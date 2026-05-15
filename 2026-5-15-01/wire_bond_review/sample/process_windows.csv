@@ -1,0 +1,4 @@
+chip_model,power_min,power_max,time_min,time_max,force_min,force_max,temp_min,temp_max,pull_force_spec,pull_force_lower_limit
+CHIP_A,140,160,20,30,40,60,170,190,8.0,6.0
+CHIP_B,150,170,25,35,50,70,180,200,7.0,5.0
+CHIP_C,170,190,35,45,65,85,190,210,5.5,4.0
