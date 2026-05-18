@@ -1,17 +1,23 @@
 {
-  "name": "team-task-manager",
+  "name": "restaurant-kitchen-scheduling",
   "version": "1.0.0",
-  "description": "Team collaboration task management application",
+  "private": true,
   "scripts": {
-    "install:all": "npm install && cd client && npm install",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon server/index.js",
-    "client": "cd client && npm run dev",
-    "build": "cd client && npm run build",
-    "start": "node server/index.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "better-sqlite3": "^11.3.0"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "nodemon": "^3.1.0"
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
   }
 }
