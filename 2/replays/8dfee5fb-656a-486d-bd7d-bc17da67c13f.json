@@ -1,0 +1,63 @@
+{
+  "replay_id": "8dfee5fb-656a-486d-bd7d-bc17da67c13f",
+  "game_id": "replay_test",
+  "player1_name": "Replay Player 1",
+  "player2_name": "Replay Player 2",
+  "player1_class": "MAGE",
+  "player2_class": "WARRIOR",
+  "winner_name": "Replay Player 1",
+  "start_time": "2026-05-15T17:04:58.650514",
+  "end_time": "2026-05-15T17:04:58.650539",
+  "turn_count": 2,
+  "action_history": [
+    {
+      "action": "play_card",
+      "card_id": "minion_001",
+      "turn": 1,
+      "timestamp": "2026-05-15T17:04:58.650532"
+    },
+    {
+      "action": "attack",
+      "attacker": "minion_001",
+      "target": "hero",
+      "turn": 1,
+      "timestamp": "2026-05-15T17:04:58.650534"
+    },
+    {
+      "action": "end_turn",
+      "turn": 1,
+      "timestamp": "2026-05-15T17:04:58.650536"
+    },
+    {
+      "action": "play_card",
+      "card_id": "minion_002",
+      "turn": 2,
+      "timestamp": "2026-05-15T17:04:58.650537"
+    },
+    {
+      "action": "end_turn",
+      "turn": 2,
+      "timestamp": "2026-05-15T17:04:58.650538"
+    }
+  ],
+  "initial_states": {
+    "replay_p1_58e0afe9": {
+      "player_id": "replay_p1_58e0afe9",
+      "name": "Replay Player 1",
+      "card_class": "MAGE",
+      "health": 30,
+      "max_health": 30,
+      "deck_size": 0,
+      "hand_size": 0
+    },
+    "replay_p2_f4c26bb0": {
+      "player_id": "replay_p2_f4c26bb0",
+      "name": "Replay Player 2",
+      "card_class": "WARRIOR",
+      "health": 30,
+      "max_health": 30,
+      "deck_size": 0,
+      "hand_size": 0
+    }
+  }
+}
