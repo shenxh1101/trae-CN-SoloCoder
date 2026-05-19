@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇AI对战</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">贪吃蛇AI对战</h1>
+        
+        <div class="menu-screen" id="menuScreen">
+            <div class="menu-buttons">
+                <button class="menu-btn" id="btnSingle">🤖 单人挑战AI</button>
+                <button class="menu-btn" id="btnDual">👥 双人对战</button>
+            </div>
+            <div class="high-score">
+                <p>历史最高分</p>
+                <span id="highScoreValue">0</span>
+            </div>
+            <div class="controls-info">
+                <div class="control-group">
+                    <h3>玩家1 (绿蛇)</h3>
+                    <p>↑ ↓ ← → 方向键</p>
+                </div>
+                <div class="control-group">
+                    <h3>玩家2 (蓝蛇)</h3>
+                    <p>W A S D 键</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-screen" id="gameScreen">
+            <div class="game-info">
+                <div class="player-info player1">
+                    <span class="player-label">玩家1</span>
+                    <span class="player-score" id="score1">0</span>
+                </div>
+                <div class="timer">
+                    <span id="gameTime">00:00</span>
+                </div>
+                <div class="player-info player2">
+                    <span class="player-label" id="player2Label">AI</span>
+                    <span class="player-score" id="score2">0</span>
+                </div>
+            </div>
+            
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+                <div class="countdown" id="countdown"></div>
+                <div class="game-over" id="gameOver">
+                    <div class="game-over-content">
+                        <h2 id="gameOverTitle">游戏结束</h2>
+                        <p id="gameOverMessage"></p>
+                        <div class="game-over-stats">
+                            <p>时长: <span id="finalTime">00:00</span></p>
+                            <p>玩家1得分: <span id="finalScore1">0</span></p>
+                            <p id="finalScore2Row">AI得分: <span id="finalScore2">0</span></p>
+                        </div>
+                        <div class="game-over-buttons">
+                            <button class="menu-btn" id="btnRestart">再来一局</button>
+                            <button class="menu-btn" id="btnBackMenu">返回菜单</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button class="control-btn" id="btnPause">⏸ 暂停</button>
+                <button class="control-btn" id="btnQuit">退出</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
