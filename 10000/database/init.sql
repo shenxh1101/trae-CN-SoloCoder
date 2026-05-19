@@ -1,6 +1,11 @@
 -- ========================================
 -- Collaborative Docs Database Schema
 -- ========================================
+-- 
+-- 执行方式:
+--   1. 创建数据库: createdb collaborative_docs
+--   2. 执行脚本: psql -d collaborative_docs -f init.sql
+-- ========================================
 
 -- Drop existing tables if they exist
 DROP TABLE IF EXISTS comments CASCADE;

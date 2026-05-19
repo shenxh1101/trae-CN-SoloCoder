@@ -45,75 +45,15 @@ collaborative-docs/
 
 ## 快速开始
 
-### 1. 数据库设置
+详细的安装和启动指南请参考 [SETUP.md](file:///Users/mac/Documents/10000/SETUP.md)。
 
-首先确保你已经安装了 PostgreSQL，然后创建数据库：
+**快速步骤：**
 
-```sql
-CREATE DATABASE collaborative_docs;
-```
-
-执行初始化脚本：
-
-```bash
-psql -d collaborative_docs -f database/init.sql
-```
-
-### 2. 后端配置
-
-进入 server 目录，复制环境变量配置：
-
-```bash
-cd server
-cp .env.example .env
-```
-
-编辑 `.env` 文件，配置数据库连接：
-
-```
-PORT=5000
-DATABASE_URL=postgresql://username:password@localhost:5432/collaborative_docs
-JWT_SECRET=your_jwt_secret_key_here
-NODE_ENV=development
-```
-
-### 3. 安装依赖
-
-在项目根目录执行：
-
-```bash
-npm run install:all
-```
-
-或者分别安装：
-
-```bash
-# 安装后端依赖
-cd server && npm install
-
-# 安装前端依赖
-cd ../client && npm install
-```
-
-### 4. 启动应用
-
-**开发模式**（同时启动前端和后端）：
-
-```bash
-npm run dev
-```
-
-或者分别启动：
-
-```bash
-# 启动后端 (端口 5000)
-cd server && npm run dev
-
-# 启动前端 (端口 3000)
-cd client && npm start
-```
-
-应用将在 `http://localhost:3000` 运行。
+1. 创建并初始化 PostgreSQL 数据库
+2. 配置后端环境变量 (server/.env)
+3. 安装依赖: `npm run install:all`
+4. 启动应用: `npm run dev`
+5. 访问: http://localhost:3000
 
 ## API 接口
 
