@@ -1,0 +1,303 @@
+{
+  "hourly_conversion": {
+    "peak_hour": 19,
+    "peak_rate": 0.1267605633802817,
+    "average_rate": 0.09088486785552895,
+    "hourly_data": [
+      {
+        "hour": 0,
+        "clicks": 380,
+        "purchases": 32,
+        "conversion_rate": 0.08421052631578947
+      },
+      {
+        "hour": 1,
+        "clicks": 973,
+        "purchases": 95,
+        "conversion_rate": 0.09763617677286741
+      },
+      {
+        "hour": 2,
+        "clicks": 1800,
+        "purchases": 177,
+        "conversion_rate": 0.09833333333333333
+      },
+      {
+        "hour": 3,
+        "clicks": 2265,
+        "purchases": 174,
+        "conversion_rate": 0.07682119205298013
+      },
+      {
+        "hour": 4,
+        "clicks": 2256,
+        "purchases": 215,
+        "conversion_rate": 0.09530141843971632
+      },
+      {
+        "hour": 5,
+        "clicks": 1764,
+        "purchases": 169,
+        "conversion_rate": 0.09580498866213152
+      },
+      {
+        "hour": 6,
+        "clicks": 1356,
+        "purchases": 117,
+        "conversion_rate": 0.08628318584070796
+      },
+      {
+        "hour": 7,
+        "clicks": 1811,
+        "purchases": 162,
+        "conversion_rate": 0.0894533406957482
+      },
+      {
+        "hour": 8,
+        "clicks": 2282,
+        "purchases": 198,
+        "conversion_rate": 0.08676599474145487
+      },
+      {
+        "hour": 9,
+        "clicks": 2752,
+        "purchases": 259,
+        "conversion_rate": 0.09411337209302326
+      },
+      {
+        "hour": 10,
+        "clicks": 3164,
+        "purchases": 261,
+        "conversion_rate": 0.0824905183312263
+      },
+      {
+        "hour": 11,
+        "clicks": 3503,
+        "purchases": 335,
+        "conversion_rate": 0.09563231515843562
+      },
+      {
+        "hour": 12,
+        "clicks": 3007,
+        "purchases": 316,
+        "conversion_rate": 0.1050881277020286
+      },
+      {
+        "hour": 13,
+        "clicks": 2739,
+        "purchases": 252,
+        "conversion_rate": 0.09200438116100766
+      },
+      {
+        "hour": 14,
+        "clicks": 2128,
+        "purchases": 214,
+        "conversion_rate": 0.10056390977443609
+      },
+      {
+        "hour": 15,
+        "clicks": 1772,
+        "purchases": 148,
+        "conversion_rate": 0.0835214446952596
+      },
+      {
+        "hour": 16,
+        "clicks": 1301,
+        "purchases": 119,
+        "conversion_rate": 0.09146810146041506
+      },
+      {
+        "hour": 17,
+        "clicks": 825,
+        "purchases": 70,
+        "conversion_rate": 0.08484848484848485
+      },
+      {
+        "hour": 18,
+        "clicks": 455,
+        "purchases": 39,
+        "conversion_rate": 0.08571428571428572
+      },
+      {
+        "hour": 19,
+        "clicks": 213,
+        "purchases": 27,
+        "conversion_rate": 0.1267605633802817
+      },
+      {
+        "hour": 20,
+        "clicks": 134,
+        "purchases": 11,
+        "conversion_rate": 0.08208955223880597
+      },
+      {
+        "hour": 21,
+        "clicks": 97,
+        "purchases": 7,
+        "conversion_rate": 0.07216494845360824
+      },
+      {
+        "hour": 22,
+        "clicks": 100,
+        "purchases": 7,
+        "conversion_rate": 0.07
+      },
+      {
+        "hour": 23,
+        "clicks": 144,
+        "purchases": 15,
+        "conversion_rate": 0.10416666666666667
+      }
+    ]
+  },
+  "funnel_analysis": {
+    "total_users": 1000,
+    "click_users": 1000,
+    "cart_users": 990,
+    "purchase_users": 727,
+    "click_to_cart_rate": 0.99,
+    "cart_to_purchase_rate": 0.7343434343434343,
+    "click_to_purchase_rate": 0.727
+  },
+  "top_categories": {
+    "top_categories": [
+      {
+        "category": "家居用品",
+        "purchase_count": 366
+      },
+      {
+        "category": "运动户外",
+        "purchase_count": 360
+      },
+      {
+        "category": "服装鞋帽",
+        "purchase_count": 346
+      },
+      {
+        "category": "汽车用品",
+        "purchase_count": 344
+      },
+      {
+        "category": "母婴用品",
+        "purchase_count": 342
+      },
+      {
+        "category": "电子产品",
+        "purchase_count": 339
+      },
+      {
+        "category": "食品饮料",
+        "purchase_count": 336
+      },
+      {
+        "category": "美妆护肤",
+        "purchase_count": 334
+      },
+      {
+        "category": "图书文具",
+        "purchase_count": 327
+      },
+      {
+        "category": "宠物用品",
+        "purchase_count": 325
+      }
+    ]
+  },
+  "repurchase_analysis": {
+    "total_purchasers": 727,
+    "repeat_purchasers": 569,
+    "repurchase_rate": 0.782668500687758,
+    "average_purchases_per_user": 4.702888583218707,
+    "purchase_distribution": [
+      {
+        "purchase_count": 1,
+        "user_count": 158
+      },
+      {
+        "purchase_count": 2,
+        "user_count": 114
+      },
+      {
+        "purchase_count": 3,
+        "user_count": 88
+      },
+      {
+        "purchase_count": 4,
+        "user_count": 69
+      },
+      {
+        "purchase_count": 5,
+        "user_count": 67
+      },
+      {
+        "purchase_count": 6,
+        "user_count": 35
+      },
+      {
+        "purchase_count": 7,
+        "user_count": 50
+      },
+      {
+        "purchase_count": 8,
+        "user_count": 23
+      },
+      {
+        "purchase_count": 9,
+        "user_count": 35
+      },
+      {
+        "purchase_count": 10,
+        "user_count": 16
+      },
+      {
+        "purchase_count": 11,
+        "user_count": 19
+      },
+      {
+        "purchase_count": 12,
+        "user_count": 20
+      },
+      {
+        "purchase_count": 13,
+        "user_count": 6
+      },
+      {
+        "purchase_count": 14,
+        "user_count": 14
+      },
+      {
+        "purchase_count": 15,
+        "user_count": 5
+      },
+      {
+        "purchase_count": 16,
+        "user_count": 4
+      },
+      {
+        "purchase_count": 17,
+        "user_count": 1
+      },
+      {
+        "purchase_count": 18,
+        "user_count": 1
+      },
+      {
+        "purchase_count": 19,
+        "user_count": 1
+      },
+      {
+        "purchase_count": 23,
+        "user_count": 1
+      }
+    ]
+  },
+  "summary": {
+    "total_records": 50000,
+    "date_range": {
+      "start": "2026-05-12",
+      "end": "2026-05-19"
+    },
+    "unique_users": 1000,
+    "unique_categories": 10
+  }
+}
