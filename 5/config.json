@@ -1,0 +1,17 @@
+{
+  "scan_path": "/Users/mac/code",
+  "ignore_dirs": [
+    "node_modules",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "dist",
+    "build",
+    ".git",
+    "target",
+    "vendor",
+    ".idea",
+    ".vscode"
+  ],
+  "db_path": "/Users/mac/code/solo coder/5/repo_data.db"
+}
