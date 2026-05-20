@@ -1,0 +1,6 @@
+tracking_number,courier_code,remark,is_subscribed
+SF1234567890123,sf,iPhone手机,true
+YT9876543210123,yt,衣服包裹,true
+ZT5678901234567,zt,书籍,true
+JD1122334455667,jd,电子产品,false
+EMS9988776655,ems,重要文件,true

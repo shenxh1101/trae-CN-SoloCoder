@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #ffffff;
+  --color-text: #1f2937;
+  --color-border: #e5e7eb;
+}
+
+.dark {
+  --color-bg: #111827;
+  --color-text: #f3f4f6;
+  --color-border: #374151;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.prose pre {
+  background: #1e293b;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.prose code {
+  background: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  color: #e2e8f0;
+}
+
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  transform-origin: 0%;
+  z-index: 50;
+}
+
+.toc-link {
+  @apply border-l-2 border-gray-200 pl-3 py-1 text-sm text-gray-600 hover:text-blue-600 hover:border-blue-500 transition-all;
+}
+
+.toc-link.active {
+  @apply text-blue-600 border-blue-500;
+}

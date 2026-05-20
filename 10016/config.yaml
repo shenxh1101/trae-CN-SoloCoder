@@ -1,0 +1,49 @@
+websites:
+  - name: "Google"
+    url: "https://www.google.com"
+    expected_status: 200
+    max_response_time: 3
+    interval: 30
+
+  - name: "GitHub"
+    url: "https://github.com"
+    expected_status: 200
+    max_response_time: 5
+    interval: 60
+
+  - name: "Example"
+    url: "http://example.com"
+    expected_status: 200
+    max_response_time: 2
+    interval: 15
+
+failure_threshold: 3
+
+notifications:
+  console:
+    enabled: true
+
+  email:
+    enabled: false
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    smtp_username: "your_email@example.com"
+    smtp_password: "your_password"
+    use_tls: true
+    from_addr: "your_email@example.com"
+    to_addrs:
+      - "admin@example.com"
+
+  webhook:
+    enabled: false
+    url: "https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN"
+    type: "dingtalk"
+    secret: "YOUR_SECRET"
+
+logging:
+  log_file: "monitor.log"
+  log_level: "INFO"
+  retention_days: 30
+
+stats:
+  output_interval: 3600
