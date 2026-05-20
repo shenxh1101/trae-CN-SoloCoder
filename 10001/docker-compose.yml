@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: task-scheduler-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  api:
+    build: .
+    container_name: task-scheduler-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+      - ./worker_runner.py:/app/worker_runner.py
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SQLALCHEMY_DATABASE_URL=sqlite:///data/task_scheduler.db
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  worker-1:
+    build: .
+    container_name: task-scheduler-worker-1
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+      - ./worker_runner.py:/app/worker_runner.py
+    environment:
+      - WORKER_NAME=worker-1
+      - WORKER_CONCURRENCY=2
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SQLALCHEMY_DATABASE_URL=sqlite:///data/task_scheduler.db
+    depends_on:
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    command: python worker_runner.py
+
+  worker-2:
+    build: .
+    container_name: task-scheduler-worker-2
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+      - ./worker_runner.py:/app/worker_runner.py
+    environment:
+      - WORKER_NAME=worker-2
+      - WORKER_CONCURRENCY=2
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SQLALCHEMY_DATABASE_URL=sqlite:///data/task_scheduler.db
+    depends_on:
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    command: python worker_runner.py
+
+volumes:
+  redis_data:
