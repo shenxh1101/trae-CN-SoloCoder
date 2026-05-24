@@ -1,0 +1,39 @@
+{
+  "summary": {
+    "totalTests": 5,
+    "totalPassed": 5,
+    "totalFailed": 0
+  },
+  "details": [
+    {
+      "testName": "对比模式测试",
+      "passed": true,
+      "description": "分屏:true 左画布:true 右画布:true 行星:true 月球:true 土星:true",
+      "timestamp": "2026-05-24T16:51:53.941Z"
+    },
+    {
+      "testName": "月球运动测试",
+      "passed": true,
+      "description": "角度变化:true 左场景运动:true 右场景运动:true",
+      "timestamp": "2026-05-24T16:51:57.117Z"
+    },
+    {
+      "testName": "日期选择测试",
+      "passed": true,
+      "description": "模拟时间:2020-01-04 地球角度:101.0° 左场景行星移动:true 右场景行星移动:true",
+      "timestamp": "2026-05-24T16:51:59.258Z"
+    },
+    {
+      "testName": "演示模式测试",
+      "passed": true,
+      "description": "主相机移动:true 实相机移动:true 行星切换:true 月球可见:true 土星光环可见:true",
+      "timestamp": "2026-05-24T16:52:11.496Z"
+    },
+    {
+      "testName": "土星环测试",
+      "passed": true,
+      "description": "左场景环数量:2 右场景环数量:2 放大后距离:14.9",
+      "timestamp": "2026-05-24T16:52:13.132Z"
+    }
+  ]
+}

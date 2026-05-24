@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">倒计时</string>
+    <string name="widget_small_label">倒计时小组件 (小)</string>
+    <string name="widget_medium_label">倒计时小组件 (中)</string>
+    <string name="widget_large_label">倒计时小组件 (大)</string>
+    <string name="widget_config_label">选择倒计时事件</string>
+    <string name="wallpaper_name">倒计时动态壁纸</string>
+    <string name="wallpaper_settings_label">壁纸设置</string>
+    <string name="facebook_app_id">0</string>
+    <string name="admob_app_id">ca-app-pub-0000000000000000~0000000000</string>
+
+    <!-- Widget actions -->
+    <string name="widget_action_update">com.countdown.app.widget.UPDATE</string>
+    <string name="widget_action_tap">com.countdown.app.widget.TAP</string>
+
+    <!-- Wallpaper actions -->
+    <string name="wallpaper_action_start">com.countdown.app.wallpaper.START</string>
+    <string name="wallpaper_action_stop">com.countdown.app.wallpaper.STOP</string>
+    <string name="wallpaper_action_update">com.countdown.app.wallpaper.UPDATE</string>
+
+    <!-- Widget messages -->
+    <string name="widget_no_event">暂无倒计时事件</string>
+    <string name="widget_counting_down">距离目标还有</string>
+    <string name="widget_counting_up">已经过去</string>
+
+    <!-- Shared Preferences Keys -->
+    <string name="pref_widget_data">widget_data</string>
+    <string name="pref_wallpaper_enabled">wallpaper_enabled</string>
+    <string name="pref_wallpaper_event_id">wallpaper_event_id</string>
+    <string name="pref_wallpaper_theme">wallpaper_theme</string>
+</resources>

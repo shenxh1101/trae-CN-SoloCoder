@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme colors -->
+    <color name="primary">#6366F1</color>
+    <color name="primary_dark">#4F46E5</color>
+    <color name="primary_light">#A5B4FC</color>
+    <color name="accent">#F472B6</color>
+
+    <!-- Background colors -->
+    <color name="background">#FFFFFF</color>
+    <color name="background_dark">#121212</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_dark">#1E1E1E</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#1F2937</color>
+    <color name="text_primary_light">#F9FAFB</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_secondary_light">#9CA3AF</color>
+    <color name="text_hint">#9CA3AF</color>
+
+    <!-- Widget background colors -->
+    <color name="widget_bg_light">#FFFFFF</color>
+    <color name="widget_bg_dark">#1E293B</color>
+    <color name="widget_bg_transparent">#80000000</color>
+
+    <!-- Category colors -->
+    <color name="category_birthday">#F43F5E</color>
+    <color name="category_anniversary">#8B5CF6</color>
+    <color name="category_work">#3B82F6</color>
+    <color name="category_holiday">#10B981</color>
+    <color name="category_study">#F59E0B</color>
+    <color name="category_other">#6B7280</color>
+
+    <!-- Other -->
+    <color name="divider">#E5E7EB</color>
+    <color name="error">#EF4444</color>
+    <color name="success">#10B981</color>
+    <color name="warning">#F59E0B</color>
+
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent">#80000000</color>
+</resources>

@@ -1,0 +1,46 @@
+{
+  "rooms": {
+    "n8droaksmpjz3iyp": {
+      "id": "n8droaksmpjz3iyp",
+      "title": "测试投票",
+      "status": "waiting",
+      "creatorId": "aava7jw4mpjz3iyp",
+      "creatorName": "测试主持人",
+      "options": [
+        {
+          "id": "opt_0_1779638976961",
+          "text": "选项A",
+          "votes": 0
+        },
+        {
+          "id": "opt_1_1779638976961",
+          "text": "选项B",
+          "votes": 0
+        },
+        {
+          "id": "opt_2_1779638976961",
+          "text": "选项C",
+          "votes": 0
+        }
+      ],
+      "isMultiple": false,
+      "isAnonymous": true,
+      "antiCheat": true,
+      "endTime": 1779720000000,
+      "createdAt": 1779638976961,
+      "voteRecords": [],
+      "danmus": [],
+      "onlineUsers": [
+        {
+          "id": "aava7jw4mpjz3iyp",
+          "name": "测试主持人",
+          "fingerprint": "unknown",
+          "lastIp": "::1",
+          "hasVoted": false,
+          "role": "host"
+        }
+      ]
+    }
+  },
+  "lastBackup": 1779639762512
+}

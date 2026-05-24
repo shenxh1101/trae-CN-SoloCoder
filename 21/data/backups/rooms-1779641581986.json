@@ -1,0 +1,186 @@
+{
+  "rooms": {
+    "n8droaksmpjz3iyp": {
+      "id": "n8droaksmpjz3iyp",
+      "title": "测试投票",
+      "status": "waiting",
+      "creatorId": "aava7jw4mpjz3iyp",
+      "creatorName": "测试主持人",
+      "options": [
+        {
+          "id": "opt_0_1779638976961",
+          "text": "选项A",
+          "votes": 0
+        },
+        {
+          "id": "opt_1_1779638976961",
+          "text": "选项B",
+          "votes": 0
+        },
+        {
+          "id": "opt_2_1779638976961",
+          "text": "选项C",
+          "votes": 0
+        }
+      ],
+      "isMultiple": false,
+      "isAnonymous": true,
+      "antiCheat": true,
+      "endTime": 1779720000000,
+      "createdAt": 1779638976961,
+      "voteRecords": [],
+      "danmus": [],
+      "onlineUsers": [
+        {
+          "id": "aava7jw4mpjz3iyp",
+          "name": "测试主持人",
+          "fingerprint": "unknown",
+          "lastIp": "::1",
+          "hasVoted": false,
+          "role": "host"
+        }
+      ]
+    },
+    "3u1uzje9mpk0fncg": {
+      "id": "3u1uzje9mpk0fncg",
+      "title": "测试投票 - 最喜欢的编程语言",
+      "status": "waiting",
+      "creatorId": "mf3qxe0impk0fncg",
+      "creatorName": "主持人小明",
+      "options": [
+        {
+          "id": "opt_0_1779641222128",
+          "text": "JavaScript",
+          "votes": 0
+        },
+        {
+          "id": "opt_1_1779641222128",
+          "text": "TypeScript",
+          "votes": 0
+        },
+        {
+          "id": "opt_2_1779641222128",
+          "text": "Python",
+          "votes": 0
+        },
+        {
+          "id": "opt_3_1779641222128",
+          "text": "Go",
+          "votes": 0
+        }
+      ],
+      "isMultiple": false,
+      "isAnonymous": false,
+      "antiCheat": true,
+      "endTime": 1779644822098,
+      "createdAt": 1779641222128,
+      "voteRecords": [],
+      "danmus": [
+        {
+          "id": "gpr9snifmpk0fr2q",
+          "roomId": "3u1uzje9mpk0fncg",
+          "userId": "user_test-voter-fp-00",
+          "userName": "投票者小红",
+          "content": "TypeScript是最好的语言！",
+          "timestamp": 1779641226962
+        },
+        {
+          "id": "tuxrprprmpk0frgn",
+          "roomId": "3u1uzje9mpk0fncg",
+          "userId": "user_test-host-fp-001",
+          "userName": "主持人小明",
+          "content": "欢迎大家积极投票！",
+          "timestamp": 1779641227463
+        }
+      ],
+      "onlineUsers": [
+        {
+          "id": "mf3qxe0impk0fncg",
+          "name": "主持人小明",
+          "fingerprint": "test-host-fp-001",
+          "lastIp": "::1",
+          "hasVoted": false,
+          "role": "host"
+        }
+      ]
+    },
+    "atqzhsp1mpk0j5tb": {
+      "id": "atqzhsp1mpk0j5tb",
+      "title": "调试测试投票",
+      "status": "waiting",
+      "creatorId": "ks81pi7rmpk0j5tb",
+      "creatorName": "调试主持人",
+      "options": [
+        {
+          "id": "opt_0_1779641386031",
+          "text": "选项A",
+          "votes": 0
+        },
+        {
+          "id": "opt_1_1779641386031",
+          "text": "选项B",
+          "votes": 0
+        }
+      ],
+      "isMultiple": false,
+      "isAnonymous": false,
+      "antiCheat": true,
+      "endTime": 1779644986011,
+      "createdAt": 1779641386031,
+      "voteRecords": [],
+      "danmus": [],
+      "onlineUsers": [
+        {
+          "id": "ks81pi7rmpk0j5tb",
+          "name": "调试主持人",
+          "fingerprint": "debug-host-fp-001",
+          "lastIp": "::1",
+          "hasVoted": false,
+          "role": "host"
+        }
+      ]
+    },
+    "pdu5xx8zmpk0mt3z": {
+      "id": "pdu5xx8zmpk0mt3z",
+      "title": "调试测试投票",
+      "status": "voting",
+      "creatorId": "user_debug-host-fp-00",
+      "creatorName": "调试主持人",
+      "options": [
+        {
+          "id": "opt_0_1779641556191",
+          "text": "选项A",
+          "votes": 1
+        },
+        {
+          "id": "opt_1_1779641556191",
+          "text": "选项B",
+          "votes": 0
+        }
+      ],
+      "isMultiple": false,
+      "isAnonymous": false,
+      "antiCheat": true,
+      "endTime": 1779645156160,
+      "createdAt": 1779641556191,
+      "voteRecords": [
+        {
+          "id": "21ktpg1hmpk0mvu7",
+          "roomId": "pdu5xx8zmpk0mt3z",
+          "userId": "user_debug-voter-fp-0",
+          "userName": "调试投票者",
+          "optionIds": [
+            "opt_0_1779641556191"
+          ],
+          "ip": "::1",
+          "fingerprint": "debug-voter-fp-002",
+          "timestamp": 1779641559727
+        }
+      ],
+      "danmus": [],
+      "onlineUsers": [],
+      "startedAt": 1779641557717
+    }
+  },
+  "lastBackup": 1779641581986
+}

@@ -1,0 +1,69 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+# App Group Configuration for Widget Sharing
+app_group_id = 'group.com.countdown.app.widgets'
+team_id = 'YOUR_TEAM_ID'
+
+abstract_target 'CountdownAppCommon' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => flags[:hermes_enabled],
+    :fabric_enabled => flags[:fabric_enabled],
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  target 'CountdownApp' do
+    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+
+    post_install do |installer|
+      react_native_post_install(
+        installer,
+        config[:reactNativePath],
+        :mac_catalyst_enabled => false
+      )
+
+      # Add App Group capability to main app
+      installer.pods_project.targets.each do |target|
+        if target.name == 'CountdownApp'
+          target.add_system_framework('GroupActivities')
+        end
+      end
+
+      # Fix for Xcode 15+
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '17.0'
+        end
+      end
+    end
+  end
+
+  target 'CountdownWidget' do
+    platform :ios, '17.0'
+    use_frameworks!
+
+    # WidgetKit is provided by system, no need for pods
+    # But we can add shared pods here if needed
+  end
+end
+
+post_integrate do |installer|
+  # Configure App Group for both targets
+  mainAppTarget = installer.aggregate_targets.find { |t| t.name == 'Pods-CountdownApp' }
+  widgetTarget = installer.aggregate_targets.find { |t| t.name == 'Pods-CountdownWidget' }
+
+  [mainAppTarget, widgetTarget].compact.each do |target|
+    target.user_build_configurations.each do |_, config|
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= {}
+      config.build_settings['CODE_SIGN_ENTITLEMENTS']['Release'] ||= 'CountdownApp/CountdownApp.entitlements'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS']['Debug'] ||= 'CountdownApp/CountdownApp.entitlements'
+      config.build_settings['DEVELOPMENT_TEAM'] = team_id
+    end
+  end
+end
