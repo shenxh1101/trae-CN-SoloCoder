@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  users     User[]
+  projects  Project[]
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  username      String       @unique
+  password      String
+  avatar        String?
+  teamId        String?
+  team          Team?        @relation(fields: [teamId], references: [id])
+  createdAt     DateTime     @default(now())
+  tasks         Task[]       @relation("AssigneeTasks")
+  createdTasks  Task[]       @relation("CreatorTasks")
+  comments      Comment[]
+  notifications Notification[]
+  activityLogs  ActivityLog[]
+  attachments   Attachment[]
+}
+
+model Project {
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  teamId      String
+  team        Team       @relation(fields: [teamId], references: [id])
+  createdBy   String
+  createdAt   DateTime   @default(now())
+  taskLists   TaskList[]
+  tasks       Task[]
+}
+
+model TaskList {
+  id        String   @id @default(uuid())
+  name      String
+  order     Int      @default(0)
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  createdAt DateTime @default(now())
+  tasks     Task[]
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      String       @default("TODO")
+  priority    String       @default("MEDIUM")
+  dueDate     DateTime?
+  order       Int          @default(0)
+  taskListId  String
+  taskList    TaskList     @relation(fields: [taskListId], references: [id])
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id])
+  assigneeId  String?
+  assignee    User?        @relation("AssigneeTasks", fields: [assigneeId], references: [id])
+  createdBy   String
+  creator     User         @relation("CreatorTasks", fields: [createdBy], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  tags        TaskTag[]
+  attachments Attachment[]
+  subtasks    Subtask[]
+  comments    Comment[]
+  activityLogs ActivityLog[]
+  reminders   Reminder[]
+  notifications Notification[]
+}
+
+model TaskTag {
+  id     String @id @default(uuid())
+  name   String
+  color  String
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id])
+}
+
+model Attachment {
+  id              String   @id @default(uuid())
+  filename        String
+  path            String
+  mimetype        String
+  size            Int
+  taskId          String
+  task            Task     @relation(fields: [taskId], references: [id])
+  uploadedBy      String
+  uploadedByUser  User     @relation(fields: [uploadedBy], references: [id])
+  createdAt       DateTime @default(now())
+}
+
+model Subtask {
+  id        String   @id @default(uuid())
+  title     String
+  completed Boolean  @default(false)
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  mentions  String?
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  field     String
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  taskId    String?
+  task      Task?    @relation(fields: [taskId], references: [id])
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Reminder {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  sent      Boolean  @default(false)
+  remindAt  DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([taskId])
+}
