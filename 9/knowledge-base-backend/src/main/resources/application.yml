@@ -1,0 +1,174 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: knowledge-base-backend
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/knowledge_base?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: postgres
+    password: postgres
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: KnowledgeHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 5
+
+    elasticsearch:
+      uris: http://localhost:9200
+      username: elastic
+      password: elastic
+      connection-timeout: 5s
+      socket-timeout: 30s
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+    encoding: UTF-8
+
+  ldap:
+    urls: ldap://localhost:389
+    base: dc=company,dc=com
+    username: cn=admin,dc=company,dc=com
+    password: admin
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 1
+        retry:
+          enabled: true
+          max-attempts: 3
+
+flowable:
+  async-executor-activate: true
+  database-schema-update: true
+  history-level: full
+  idm-enabled: false
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+  openapi:
+    title: 知识库管理系统API文档
+    description: 知识库管理系统后端接口文档
+    version: 1.0.0
+    concat: admin@company.com
+    license: Apache 2.0
+    license-url: https://www.apache.org/licenses/LICENSE-2.0
+    terms-of-service-url: https://www.company.com
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: your-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm
+  expiration: 86400000
+  refresh-expiration: 604800000
+  header: Authorization
+  prefix: Bearer
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: knowledge-base
+  secure: false
+
+knowledge:
+  file:
+    storage-path: /data/knowledge/files
+    allowed-extensions: .pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.png,.jpg,.jpeg,.gif
+    max-size: 104857600
+  watermark:
+    enabled: true
+    text: 公司内部文档
+    opacity: 0.3
+    font-size: 30
+  recycle:
+    retention-days: 30
+  search:
+    highlight:
+      pre-tags: <span style="color:red">
+      post-tags: </span>
+  approval:
+    auto-approve: false
+    timeout-days: 7
+
+logging:
+  level:
+    root: INFO
+    com.company.knowledge: DEBUG
+    org.springframework.security: DEBUG
+    org.flowable: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/knowledge-backend.log
+    max-size: 100MB
+    max-history: 30
