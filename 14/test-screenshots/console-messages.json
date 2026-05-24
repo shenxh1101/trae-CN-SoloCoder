@@ -1,0 +1,57 @@
+[
+  {
+    "type": "debug",
+    "text": "[vite] connecting...",
+    "location": {
+      "url": "http://localhost:5175/@vite/client",
+      "line": 494,
+      "column": 8,
+      "lineNumber": 494,
+      "columnNumber": 8
+    }
+  },
+  {
+    "type": "debug",
+    "text": "[vite] connected.",
+    "location": {
+      "url": "http://localhost:5175/@vite/client",
+      "line": 617,
+      "column": 14,
+      "lineNumber": 617,
+      "columnNumber": 14
+    }
+  },
+  {
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "http://localhost:5175/node_modules/.vite/deps/chunk-YZVM2MHU.js?v=cd72dafc",
+      "line": 21550,
+      "column": 24,
+      "lineNumber": 21550,
+      "columnNumber": 24
+    }
+  },
+  {
+    "type": "error",
+    "text": "Warning: Received NaN for the `%s` attribute. If this is expected, cast the value to a string.%s value \n    at input\n    at div\n    at div\n    at div\n    at div\n    at TimelineControl (http://localhost:5175/src/components/TimelineControl.jsx:23:67)\n    at ErrorBoundary (http://localhost:5175/src/components/ErrorBoundary.jsx:6:5)\n    at CesiumViewer (http://localhost:5175/src/components/CesiumViewer.jsx?t=1779616874020:32:40)\n    at div\n    at GlacierProvider (http://localhost:5175/src/context/GlacierContext.jsx:86:35)\n    at App (http://localhost:5175/src/App.jsx?t=1779617840698:37:43)",
+    "location": {
+      "url": "http://localhost:5175/node_modules/.vite/deps/chunk-YZVM2MHU.js?v=cd72dafc",
+      "line": 520,
+      "column": 37,
+      "lineNumber": 520,
+      "columnNumber": 37
+    }
+  },
+  {
+    "type": "error",
+    "text": "An error occurred while rendering.  Rendering has stopped.\nTypeError: Cannot read properties of undefined (reading 'size')\nTypeError: Cannot read properties of undefined (reading 'size')\n    at viewer.scene.render (http://localhost:5175/src/components/CesiumViewer.jsx?t=1779616874020:115:95)\n    at CesiumWidget.render (http://localhost:5175/node_modules/.vite/deps/cesium.js?v=cd72dafc:246845:17)\n    at render2 (http://localhost:5175/node_modules/.vite/deps/cesium.js?v=cd72dafc:246091:18)",
+    "location": {
+      "url": "http://localhost:5175/node_modules/.vite/deps/cesium.js?v=cd72dafc",
+      "line": 246770,
+      "column": 16,
+      "lineNumber": 246770,
+      "columnNumber": 16
+    }
+  }
+]

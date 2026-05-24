@@ -1,0 +1,176 @@
+{
+  "testDate": "2026-05-24T10:20:34.928Z",
+  "testUrl": "http://localhost:5175/",
+  "summary": {
+    "total": 24,
+    "passed": 24,
+    "failed": 0,
+    "passRate": "100.0"
+  },
+  "consoleErrors": 2,
+  "consoleWarnings": 0,
+  "networkRequests": 1016,
+  "testResults": [
+    {
+      "step": 1,
+      "description": "导航到 http://localhost:5175/ 并等待20秒",
+      "status": "PASS",
+      "error": "加载时间: 20623ms"
+    },
+    {
+      "step": 2,
+      "description": "截取全屏截图保存为 test-01-main-interface.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 3,
+      "description": "检查控制台错误 (0个错误, 0个警告)",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 4,
+      "description": "验证地球场景加载和ESRI卫星影像底图显示",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 5,
+      "description": "验证控制面板显示（右侧面板）",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 5.1,
+      "description": "验证时间轴控件显示（底部）",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 5.2,
+      "description": "验证图例面板显示（左侧）",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 6,
+      "description": "点击控制面板中的\"图层\"选项卡，截图保存为 test-02-control-panel.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 7,
+      "description": "点击\"格陵兰岛\"快速导航按钮，截图保存为 test-03-greenland-view.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 8,
+      "description": "开启\"冰川流速\"图层开关，截图保存为 test-04-flow-arrows.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 9,
+      "description": "点击时间轴的播放按钮，截图保存为 test-05-timeline-playing.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 10,
+      "description": "暂停播放，点击\"调试\"按钮开启调试面板，截图保存为 test-06-debug-panel.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 11,
+      "description": "点击\"图例\"按钮，截图保存为 test-07-legend-panel.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 12,
+      "description": "开启比较模式，设置年份1980和2024，左右分屏模式，截图保存为 test-08-split-screen.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 13,
+      "description": "切换到滑动对比模式，截图保存为 test-09-slider-mode.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 13.1,
+      "description": "关闭比较模式",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 14,
+      "description": "剖面分析：绘制剖面线，生成图表后截图保存为 test-10-profile-analysis.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 15,
+      "description": "区域统计：框选区域，等待统计结果后截图保存为 test-11-region-stats.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 16,
+      "description": "点击1.5°C情景按钮，截图保存为 test-12-sea-level-1.5.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 17,
+      "description": "点击2.0°C情景按钮，截图保存为 test-13-sea-level-2.0.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 18,
+      "description": "点击3.0°C情景按钮，截图保存为 test-14-sea-level-3.0.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 19,
+      "description": "点击开始漫游按钮，等待5秒后截图保存为 test-15-flight-tour.png",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 19.1,
+      "description": "点击停止漫游",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "step": 20,
+      "description": "收集所有控制台消息(5条)和网络请求(1016条)",
+      "status": "PASS",
+      "error": null
+    }
+  ],
+  "screenshots": [
+    "test-01-main-interface.png",
+    "test-02-control-panel.png",
+    "test-03-greenland-view.png",
+    "test-04-flow-arrows.png",
+    "test-05-timeline-playing.png",
+    "test-06-debug-panel.png",
+    "test-07-legend-panel.png",
+    "test-08-split-screen.png",
+    "test-09-slider-mode.png",
+    "test-10-profile-analysis.png",
+    "test-11-region-stats.png",
+    "test-12-sea-level-1.5.png",
+    "test-13-sea-level-2.0.png",
+    "test-14-sea-level-3.0.png",
+    "test-15-flight-tour.png"
+  ]
+}

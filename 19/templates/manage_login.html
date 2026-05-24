@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}文件管理 - 文件分享{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-section">
+        <div class="login-card">
+            <h2>🔐 文件管理登录</h2>
+            <p>请输入您的管理密钥以查看和管理上传的文件</p>
+            <form method="GET" action="{{ url_for('manage_files_page') }}">
+                <div class="form-group">
+                    <label>管理密钥</label>
+                    <input type="text" name="admin_key" placeholder="请输入管理密钥" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-large">登录管理</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

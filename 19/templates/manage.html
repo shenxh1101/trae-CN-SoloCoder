@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}我的文件 - 文件分享{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="manage-section">
+        <div class="manage-header">
+            <h1>📁 我的文件</h1>
+            <p class="manage-info">共 {{ files|length }} 个文件</p>
+        </div>
+        
+        {% if files %}
+        <div class="file-list">
+            {% for file in files %}
+            <div class="file-list-item">
+                <div class="file-icon">
+                    {% if file.file_type == 'image' %}🖼️
+                    {% elif file.file_type == 'document' %}📄
+                    {% elif file.file_type == 'video' %}🎬
+                    {% elif file.file_type == 'audio' %}🎵
+                    {% elif file.file_type == 'archive' %}📦
+                    {% elif file.file_type == 'code' %}💻
+                    {% else %}📁{% endif %}
+                </div>
+                <div class="file-details">
+                    <div class="file-name">
+                        {{ file.original_name }}
+                        {% if file.is_folder %}
+                        <span class="badge badge-folder">文件夹</span>
+                        {% endif %}
+                    </div>
+                    <div class="file-meta">
+                        <span>📦 {{ file.size|human_size }}</span>
+                        <span>📥 {{ file.download_count }} 次下载</span>
+                        <span>📅 {{ file.created_at|format_datetime }}</span>
+                        {% if file.expires_at %}
+                        <span>⏰ {{ file.expires_at|remaining_time }}</span>
+                        {% else %}
+                        <span>♾️ 永不过期</span>
+                        {% endif %}
+                        {% if file.max_downloads %}
+                        <span>🔢 剩余 {{ file.max_downloads - file.download_count }} 次</span>
+                        {% endif %}
+                    </div>
+                    {% if file.tags %}
+                    <div class="file-tags">
+                        {% for tag in file.tags %}
+                        <span class="tag">#{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="file-codes">
+                        <span class="code-item">🔗 短链: <code>{{ file.short_code }}</code></span>
+                        <span class="code-item">🔑 提取码: <code>{{ file.extract_code }}</code></span>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <a href="/s/{{ file.short_code }}" class="btn btn-sm btn-info" target="_blank">查看</a>
+                    <button class="btn btn-sm btn-danger" onclick="deleteFile('{{ file.short_code }}')">删除</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>还没有上传任何文件</h3>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">立即上传</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deleteFile(shortCode) {
+    if (!confirm('确定要删除这个文件吗？此操作无法撤销。')) {
+        return;
+    }
+    
+    fetch('/manage/delete/' + shortCode, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({admin_key: '{{ admin_key }}'})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('删除失败: ' + data.error);
+        }
+    })
+    .catch(() => alert('删除失败，请重试'));
+}
+</script>
+{% endblock %}

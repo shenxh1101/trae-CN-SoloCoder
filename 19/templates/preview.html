@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}预览文件 - 文件分享{% endblock %}
+
+{% block extra_css %}
+{% if preview_data and preview_data.type == 'code' %}
+<style>{{ preview_data.css }}</style>
+{% endif %}
+<style>
+.preview-container {
+    max-width: 100%;
+    overflow: auto;
+}
+.preview-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+.preview-pdf {
+    width: 100%;
+    height: 80vh;
+    border: none;
+}
+.markdown-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.8;
+}
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+.markdown-content pre {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+.markdown-content code {
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+.code-preview {
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 20px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+.code-preview .linenodiv {
+    color: #999;
+    user-select: none;
+    padding-right: 15px;
+    border-right: 1px solid #444;
+    margin-right: 15px;
+}
+.text-content {
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 5px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="preview-section">
+        <div class="preview-header">
+            <h1>📄 {{ file_info.original_name }}</h1>
+            <div class="file-meta">
+                <span class="meta-item">📦 {{ file_info.size|human_size }}</span>
+                <span class="meta-item">📥 {{ file_info.download_count }} 次下载</span>
+                {% if file_info.expires_at %}
+                <span class="meta-item">⏰ {{ file_info.expires_at|remaining_time }}</span>
+                {% endif %}
+            </div>
+            <a href="/s/{{ short_code }}" class="btn btn-secondary">返回下载页</a>
+        </div>
+        
+        <div class="preview-container">
+            {% if not preview_available %}
+                <div class="no-preview">
+                    <div class="no-preview-icon">📁</div>
+                    <h3>此文件类型不支持在线预览</h3>
+                    <p>请下载后查看</p>
+                    <a href="/s/{{ short_code }}" class="btn btn-primary btn-large">前往下载</a>
+                </div>
+            {% elif preview_data.type == 'image' %}
+                <img src="/preview/{{ short_code }}/raw" alt="{{ file_info.original_name }}" class="preview-image">
+            {% elif preview_data.type == 'pdf' %}
+                <iframe src="/preview/{{ short_code }}/raw" class="preview-pdf"></iframe>
+            {% elif preview_data.type == 'markdown' %}
+                <div class="markdown-content">{{ preview_data.content|safe }}</div>
+            {% elif preview_data.type == 'code' %}
+                <div class="code-preview">{{ preview_data.content|safe }}</div>
+            {% elif preview_data.type == 'text' %}
+                <pre class="text-content">{{ preview_data.content }}</pre>
+            {% elif preview_data.type == 'error' %}
+                <div class="no-preview">
+                    <div class="no-preview-icon">❌</div>
+                    <h3>预览失败</h3>
+                    <p>{{ preview_data.content }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

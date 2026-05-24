@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  username      String    @unique
+  email         String    @unique
+  passwordHash  String?
+  avatar        String?
+  bio           String?
+  githubId      String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  snippets      Snippet[]
+  likes         SnippetLike[]
+  favorites     SnippetFavorite[]
+  comments      Comment[]
+  settings      UserSettings?
+  versions      SnippetVersion[]
+}
+
+model Snippet {
+  id              String             @id @default(uuid())
+  title           String
+  description     String?
+  language        String
+  code            String
+  isPublic        Boolean            @default(true)
+  authorId        String
+  author          User               @relation(fields: [authorId], references: [id])
+  forkedFromId    String?
+  forkedFrom      Snippet?           @relation("Forks", fields: [forkedFromId], references: [id])
+  forks           Snippet[]          @relation("Forks")
+  shortCode       String             @unique
+  likesCount      Int                @default(0)
+  favoritesCount  Int                @default(0)
+  forksCount      Int                @default(0)
+  viewsCount      Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  versions        SnippetVersion[]
+  likes           SnippetLike[]
+  favorites       SnippetFavorite[]
+  comments        Comment[]
+  tags            SnippetTag[]
+  viewStats       ViewStat[]
+}
+
+model SnippetVersion {
+  id         String   @id @default(uuid())
+  snippetId  String
+  snippet    Snippet  @relation(fields: [snippetId], references: [id])
+  version    String
+  label      String?
+  code       String
+  language   String
+  createdById String?
+  createdBy  User?    @relation(fields: [createdById], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  snippetId   String
+  snippet     Snippet   @relation(fields: [snippetId], references: [id])
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  content     String
+  lineNumber  Int?
+  lineContent String?
+  parentId    String?
+  parent      Comment?  @relation("Comments", fields: [parentId], references: [id])
+  replies     Comment[] @relation("Comments")
+  createdAt   DateTime  @default(now())
+}
+
+model SnippetLike {
+  id        String   @id @default(uuid())
+  snippetId String
+  snippet   Snippet  @relation(fields: [snippetId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([snippetId, userId])
+}
+
+model SnippetFavorite {
+  id        String   @id @default(uuid())
+  snippetId String
+  snippet   Snippet  @relation(fields: [snippetId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([snippetId, userId])
+}
+
+model Tag {
+  id             String        @id @default(uuid())
+  name           String        @unique
+  snippetTags    SnippetTag[]
+}
+
+model SnippetTag {
+  id        String  @id @default(uuid())
+  snippetId String
+  snippet   Snippet @relation(fields: [snippetId], references: [id])
+  tagId     String
+  tag       Tag     @relation(fields: [tagId], references: [id])
+  @@unique([snippetId, tagId])
+}
+
+model UserSettings {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id])
+  editorSettings  Json    @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ViewStat {
+  id        String  @id @default(uuid())
+  snippetId String
+  snippet   Snippet @relation(fields: [snippetId], references: [id])
+  viewDate  DateTime
+  viewCount Int     @default(1)
+  @@unique([snippetId, viewDate])
+}
+
+model CodeTemplate {
+  id          String  @id @default(uuid())
+  language    String
+  name        String
+  description String?
+  code        String
+  category    String?
+}

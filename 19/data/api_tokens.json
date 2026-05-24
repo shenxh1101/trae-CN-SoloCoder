@@ -1,0 +1,24 @@
+[
+  {
+    "token": "666a82c382028d8bd82c72e44210da40606a328721b880d674df0dbd5004e2ae",
+    "name": "test_token",
+    "permissions": [
+      "upload",
+      "download"
+    ],
+    "created_at": "2026-05-24T22:07:13.336047",
+    "last_used": null,
+    "active": false
+  },
+  {
+    "token": "3d83f161f9b004630b9b9cb971fdbf37bc3561dea3011111a4b56b133e73b860",
+    "name": "test_token",
+    "permissions": [
+      "upload",
+      "download"
+    ],
+    "created_at": "2026-05-24T22:12:14.216040",
+    "last_used": null,
+    "active": false
+  }
+]

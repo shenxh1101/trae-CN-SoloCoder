@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}搜索文件 - 文件分享{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="search-section">
+        <h1 class="page-title">🔍 搜索文件</h1>
+        
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="search-tags" placeholder="输入标签搜索，多个标签用逗号分隔">
+                <button class="btn btn-primary" id="search-btn">搜索</button>
+            </div>
+            <p class="search-hint">搜索分享文件的标签，例如：文档、图片、2024</p>
+        </div>
+        
+        <div id="search-results" class="search-results" style="display: none;">
+            <h3>搜索结果 (<span id="result-count">0</span>)</h3>
+            <div id="results-list" class="file-list"></div>
+        </div>
+        
+        <div id="no-results" class="empty-state" style="display: none;">
+            <div class="empty-icon">🔍</div>
+            <h3>未找到相关文件</h3>
+            <p>请尝试其他标签</p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('search-tags');
+    const searchResults = document.getElementById('search-results');
+    const resultsList = document.getElementById('results-list');
+    const resultCount = document.getElementById('result-count');
+    const noResults = document.getElementById('no-results');
+    
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') doSearch();
+    });
+    
+    function doSearch() {
+        const tags = searchInput.value.trim();
+        if (!tags) return;
+        
+        fetch('/api/search?tags=' + encodeURIComponent(tags))
+        .then(r => r.json())
+        .then(data => {
+            if (data.count > 0) {
+                showResults(data.files);
+            } else {
+                searchResults.style.display = 'none';
+                noResults.style.display = 'block';
+            }
+        })
+        .catch(() => {
+            noResults.style.display = 'block';
+        });
+    }
+    
+    function showResults(files) {
+        noResults.style.display = 'none';
+        searchResults.style.display = 'block';
+        resultCount.textContent = files.length;
+        
+        resultsList.innerHTML = '';
+        
+        files.forEach(file => {
+            const item = document.createElement('div');
+            item.className = 'file-list-item';
+            
+            let icon = '📁';
+            if (file.file_type === 'image') icon = '🖼️';
+            else if (file.file_type === 'document') icon = '📄';
+            else if (file.file_type === 'video') icon = '🎬';
+            else if (file.file_type === 'audio') icon = '🎵';
+            else if (file.file_type === 'archive') icon = '📦';
+            else if (file.file_type === 'code') icon = '💻';
+            
+            let tagsHtml = '';
+            if (file.tags && file.tags.length > 0) {
+                tagsHtml = '<div class="file-tags">';
+                file.tags.forEach(tag => {
+                    tagsHtml += `<span class="tag">#${tag}</span>`;
+                });
+                tagsHtml += '</div>';
+            }
+            
+            item.innerHTML = `
+                <div class="file-icon">${icon}</div>
+                <div class="file-details">
+                    <div class="file-name">${file.original_name}</div>
+                    <div class="file-meta">
+                        <span>📦 ${file.size_human}</span>
+                        <span>📥 ${file.download_count} 次下载</span>
+                    </div>
+                    ${tagsHtml}
+                </div>
+                <div class="file-actions">
+                    <a href="/s/${file.short_code}" class="btn btn-sm btn-primary" target="_blank">获取</a>
+                </div>
+            `;
+            
+            resultsList.appendChild(item);
+        });
+    }
+});
+</script>
+{% endblock %}

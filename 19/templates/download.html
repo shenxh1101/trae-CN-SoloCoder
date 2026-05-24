@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}下载文件 - 文件分享{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="download-section">
+        <div class="file-card">
+            <div class="file-icon">
+                {% if file_info.file_type == 'image' %}🖼️
+                {% elif file_info.file_type == 'document' %}📄
+                {% elif file_info.file_type == 'video' %}🎬
+                {% elif file_info.file_type == 'audio' %}🎵
+                {% elif file_info.file_type == 'archive' %}📦
+                {% elif file_info.file_type == 'code' %}💻
+                {% else %}📁{% endif %}
+            </div>
+            
+            <h1 class="file-name">{{ file_info.original_name }}</h1>
+            
+            <div class="file-meta">
+                <span class="meta-item">📦 {{ file_info.size|human_size }}</span>
+                <span class="meta-item">📥 已下载 {{ file_info.download_count }} 次</span>
+                {% if file_info.expires_at %}
+                <span class="meta-item">⏰ {{ file_info.expires_at|remaining_time }}</span>
+                {% else %}
+                <span class="meta-item">♾️ 永不过期</span>
+                {% endif %}
+                {% if file_info.max_downloads %}
+                <span class="meta-item">🔢 剩余 {{ file_info.max_downloads - file_info.download_count }} 次</span>
+                {% endif %}
+            </div>
+            
+            {% if file_info.description %}
+            <div class="file-description">
+                <strong>描述：</strong>{{ file_info.description }}
+            </div>
+            {% endif %}
+            
+            {% if file_info.tags %}
+            <div class="file-tags">
+                {% for tag in file_info.tags %}
+                <span class="tag">#{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div id="verify-section" class="verify-section">
+                <h3>请输入提取码</h3>
+                <div class="input-group">
+                    <input type="text" id="extract-code" placeholder="请输入6位提取码" maxlength="6">
+                    <button class="btn btn-primary" id="verify-btn">验证</button>
+                </div>
+                <p id="verify-error" class="error-message" style="display: none;"></p>
+            </div>
+            
+            <div id="download-section" class="download-actions" style="display: none;">
+                <a href="/s/{{ short_code }}/download" class="btn btn-primary btn-large">
+                    <span class="btn-icon">⬇️</span> 下载文件
+                </a>
+                {% if file_info.preview_type %}
+                <a href="/preview/{{ short_code }}" class="btn btn-info btn-large" target="_blank">
+                    <span class="btn-icon">👁️</span> 在线预览
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const verifyBtn = document.getElementById('verify-btn');
+    const extractCode = document.getElementById('extract-code');
+    const verifyError = document.getElementById('verify-error');
+    const verifySection = document.getElementById('verify-section');
+    const downloadSection = document.getElementById('download-section');
+    
+    verifyBtn.addEventListener('click', verifyCode);
+    extractCode.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') verifyCode();
+    });
+    
+    function verifyCode() {
+        const code = extractCode.value.trim();
+        if (!code) {
+            showError('请输入提取码');
+            return;
+        }
+        
+        fetch('/s/{{ short_code }}/verify', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({extract_code: code})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                verifySection.style.display = 'none';
+                downloadSection.style.display = 'block';
+            } else {
+                showError(data.error);
+            }
+        })
+        .catch(() => showError('验证失败，请重试'));
+    }
+    
+    function showError(msg) {
+        verifyError.textContent = msg;
+        verifyError.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

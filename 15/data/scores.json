@@ -1,0 +1,71 @@
+{
+  "easy": [
+    {
+      "playerName": "TestPlayer1",
+      "time": 45.5,
+      "steps": 120,
+      "stars": 5,
+      "date": "2026-05-24T13:17:23.687Z"
+    },
+    {
+      "playerName": "TestPlayer1",
+      "time": 45.5,
+      "steps": 120,
+      "stars": 5,
+      "date": "2026-05-24T13:20:41.602Z"
+    },
+    {
+      "playerName": "TestPlayer1",
+      "time": 45.5,
+      "steps": 120,
+      "stars": 5,
+      "date": "2026-05-24T14:16:55.850Z"
+    }
+  ],
+  "normal": [
+    {
+      "playerName": "TestPlayer2",
+      "time": 60,
+      "steps": 150,
+      "stars": 6,
+      "date": "2026-05-24T13:17:23.693Z"
+    },
+    {
+      "playerName": "TestPlayer2",
+      "time": 60,
+      "steps": 150,
+      "stars": 6,
+      "date": "2026-05-24T13:20:41.606Z"
+    },
+    {
+      "playerName": "TestPlayer2",
+      "time": 60,
+      "steps": 150,
+      "stars": 6,
+      "date": "2026-05-24T14:16:55.854Z"
+    }
+  ],
+  "hard": [
+    {
+      "playerName": "TestPlayer3",
+      "time": 90,
+      "steps": 200,
+      "stars": 7,
+      "date": "2026-05-24T13:17:23.702Z"
+    },
+    {
+      "playerName": "TestPlayer3",
+      "time": 90,
+      "steps": 200,
+      "stars": 7,
+      "date": "2026-05-24T13:20:41.610Z"
+    },
+    {
+      "playerName": "TestPlayer3",
+      "time": 90,
+      "steps": 200,
+      "stars": 7,
+      "date": "2026-05-24T14:16:55.857Z"
+    }
+  ]
+}

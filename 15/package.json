@@ -1,0 +1,21 @@
+{
+  "name": "maze-explorer-3d",
+  "version": "1.0.0",
+  "description": "3D maze exploration game with Three.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "playwright": "^1.60.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

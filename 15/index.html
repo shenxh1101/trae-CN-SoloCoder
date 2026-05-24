@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D迷宫漫游 - Maze Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 开始菜单 -->
+    <div id="menu" class="menu-overlay">
+        <div class="menu-container">
+            <h1 class="game-title">🏰 3D迷宫漫游</h1>
+            <p class="game-subtitle">收集钥匙，找到出口，躲避敌人！</p>
+            
+            <div class="menu-section">
+                <h3>选择难度</h3>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn active" data-difficulty="easy">简单</button>
+                    <button class="diff-btn" data-difficulty="normal">普通</button>
+                    <button class="diff-btn" data-difficulty="hard">困难</button>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <h3>历史最佳</h3>
+                <div id="bestRecords" class="best-records">
+                    <div class="record-item">
+                        <span class="record-label">简单:</span>
+                        <span id="bestEasy" class="record-value">--</span>
+                    </div>
+                    <div class="record-item">
+                        <span class="record-label">普通:</span>
+                        <span id="bestNormal" class="record-value">--</span>
+                    </div>
+                    <div class="record-item">
+                        <span class="record-label">困难:</span>
+                        <span id="bestHard" class="record-value">--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-buttons">
+                <button id="newGameBtn" class="primary-btn">🎮 新游戏</button>
+                <button id="continueBtn" class="secondary-btn" style="display: none;">📂 继续游戏</button>
+            </div>
+            
+            <div class="controls-help">
+                <h4>操作说明</h4>
+                <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动</p>
+                <p><kbd>鼠标</kbd> 控制视角</p>
+                <p><kbd>F</kbd> 开关手电筒</p>
+                <p><kbd>ESC</kbd> 暂停游戏</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 游戏暂停菜单 -->
+    <div id="pauseMenu" class="menu-overlay" style="display: none;">
+        <div class="menu-container">
+            <h2>⏸️ 游戏暂停</h2>
+            <div class="menu-buttons">
+                <button id="resumeBtn" class="primary-btn">▶️ 继续游戏</button>
+                <button id="saveBtn" class="secondary-btn">💾 保存进度</button>
+                <button id="quitBtn" class="danger-btn">🚪 返回菜单</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 游戏结束界面 -->
+    <div id="gameOver" class="menu-overlay" style="display: none;">
+        <div class="menu-container">
+            <h2 id="gameOverTitle">🎉 恭喜通关！</h2>
+            <div class="stats-display">
+                <div class="stat-item">
+                    <span class="stat-label">用时:</span>
+                    <span id="finalTime" class="stat-value">00:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">步数:</span>
+                    <span id="finalSteps" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">星星:</span>
+                    <span id="finalStars" class="stat-value">0</span>
+                </div>
+                <div id="newRecord" class="new-record" style="display: none;">🏆 新纪录！</div>
+            </div>
+            <div class="menu-buttons">
+                <button id="playAgainBtn" class="primary-btn">🔄 再来一局</button>
+                <button id="backToMenuBtn" class="secondary-btn">🏠 返回菜单</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 游戏HUD -->
+    <div id="hud" class="hud" style="display: none;">
+        <div class="hud-top">
+            <div class="hud-item">
+                <span class="hud-icon">⏱️</span>
+                <span id="timer" class="hud-value">00:00</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-icon">👣</span>
+                <span id="steps" class="hud-value">0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-icon">⭐</span>
+                <span id="stars" class="hud-value">0/0</span>
+            </div>
+        </div>
+        
+        <div class="hud-keys">
+            <span class="keys-label">钥匙:</span>
+            <div id="keyIndicators" class="key-indicators">
+                <div class="key-slot">🔑</div>
+                <div class="key-slot">🔑</div>
+                <div class="key-slot">🔑</div>
+            </div>
+        </div>
+        
+        <div class="minimap-container">
+            <canvas id="minimap" width="150" height="150"></canvas>
+            <div class="minimap-label">小地图</div>
+        </div>
+        
+        <div class="hud-bottom">
+            <div id="flashlightStatus" class="flashlight-status">
+                <span class="flashlight-icon">🔦</span>
+                <span>手电筒: <span id="flashlightState">开</span></span>
+            </div>
+            <div id="difficultyIndicator" class="difficulty-indicator">
+                难度: <span id="currentDifficulty">普通</span>
+            </div>
+        </div>
+        
+        <div id="message" class="message"></div>
+    </div>
+    
+    <!-- 游戏画布 -->
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- 点击开始提示 -->
+    <div id="clickToStart" class="click-to-start" style="display: none;">
+        <div class="click-content">
+            <h2>点击屏幕开始游戏</h2>
+            <p>点击后鼠标将被锁定以控制视角</p>
+        </div>
+    </div>
+    
+    <!-- Three.js 通过 importmap 引入 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+    }
+    </script>
+    
+    <script type="module" src="game.js"></script>
+</body>
+</html>

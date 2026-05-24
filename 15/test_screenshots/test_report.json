@@ -1,0 +1,310 @@
+{
+  "timestamp": "2026-05-24T14:43:58.798Z",
+  "browser": "Chromium (Playwright)",
+  "url": "http://localhost:3000",
+  "totalTests": 50,
+  "passed": 46,
+  "failed": 4,
+  "results": [
+    {
+      "name": "页面标题正确",
+      "passed": true,
+      "details": "实际标题: 3D迷宫漫游 - Maze Explorer",
+      "timestamp": "2026-05-24T14:43:04.271Z"
+    },
+    {
+      "name": "游戏画布存在",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:04.271Z"
+    },
+    {
+      "name": "开始菜单存在",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:04.271Z"
+    },
+    {
+      "name": "页面无控制台错误",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:04.271Z"
+    },
+    {
+      "name": "游戏HUD显示",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:08.014Z"
+    },
+    {
+      "name": "开始菜单隐藏",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:08.015Z"
+    },
+    {
+      "name": "点击开始提示显示",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:08.015Z"
+    },
+    {
+      "name": "鼠标锁定成功",
+      "passed": false,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:12.361Z"
+    },
+    {
+      "name": "鼠标移动改变视角",
+      "passed": false,
+      "details": "初始yaw: 0, 移动后yaw: 0",
+      "timestamp": "2026-05-24T14:43:13.250Z"
+    },
+    {
+      "name": "W键向前移动",
+      "passed": true,
+      "details": "W键移动距离: 1.00m",
+      "timestamp": "2026-05-24T14:43:16.297Z"
+    },
+    {
+      "name": "D键向右移动",
+      "passed": true,
+      "details": "D键移动距离: 1.00m",
+      "timestamp": "2026-05-24T14:43:17.737Z"
+    },
+    {
+      "name": "玩家在迷宫边界内",
+      "passed": true,
+      "details": "网格位置: (1.00, 2.00)",
+      "timestamp": "2026-05-24T14:43:20.407Z"
+    },
+    {
+      "name": "F键切换手电筒状态",
+      "passed": true,
+      "details": "切换前: true, 切换后: false",
+      "timestamp": "2026-05-24T14:43:23.107Z"
+    },
+    {
+      "name": "手电筒光照强度对应状态",
+      "passed": true,
+      "details": "光照强度: 0, 期望: =0",
+      "timestamp": "2026-05-24T14:43:23.250Z"
+    },
+    {
+      "name": "HUD显示手电筒状态",
+      "passed": true,
+      "details": "HUD显示: 关",
+      "timestamp": "2026-05-24T14:43:23.378Z"
+    },
+    {
+      "name": "计时器可见",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:25.730Z"
+    },
+    {
+      "name": "步数可见",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:25.730Z"
+    },
+    {
+      "name": "星星计数可见",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:25.730Z"
+    },
+    {
+      "name": "小地图可见",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:25.730Z"
+    },
+    {
+      "name": "计时器格式正确",
+      "passed": true,
+      "details": "实际值: 00:21",
+      "timestamp": "2026-05-24T14:43:25.980Z"
+    },
+    {
+      "name": "钥匙存在",
+      "passed": true,
+      "details": "钥匙数量: 3, 期望: 3",
+      "timestamp": "2026-05-24T14:43:27.324Z"
+    },
+    {
+      "name": "星星存在",
+      "passed": true,
+      "details": "星星数量: 8",
+      "timestamp": "2026-05-24T14:43:27.324Z"
+    },
+    {
+      "name": "敌人存在",
+      "passed": true,
+      "details": "敌人数量: 2",
+      "timestamp": "2026-05-24T14:43:27.324Z"
+    },
+    {
+      "name": "出口门存在",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:27.324Z"
+    },
+    {
+      "name": "初始钥匙收集数为0",
+      "passed": false,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:27.324Z"
+    },
+    {
+      "name": "出口门初始为红色",
+      "passed": true,
+      "details": "颜色: R=1.00, G=0.00, B=0.00",
+      "timestamp": "2026-05-24T14:43:27.449Z"
+    },
+    {
+      "name": "出口门初始未开启",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:27.449Z"
+    },
+    {
+      "name": "星星旋转动画正常",
+      "passed": true,
+      "details": "旋转角度变化: 3.1864弧度",
+      "timestamp": "2026-05-24T14:43:28.809Z"
+    },
+    {
+      "name": "小地图有像素数据",
+      "passed": true,
+      "details": "非黑色像素数量: 2983",
+      "timestamp": "2026-05-24T14:43:29.227Z"
+    },
+    {
+      "name": "粒子系统存在",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:29.342Z"
+    },
+    {
+      "name": "钥匙收集功能正常",
+      "passed": true,
+      "details": "已收集钥匙数量: 2",
+      "timestamp": "2026-05-24T14:43:31.394Z"
+    },
+    {
+      "name": "收集全部钥匙后大门变绿色",
+      "passed": true,
+      "details": "颜色: R=0.00, G=1.00, B=0.00",
+      "timestamp": "2026-05-24T14:43:32.610Z"
+    },
+    {
+      "name": "出口门已开启",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:32.610Z"
+    },
+    {
+      "name": "收集钥匙产生粒子特效",
+      "passed": true,
+      "details": "粒子数量: 2",
+      "timestamp": "2026-05-24T14:43:32.743Z"
+    },
+    {
+      "name": "ESC键显示暂停菜单",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:34.757Z"
+    },
+    {
+      "name": "游戏存档保存成功",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:36.081Z"
+    },
+    {
+      "name": "存档数据完整",
+      "passed": true,
+      "details": "Seed: 1779633784503, 难度: easy, 钥匙: 3",
+      "timestamp": "2026-05-24T14:43:36.082Z"
+    },
+    {
+      "name": "主菜单显示继续游戏按钮",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:37.394Z"
+    },
+    {
+      "name": "刷新后继续按钮仍可见",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:41.663Z"
+    },
+    {
+      "name": "刷新后存档仍存在",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:41.681Z"
+    },
+    {
+      "name": "存档加载后游戏继续",
+      "passed": true,
+      "details": "游戏状态: true, 已收集钥匙: 3",
+      "timestamp": "2026-05-24T14:43:44.912Z"
+    },
+    {
+      "name": "加载的存档数据正确",
+      "passed": true,
+      "details": "期望Seed: 1779633784503, 实际Seed: 1779633784503",
+      "timestamp": "2026-05-24T14:43:44.912Z"
+    },
+    {
+      "name": "显示被敌人抓住提示",
+      "passed": true,
+      "details": "消息内容: \"被敌人抓住了！关卡重置...\"",
+      "timestamp": "2026-05-24T14:43:49.690Z"
+    },
+    {
+      "name": "玩家重置到起点",
+      "passed": true,
+      "details": "期望位置: (-16.0, -16.0), 实际: (-16.0, -16.0)",
+      "timestamp": "2026-05-24T14:43:50.404Z"
+    },
+    {
+      "name": "钥匙计数重置为0",
+      "passed": true,
+      "details": "重置后钥匙数: 0",
+      "timestamp": "2026-05-24T14:43:50.404Z"
+    },
+    {
+      "name": "大门重置为红色",
+      "passed": true,
+      "details": "门颜色: #ff0000",
+      "timestamp": "2026-05-24T14:43:50.404Z"
+    },
+    {
+      "name": "重力系统正常",
+      "passed": true,
+      "details": "初始Y: 1.70, 当前Y: 2.10, 速度Y: 1.00",
+      "timestamp": "2026-05-24T14:43:53.213Z"
+    },
+    {
+      "name": "难度系统正确",
+      "passed": true,
+      "details": "难度: easy, 敌人数量: 2, 期望: ~2",
+      "timestamp": "2026-05-24T14:43:54.368Z"
+    },
+    {
+      "name": "返回主菜单成功",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-24T14:43:56.887Z"
+    },
+    {
+      "name": "无严重控制台错误",
+      "passed": false,
+      "details": "The root document of this element is not valid for pointer lock.",
+      "timestamp": "2026-05-24T14:43:58.751Z"
+    }
+  ]
+}

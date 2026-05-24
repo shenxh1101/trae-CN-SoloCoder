@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}管理员登录 - 文件分享{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-section">
+        <div class="login-card">
+            <h2>🛡️ 管理员登录</h2>
+            <p>请输入管理员密钥以访问管理后台</p>
+            {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+            <form method="GET" action="{{ url_for('admin_page') }}">
+                <div class="form-group">
+                    <label>管理员密钥</label>
+                    <input type="password" name="admin_key" placeholder="请输入管理员密钥" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-large">登录</button>
+            </form>
+            <p class="hint">默认管理员密钥: admin123456</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
