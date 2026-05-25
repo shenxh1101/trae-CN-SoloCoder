@@ -1,0 +1,12 @@
+# 这是批量换算测试文件
+100 km mi
+10 kg lb
+32 f c
+100 m2 ft2
+1000 l gal
+100 km/h mph
+1 h s
+1000 cal kj
+100 kw hp
+1 atm kpa
+m2ft 50

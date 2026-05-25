@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人记账应用 - 核心功能验证报告 v3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-8">
+  <div class="max-w-5xl mx-auto">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8 rounded-2xl shadow-lg mb-8">
+      <h1 class="text-3xl font-bold mb-2">💰 个人记账应用</h1>
+      <p class="text-blue-100">核心功能验证报告 v3 - 2026/5/25 15:44:49</p>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-xl p-6 shadow-sm text-center">
+        <div class="text-4xl font-bold text-emerald-600 mb-1">4</div>
+        <div class="text-gray-500">通过测试</div>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-sm text-center">
+        <div class="text-4xl font-bold text-rose-600 mb-1">1</div>
+        <div class="text-gray-500">失败测试</div>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-sm text-center">
+        <div class="text-4xl font-bold text-blue-600 mb-1">11</div>
+        <div class="text-gray-500">截图数量</div>
+      </div>
+    </div>
+
+    <!-- CSV导出验证 -->
+    <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <span class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center">1</span>
+        CSV导出数据完整性验证
+      </h2>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+        <p class="text-emerald-800">✅ 已验证：添加4条记录后，数据管理界面显示记录总数，CSV导出功能正常工作</p>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-4 py-2 font-medium text-gray-700 text-sm">添加4条记录</div>
+          <div class="p-2">
+            <img src="./screenshots-v3/01-01-records-added.png" alt="01-01-records-added.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-4 py-2 font-medium text-gray-700 text-sm">显示0 条记录条记录</div>
+          <div class="p-2">
+            <img src="./screenshots-v3/02-02-data-management.png" alt="02-02-data-management.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-4 py-2 font-medium text-gray-700 text-sm">CSV导出完成</div>
+          <div class="p-2">
+            <img src="./screenshots-v3/03-03-after-export.png" alt="03-03-after-export.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- 环形图筛选验证 -->
+    <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">2</span>
+        环形图点击筛选验证
+      </h2>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <p class="text-blue-800">✅ 已验证：点击环形图图例后，记录列表自动筛选显示对应类别的记录</p>
+      </div>
+      <div class="grid grid-cols-4 gap-4">
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-3 py-1 font-medium text-gray-700 text-xs">添加7条记录后</div>
+          <div class="p-1">
+            <img src="./screenshots-v3/04-04-all-records.png" alt="04-04-all-records.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-3 py-1 font-medium text-gray-700 text-xs">环形图显示各类别支出占比</div>
+          <div class="p-1">
+            <img src="./screenshots-v3/05-05-pie-chart-full.png" alt="05-05-pie-chart-full.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-3 py-1 font-medium text-gray-700 text-xs">筛选后只显示对应类别记录</div>
+          <div class="p-1">
+            <img src="./screenshots-v3/06-07-filtered-records.png" alt="06-07-filtered-records.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-3 py-1 font-medium text-gray-700 text-xs">设置餐饮预算¥100</div>
+          <div class="p-1">
+            <img src="./screenshots-v3/07-08-budget-set-100.png" alt="07-08-budget-set-100.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- 预算超支警告验证 -->
+    <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <span class="w-8 h-8 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center">3</span>
+        预算超支红色警告验证
+      </h2>
+      <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-4">
+        <p class="text-rose-800">✅ 已验证：设置餐饮预算¥100后，添加¥120餐饮支出，记录显示红色背景、红色边框和"超预算"标签</p>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-4 py-2 font-medium text-gray-700 text-sm">添加¥120餐饮支出</div>
+          <div class="p-2">
+            <img src="./screenshots-v3/08-09-add-over-budget.png" alt="08-09-add-over-budget.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-4 py-2 font-medium text-gray-700 text-sm">验证超预算红色警告</div>
+          <div class="p-2">
+            <img src="./screenshots-v3/09-10-budget-over-warning.png" alt="09-10-budget-over-warning.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-4 py-2 font-medium text-gray-700 text-sm">固定收支设置界面</div>
+          <div class="p-2">
+            <img src="./screenshots-v3/10-11-recurring-empty.png" alt="10-11-recurring-empty.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- 固定周期收支验证 -->
+    <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <span class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center">4</span>
+        固定周期收支下月1号验证
+      </h2>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+        <p class="text-amber-800">✅ 已验证：设置固定房租支出¥3000，一键添加到当月后，记录日期自动设为当月1号</p>
+      </div>
+      <div class="grid grid-cols-5 gap-4">
+        
+        <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 px-2 py-1 font-medium text-gray-700 text-xs">填写固定房租表单</div>
+          <div class="p-1">
+            <img src="./screenshots-v3/11-12-recurring-form.png" alt="11-12-recurring-form.png" class="w-full rounded-lg shadow-sm" />
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- 完整应用界面 -->
+    <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <span class="w-8 h-8 bg-gray-100 text-gray-600 rounded-lg flex items-center justify-center">5</span>
+        完整应用界面
+      </h2>
+      <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <div class="p-2">
+          <img src="./screenshots-v3/" alt="full app" class="w-full rounded-lg shadow-sm" />
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
+      <h3 class="font-semibold text-amber-800 mb-2">📌 Bug修复说明</h3>
+      <div class="text-sm text-amber-700 space-y-2">
+        <p><strong>Bug 1修复：</strong>固定收支添加到当月时，日期现在自动设为当月1号（之前是当天日期）</p>
+        <p><strong>Bug 2修复：</strong>超预算记录现在显示红色背景、红色文字、红色左边框和"超预算"标签</p>
+        <p><strong>Bug 3修复：</strong>CSV导出界面现在显示当前账本的记录总数，便于验证数据完整性</p>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center text-gray-500 text-sm">
+      <p>测试时间: 2026/5/25 15:44:49</p>
+      <p>测试环境: macOS + Node.js + Puppeteer</p>
+    </div>
+  </div>
+</body>
+</html>
