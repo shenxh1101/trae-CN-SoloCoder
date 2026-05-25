@@ -1,0 +1,138 @@
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+could not create image from window
+
+============================================================
+开始UI自动化测试与截图
+============================================================
+
+=== 截图1: 主界面 + 11个功能选项卡 ===
+  已加载 5 个测试图片
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/01_main_window_all_tabs.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 01_main_window_all_tabs.png - 主界面-11个功能选项卡全部显示
+
+=== 截图2: 对比预览功能 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/02_compare_preview.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 02_compare_preview.png - 选中图片后-原图vs处理后对比预览
+
+=== 截图3: 尺寸调整选项卡 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/03_resize_tab.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 03_resize_tab.png - 尺寸调整功能界面
+
+=== 截图4: 滤镜效果选项卡 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/04_filter_tab.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 04_filter_tab.png - 滤镜效果-边缘检测预览
+
+=== 截图5: 水印添加选项卡 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/05_watermark_tab.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 05_watermark_tab.png - 文字水印添加界面
+
+=== 截图6: 任务队列UI完整性 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/06_task_queue.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 06_task_queue.png - 任务队列-添加任务/上移下移/暂停继续取消按钮完整
+
+=== 截图7: 文件列表和文件夹选择 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/07_file_list.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 07_file_list.png - 文件列表-文件夹扫描+格式过滤(自动排除txt/csv)
+
+=== 截图8: 颜色调整实时预览 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/08_color_adjust.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 08_color_adjust.png - 颜色调整-滑动参数实时更新预览
+
+=== 截图9: 批量重命名功能 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/09_batch_rename.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 09_batch_rename.png - 批量重命名-预览功能
+
+=== 截图10: 人像美化功能 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/10_portrait_beautify.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 10_portrait_beautify.png - 人像美化-磨皮和红眼去除
+
+=== 截图11: 自动裁剪功能 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/11_auto_crop.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 11_auto_crop.png - 自动裁剪功能
+
+=== 截图12: 旋转翻转功能 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/12_rotate_flip.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 12_rotate_flip.png - 旋转翻转功能
+
+=== 截图13: 格式转换功能 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/13_format_convert.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 13_format_convert.png - 格式转换-PNG质量95%
+
+=== 截图14: 历史记录功能 ===
+  ⚠️  自动截图失败: Command '['screencapture', '-l', '', '-x', 'screenshots/14_history.png']' returned non-zero exit status 1.
+  ✅ 截图成功(坐标方式): 14_history.png - 历史记录-模板保存与重用
+
+============================================================
+📸 截图汇总
+============================================================
+ 1. [01_main_window_all_tabs.png]
+    主界面-11个功能选项卡全部显示
+    保存路径: /Users/mac/code/solo coder/29/screenshots/01_main_window_all_tabs.png
+    文件大小: 1728966 bytes
+ 2. [02_compare_preview.png]
+    选中图片后-原图vs处理后对比预览
+    保存路径: /Users/mac/code/solo coder/29/screenshots/02_compare_preview.png
+    文件大小: 1706189 bytes
+ 3. [03_resize_tab.png]
+    尺寸调整功能界面
+    保存路径: /Users/mac/code/solo coder/29/screenshots/03_resize_tab.png
+    文件大小: 1762350 bytes
+ 4. [04_filter_tab.png]
+    滤镜效果-边缘检测预览
+    保存路径: /Users/mac/code/solo coder/29/screenshots/04_filter_tab.png
+    文件大小: 1671181 bytes
+ 5. [05_watermark_tab.png]
+    文字水印添加界面
+    保存路径: /Users/mac/code/solo coder/29/screenshots/05_watermark_tab.png
+    文件大小: 1642302 bytes
+ 6. [06_task_queue.png]
+    任务队列-添加任务/上移下移/暂停继续取消按钮完整
+    保存路径: /Users/mac/code/solo coder/29/screenshots/06_task_queue.png
+    文件大小: 1662313 bytes
+ 7. [07_file_list.png]
+    文件列表-文件夹扫描+格式过滤(自动排除txt/csv)
+    保存路径: /Users/mac/code/solo coder/29/screenshots/07_file_list.png
+    文件大小: 1591589 bytes
+ 8. [08_color_adjust.png]
+    颜色调整-滑动参数实时更新预览
+    保存路径: /Users/mac/code/solo coder/29/screenshots/08_color_adjust.png
+    文件大小: 1915191 bytes
+ 9. [09_batch_rename.png]
+    批量重命名-预览功能
+    保存路径: /Users/mac/code/solo coder/29/screenshots/09_batch_rename.png
+    文件大小: 1598344 bytes
+10. [10_portrait_beautify.png]
+    人像美化-磨皮和红眼去除
+    保存路径: /Users/mac/code/solo coder/29/screenshots/10_portrait_beautify.png
+    文件大小: 1594977 bytes
+11. [11_auto_crop.png]
+    自动裁剪功能
+    保存路径: /Users/mac/code/solo coder/29/screenshots/11_auto_crop.png
+    文件大小: 1748069 bytes
+12. [12_rotate_flip.png]
+    旋转翻转功能
+    保存路径: /Users/mac/code/solo coder/29/screenshots/12_rotate_flip.png
+    文件大小: 1539180 bytes
+13. [13_format_convert.png]
+    格式转换-PNG质量95%
+    保存路径: /Users/mac/code/solo coder/29/screenshots/13_format_convert.png
+    文件大小: 1815969 bytes
+14. [14_history.png]
+    历史记录-模板保存与重用
+    保存路径: /Users/mac/code/solo coder/29/screenshots/14_history.png
+    文件大小: 1777525 bytes
+
+✅ 共生成 14 张界面演示图
+📁 截图目录: /Users/mac/code/solo coder/29/screenshots

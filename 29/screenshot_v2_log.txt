@@ -1,0 +1,70 @@
+Traceback (most recent call last):
+  File "/Users/mac/code/solo coder/29/real_screenshot_v2.py", line 222, in run_app_and_screenshot
+    action()
+    ~~~~~~^^
+  File "/Users/mac/code/solo coder/29/real_screenshot_v2.py", line 201, in <lambda>
+    app.rename_padding.set(4),
+    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'ImageBatchProcessorApp' object has no attribute 'rename_padding'. Did you mean: 'rename_prefix'?
+
+======================================================================
+🚀 程序已启动，准备截取真实界面（Mac系统screencapture工具）
+======================================================================
+⚠️  未找到窗口ID，将使用坐标方式（需确保程序窗口在屏幕左上方）
+
+--- 截图 1/10 ---
+  ✅ 真实截图: 01_main_11tabs.png
+     尺寸: 2800x1800 | 1162.8 KB | 主界面+11个功能选项卡
+
+--- 截图 2/10 ---
+  ✅ 真实截图: 02_compare_preview.png
+     尺寸: 2800x1800 | 1209.4 KB | 对比预览-老照片滤镜
+
+--- 截图 3/10 ---
+  ✅ 真实截图: 03_task_queue.png
+     尺寸: 2800x1800 | 1429.9 KB | 任务队列-所有按钮
+
+--- 截图 4/10 ---
+  ✅ 真实截图: 04_file_list.png
+     尺寸: 2800x1800 | 1275.7 KB | 文件列表-文件夹扫描+格式过滤
+
+--- 截图 5/10 ---
+  ✅ 真实截图: 05_color_realtime.png
+     尺寸: 2800x1800 | 1260.1 KB | 颜色调整-实时预览
+
+--- 截图 6/10 ---
+  ✅ 真实截图: 06_resize.png
+     尺寸: 2800x1800 | 1276.1 KB | 尺寸调整-像素/百分比/插值
+
+--- 截图 7/10 ---
+  ✅ 真实截图: 07_watermark.png
+     尺寸: 2800x1800 | 1305.4 KB | 水印添加-文字水印设置
+
+--- 截图 8/10 ---
+  ❌ 截图8异常: 'ImageBatchProcessorApp' object has no attribute 'rename_padding'
+
+--- 截图 9/10 ---
+  ✅ 真实截图: 09_crop.png
+     尺寸: 2800x1800 | 1236.8 KB | 自动裁剪-固定尺寸
+
+--- 截图 10/10 ---
+  ✅ 真实截图: 10_rotate.png
+     尺寸: 2800x1800 | 1216.8 KB | 旋转翻转-90度旋转
+
+======================================================================
+📸 真实截图完成！
+======================================================================
+
+最终截图文件列表:
+  01_main_11tabs.png: 2800x1800 (1162.8 KB)
+  02_compare_preview.png: 2800x1800 (1209.4 KB)
+  03_task_queue.png: 2800x1800 (1429.9 KB)
+  04_file_list.png: 2800x1800 (1275.7 KB)
+  05_color_realtime.png: 2800x1800 (1260.1 KB)
+  06_resize.png: 2800x1800 (1276.1 KB)
+  07_watermark.png: 2800x1800 (1305.4 KB)
+  09_crop.png: 2800x1800 (1236.8 KB)
+  10_rotate.png: 2800x1800 (1216.8 KB)
+
+✅ 共 9 张有效真实截图
+📁 保存目录: /Users/mac/code/solo coder/29/real_screenshots
