@@ -1,0 +1,134 @@
+========================================
+  像素画绘制工具 - Playwright 真实浏览器测试
+========================================
+
+--- 测试 1: 页面加载 ---
+✅ PASS - 页面标题正确 | 标题: "像素画绘制工具"
+✅ PASS - 像素画布存在
+✅ PASS - 网格画布存在
+✅ PASS - 应用对象已初始化
+
+--- 测试 2: 画笔工具绘制像素 ---
+✅ PASS - 点击绘制单个像素 | 颜色: #000000
+✅ PASS - 拖拽绘制水平线
+✅ PASS - 橡皮擦功能 | 擦除后颜色: #FFFFFF
+
+--- 测试 3: 24色调色板 ---
+✅ PASS - 24个预设颜色显示 | 实际: 24个
+✅ PASS - 点击红色预设
+✅ PASS - 当前颜色更新为红色 | 颜色: #ED1C24
+✅ PASS - 红色预设标记为active
+✅ PASS - 用红色绘制像素 | 颜色: #ED1C24
+
+--- 测试 4: 取色器功能 ---
+✅ PASS - 取色器获取颜色 | 获取颜色: #ED1C24
+✅ PASS - 取色操作不保存历史 | 之前: 5, 之后: 5
+
+--- 测试 5: 填充桶功能 ---
+✅ PASS - 填充桶填充区域
+✅ PASS - 填充后保存历史记录 | 历史数: 2
+
+--- 测试 6: 撤销/重做功能 ---
+✅ PASS - 绘制后像素为黑色 | 颜色: #000000
+✅ PASS - Ctrl+Z撤销恢复白色 | 颜色: #FFFFFF
+✅ PASS - 撤销后可以重做
+✅ PASS - Ctrl+Y重做恢复黑色 | 颜色: #000000
+❌ FAIL - 20步历史限制 | 历史: 2条, 索引: 1
+
+--- 测试 7: PNG导出功能 ---
+✅ PASS - 导出尺寸320x320 | 尺寸: 320x320
+✅ PASS - 导出像素颜色正确 | 第一个像素: #ED1C24
+❌ FAIL - 导出第二像素为白色 | 第二个像素: #ED1C24
+✅ PASS - 导出PNG文件名 | 文件名: pixel-art-1779779897452.png
+
+--- 测试 8: localStorage恢复功能 ---
+✅ PASS - 数据保存到localStorage | 像素颜色: #ED1C24
+❌ FAIL - 保存的像素颜色正确 | 颜色: #ED1C24
+✅ PASS - 保存当前颜色 | 当前颜色: #00FF00
+❌ FAIL - 刷新后像素恢复 | 颜色: #ED1C24
+❌ FAIL - 刷新后工具恢复 | 工具: fillbucket
+
+--- 测试 9: 动画模式功能 ---
+测试执行出错: locator.check: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#toggle-animation')[22m
+[2m    - locator resolved to <input type="checkbox" id="toggle-animation"/>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    58 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not visible[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+
+    at runTests (/Users/mac/code/solo coder/46/playwright-test.js:424:31) {
+  name: 'TimeoutError'
+}
+❌ FAIL - 测试执行 | locator.check: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#toggle-animation')[22m
+[2m    - locator resolved to <input type="checkbox" id="toggle-animation"/>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    58 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not visible[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+
+
+==================================================
+  测试报告
+==================================================
+  总计: 31 项测试
+  通过: 25 ✅
+  失败: 6 ❌
+==================================================
+
+失败的测试:
+  1. 20步历史限制
+     历史: 2条, 索引: 1
+  2. 导出第二像素为白色
+     第二个像素: #ED1C24
+  3. 保存的像素颜色正确
+     颜色: #ED1C24
+  4. 刷新后像素恢复
+     颜色: #ED1C24
+  5. 刷新后工具恢复
+     工具: fillbucket
+  6. 测试执行
+     locator.check: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#toggle-animation')[22m
+[2m    - locator resolved to <input type="checkbox" id="toggle-animation"/>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    58 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not visible[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+
+
+测试报告已保存到 test-report.json

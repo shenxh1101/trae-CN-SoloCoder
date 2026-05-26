@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>像素画绘制工具</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">像素画编辑器</h1>
+            <div class="file-operations">
+                <button id="btn-clear" class="btn btn-danger" title="清空画布">🗑️ 清空</button>
+                <label class="btn btn-secondary" title="导入PNG图片">
+                    📥 导入
+                    <input type="file" id="file-import" accept="image/png" hidden>
+                </label>
+                <button id="btn-export" class="btn btn-primary" title="导出PNG图片">📤 导出</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <aside class="sidebar left-sidebar">
+                <div class="toolbar-section">
+                    <h3 class="section-title">工具</h3>
+                    <div class="toolbar">
+                        <button class="tool-btn active" data-tool="pencil" title="铅笔 (P)">
+                            <span class="tool-icon">✏️</span>
+                            <span class="tool-name">铅笔</span>
+                        </button>
+                        <button class="tool-btn" data-tool="eraser" title="橡皮擦 (E)">
+                            <span class="tool-icon">🧽</span>
+                            <span class="tool-name">橡皮</span>
+                        </button>
+                        <button class="tool-btn" data-tool="eyedropper" title="取色器 (I)">
+                            <span class="tool-icon">💧</span>
+                            <span class="tool-name">取色</span>
+                        </button>
+                        <button class="tool-btn" data-tool="fillbucket" title="填充桶 (F)">
+                            <span class="tool-icon">🪣</span>
+                            <span class="tool-name">填充</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="history-section">
+                    <h3 class="section-title">历史</h3>
+                    <div class="history-controls">
+                        <button id="btn-undo" class="btn btn-history" title="撤销 (Ctrl+Z)">
+                            ↶ 撤销
+                        </button>
+                        <button id="btn-redo" class="btn btn-history" title="重做 (Ctrl+Y)">
+                            ↷ 重做
+                        </button>
+                    </div>
+                </div>
+
+                <div class="view-section">
+                    <h3 class="section-title">视图</h3>
+                    <div class="view-controls">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-grid" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">显示网格</span>
+                        </label>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="canvas-section">
+                <div class="canvas-wrapper">
+                    <div class="canvas-container" id="canvas-container">
+                        <canvas id="pixel-canvas" width="512" height="512"></canvas>
+                        <canvas id="grid-canvas" width="512" height="512"></canvas>
+                    </div>
+                    <div class="magnifier" id="magnifier">
+                        <div class="magnifier-title">放大镜</div>
+                        <canvas id="magnifier-canvas" width="128" height="128"></canvas>
+                        <div class="magnifier-coord" id="magnifier-coord">X: 0, Y: 0</div>
+                    </div>
+                </div>
+                <div class="canvas-info">
+                    <span>画布尺寸: 32 × 32 像素</span>
+                    <span id="current-frame-info">帧: 1 / 1</span>
+                </div>
+            </section>
+
+            <aside class="sidebar right-sidebar">
+                <div class="palette-section">
+                    <h3 class="section-title">调色板</h3>
+                    <div class="color-display">
+                        <div class="current-color">
+                            <div class="color-label">当前颜色</div>
+                            <div class="color-preview" id="current-color-preview" style="background-color: #000000;"></div>
+                            <div class="color-hex" id="current-color-hex">#000000</div>
+                        </div>
+                    </div>
+                    <div class="custom-color">
+                        <label class="color-picker-label">
+                            <input type="color" id="color-picker" value="#000000">
+                            <span>自定义颜色</span>
+                        </label>
+                    </div>
+                    <div class="preset-palette" id="preset-palette">
+                    </div>
+                </div>
+
+                <div class="animation-section">
+                    <h3 class="section-title">动画模式</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-animation">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">启用动画</span>
+                    </label>
+                    
+                    <div class="animation-controls" id="animation-controls" style="display: none;">
+                        <div class="frames-list" id="frames-list">
+                        </div>
+                        <div class="frame-buttons">
+                            <button id="btn-add-frame" class="btn btn-secondary" title="添加帧">
+                                ➕ 添加帧
+                            </button>
+                            <button id="btn-remove-frame" class="btn btn-danger" title="删除帧">
+                                ➖ 删除帧
+                            </button>
+                        </div>
+                        <div class="playback-controls">
+                            <button id="btn-play" class="btn btn-primary" title="播放动画">
+                                ▶️ 播放
+                            </button>
+                            <button id="btn-stop" class="btn btn-secondary" title="停止播放" disabled>
+                                ⏹️ 停止
+                            </button>
+                        </div>
+                        <div class="fps-control">
+                            <label for="fps-slider">帧率: <span id="fps-value">8</span> FPS</label>
+                            <input type="range" id="fps-slider" min="1" max="30" value="8">
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <footer class="app-footer">
+            <span class="status-text" id="status-text">就绪</span>
+            <span class="shortcut-hint">快捷键: P-铅笔 | E-橡皮 | I-取色 | F-填充 | Ctrl+Z-撤销 | Ctrl+Y-重做</span>
+        </footer>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

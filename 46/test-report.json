@@ -1,0 +1,239 @@
+{
+  "summary": {
+    "total": 46,
+    "passed": 46,
+    "failed": 0
+  },
+  "results": [
+    {
+      "name": "页面标题正确",
+      "passed": true,
+      "detail": "标题: \"像素画绘制工具\""
+    },
+    {
+      "name": "像素画布存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "网格画布存在",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "应用对象已初始化",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "当前工具是铅笔",
+      "passed": true,
+      "detail": "工具: pencil"
+    },
+    {
+      "name": "点击绘制单个像素",
+      "passed": true,
+      "detail": "颜色: #000000"
+    },
+    {
+      "name": "拖拽绘制水平线",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "橡皮擦功能",
+      "passed": true,
+      "detail": "擦除后颜色: #FFFFFF"
+    },
+    {
+      "name": "24个预设颜色显示",
+      "passed": true,
+      "detail": "实际: 24个"
+    },
+    {
+      "name": "点击红色预设 - 当前颜色更新",
+      "passed": true,
+      "detail": "颜色: #ED1C24"
+    },
+    {
+      "name": "红色预设标记为active",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "用红色绘制像素",
+      "passed": true,
+      "detail": "颜色: #ED1C24"
+    },
+    {
+      "name": "取色器获取颜色",
+      "passed": true,
+      "detail": "获取颜色: #3F48CC"
+    },
+    {
+      "name": "取色操作不保存历史",
+      "passed": true,
+      "detail": "之前: 1, 之后: 1"
+    },
+    {
+      "name": "填充桶填充边界内区域",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "填充后保存历史记录",
+      "passed": true,
+      "detail": "之前: 1, 之后: 2"
+    },
+    {
+      "name": "绘制后像素为黑色",
+      "passed": true,
+      "detail": "颜色: #000000"
+    },
+    {
+      "name": "撤销恢复白色(Ctrl+Z)",
+      "passed": true,
+      "detail": "颜色: #FFFFFF"
+    },
+    {
+      "name": "撤销后可以重做",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "重做恢复黑色(Ctrl+Y)",
+      "passed": true,
+      "detail": "颜色: #000000"
+    },
+    {
+      "name": "重做后可以撤销",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "20步历史限制",
+      "passed": true,
+      "detail": "历史: 20条, 索引: 19"
+    },
+    {
+      "name": "导出尺寸320x320",
+      "passed": true,
+      "detail": "尺寸: 320x320"
+    },
+    {
+      "name": "导出像素颜色正确",
+      "passed": true,
+      "detail": "第一个像素(0,0): #ED1C24"
+    },
+    {
+      "name": "导出第二像素为白色",
+      "passed": true,
+      "detail": "第二个像素(1,0): #FFFFFF"
+    },
+    {
+      "name": "导出PNG文件名",
+      "passed": true,
+      "detail": "文件名: pixel-art-1779780725204.png"
+    },
+    {
+      "name": "数据保存到localStorage",
+      "passed": true,
+      "detail": "像素颜色: #00FF00"
+    },
+    {
+      "name": "保存的像素颜色正确",
+      "passed": true,
+      "detail": "颜色: #00FF00"
+    },
+    {
+      "name": "保存当前颜色",
+      "passed": true,
+      "detail": "当前颜色: #00FF00"
+    },
+    {
+      "name": "保存当前工具",
+      "passed": true,
+      "detail": "当前工具: pencil"
+    },
+    {
+      "name": "刷新后像素恢复",
+      "passed": true,
+      "detail": "颜色: #00FF00"
+    },
+    {
+      "name": "刷新后当前颜色恢复",
+      "passed": true,
+      "detail": "颜色: #00FF00"
+    },
+    {
+      "name": "刷新后工具恢复",
+      "passed": true,
+      "detail": "工具: pencil"
+    },
+    {
+      "name": "动画控制面板显示",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "animationEnabled=true",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "添加帧到5帧",
+      "passed": true,
+      "detail": "帧数: 5"
+    },
+    {
+      "name": "第1帧独立像素 - 红色",
+      "passed": true,
+      "detail": "颜色: #FF0000"
+    },
+    {
+      "name": "第1帧其他位置 - 白色",
+      "passed": true,
+      "detail": "颜色: #FFFFFF"
+    },
+    {
+      "name": "第2帧独立像素 - 蓝色",
+      "passed": true,
+      "detail": "颜色: #0000FF"
+    },
+    {
+      "name": "第2帧不影响第1帧",
+      "passed": true,
+      "detail": "颜色: #FFFFFF"
+    },
+    {
+      "name": "动画正在播放",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "播放帧高亮显示",
+      "passed": true,
+      "detail": "高亮数: 1"
+    },
+    {
+      "name": "动画停止播放",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "帧率调节到20FPS",
+      "passed": true,
+      "detail": "FPS: 20"
+    },
+    {
+      "name": "FPS显示正确",
+      "passed": true,
+      "detail": "显示: 20"
+    },
+    {
+      "name": "无控制台错误",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}
