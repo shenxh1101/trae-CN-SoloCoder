@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "timestamp": "2026-05-26T11:46:59.506287"
+  },
+  "details": [
+    {
+      "name": "XOR加密-不带密码失败验证",
+      "passed": true,
+      "details": "正确拒绝无密码合并",
+      "timestamp": "2026-05-26T11:46:57.738602"
+    },
+    {
+      "name": "XOR加密分片合并（详细）",
+      "passed": true,
+      "details": "加密有效: True, MD5匹配: True, 完整性验证: True",
+      "timestamp": "2026-05-26T11:46:58.098949"
+    },
+    {
+      "name": "AES加密-错误密码失败验证",
+      "passed": true,
+      "details": "正确拒绝错误密码",
+      "timestamp": "2026-05-26T11:46:58.377093"
+    },
+    {
+      "name": "AES加密分片合并（详细）",
+      "passed": true,
+      "details": "加密有效: True, MD5匹配: True, 完整性验证: True",
+      "timestamp": "2026-05-26T11:46:58.785000"
+    },
+    {
+      "name": "恢复脚本生成与运行（详细）",
+      "passed": true,
+      "details": "脚本返回码: 0, 文件MD5匹配: True",
+      "timestamp": "2026-05-26T11:46:58.902356"
+    },
+    {
+      "name": "断点续传合并（详细）",
+      "passed": true,
+      "details": "MD5匹配: True, 完整性验证: True, 进度正确: True",
+      "timestamp": "2026-05-26T11:46:59.000301"
+    },
+    {
+      "name": "强制重新合并(no-resume)（详细）",
+      "passed": true,
+      "details": "MD5匹配: True",
+      "timestamp": "2026-05-26T11:46:59.037487"
+    },
+    {
+      "name": "CLI命令执行（详细）",
+      "passed": true,
+      "details": "split: True, merge: True",
+      "timestamp": "2026-05-26T11:46:59.429484"
+    },
+    {
+      "name": "按范围合并（详细）",
+      "passed": true,
+      "details": "范围: 2-4, 分片数: 3, 数据匹配: True",
+      "timestamp": "2026-05-26T11:46:59.505460"
+    }
+  ]
+}

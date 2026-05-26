@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "created_at": "2026-05-26T11:46:57.421121",
+  "original_file": "original_data.bin",
+  "original_size": 4194304,
+  "original_md5": "0d4855bf9dc1ff3a395426976ca7911d",
+  "chunk_size_mb": 1,
+  "total_chunks": 4,
+  "encryption_type": "xor",
+  "chunk_extension": "part",
+  "chunks": [
+    {
+      "index": 1,
+      "filename": "original_data.part1",
+      "size": 1048576,
+      "md5": "574d0078ab4fcb0faf35614e49595a47",
+      "start_byte": 0,
+      "end_byte": 1048575
+    },
+    {
+      "index": 2,
+      "filename": "original_data.part2",
+      "size": 1048576,
+      "md5": "d0ee60c8846fe2b419754c605fe706f2",
+      "start_byte": 1048576,
+      "end_byte": 2097151
+    },
+    {
+      "index": 3,
+      "filename": "original_data.part3",
+      "size": 1048576,
+      "md5": "0f097d5b09955ef430e2ea6a5de6b909",
+      "start_byte": 2097152,
+      "end_byte": 3145727
+    },
+    {
+      "index": 4,
+      "filename": "original_data.part4",
+      "size": 1048576,
+      "md5": "f586fba11c5f57ea411ad8229f12a2c0",
+      "start_byte": 3145728,
+      "end_byte": 4194303
+    }
+  ],
+  "merge_progress": {
+    "current_chunk": 4,
+    "bytes_written": 4194304,
+    "completed": true,
+    "updated_at": "2026-05-26T11:46:58.079177"
+  },
+  "updated_at": "2026-05-26T11:46:58.079191"
+}

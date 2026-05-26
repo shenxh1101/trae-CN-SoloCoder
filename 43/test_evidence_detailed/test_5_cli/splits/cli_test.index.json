@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "created_at": "2026-05-26T11:46:59.128655",
+  "original_file": "cli_test.bin",
+  "original_size": 2097152,
+  "original_md5": "628257b02321e2ceb893e659be6bd4e9",
+  "chunk_size_mb": 1,
+  "total_chunks": 2,
+  "encryption_type": "none",
+  "chunk_extension": "part",
+  "chunks": [
+    {
+      "index": 1,
+      "filename": "cli_test.part1",
+      "size": 1048576,
+      "md5": "d2f09d98f60f88785752a7fc2806a051",
+      "start_byte": 0,
+      "end_byte": 1048575
+    },
+    {
+      "index": 2,
+      "filename": "cli_test.part2",
+      "size": 1048576,
+      "md5": "62d3b6880f8b74a4b7ebc7e692fe4336",
+      "start_byte": 1048576,
+      "end_byte": 2097151
+    }
+  ],
+  "merge_progress": {
+    "current_chunk": 2,
+    "bytes_written": 2097152,
+    "completed": true,
+    "updated_at": "2026-05-26T11:46:59.407055"
+  },
+  "updated_at": "2026-05-26T11:46:59.407058"
+}

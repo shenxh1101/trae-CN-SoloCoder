@@ -1,0 +1,1637 @@
+{
+  "FxZlpQ": {
+    "long_url": "https://www.example.com/permanent",
+    "created_at": "2026-05-26T11:16:49.461767",
+    "expiry": null,
+    "password": null,
+    "admin_key": "Do9EMA5vpsXzmQM91uHeBA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "3hO1tw": {
+    "long_url": "https://www.example.com/qr-test",
+    "created_at": "2026-05-26T11:16:49.462176",
+    "expiry": null,
+    "password": null,
+    "admin_key": "O0YvFxpeGrmitykZTrbGXw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "B8fjOA": {
+    "long_url": "https://www.example.com/password-test",
+    "created_at": "2026-05-26T11:16:49.524912",
+    "expiry": null,
+    "password": "6e659deaa85842cdabb5c6305fcc40033ba43772ec00d45c2a3c921741a5e377",
+    "admin_key": "8JAd-Kvzl1hQDMVjP5trCQ",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:16:49.531660",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:16:49.531660",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "mycustom123": {
+    "long_url": "https://www.example.com/custom1",
+    "created_at": "2026-05-26T11:16:49.534394",
+    "expiry": null,
+    "password": null,
+    "admin_key": "8iquyG5l7D63JU9dKxvglQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "gBJDSj": {
+    "long_url": "https://www.example.com/api-full-test",
+    "created_at": "2026-05-26T11:16:49.536860",
+    "expiry": null,
+    "password": null,
+    "admin_key": "MljBtQVS075lmzEpgaghkA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "whx23x": {
+    "long_url": "https://www.example.com/expire-test",
+    "created_at": "2026-05-26T11:19:50.541161",
+    "expiry": 1779769190.541121,
+    "password": null,
+    "admin_key": "bM5Q8HHmMiZ8zZdP8VsXdw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "UCcrY7": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T11:22:48.700227",
+    "expiry": null,
+    "password": null,
+    "admin_key": "-FvsjFm0hqnkk-NTffXz6w",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:22:48.740903",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:22:48.740903",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "5ACEBp": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T11:22:48.742040",
+    "expiry": null,
+    "password": null,
+    "admin_key": "AoOh9mLsslsRLPZx7HV78w",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "j9Rmyp": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T11:22:48.743140",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "4AL3puhj7OcJPrpHkZlTyA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "UxLiHT": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T11:22:48.747449",
+    "expiry": 1779769368.747431,
+    "password": null,
+    "admin_key": "Abqp9rCMwvYKOHnIEvwhPQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "h2uI9Q": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T11:24:42.209683",
+    "expiry": null,
+    "password": null,
+    "admin_key": "94Q8YAtQRgzTHpSaMrXahA",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:24:42.257307",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:24:42.257307",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "PvIVG9": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T11:24:42.258647",
+    "expiry": null,
+    "password": null,
+    "admin_key": "NyFIKXu05iJ1RDC1y33Gzg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "DQEgUn": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T11:24:42.259553",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "I7Yv5s0kBrr3vXsuTiIS9A",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "PBpxQt": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T11:24:42.262839",
+    "expiry": 1779769482.262816,
+    "password": null,
+    "admin_key": "R4wrEbi8E_-krEL7lhCCYg",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:24:42.286147",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:24:42.286147",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "IBl47n": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T11:24:42.297761",
+    "expiry": null,
+    "password": null,
+    "admin_key": "QI9VajM2w7dD8FZB-Moieg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "9eQjjy": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T11:24:42.308041",
+    "expiry": null,
+    "password": null,
+    "admin_key": "MJU4o1_Mox3JAdTr_p1Gsw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "8D2rwW": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T11:24:42.314618",
+    "expiry": null,
+    "password": null,
+    "admin_key": "9q2XzCfMl9s6qcThnmWZZQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "5MteTO": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T11:24:42.316417",
+    "expiry": null,
+    "password": null,
+    "admin_key": "a0WjomreyD5AxpWqmS-WkA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "GCJcTV": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T11:24:42.318041",
+    "expiry": null,
+    "password": null,
+    "admin_key": "PXD-B_DWubeFT7S-oWPmZQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "8xjcID": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T11:24:42.318805",
+    "expiry": null,
+    "password": null,
+    "admin_key": "t7P92c11PFerIdhgbXlRWw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "AKfX3V": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T11:24:42.319475",
+    "expiry": null,
+    "password": null,
+    "admin_key": "8rkKJ8j3wLGBgmxzqQ5kTQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "SVFwov": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T11:24:42.320647",
+    "expiry": null,
+    "password": null,
+    "admin_key": "VVoA93LdsznqmOByAEMAtQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "68JkmA": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T11:24:42.321354",
+    "expiry": null,
+    "password": null,
+    "admin_key": "Tr5DfS-648N5keDYNlN3hw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "uD62TQ": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T11:24:42.322139",
+    "expiry": null,
+    "password": null,
+    "admin_key": "cM0YgykcVSVtkDoEkW5Cjg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "8BlLqz": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T11:26:54.092847",
+    "expiry": null,
+    "password": null,
+    "admin_key": "kzntvaSKSxMUiVhZSeo6YQ",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:26:54.131790",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:26:54.131790",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "ojhhJN": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T11:26:54.133368",
+    "expiry": null,
+    "password": null,
+    "admin_key": "pcEt_OIAJwFfkn0wCHk6sg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "lU8cou": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T11:26:54.134174",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "gbEfZfPIBD0vrYvlK8TcGQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "opGz6p": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T11:26:54.136670",
+    "expiry": 1779769614.136643,
+    "password": null,
+    "admin_key": "gz_EByc0Qh1q5DwH-I54Ig",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:26:54.137863",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:26:54.137863",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "iDiGq7": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T11:26:54.139468",
+    "expiry": null,
+    "password": null,
+    "admin_key": "2ExV5_mgw2-wJYGKAV5AEQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "gsWtSR": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T11:26:54.140126",
+    "expiry": null,
+    "password": null,
+    "admin_key": "K7ruREMHxPSPsNJ6IJ-YdA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "KYwxRR": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T11:26:54.141539",
+    "expiry": null,
+    "password": null,
+    "admin_key": "f1-lGqSR-HoeeB0ysNZKlQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "xhcIXY": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T11:26:54.142364",
+    "expiry": null,
+    "password": null,
+    "admin_key": "n5vBiLrO4b8H0eWDr3PMvg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "g2HZYI": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T11:26:54.142998",
+    "expiry": null,
+    "password": null,
+    "admin_key": "FQdw5KxPf6c27F9nfU3xQA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "JrKZsT": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T11:26:54.143794",
+    "expiry": null,
+    "password": null,
+    "admin_key": "iQjYJLupLkW_e7aNkDCUnw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "ADXNLk": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T11:26:54.144465",
+    "expiry": null,
+    "password": null,
+    "admin_key": "KfzK7wvCajeT-uTITusWrw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "dIXhel": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T11:26:54.145107",
+    "expiry": null,
+    "password": null,
+    "admin_key": "UVQePPqf8-N-hwGwcVS64A",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "MnCIEV": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T11:26:54.145933",
+    "expiry": null,
+    "password": null,
+    "admin_key": "N7Q-OXoCX0_oiaWbM6cwUQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "bYls2l": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T11:26:54.146809",
+    "expiry": null,
+    "password": null,
+    "admin_key": "sFooomXDDfoqbkX_mCeI8Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "xUmoqr": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T11:30:59.404348",
+    "expiry": null,
+    "password": null,
+    "admin_key": "-TGsffRlIHZW55fCTI3e0A",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:30:59.454870",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:30:59.454870",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "veAh4U": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T11:30:59.455805",
+    "expiry": null,
+    "password": null,
+    "admin_key": "xrvHn1WbR55ByG9n6UJEqg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "XNJiX9": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T11:30:59.457818",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "DiVjUko5TIsYDUjsN5YN4Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "oqgCvz": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T11:30:59.461130",
+    "expiry": 1779769859.461105,
+    "password": null,
+    "admin_key": "J1tX1E0eHcoQDyeo3x2bcw",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:30:59.462395",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:30:59.462395",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "RHeZmp": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T11:30:59.464523",
+    "expiry": null,
+    "password": null,
+    "admin_key": "ryDV6lTkYcacligVNYKzIw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "ixgzXZ": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T11:30:59.466615",
+    "expiry": null,
+    "password": null,
+    "admin_key": "0TkvKMlsl2lwbwJ3neN1Ew",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "nAY0xD": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T11:30:59.467619",
+    "expiry": null,
+    "password": null,
+    "admin_key": "STwjt0oNIWJzwuORDt4Ymg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "HtkbaX": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T11:30:59.468385",
+    "expiry": null,
+    "password": null,
+    "admin_key": "ITDDgESBVCqeDOgcf3crmg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "5hc6d1": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T11:30:59.469122",
+    "expiry": null,
+    "password": null,
+    "admin_key": "WUGyeix5zOyfF0jTYr6IKg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "ms6RrH": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T11:30:59.469873",
+    "expiry": null,
+    "password": null,
+    "admin_key": "itaxEE0l_bnlnNJMa4DOFQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "S7tZRY": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T11:30:59.470820",
+    "expiry": null,
+    "password": null,
+    "admin_key": "EXubIFrZk_wL04PU-4iRng",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "hKMxWA": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T11:30:59.471616",
+    "expiry": null,
+    "password": null,
+    "admin_key": "B_ngkKu5Sf4acRXbtY0ULQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "Z8ZSu0": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T11:30:59.472336",
+    "expiry": null,
+    "password": null,
+    "admin_key": "uui1L1ehoAmp-I8JIUS4dg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "ap8ee2": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T11:30:59.474181",
+    "expiry": null,
+    "password": null,
+    "admin_key": "bGqXRo7XjjwiYObt2o9MgQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "XA8eAy": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T11:34:41.257505",
+    "expiry": null,
+    "password": null,
+    "admin_key": "znjPKTX7fk7QihSBQ6q6Sg",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:34:41.302970",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:34:41.302970",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "S1txoT": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T11:34:41.306532",
+    "expiry": null,
+    "password": null,
+    "admin_key": "DNgPwagCEfZM9nXur6QF5Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "0HQQGO": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T11:34:41.309678",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "CPlx35SeMT9TJovLbBaRSw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "h7n5pS": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T11:34:41.314620",
+    "expiry": 1779770081.3146,
+    "password": null,
+    "admin_key": "jyb37cDZhm5-oGNkQb_-FA",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:34:41.316173",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:34:41.316173",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "tdvhzS": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T11:34:41.318863",
+    "expiry": null,
+    "password": null,
+    "admin_key": "z4XCblDpFbUp3zUsFUEL6g",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "ALoLqI": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T11:34:41.320191",
+    "expiry": null,
+    "password": null,
+    "admin_key": "6SynC8RJsyO6BwXyJR5d8w",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "3nGb6G": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T11:34:41.321315",
+    "expiry": null,
+    "password": null,
+    "admin_key": "O4TztvMjh-8YRxE04ICWMw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "H7sBev": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T11:34:41.322665",
+    "expiry": null,
+    "password": null,
+    "admin_key": "Xg-WzG_W8w3IwcimK0_9Gg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "Skyw5d": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T11:34:41.323825",
+    "expiry": null,
+    "password": null,
+    "admin_key": "w_FCZa4RuuSDDpFlpBhGqw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "by3CaH": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T11:34:41.324975",
+    "expiry": null,
+    "password": null,
+    "admin_key": "d14SvVMvw6V0-6ZPr_RMDA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "4owEZQ": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T11:34:41.326075",
+    "expiry": null,
+    "password": null,
+    "admin_key": "m8sKY3OoI-1LfmHqVOuaaw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "raw5tG": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T11:34:41.328027",
+    "expiry": null,
+    "password": null,
+    "admin_key": "bjid-v1ceOKb5VKuTDGHMw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "JYAGb1": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T11:34:41.329025",
+    "expiry": null,
+    "password": null,
+    "admin_key": "DHAd4Ex9dUKZTt1L_dPq3w",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "W4tTwb": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T11:34:41.330073",
+    "expiry": null,
+    "password": null,
+    "admin_key": "ZMC3OVvZKju3xUeMDlsoZQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "uODPq5": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T11:36:17.845674",
+    "expiry": null,
+    "password": null,
+    "admin_key": "xPCth7Eabcjo2uavEKqXTg",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:36:17.881382",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:36:17.881382",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "s3BIE1": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T11:36:17.882756",
+    "expiry": null,
+    "password": null,
+    "admin_key": "CLlY9AR7kUFwA-Tn-Emd2Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "PZbFua": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T11:36:17.883790",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "KRIbjPMQCHzQsIufkTxlAw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "QrTtMc": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T11:36:17.887437",
+    "expiry": 1779770177.887422,
+    "password": null,
+    "admin_key": "qlfmG8RdND03OBi0GogGgg",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:36:17.888497",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:36:17.888497",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "x9tDOn": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T11:36:17.890551",
+    "expiry": null,
+    "password": null,
+    "admin_key": "kPRks36Xb4P-aiqnGAFsxQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "3U9tIi": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T11:36:17.892041",
+    "expiry": null,
+    "password": null,
+    "admin_key": "qUxBuB81rGY3tMRtx_pyJA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "MSKjoW": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T11:36:17.893687",
+    "expiry": null,
+    "password": null,
+    "admin_key": "rzZIQfe5tppt0bFTw8tiNQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "ogMyTE": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T11:36:17.894698",
+    "expiry": null,
+    "password": null,
+    "admin_key": "iw5FMJSLvbksI9HdA_bGGQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "bDxv4o": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T11:36:17.895637",
+    "expiry": null,
+    "password": null,
+    "admin_key": "cQCk17IHR70yX68Fpy4xuw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "krl8iv": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T11:36:17.896554",
+    "expiry": null,
+    "password": null,
+    "admin_key": "cnF4VgtV4UCCuq-vjc5leg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "9OESOp": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T11:36:17.897474",
+    "expiry": null,
+    "password": null,
+    "admin_key": "tMv7exi5ylUMZBwEG4MmLg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "bzkk3q": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T11:36:17.898379",
+    "expiry": null,
+    "password": null,
+    "admin_key": "aDsEKaK-_4S2mjwI_OKaZQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "fUmmCA": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T11:36:17.899303",
+    "expiry": null,
+    "password": null,
+    "admin_key": "NHQHIJ-SIAabLwShVWOgbg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "tUTaac": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T11:36:17.900433",
+    "expiry": null,
+    "password": null,
+    "admin_key": "YkyVCuTPsQMQdyb2NTdTDQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "L9YVNT": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T11:42:20.703411",
+    "expiry": null,
+    "password": null,
+    "admin_key": "72eSVVDTZjnvBn7pQLHH3A",
+    "clicks": 1,
+    "last_access": "2026-05-26T11:42:20.740363",
+    "access_log": [
+      {
+        "time": "2026-05-26T11:42:20.740363",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 11:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "M0nLcg": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T11:42:20.741639",
+    "expiry": null,
+    "password": null,
+    "admin_key": "iT0ruUtAxKvD3FypQH5h5A",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "2sTKQF": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T11:42:20.742767",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "NGTAB-8ASWBEfWA2fArijQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "bRMipF": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T11:42:20.745773",
+    "expiry": 1779770540.74576,
+    "password": null,
+    "admin_key": "GtKqaySlF75NpndOD3yscQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "fOOLbi": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T11:42:20.748919",
+    "expiry": null,
+    "password": null,
+    "admin_key": "uZXQ-i1xTkbLxGiYjysCZg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "qavz4n": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T11:42:20.750739",
+    "expiry": null,
+    "password": null,
+    "admin_key": "_FqrAEz_uepw9TLRkTDf0w",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "1aWeQS": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T11:42:20.752251",
+    "expiry": null,
+    "password": null,
+    "admin_key": "_NJoOmzKr-uk1pqFqK5GGw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "GCHK5o": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T11:42:20.753702",
+    "expiry": null,
+    "password": null,
+    "admin_key": "8sARUn4sgD6UMaH05nZoIg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "sqsMgM": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T11:42:20.755360",
+    "expiry": null,
+    "password": null,
+    "admin_key": "Mh5FbJjZqIwlYtnQu_plfw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "Ay1zas": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T11:42:20.756676",
+    "expiry": null,
+    "password": null,
+    "admin_key": "lWnECB-tSwHwOfMPFSHo_w",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "d68rYe": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T11:42:20.757838",
+    "expiry": null,
+    "password": null,
+    "admin_key": "tfczKbtbb186JalCGvcdjw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "Wby2Xg": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T11:42:20.758978",
+    "expiry": null,
+    "password": null,
+    "admin_key": "5OBoU_qjJZNuOobwfMvSoA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "gCUJZD": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T11:42:20.760227",
+    "expiry": null,
+    "password": null,
+    "admin_key": "FxnKj33iPXIqfR9gBIg-1Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "LHbKyd": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T11:42:20.761395",
+    "expiry": null,
+    "password": null,
+    "admin_key": "_aCAh3nGxISbu9iZsc-h4Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "K3XrVD": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T12:06:58.241522",
+    "expiry": null,
+    "password": null,
+    "admin_key": "ekmoGgmv6q49BMNvXwsOHA",
+    "clicks": 1,
+    "last_access": "2026-05-26T12:06:58.285739",
+    "access_log": [
+      {
+        "time": "2026-05-26T12:06:58.285739",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 12:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "4kSuQ5": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T12:06:58.287490",
+    "expiry": null,
+    "password": null,
+    "admin_key": "oHHslKL85-hkmhX6_dLYGQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "6oBwkK": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T12:06:58.288661",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "Jb1qjmlZSHKF6WBj55jMTg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "vHyta2": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T12:06:58.292261",
+    "expiry": 1779772018.29224,
+    "password": null,
+    "admin_key": "Th3MpJLNU5ObIXLnBhIItg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "i4i9vF": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T12:06:58.295512",
+    "expiry": null,
+    "password": null,
+    "admin_key": "9fiBc3MEUoAcKTOIhE5oMA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "Si2UMa": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T12:06:58.297347",
+    "expiry": null,
+    "password": null,
+    "admin_key": "ETmMBgxD8LUwVd75amVtSQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "jEIglL": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T12:06:58.299366",
+    "expiry": null,
+    "password": null,
+    "admin_key": "EMHOBsfKXjbkkuiFdz1JnA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "pGndOj": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T12:06:58.301459",
+    "expiry": null,
+    "password": null,
+    "admin_key": "lwcH_Pft6_s227CWOVuo_Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "iE6qxF": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T12:06:58.303144",
+    "expiry": null,
+    "password": null,
+    "admin_key": "L97vZyDMRxsoJu8xm-5SLw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "BgXlWQ": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T12:06:58.304848",
+    "expiry": null,
+    "password": null,
+    "admin_key": "ctTqI3iIk8RdCFzq1sO8aQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "txZm65": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T12:06:58.306685",
+    "expiry": null,
+    "password": null,
+    "admin_key": "UtBHAFrGhtjhDf7YbavCnQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "D0Y7zj": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T12:06:58.308424",
+    "expiry": null,
+    "password": null,
+    "admin_key": "aPtkHOGIy9CkPwjl4bpE2g",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "L7m5np": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T12:06:58.310494",
+    "expiry": null,
+    "password": null,
+    "admin_key": "7N_Gmu27BWWH_mjANlUbIQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "ziqcYg": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T12:06:58.311823",
+    "expiry": null,
+    "password": null,
+    "admin_key": "bbijSQaqp5CQN2bCaBAW1A",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "GS3j1t": {
+    "long_url": "https://www.example.com/qr-download-test",
+    "created_at": "2026-05-26T12:06:58.313804",
+    "expiry": null,
+    "password": null,
+    "admin_key": "Usw4gbbdqipoffB1ei_ciw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "tmxPyc": {
+    "long_url": "https://www.example.com/original-page",
+    "created_at": "2026-05-26T12:06:58.319975",
+    "expiry": 1780373218.319959,
+    "password": null,
+    "admin_key": "CPNV3wsTfwd1h0EyQfGY6g",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "U4Ftja": {
+    "long_url": "https://www.example.com/flask-test",
+    "created_at": "2026-05-26T12:11:14.628099",
+    "expiry": null,
+    "password": null,
+    "admin_key": "-KxVZo0mwuCibxZhhVxjZA",
+    "clicks": 1,
+    "last_access": "2026-05-26T12:11:14.665262",
+    "access_log": [
+      {
+        "time": "2026-05-26T12:11:14.665262",
+        "ip_prefix": "127.0.0"
+      }
+    ],
+    "hourly_stats": {
+      "2026-05-26 12:00": 1
+    },
+    "region_stats": {
+      "华东地区": 1
+    }
+  },
+  "qKCLs7": {
+    "long_url": "https://www.example.com/api-test",
+    "created_at": "2026-05-26T12:11:14.666967",
+    "expiry": null,
+    "password": null,
+    "admin_key": "CgzYgd0UHv3nT9yehgFQIA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "nM3rPc": {
+    "long_url": "https://www.example.com/pwd-test",
+    "created_at": "2026-05-26T12:11:14.668405",
+    "expiry": null,
+    "password": "fcf730b6d95236ecd3c9fc2d92d7b6b2bb061514961aec041d6c7a7192f592e4",
+    "admin_key": "9X8hi6HMm0WnG2msY6gd7Q",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "Yd3Uea": {
+    "long_url": "https://www.example.com/exp-test",
+    "created_at": "2026-05-26T12:11:14.679241",
+    "expiry": 1779772274.679226,
+    "password": null,
+    "admin_key": "IEDJ4eexGvze7gLQ1OZvSg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "I0sG4E": {
+    "long_url": "https://www.example.com/limit-0",
+    "created_at": "2026-05-26T12:11:14.683193",
+    "expiry": null,
+    "password": null,
+    "admin_key": "jFbijlkyFSugJKepdIR9VQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "8PjnVj": {
+    "long_url": "https://www.example.com/limit-1",
+    "created_at": "2026-05-26T12:11:14.685063",
+    "expiry": null,
+    "password": null,
+    "admin_key": "QocrelOlTsTyGvM_QLaWoQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "u5U85f": {
+    "long_url": "https://www.example.com/limit-2",
+    "created_at": "2026-05-26T12:11:14.686768",
+    "expiry": null,
+    "password": null,
+    "admin_key": "2d12zhiZMCM8POK1CUm5fA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "DvE62e": {
+    "long_url": "https://www.example.com/limit-3",
+    "created_at": "2026-05-26T12:11:14.689416",
+    "expiry": null,
+    "password": null,
+    "admin_key": "gdyf70AJml20AFwlaBGTxg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "HkqoO0": {
+    "long_url": "https://www.example.com/limit-4",
+    "created_at": "2026-05-26T12:11:14.691480",
+    "expiry": null,
+    "password": null,
+    "admin_key": "VVmCFp7T3z1dDF_8vb4BHQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "T9xOXb": {
+    "long_url": "https://www.example.com/limit-5",
+    "created_at": "2026-05-26T12:11:14.692902",
+    "expiry": null,
+    "password": null,
+    "admin_key": "wnyrwQDxLUdVTjt_K5AXbw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "c7YYZh": {
+    "long_url": "https://www.example.com/limit-6",
+    "created_at": "2026-05-26T12:11:14.694628",
+    "expiry": null,
+    "password": null,
+    "admin_key": "fyV-qI24kN3zeXhXB6fVKw",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "TBWUDx": {
+    "long_url": "https://www.example.com/limit-7",
+    "created_at": "2026-05-26T12:11:14.696998",
+    "expiry": null,
+    "password": null,
+    "admin_key": "3EWX3ziHdEAsSJd05CokNA",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "NYIZkl": {
+    "long_url": "https://www.example.com/limit-8",
+    "created_at": "2026-05-26T12:11:14.698964",
+    "expiry": null,
+    "password": null,
+    "admin_key": "9WTI2uOL6kO9mygNgeB-tg",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "I34IUV": {
+    "long_url": "https://www.example.com/limit-9",
+    "created_at": "2026-05-26T12:11:14.700873",
+    "expiry": null,
+    "password": null,
+    "admin_key": "yMLCjShmf6pJnF20f2eilQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  },
+  "D0od0t": {
+    "long_url": "https://www.example.com/qr-download-test",
+    "created_at": "2026-05-26T12:11:14.702800",
+    "expiry": null,
+    "password": null,
+    "admin_key": "1hxvdFksVVa3FedpOaXpAQ",
+    "clicks": 0,
+    "last_access": null,
+    "access_log": [],
+    "hourly_stats": {},
+    "region_stats": {}
+  }
+}

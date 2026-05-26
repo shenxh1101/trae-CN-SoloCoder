@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量创建 - 短链接服务</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            background: #f0f9ff;
+        }
+        .upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #764ba2;
+        }
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .file-label:hover {
+            transform: translateY(-2px);
+        }
+        .file-info {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .instructions {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .instructions ul {
+            padding-left: 20px;
+            color: #666;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        .error {
+            color: #e74c3c;
+            background: #fdf0ed;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .csv-example {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 批量创建短链接</h1>
+        <p class="subtitle">上传CSV文件批量生成短链接</p>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form id="uploadForm" method="POST" enctype="multipart/form-data">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <input type="file" id="fileInput" name="file" accept=".csv" required>
+                <label for="fileInput" class="file-label">选择CSV文件</label>
+                <div class="file-info" id="fileInfo">未选择文件</div>
+            </div>
+            <button type="submit" id="submitBtn" disabled>开始批量创建</button>
+        </form>
+        
+        <div class="instructions">
+            <h3>📋 CSV文件格式</h3>
+            <ul>
+                <li><strong>第一列：</strong>长网址（必填，需以 http:// 或 https:// 开头）</li>
+                <li><strong>第二列：</strong>自定义短码（可选，留空自动生成）</li>
+                <li><strong>第三列：</strong>访问密码（可选）</li>
+            </ul>
+            <div class="csv-example">
+                示例：<br>
+                https://example.com/page1,mycode,mypassword<br>
+                https://example.com/page2,,<br>
+                https://example.com/page3,custom123,
+            </div>
+        </div>
+        
+        <div class="back-link">
+            <a href="/">返回首页</a>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadArea = document.getElementById('uploadArea');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileInfo.textContent = `已选择: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                submitBtn.disabled = false;
+            } else {
+                fileInfo.textContent = '未选择文件';
+                submitBtn.disabled = true;
+            }
+        });
+
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                fileInput.files = files;
+                fileInfo.textContent = `已选择: ${files[0].name} (${(files[0].size / 1024).toFixed(2)} KB)`;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

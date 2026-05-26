@@ -1,0 +1,42 @@
+node_modules/
+.expo/
+dist/
+web-build/
+
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
+
+# Android
+*.apk
+*.aab
+
+# iOS
+*.ipa
+*.xcuserstate
+xcuserdata/
+
+# Metro
+.metro-health-check*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Expo
+.expo-shared/

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>3D 太阳系模型</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #e8e8e8;
+    }
+    #app {
+      position: fixed;
+      inset: 0;
+    }
+    #panel {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      padding: 14px 16px;
+      background: rgba(15, 20, 35, 0.75);
+      border: 1px solid rgba(120, 160, 255, 0.25);
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      min-width: 220px;
+      user-select: none;
+    }
+    #panel h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #8fb8ff;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      font-size: 13px;
+    }
+    .row label {
+      flex: 0 0 60px;
+      color: #bfc9e0;
+    }
+    .row input[type="range"] {
+      flex: 1;
+    }
+    .row input[type="checkbox"] {
+      accent-color: #ffb347;
+    }
+    .btn {
+      flex: 1;
+      padding: 6px 10px;
+      background: linear-gradient(180deg, #3a5bff, #2540c0);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:active { transform: scale(0.97); }
+    .btn.pause {
+      background: linear-gradient(180deg, #ff7a59, #c94b2e);
+    }
+    #info {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 12px 14px;
+      background: rgba(15, 20, 35, 0.75);
+      border: 1px solid rgba(255, 170, 90, 0.35);
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      min-width: 220px;
+      font-size: 13px;
+      line-height: 1.6;
+      user-select: none;
+      display: none;
+    }
+    #info h4 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      color: #ffb347;
+      letter-spacing: 1px;
+    }
+    #info .k { color: #bfc9e0; }
+    #info .v { color: #fff; }
+    #info .close {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      cursor: pointer;
+      color: #bfc9e0;
+      font-size: 14px;
+    }
+    #hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(230, 230, 255, 0.55);
+      letter-spacing: 0.5px;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="panel">
+    <h3>太阳系控制面板</h3>
+    <div class="row">
+      <button id="btnToggle" class="btn">暂停</button>
+    </div>
+    <div class="row">
+      <label>速度</label>
+      <input id="speed" type="range" min="0.5" max="5" step="0.1" value="1" />
+      <span id="speedVal" style="min-width:32px;text-align:right;color:#fff;">1.0x</span>
+    </div>
+    <div class="row">
+      <label>自动旋转</label>
+      <input id="autoRotate" type="checkbox" />
+    </div>
+  </div>
+
+  <div id="info">
+    <span class="close" id="infoClose">×</span>
+    <h4 id="infoName">行星信息</h4>
+    <div><span class="k">名称：</span><span class="v" id="infoPlanetName">-</span></div>
+    <div><span class="k">公转周期：</span><span class="v" id="infoOrbitPeriod">-</span></div>
+    <div><span class="k">距太阳：</span><span class="v" id="infoDistance">-</span></div>
+  </div>
+
+  <div id="hint">鼠标拖拽旋转视角 · 滚轮缩放 · 点击行星查看信息</div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

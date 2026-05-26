@@ -1,0 +1,100 @@
+{
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0,
+    "timestamp": "2026-05-26T11:35:17.440096"
+  },
+  "details": [
+    {
+      "name": "基础分片合并",
+      "passed": true,
+      "details": "分片数: 5, 完整性验证: 通过",
+      "timestamp": "2026-05-26T11:35:15.424518"
+    },
+    {
+      "name": "自定义分片扩展名",
+      "passed": true,
+      "details": "扩展名: chunk, 所有分片存在: True",
+      "timestamp": "2026-05-26T11:35:15.502478"
+    },
+    {
+      "name": "XOR加密-不带密码失败",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-26T11:35:15.737076"
+    },
+    {
+      "name": "XOR加密分片合并",
+      "passed": true,
+      "details": "加密有效: True, 解密合并: 成功",
+      "timestamp": "2026-05-26T11:35:15.944356"
+    },
+    {
+      "name": "AES加密-错误密码失败",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-26T11:35:16.188317"
+    },
+    {
+      "name": "AES加密分片合并",
+      "passed": true,
+      "details": "加密有效: True, 解密合并: 成功",
+      "timestamp": "2026-05-26T11:35:16.492954"
+    },
+    {
+      "name": "断点续传合并",
+      "passed": true,
+      "details": "断点续传: 成功, 完整性验证: 通过",
+      "timestamp": "2026-05-26T11:35:16.595142"
+    },
+    {
+      "name": "强制重新合并(no-resume)",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-26T11:35:16.640178"
+    },
+    {
+      "name": "按范围合并",
+      "passed": true,
+      "details": "范围: 2-4, 分片数: 3, 数据匹配: True",
+      "timestamp": "2026-05-26T11:35:16.717896"
+    },
+    {
+      "name": "JSON导入导出",
+      "passed": true,
+      "details": "导出: /Users/mac/code/solo coder/43/test_evidence/test_7_json/exported.json, 数据完整: True",
+      "timestamp": "2026-05-26T11:35:16.748400"
+    },
+    {
+      "name": "文本文件列表合并",
+      "passed": true,
+      "details": "MD5匹配: True",
+      "timestamp": "2026-05-26T11:35:16.866265"
+    },
+    {
+      "name": "恢复脚本生成与运行",
+      "passed": true,
+      "details": "脚本返回码: 0, 文件匹配: True",
+      "timestamp": "2026-05-26T11:35:16.980993"
+    },
+    {
+      "name": "MD5完整性校验",
+      "passed": true,
+      "details": "完整时有效: True, 破坏后检测: True",
+      "timestamp": "2026-05-26T11:35:17.161627"
+    },
+    {
+      "name": "索引信息查看",
+      "passed": true,
+      "details": "信息完整: True",
+      "timestamp": "2026-05-26T11:35:17.220063"
+    },
+    {
+      "name": "加密模块单元测试",
+      "passed": true,
+      "details": "XOR: True, AES: True, 错误密码: True, 工厂: True",
+      "timestamp": "2026-05-26T11:35:17.439504"
+    }
+  ]
+}

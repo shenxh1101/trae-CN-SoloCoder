@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理面板 - 短链接服务</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        input[type="url"], input[type="text"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .actions a {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: transform 0.2s;
+        }
+        .actions a:hover {
+            transform: translateY(-2px);
+        }
+        .delete-section {
+            border: 2px solid #e74c3c;
+        }
+        .flash {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .flash-success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚙️ 链接管理面板</h1>
+        
+        <div class="info-card">
+            <div class="info-row">
+                <span class="info-label">短码：</span>
+                <span class="info-value">{{ code }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">短链接：</span>
+                <span class="info-value">{{ short_url }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">目标网址：</span>
+                <span class="info-value">{{ entry.long_url }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">创建时间：</span>
+                <span class="info-value">{{ entry.created_at }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">总点击：</span>
+                <span class="info-value">{{ entry.clicks }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">有效期至：</span>
+                <span class="info-value">{{ entry.expiry|datetime }}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">✏️ 修改目标网址</h2>
+            <form method="POST">
+                <input type="hidden" name="action" value="update_url">
+                <input type="hidden" name="admin_key" value="{{ admin_key }}">
+                <div class="form-group">
+                    <label for="new_url">新的目标网址</label>
+                    <input type="url" id="new_url" name="new_url" placeholder="https://new-example.com" required>
+                </div>
+                <button type="submit" class="btn-primary">更新网址</button>
+            </form>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">⏰ 延长有效期</h2>
+            <form method="POST">
+                <input type="hidden" name="action" value="extend_expiry">
+                <input type="hidden" name="admin_key" value="{{ admin_key }}">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="expiry_type">类型</label>
+                        <select id="expiry_type" name="expiry_type">
+                            <option value="hours">按小时</option>
+                            <option value="days">按天</option>
+                            <option value="permanent">永久有效</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expiry_value">时长</label>
+                        <input type="number" id="expiry_value" name="expiry_value" value="24" min="1">
+                    </div>
+                </div>
+                <button type="submit" class="btn-success">延长有效期</button>
+            </form>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🔐 重置密码</h2>
+            <form method="POST">
+                <input type="hidden" name="action" value="reset_password">
+                <input type="hidden" name="admin_key" value="{{ admin_key }}">
+                <div class="form-group">
+                    <label for="new_password">新密码（留空则移除密码）</label>
+                    <input type="password" id="new_password" name="new_password" placeholder="留空则移除密码保护">
+                </div>
+                <button type="submit" class="btn-warning">重置密码</button>
+            </form>
+        </div>
+        
+        <div class="section delete-section">
+            <h2 class="section-title" style="color: #e74c3c; border-color: #e74c3c;">🗑️ 删除链接</h2>
+            <form method="POST" onsubmit="return confirm('确定要删除此短链接吗？此操作不可恢复！');">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="admin_key" value="{{ admin_key }}">
+                <button type="submit" class="btn-danger">删除短链接</button>
+            </form>
+        </div>
+        
+        <div class="actions">
+            <a href="/" class="btn-secondary">返回首页</a>
+            <a href="/stats/{{ code }}" class="btn-primary" style="background: #667eea;">查看统计</a>
+            <a href="/qrcode/{{ code }}" class="btn-success" style="background: #17a2b8;" download>下载二维码</a>
+        </div>
+    </div>
+</body>
+</html>

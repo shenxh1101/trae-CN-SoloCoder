@@ -1,0 +1,4 @@
+# 分片文件列表 - 由测试生成
+/Users/mac/code/solo coder/43/test_evidence/test_8_text/splits/chunk_1.bin
+/Users/mac/code/solo coder/43/test_evidence/test_8_text/splits/chunk_2.bin
+/Users/mac/code/solo coder/43/test_evidence/test_8_text/splits/chunk_3.bin

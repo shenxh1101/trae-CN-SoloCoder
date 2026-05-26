@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钢琴模拟器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="celebration" class="celebration hidden">
+        <div class="confetti-container"></div>
+        <div class="celebration-content">
+            <div class="trophy-icon">🏆</div>
+            <h2>太棒了！</h2>
+            <p>连续答对10次！</p>
+            <p class="subtitle">你是钢琴小天才！🎉</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="title-container">
+                <span class="music-icon">🎹</span>
+                <h1>钢琴模拟器</h1>
+            </div>
+            <p class="subtitle">使用鼠标点击或键盘按键弹奏 · 支持录音、教学、多种音色</p>
+            <div id="loadingStatus" class="loading-status">
+                <span id="loadingText">⏳ 正在加载音频采样...</span>
+                <div class="loading-progress-container">
+                    <div id="loadingProgress" class="loading-progress"></div>
+                </div>
+                <span id="loadingPercent" class="loading-percent">0%</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="top-section">
+                <div class="note-display-card">
+                    <div class="card-header">
+                        <span class="card-icon">🎵</span>
+                        <h3>当前音符</h3>
+                    </div>
+                    <div class="note-display">
+                        <span id="currentNote">-</span>
+                    </div>
+                    <p id="activeCount" class="active-count"></p>
+                </div>
+
+                <div class="metronome-card">
+                    <div class="card-header">
+                        <span class="card-icon">⏱️</span>
+                        <h3>节拍器</h3>
+                    </div>
+                    <div class="metronome-controls">
+                        <button id="metronomeToggle" class="btn btn-metronome">
+                            <span id="metronomeIcon">▶</span>
+                        </button>
+                        <div class="bpm-control">
+                            <span class="bpm-label">BPM</span>
+                            <input type="range" id="bpmSlider" min="40" max="200" value="120">
+                            <span id="bpmValue" class="bpm-value">120</span>
+                        </div>
+                        <div class="beat-indicators">
+                            <div class="beat-dot active" data-beat="0"></div>
+                            <div class="beat-dot" data-beat="1"></div>
+                            <div class="beat-dot" data-beat="2"></div>
+                            <div class="beat-dot" data-beat="3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="piano-container">
+                <div class="piano-body">
+                    <div class="piano-keys" id="pianoKeys">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="control-card">
+                    <div class="card-header">
+                        <span class="card-icon">🎨</span>
+                        <h3>音色</h3>
+                    </div>
+                    <div class="timbre-buttons">
+                        <button class="timbre-btn active" data-timbre="piano">🎹 钢琴</button>
+                        <button class="timbre-btn" data-timbre="synth">🎛️ 电子琴</button>
+                        <button class="timbre-btn" data-timbre="organ">🎺 风琴</button>
+                        <button class="timbre-btn" data-timbre="guitar">🎸 吉他</button>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <div class="card-header">
+                        <span class="card-icon">🎙️</span>
+                        <h3>录音</h3>
+                    </div>
+                    <div class="record-buttons">
+                        <button id="recordBtn" class="btn btn-record">
+                            <span class="record-dot"></span> 录音
+                        </button>
+                        <button id="playBtn" class="btn btn-play" disabled>
+                            ▶ 播放
+                        </button>
+                        <button id="stopBtn" class="btn btn-stop" disabled>
+                            ⏹ 停止
+                        </button>
+                        <div class="file-buttons">
+                            <button id="saveBtn" class="btn btn-save" disabled>
+                                💾 保存
+                            </button>
+                            <button id="loadBtn" class="btn btn-load">
+                                📂 加载
+                            </button>
+                            <input type="file" id="fileInput" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <div class="card-header">
+                        <span class="card-icon">🔊</span>
+                        <h3>音量</h3>
+                    </div>
+                    <div class="volume-control">
+                        <button id="muteBtn" class="btn btn-mute">
+                            <span id="muteIcon">🔊</span>
+                        </button>
+                        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
+                        <span id="volumeValue" class="volume-value">70%</span>
+                    </div>
+                </div>
+
+                <div class="control-card">
+                    <div class="card-header">
+                        <span class="card-icon">✨</span>
+                        <h3>音效</h3>
+                    </div>
+                    <div class="effect-buttons">
+                        <button id="sustainBtn" class="btn btn-effect">
+                            延音踏板 关
+                        </button>
+                        <button id="reverbBtn" class="btn btn-effect">
+                            混响 关
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chord-card">
+                <div class="card-header">
+                    <span class="card-icon">🎼</span>
+                    <h3>和弦助手</h3>
+                </div>
+                <div class="chord-buttons" id="chordButtons">
+                </div>
+            </div>
+
+            <div class="teaching-card" id="teachingCard">
+                <div class="card-header">
+                    <span class="card-icon">📚</span>
+                    <h3>教学模式</h3>
+                    <button id="teachingToggle" class="btn btn-teaching">
+                        开启教学
+                    </button>
+                </div>
+                <div id="teachingContent" class="teaching-content hidden">
+                    <div class="teaching-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">目标音符</span>
+                            <span id="targetNote" class="stat-value target">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">当前连胜</span>
+                            <span id="currentStreak" class="stat-value streak">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">最高纪录</span>
+                            <span id="bestStreak" class="stat-value best">0</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <p class="teaching-hint">按下键盘上对应的琴键，连续答对10次获得奖励！</p>
+                </div>
+                <div id="teachingDisabled" class="teaching-disabled">
+                    <span class="trophy-icon">🏆</span>
+                    <p>开启教学模式练习音符识别</p>
+                    <p class="small-hint">最高纪录: <span id="bestStreakDisplay">0</span> 次连续正确</p>
+                </div>
+            </div>
+
+            <div class="keyboard-help">
+                <div class="card-header">
+                    <span class="card-icon">⌨️</span>
+                    <h3>键盘快捷键</h3>
+                </div>
+                <div class="keyboard-grid">
+                    <div class="key-group">
+                        <span class="group-label">白键:</span>
+                        <span class="keys">A S D F G H J K L ;</span>
+                    </div>
+                    <div class="key-group">
+                        <span class="group-label">黑键:</span>
+                        <span class="keys">W E T Y U O P</span>
+                    </div>
+                </div>
+                <p class="hint">提示: 按空格键切换延音踏板</p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>🎹 尽情享受音乐的乐趣吧！</p>
+        </footer>
+    </div>
+
+    <script src="js/audioEngine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

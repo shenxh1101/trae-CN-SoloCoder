@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线调色板工具</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+  <header class="app-header">
+    <h1>🎨 在线调色板工具</h1>
+    <button id="randomBtn" class="btn btn-primary">🎲 随机颜色</button>
+  </header>
+
+  <main class="main-container">
+    <section class="left-panel">
+      <div class="pickers">
+        <div class="hue-ring-wrap">
+          <h3>色相</h3>
+          <svg id="hueRing" width="240" height="240" viewBox="0 0 240 240">
+            <defs>
+              <filter id="blur">
+                <feGaussianBlur stdDeviation="2"/>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+        <div class="sv-square-wrap">
+          <h3>饱和度 / 亮度</h3>
+          <div class="sv-canvas-wrap">
+            <canvas id="svSquare" width="200" height="200"></canvas>
+            <div id="svCursor"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="current-color">
+        <div id="currentSwatch" class="swatch-large"></div>
+        <div class="values">
+          <div class="value-row">
+            <label>HEX</label>
+            <input type="text" id="hexInput" class="value-input" maxlength="7">
+          </div>
+          <div class="value-row">
+            <label>RGB</label>
+            <div class="rgb-inputs">
+              <input type="number" id="rInput" min="0" max="255">
+              <input type="number" id="gInput" min="0" max="255">
+              <input type="number" id="bInput" min="0" max="255">
+            </div>
+          </div>
+          <div class="value-row">
+            <label>HSL</label>
+            <div class="hsl-inputs">
+              <input type="number" id="hInput" min="0" max="360">
+              <input type="number" id="sInput" min="0" max="100">
+              <input type="number" id="lInput" min="0" max="100">
+            </div>
+          </div>
+        </div>
+        <button id="favBtn" class="btn fav-btn">☆ 收藏</button>
+      </div>
+
+      <div class="preview-section">
+        <h3>背景预览</h3>
+        <div class="preview-panels">
+          <div class="preview-panel light-preview">
+            <span class="preview-text" id="previewLight">浅色背景</span>
+          </div>
+          <div class="preview-panel dark-preview">
+            <span class="preview-text" id="previewDark">深色背景</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contrast-section">
+        <h3>对比度检测 (WCAG)</h3>
+        <div class="contrast-controls">
+          <div class="contrast-color-row">
+            <label>前景色</label>
+            <input type="color" id="contrastFg" value="#000000">
+            <input type="text" id="contrastFgHex" class="value-input small" maxlength="7">
+          </div>
+          <div class="contrast-color-row">
+            <label>背景色</label>
+            <input type="color" id="contrastBg" value="#ffffff">
+            <input type="text" id="contrastBgHex" class="value-input small" maxlength="7">
+          </div>
+        </div>
+        <div class="contrast-result">
+          <div class="contrast-ratio">
+            <span class="label">对比度比率</span>
+            <span id="contrastRatio" class="ratio-value">21.00:1</span>
+          </div>
+          <div class="contrast-levels">
+            <div class="level-row">
+              <span>AA (普通)</span>
+              <span id="aaNormal" class="level-badge pass">通过</span>
+            </div>
+            <div class="level-row">
+              <span>AA (大字号)</span>
+              <span id="aaLarge" class="level-badge pass">通过</span>
+            </div>
+            <div class="level-row">
+              <span>AAA (普通)</span>
+              <span id="aaaNormal" class="level-badge pass">通过</span>
+            </div>
+            <div class="level-row">
+              <span>AAA (大字号)</span>
+              <span id="aaaLarge" class="level-badge pass">通过</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="right-panel">
+      <div class="favorites-section">
+        <div class="section-header">
+          <h3>⭐ 收藏颜色</h3>
+          <button id="clearFavsBtn" class="btn btn-small">清空</button>
+        </div>
+        <div id="favList" class="fav-list"></div>
+      </div>
+
+      <div class="schemes-section">
+        <div class="section-header">
+          <h3>🎨 配色方案</h3>
+        </div>
+        <div class="schemes-tabs">
+          <button class="tab-btn active" data-scheme="complementary">互补色</button>
+          <button class="tab-btn" data-scheme="analogous">类似色</button>
+          <button class="tab-btn" data-scheme="split">对比色</button>
+          <button class="tab-btn" data-scheme="triadic">三角色</button>
+        </div>
+        <div id="schemeDisplay" class="scheme-display"></div>
+      </div>
+
+      <div class="extract-section">
+        <div class="section-header">
+          <h3>🖼️ 图片取色</h3>
+        </div>
+        <input type="file" id="imageInput" accept="image/*" style="display:none">
+        <button id="uploadBtn" class="btn btn-upload">上传图片</button>
+        <canvas id="extractCanvas" style="display:none"></canvas>
+        <div id="extractColors" class="extract-colors"></div>
+      </div>
+
+      <div class="export-section">
+        <div class="section-header">
+          <h3>💾 导出</h3>
+        </div>
+        <div class="export-buttons">
+          <button class="btn btn-export" data-format="css">CSS 变量</button>
+          <button class="btn btn-export" data-format="scss">SCSS 变量</button>
+          <button class="btn btn-export" data-format="ase">ASE 格式</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

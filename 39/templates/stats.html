@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>链接统计 - 短链接服务</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        .section-title {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 200px;
+            gap: 4px;
+            padding: 10px 0;
+        }
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+            min-height: 2px;
+        }
+        .bar:hover {
+            opacity: 0.8;
+        }
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .bar-value {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #333;
+            font-weight: 600;
+        }
+        .region-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .region-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .region-name {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .region-count {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 链接统计</h1>
+        
+        <div class="info-card">
+            <div class="info-row">
+                <span class="info-label">短码：</span>
+                <span class="info-value">{{ code }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">短链接：</span>
+                <span class="info-value">{{ short_url }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">目标网址：</span>
+                <span class="info-value">{{ entry.long_url }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">创建时间：</span>
+                <span class="info-value">{{ entry.created_at }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">最后访问：</span>
+                <span class="info-value">{{ entry.last_access or '暂无访问' }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">有效期至：</span>
+                <span class="info-value">{{ entry.expiry|datetime }}</span>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ entry.clicks }}</div>
+                <div class="stat-label">总点击次数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ entry.access_log|length }}</div>
+                <div class="stat-label">访问记录数</div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">⏰ 最近24小时点击分布</h2>
+        <div class="chart-container">
+            <div class="bar-chart">
+                {% set max_count = namespace(value=0) %}
+                {% for item in hourly_data %}
+                    {% if item.count > max_count.value %}
+                        {% set max_count.value = item.count %}
+                    {% endif %}
+                {% endfor %}
+                {% for item in hourly_data %}
+                    {% set pct = (item.count / max_count.value * 100) if max_count.value > 0 else 0 %}
+                    <div class="bar" style="height: {{ [pct, 1]|max }}%;">
+                        {% if item.count > 0 %}
+                            <span class="bar-value">{{ item.count }}</span>
+                        {% endif %}
+                        <span class="bar-label">{{ item.hour }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <div style="clear: both; margin-top: 35px; text-align: center; color: #999; font-size: 12px;">
+                时间（小时）
+            </div>
+        </div>
+        
+        <h2 class="section-title">🌍 来源地区分布</h2>
+        <div class="region-list">
+            {% for region, count in region_data.items() %}
+                <div class="region-item">
+                    <div class="region-name">{{ region }}</div>
+                    <div class="region-count">{{ count }}</div>
+                </div>
+            {% endfor %}
+            {% if not region_data %}
+                <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
+                    暂无访问数据
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="actions">
+            <a href="/" class="btn btn-secondary">返回首页</a>
+            <a href="/qrcode/{{ code }}" class="btn btn-info" download>下载二维码</a>
+            <a href="/manage/{{ code }}" class="btn btn-primary">管理链接</a>
+        </div>
+    </div>
+</body>
+</html>

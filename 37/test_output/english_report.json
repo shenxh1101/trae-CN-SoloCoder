@@ -1,0 +1,162 @@
+{
+  "export_time": "2026-05-26 09:59:59",
+  "analysis_result": {
+    "basic_stats": {
+      "chars_without_spaces": 814,
+      "chars_with_spaces": 963,
+      "chinese_chars": 0,
+      "letters": 791,
+      "digits": 0,
+      "punctuations": 23,
+      "english_words": 154,
+      "lines": 5
+    },
+    "word_frequency": [
+      [
+        "the",
+        7
+      ],
+      [
+        "text",
+        7
+      ],
+      [
+        "and",
+        7
+      ],
+      [
+        "is",
+        6
+      ],
+      [
+        "it",
+        5
+      ],
+      [
+        "this",
+        4
+      ],
+      [
+        "a",
+        4
+      ],
+      [
+        "tool",
+        4
+      ],
+      [
+        "analyzer",
+        3
+      ],
+      [
+        "in",
+        3
+      ],
+      [
+        "data",
+        3
+      ],
+      [
+        "of",
+        3
+      ],
+      [
+        "analysis",
+        3
+      ],
+      [
+        "with",
+        3
+      ],
+      [
+        "for",
+        2
+      ],
+      [
+        "python",
+        2
+      ],
+      [
+        "language",
+        2
+      ],
+      [
+        "many",
+        2
+      ],
+      [
+        "its",
+        2
+      ],
+      [
+        "can",
+        2
+      ]
+    ],
+    "chinese_char_frequency": [],
+    "readability": {
+      "flesch_reading_ease": 44.79,
+      "flesch_kincaid_grade": 9.56,
+      "coleman_liau_index": 11.52,
+      "smog_index": 12.1,
+      "reading_age_suggestion": "适合17-22岁（大学）阅读"
+    },
+    "sentence_analysis": {
+      "total_sentences": 15,
+      "average_sentence_length": 10.27,
+      "average_word_length": 5.14,
+      "longest_sentence": {
+        "text": "This makes it a very powerful and helpful tool for anyone working with text data",
+        "word_count": 15
+      },
+      "shortest_sentence": {
+        "text": "Python is a great programming language",
+        "word_count": 6
+      }
+    },
+    "keywords": [
+      [
+        "text",
+        0.0745
+      ],
+      [
+        "tool",
+        0.0426
+      ],
+      [
+        "analyzer",
+        0.0319
+      ],
+      [
+        "data",
+        0.0319
+      ],
+      [
+        "analysis",
+        0.0319
+      ]
+    ],
+    "sentiment": {
+      "sentiment": "positive",
+      "sentiment_label": "正面",
+      "sentiment_score": 81.82,
+      "positive_words_count": 10,
+      "negative_words_count": 1,
+      "matched_positive_words": [
+        "great",
+        "elegant",
+        "useful",
+        "powerful",
+        "helpful",
+        "valuable",
+        "wonderful",
+        "excellent",
+        "happy",
+        "satisfied"
+      ],
+      "matched_negative_words": [
+        "lazy"
+      ]
+    }
+  }
+}

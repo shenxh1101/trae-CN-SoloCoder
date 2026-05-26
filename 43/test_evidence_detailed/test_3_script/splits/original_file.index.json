@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "created_at": "2026-05-26T11:46:58.809065",
+  "original_file": "original_file.bin",
+  "original_size": 3145728,
+  "original_md5": "a73b1f12a1ed1424e54ca4700c282478",
+  "chunk_size_mb": 1,
+  "total_chunks": 3,
+  "encryption_type": "none",
+  "chunk_extension": "part",
+  "chunks": [
+    {
+      "index": 1,
+      "filename": "original_file.part1",
+      "size": 1048576,
+      "md5": "cdf83833a66a1b97e0d04123a2cba50d",
+      "start_byte": 0,
+      "end_byte": 1048575
+    },
+    {
+      "index": 2,
+      "filename": "original_file.part2",
+      "size": 1048576,
+      "md5": "73c0a9664dc0e1d59a804e2a3bdd6590",
+      "start_byte": 1048576,
+      "end_byte": 2097151
+    },
+    {
+      "index": 3,
+      "filename": "original_file.part3",
+      "size": 1048576,
+      "md5": "31e203240b4ab0513dd192423ea21063",
+      "start_byte": 2097152,
+      "end_byte": 3145727
+    }
+  ],
+  "merge_progress": {
+    "current_chunk": 0,
+    "bytes_written": 0,
+    "completed": false
+  },
+  "updated_at": "2026-05-26T11:46:58.823375"
+}
