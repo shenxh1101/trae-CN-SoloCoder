@@ -1,0 +1,433 @@
+{
+  "users": {
+    "default": {
+      "tasks": {}
+    },
+    "testuser": {
+      "tasks": {
+        "c75fb385-4c75-4d99-b941-8bd3003b3f67": {
+          "id": "c75fb385-4c75-4d99-b941-8bd3003b3f67",
+          "title": "测试任务1",
+          "description": "这是一个测试任务的描述",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-05-30",
+          "created_at": "2026-05-26T15:02:34.971780",
+          "completed_at": null
+        },
+        "0a2c3c7e-4a99-4322-ae94-8e3b6b09f29e": {
+          "id": "0a2c3c7e-4a99-4322-ae94-8e3b6b09f29e",
+          "title": "重要项目开发",
+          "description": "完成Flask项目的核心功能开发",
+          "status": "in_progress",
+          "priority": "high",
+          "due_date": "2026-05-20",
+          "created_at": "2026-05-26T15:03:36.320754",
+          "completed_at": null
+        },
+        "98fb71b9-a2a0-49dc-880c-15b646b1a48c": {
+          "id": "98fb71b9-a2a0-49dc-880c-15b646b1a48c",
+          "title": "代码审查",
+          "description": "审查新提交的PR代码",
+          "status": "completed",
+          "priority": "medium",
+          "due_date": "2026-05-25",
+          "created_at": "2026-05-26T15:05:49.126650",
+          "completed_at": null
+        },
+        "5da23493-bf2f-4873-9863-c70529045824": {
+          "id": "5da23493-bf2f-4873-9863-c70529045824",
+          "title": "文档编写",
+          "description": "编写用户使用手册",
+          "status": "todo",
+          "priority": "low",
+          "due_date": "2026-06-01",
+          "created_at": "2026-05-26T15:05:49.161935",
+          "completed_at": null
+        },
+        "7bd6e176-aec0-4e4d-b8b2-96d65a62c309": {
+          "id": "7bd6e176-aec0-4e4d-b8b2-96d65a62c309",
+          "title": "过期测试任务",
+          "description": "测试过期任务红色标记",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-05-01",
+          "created_at": "2026-05-26T15:05:49.192924",
+          "completed_at": null
+        }
+      }
+    },
+    "testuser1": {
+      "tasks": {
+        "2806a763-2006-4a66-b9aa-88029ad8f1c6": {
+          "id": "2806a763-2006-4a66-b9aa-88029ad8f1c6",
+          "title": "API测试任务",
+          "description": "测试描述内容",
+          "status": "completed",
+          "priority": "high",
+          "due_date": "2026-05-30",
+          "created_at": "2026-05-26T16:52:34.575258",
+          "completed_at": "2026-05-26T16:52:34.583075"
+        },
+        "b460cb2d-4db6-4949-8d10-b8f0e0d27a51": {
+          "id": "b460cb2d-4db6-4949-8d10-b8f0e0d27a51",
+          "title": "搜索匹配任务1",
+          "description": "",
+          "status": "todo",
+          "priority": "high",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.592260",
+          "completed_at": null
+        },
+        "ed10ee66-1b47-4894-9370-4c1b274ed6f8": {
+          "id": "ed10ee66-1b47-4894-9370-4c1b274ed6f8",
+          "title": "搜索匹配任务2",
+          "description": "",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.594902",
+          "completed_at": null
+        },
+        "60ae6c6d-464f-495d-ac95-002ff9a02c61": {
+          "id": "60ae6c6d-464f-495d-ac95-002ff9a02c61",
+          "title": "不匹配的任务",
+          "description": "",
+          "status": "todo",
+          "priority": "low",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.596942",
+          "completed_at": null
+        },
+        "7496822b-e8d2-4e03-b103-0d6fbefa8de3": {
+          "id": "7496822b-e8d2-4e03-b103-0d6fbefa8de3",
+          "title": "搜索匹配任务3",
+          "description": "",
+          "status": "todo",
+          "priority": "high",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.599070",
+          "completed_at": null
+        },
+        "b002c2fb-c91a-45bd-bebc-cbcc7cec40a5": {
+          "id": "b002c2fb-c91a-45bd-bebc-cbcc7cec40a5",
+          "title": "过期任务测试",
+          "description": "",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-05-01",
+          "created_at": "2026-05-26T16:52:34.602337",
+          "completed_at": null
+        },
+        "7778d484-62e3-4454-82e4-24255248f72d": {
+          "id": "7778d484-62e3-4454-82e4-24255248f72d",
+          "title": "重复导入测试",
+          "description": "",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.609847",
+          "completed_at": null
+        }
+      }
+    },
+    "user_a": {
+      "tasks": {
+        "c911471c-243d-4101-9a4c-e57c569ca528": {
+          "id": "c911471c-243d-4101-9a4c-e57c569ca528",
+          "title": "用户A专属任务",
+          "description": "",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.623315",
+          "completed_at": null
+        }
+      }
+    },
+    "user_b": {
+      "tasks": {
+        "4dea4e94-0609-48e0-b802-e457e12b29a3": {
+          "id": "4dea4e94-0609-48e0-b802-e457e12b29a3",
+          "title": "用户B专属任务",
+          "description": "",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.625512",
+          "completed_at": null
+        }
+      }
+    },
+    "backup_user": {
+      "tasks": {
+        "b059b82c-8195-4290-9792-95a9ff021343": {
+          "id": "b059b82c-8195-4290-9792-95a9ff021343",
+          "title": "备份任务1",
+          "description": "",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.632478",
+          "completed_at": null
+        },
+        "05c05ac6-9b7b-4c4a-88c8-3bb39fb1f48b": {
+          "id": "05c05ac6-9b7b-4c4a-88c8-3bb39fb1f48b",
+          "title": "备份任务2",
+          "description": "",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.635044",
+          "completed_at": null
+        },
+        "12620043-40e4-44e3-a7cd-8d33e187cf33": {
+          "id": "12620043-40e4-44e3-a7cd-8d33e187cf33",
+          "title": "备份任务3",
+          "description": "",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": null,
+          "created_at": "2026-05-26T16:52:34.638700",
+          "completed_at": null
+        }
+      }
+    },
+    "edit_user": {
+      "tasks": {}
+    },
+    "curluser": {
+      "tasks": {
+        "0e5adea5-3e5c-4508-b7b4-52f1775f8bf2": {
+          "id": "0e5adea5-3e5c-4508-b7b4-52f1775f8bf2",
+          "title": "curl测试任务1",
+          "description": "描述1",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-06-01",
+          "created_at": "2026-05-26T16:52:56.285310",
+          "completed_at": null
+        },
+        "bd4b8e2a-6649-42f6-90f9-b135666c9e34": {
+          "id": "bd4b8e2a-6649-42f6-90f9-b135666c9e34",
+          "title": "curl测试任务2",
+          "description": "描述2",
+          "status": "in_progress",
+          "priority": "medium",
+          "due_date": "2026-06-15",
+          "created_at": "2026-05-26T16:52:56.285684",
+          "completed_at": null
+        }
+      }
+    },
+    "newuser": {
+      "tasks": {
+        "0e5adea5-3e5c-4508-b7b4-52f1775f8bf2": {
+          "id": "0e5adea5-3e5c-4508-b7b4-52f1775f8bf2",
+          "title": "curl测试任务1",
+          "description": "描述1",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-06-01",
+          "created_at": "2026-05-26T16:52:56.285310",
+          "completed_at": null
+        },
+        "bd4b8e2a-6649-42f6-90f9-b135666c9e34": {
+          "id": "bd4b8e2a-6649-42f6-90f9-b135666c9e34",
+          "title": "curl测试任务2",
+          "description": "描述2",
+          "status": "in_progress",
+          "priority": "medium",
+          "due_date": "2026-06-15",
+          "created_at": "2026-05-26T16:52:56.285684",
+          "completed_at": null
+        }
+      }
+    },
+    "demo": {
+      "tasks": {
+        "512ecbf7-a495-4141-972a-56872b5cb948": {
+          "id": "512ecbf7-a495-4141-972a-56872b5cb948",
+          "title": "完成项目文档",
+          "description": "编写完整的用户手册",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-06-05",
+          "created_at": "2026-05-26T20:00:20.503191",
+          "completed_at": null
+        },
+        "e9d52868-13f3-42c6-9ef6-5c1e01f1e20c": {
+          "id": "e9d52868-13f3-42c6-9ef6-5c1e01f1e20c",
+          "title": "完成项目文档",
+          "description": "编写完整的用户手册和API文档",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-06-02",
+          "created_at": "2026-05-26T20:08:26.077193",
+          "completed_at": null
+        },
+        "b49b3505-1241-47ce-8f5e-70ea3be06794": {
+          "id": "b49b3505-1241-47ce-8f5e-70ea3be06794",
+          "title": "修复登录Bug",
+          "description": "修复用户反馈的登录超时问题",
+          "status": "in_progress",
+          "priority": "high",
+          "due_date": "2026-05-27",
+          "created_at": "2026-05-26T20:08:26.082070",
+          "completed_at": null
+        },
+        "f5432137-e481-470f-b0cb-2767298fceb7": {
+          "id": "f5432137-e481-470f-b0cb-2767298fceb7",
+          "title": "代码审查",
+          "description": "审查新功能的代码质量",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": "2026-06-02",
+          "created_at": "2026-05-26T20:08:26.085124",
+          "completed_at": null
+        },
+        "003fa5f5-537e-4095-8f9d-92869ca8d938": {
+          "id": "003fa5f5-537e-4095-8f9d-92869ca8d938",
+          "title": "更新依赖包",
+          "description": "升级第三方依赖到最新版本",
+          "status": "todo",
+          "priority": "low",
+          "due_date": "2026-06-02",
+          "created_at": "2026-05-26T20:08:26.087862",
+          "completed_at": null
+        },
+        "4f078a10-3aa6-4e88-b4e2-554817884b14": {
+          "id": "4f078a10-3aa6-4e88-b4e2-554817884b14",
+          "title": "部署测试环境",
+          "description": "在测试服务器部署最新版本",
+          "status": "in_progress",
+          "priority": "medium",
+          "due_date": "2026-06-02",
+          "created_at": "2026-05-26T20:08:26.091110",
+          "completed_at": null
+        },
+        "d45a8fd5-ba95-4cfc-be87-3714d66e8068": {
+          "id": "d45a8fd5-ba95-4cfc-be87-3714d66e8068",
+          "title": "单元测试",
+          "description": "为新功能编写单元测试",
+          "status": "completed",
+          "priority": "high",
+          "due_date": "2026-05-25",
+          "created_at": "2026-05-26T20:08:26.094923",
+          "completed_at": "2026-05-26T20:08:26.094923"
+        },
+        "9b16877b-c0c2-44b4-adc2-f43aed45a087": {
+          "id": "9b16877b-c0c2-44b4-adc2-f43aed45a087",
+          "title": "数据库优化",
+          "description": "优化慢查询SQL语句",
+          "status": "completed",
+          "priority": "medium",
+          "due_date": "2026-05-19",
+          "created_at": "2026-05-26T20:08:26.099100",
+          "completed_at": "2026-05-26T20:08:26.099100"
+        },
+        "235db701-1cde-48d7-9d3b-c758b42ee243": {
+          "id": "235db701-1cde-48d7-9d3b-c758b42ee243",
+          "title": "紧急修复任务",
+          "description": "这是一个已过期的紧急任务！",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-05-25",
+          "created_at": "2026-05-26T20:08:26.102074",
+          "completed_at": null
+        },
+        "dc96849d-9fad-409d-800d-3aad7d41b3fa": {
+          "id": "dc96849d-9fad-409d-800d-3aad7d41b3fa",
+          "title": "搜索测试任务123",
+          "description": "用于测试搜索功能",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": "2026-06-02",
+          "created_at": "2026-05-26T20:08:26.104930",
+          "completed_at": null
+        },
+        "0034fc23-655b-4968-abc5-c0d5c7a07854": {
+          "id": "0034fc23-655b-4968-abc5-c0d5c7a07854",
+          "title": "UI设计评审",
+          "description": "评审新功能的UI设计方案",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": "2026-05-19",
+          "created_at": "2026-05-26T20:08:26.108738",
+          "completed_at": null
+        }
+      }
+    },
+    "browsertest": {
+      "tasks": {
+        "ab330006-e464-44e0-94b4-c636f5097d93": {
+          "id": "ab330006-e464-44e0-94b4-c636f5097d93",
+          "title": "完成项目文档",
+          "description": "编写完整的用户手册和API文档",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-05-30",
+          "created_at": "2026-05-26T17:17:55.994621",
+          "completed_at": null
+        },
+        "a1c04008-c8d5-4ae0-a099-9905857cd0a3": {
+          "id": "a1c04008-c8d5-4ae0-a099-9905857cd0a3",
+          "title": "修复登录Bug",
+          "description": "修复用户反馈的登录超时问题",
+          "status": "in_progress",
+          "priority": "high",
+          "due_date": "2026-05-27",
+          "created_at": "2026-05-26T17:17:56.015448",
+          "completed_at": null
+        },
+        "5eb4bd82-9473-4c7e-aded-040241c5f92c": {
+          "id": "5eb4bd82-9473-4c7e-aded-040241c5f92c",
+          "title": "代码审查",
+          "description": "审查新功能的代码质量",
+          "status": "todo",
+          "priority": "medium",
+          "due_date": "2026-06-01",
+          "created_at": "2026-05-26T17:17:56.043168",
+          "completed_at": null
+        },
+        "f5a06329-e778-4cc6-bc39-a5ecba2bcd25": {
+          "id": "f5a06329-e778-4cc6-bc39-a5ecba2bcd25",
+          "title": "更新依赖包",
+          "description": "升级第三方依赖到最新版本",
+          "status": "todo",
+          "priority": "low",
+          "due_date": "2026-06-15",
+          "created_at": "2026-05-26T17:17:56.063130",
+          "completed_at": null
+        }
+      }
+    },
+    "user1": {
+      "tasks": {
+        "0002c010-4bb8-4aca-91a2-a33148950b2f": {
+          "id": "0002c010-4bb8-4aca-91a2-a33148950b2f",
+          "title": "用户1的专属任务",
+          "description": "只有user1能看到这个任务",
+          "status": "todo",
+          "priority": "high",
+          "due_date": "2026-06-02",
+          "created_at": "2026-05-26T20:08:26.111148",
+          "completed_at": null
+        },
+        "9a9e829f-ef56-4dee-941d-978c2c69007e": {
+          "id": "9a9e829f-ef56-4dee-941d-978c2c69007e",
+          "title": "用户1的第二个任务",
+          "description": "多用户数据隔离测试",
+          "status": "in_progress",
+          "priority": "medium",
+          "due_date": "2026-05-27",
+          "created_at": "2026-05-26T20:08:26.114091",
+          "completed_at": null
+        }
+      }
+    },
+    "user2": {
+      "tasks": {}
+    }
+  }
+}

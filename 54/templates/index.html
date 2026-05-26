@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简易留言板</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>📝 简易留言板</h1>
+        <div class="today-count">📊 今日新留言：<strong>{{ today_count }}</strong> 条</div>
+        <div class="header-actions">
+            <a href="{{ url_for('export_messages', format='txt') }}" class="btn btn-small">导出 TXT</a>
+            <a href="{{ url_for('export_messages', format='csv') }}" class="btn btn-small">导出 CSV</a>
+            {% if is_admin %}
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-small btn-danger">退出管理</a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if error %}
+    <div class="alert alert-error">
+        {% if error == 'empty' %}
+            昵称和内容不能为空！
+        {% elif error == 'captcha' %}
+            验证码错误或已过期，请重新输入！
+        {% elif error == 'password' %}
+            管理员密码错误！
+        {% elif error == 'save' %}
+            保存失败，请重试！
+        {% elif error == 'notfound' %}
+            留言不存在！
+        {% else %}
+            操作失败，请重试！
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="admin-panel">
+        {% if not is_admin %}
+        <form method="POST" action="{{ url_for('admin_login') }}" class="admin-login">
+            <input type="password" name="admin_password" placeholder="管理员密码" required>
+            <button type="submit" class="btn btn-small">管理员登录</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="post-form">
+        <h2>💬 发表留言</h2>
+        <form method="POST" action="{{ url_for('post_message') }}" id="post-form">
+            <div class="form-row">
+                <input type="text" name="nickname" placeholder="你的昵称" required maxlength="20" class="input-nick">
+            </div>
+            <div class="form-row">
+                <textarea name="content" placeholder="写下你想说的..." required rows="3" maxlength="500" class="input-content" id="content-input"></textarea>
+                <span class="char-count"><span id="char-count">0</span>/500</span>
+            </div>
+            <div class="form-row emojis-row">
+                <span>选择表情：</span>
+                <div class="emoji-list">
+                    {% for emoji in emojis %}
+                    <label class="emoji-label" data-emoji="{{ emoji.key }}">
+                        <input type="radio" name="emoji" value="{{ emoji.key }}" {% if loop.first %}checked{% endif %}>
+                        <img src="{{ emoji.url }}" alt="{{ emoji.key }}" class="emoji-img">
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-row captcha-row">
+                <span class="captcha-question" id="captcha-question">{{ captcha_question }}</span>
+                <input type="text" name="captcha" placeholder="答案" required class="input-captcha" pattern="[0-9]+" inputmode="numeric">
+                <button type="button" class="btn btn-small btn-refresh" id="refresh-captcha" title="刷新验证码">🔄</button>
+            </div>
+            <div class="form-row">
+                <button type="submit" class="btn btn-primary">发表留言</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="search-bar">
+        <form method="GET" action="{{ url_for('index') }}">
+            <input type="text" name="search" placeholder="搜索留言..." value="{{ search }}" class="search-input">
+            <button type="submit" class="btn btn-small">搜索</button>
+            {% if search %}
+                <a href="{{ url_for('index') }}" class="btn btn-small">清除</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="messages">
+        <h2>📋 留言列表</h2>
+        {% if not messages %}
+            <p class="empty">暂无留言</p>
+        {% endif %}
+
+        {% for msg in messages %}
+        <div class="message {% if msg.pinned %}pinned{% endif %}" id="msg-{{ msg.id }}" data-msg-id="{{ msg.id }}">
+            <div class="msg-header">
+                <span class="msg-nick">{{ msg.nickname }}</span>
+                {% if msg.emoji %}
+                    {% for e in emojis %}
+                        {% if e.key == msg.emoji %}
+                            <img src="{{ e.url }}" alt="emoji" class="msg-emoji">
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <span class="msg-time">{{ msg.time[:19] }}</span>
+                {% if msg.pinned %}
+                    <span class="pin-badge">📌 置顶</span>
+                {% endif %}
+                <span class="msg-ip">IP: {{ msg.ip }}</span>
+            </div>
+            <div class="msg-content">{{ msg.filtered_content }}</div>
+            <div class="msg-actions">
+                <button type="button" class="btn btn-like" data-msg-id="{{ msg.id }}" data-like-count="{{ msg.like_count }}">
+                    👍 点赞 (<span class="like-count">{{ msg.like_count }}</span>)
+                </button>
+
+                {% if is_admin %}
+                <form method="POST" action="{{ url_for('pin_message', msg_id=msg.id) }}" class="inline-form">
+                    <input type="hidden" name="pin_password" value="">
+                    <button type="submit" class="btn btn-small">{% if msg.pinned %}取消置顶{% else %}置顶{% endif %}</button>
+                </form>
+                <form method="POST" action="{{ url_for('delete_message', msg_id=msg.id) }}" class="inline-form" onsubmit="return confirm('确定删除这条留言？');">
+                    <input type="password" name="password" placeholder="管理员密码" required>
+                    <button type="submit" class="btn btn-danger btn-small">删除</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <div class="replies-section">
+                <button type="button" class="btn btn-small btn-toggle-replies" data-msg-id="{{ msg.id }}">
+                    💬 回复 ({{ msg.replies|length }}) ▼
+                </button>
+
+                <div class="replies-wrapper" id="replies-{{ msg.id }}" style="display:none;">
+                    {% if msg.replies %}
+                    <div class="replies-list">
+                        {% for reply in msg.replies %}
+                        <div class="reply">
+                            <span class="reply-nick">{{ reply.nickname }}</span>
+                            <span class="reply-content">{{ reply.filtered_content }}</span>
+                            <span class="reply-time">{{ reply.time[:19] }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('reply_message', msg_id=msg.id) }}" class="reply-form">
+                        <input type="text" name="reply_nickname" placeholder="昵称" required maxlength="20">
+                        <input type="text" name="reply_content" placeholder="回复内容..." required maxlength="500">
+                        <button type="submit" class="btn btn-small">回复</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url_for('index', page=1, search=search) }}" class="btn btn-small">首页</a>
+            <a href="{{ url_for('index', page=page-1, search=search) }}" class="btn btn-small">上一页</a>
+        {% endif %}
+        {% for p in page_numbers %}
+            {% if p == '...' %}
+                <span class="page-ellipsis">...</span>
+            {% elif p == page %}
+                <span class="page-current">{{ p }}</span>
+            {% else %}
+                <a href="{{ url_for('index', page=p, search=search) }}" class="btn btn-small">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page < total_pages %}
+            <a href="{{ url_for('index', page=page+1, search=search) }}" class="btn btn-small">下一页</a>
+            <a href="{{ url_for('index', page=total_pages, search=search) }}" class="btn btn-small">末页</a>
+        {% endif %}
+        <span class="page-info">第 {{ page }} / {{ total_pages }} 页</span>
+    </div>
+    {% endif %}
+
+    <footer>
+        <p>简易留言板 &copy; {{ now.year }}</p>
+    </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+    var toast = document.getElementById('toast');
+    function showToast(msg, type) {
+        toast.textContent = msg;
+        toast.className = 'toast toast-' + (type || 'info');
+        toast.style.display = 'block';
+        setTimeout(function() {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    var contentInput = document.getElementById('content-input');
+    var charCount = document.getElementById('char-count');
+    if (contentInput && charCount) {
+        contentInput.addEventListener('input', function() {
+            charCount.textContent = contentInput.value.length;
+        });
+    }
+
+    var refreshBtn = document.getElementById('refresh-captcha');
+    var captchaQ = document.getElementById('captcha-question');
+    if (refreshBtn && captchaQ) {
+        refreshBtn.addEventListener('click', function() {
+            fetch('{{ url_for("captcha_refresh") }}', {credentials: 'same-origin'})
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    captchaQ.textContent = data.question;
+                })
+                .catch(function() {
+                    showToast('刷新验证码失败', 'error');
+                });
+        });
+    }
+
+    var likeButtons = document.querySelectorAll('.btn-like');
+    likeButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var msgId = btn.getAttribute('data-msg-id');
+            var countSpan = btn.querySelector('.like-count');
+            btn.disabled = true;
+            fetch('/like-ajax/' + msgId, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    countSpan.textContent = data.like_count;
+                    showToast('点赞成功！', 'success');
+                } else {
+                    showToast(data.error || '点赞失败', 'error');
+                }
+            })
+            .catch(function() {
+                showToast('网络错误，请重试', 'error');
+            })
+            .finally(function() {
+                btn.disabled = false;
+            });
+        });
+    });
+
+    var toggleBtns = document.querySelectorAll('.btn-toggle-replies');
+    toggleBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var msgId = btn.getAttribute('data-msg-id');
+            var wrapper = document.getElementById('replies-' + msgId);
+            if (wrapper.style.display === 'none') {
+                wrapper.style.display = 'block';
+                btn.innerHTML = '💬 回复 (' + (wrapper.querySelectorAll('.reply').length) + ') ▲';
+            } else {
+                wrapper.style.display = 'none';
+                btn.innerHTML = '💬 回复 (' + (wrapper.querySelectorAll('.reply').length) + ') ▼';
+            }
+        });
+    });
+
+    var emojiLabels = document.querySelectorAll('.emoji-label');
+    emojiLabels.forEach(function(label) {
+        label.addEventListener('click', function() {
+            emojiLabels.forEach(function(l) { l.classList.remove('emoji-selected'); });
+            label.classList.add('emoji-selected');
+        });
+    });
+})();
+</script>
+</body>
+</html>

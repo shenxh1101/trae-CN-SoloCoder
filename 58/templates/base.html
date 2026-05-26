@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}URL健康检查服务{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">🌐 URL健康检查</a>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">仪表盘</a>
+                <a href="{{ url_for('add_url') }}">添加URL</a>
+                <a href="{{ url_for('import_urls') }}">批量导入</a>
+                <a href="{{ url_for('notifications') }}">通知日志</a>
+                <a href="{{ url_for('settings') }}">SMTP设置</a>
+                <a href="{{ url_for('export_report', format_type='json') }}">导出JSON</a>
+                <a href="{{ url_for('export_report', format_type='html') }}">导出HTML</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; {{ now.year }} URL健康检查服务</p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

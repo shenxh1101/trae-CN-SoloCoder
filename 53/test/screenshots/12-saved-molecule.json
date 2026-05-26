@@ -1,0 +1,52 @@
+{
+  "name": "水分子",
+  "formula": "H₂O",
+  "atoms": [
+    {
+      "id": "O1",
+      "element": "O",
+      "position": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "H1",
+      "element": "H",
+      "position": [
+        0.96,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "H2",
+      "element": "H",
+      "position": [
+        -0.24036480389226372,
+        0.9294217347629834,
+        0
+      ]
+    }
+  ],
+  "bonds": [
+    {
+      "from": "O1",
+      "to": "H1",
+      "order": 1
+    },
+    {
+      "from": "O1",
+      "to": "H2",
+      "order": 1
+    }
+  ],
+  "dipoleMoment": [
+    0.5,
+    0.3,
+    0
+  ],
+  "exportTime": "2026-05-26T12:50:15.390Z",
+  "version": "1.0"
+}

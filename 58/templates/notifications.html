@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}通知日志 - URL健康检查{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>通知发送日志</h1>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">返回列表</a>
+</div>
+
+<div class="table-container">
+    {% if logs %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>类型</th>
+                <th>目标</th>
+                <th>主题</th>
+                <th>状态</th>
+                <th>错误信息</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td style="font-size: 0.875rem; color: #64748b;">{{ log.timestamp }}</td>
+                <td>
+                    {% if log.type == 'email' %}
+                        <span class="badge" style="background: #dbeafe; color: #1e40af;">📧 邮件</span>
+                    {% elif log.type == 'webhook' %}
+                        <span class="badge" style="background: #fce7f3; color: #9d174d;">🔗 Webhook</span>
+                    {% else %}
+                        <span class="badge" style="background: #e5e7eb; color: #374151;">{{ log.type }}</span>
+                    {% endif %}
+                </td>
+                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{ log.target }}
+                </td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{ log.subject }}
+                </td>
+                <td>
+                    {% if log.status == 'success' %}
+                        <span class="status-badge status-success">成功</span>
+                    {% elif log.status == 'failed' %}
+                        <span class="status-badge status-danger">失败</span>
+                    {% elif log.status == 'skipped' %}
+                        <span class="status-badge status-paused">已跳过</span>
+                    {% else %}
+                        <span class="status-badge status-pending">{{ log.status }}</span>
+                    {% endif %}
+                </td>
+                <td style="max-width: 300px; color: #ef4444; font-size: 0.875rem;">
+                    {{ log.error or '-' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state" style="padding: 4rem 1rem;">
+        <p style="font-size: 1.25rem; margin-bottom: 0.5rem;">暂无通知日志</p>
+        <p style="color: #64748b;">当有邮件或Webhook通知发送时，记录会显示在这里</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="info-card">
+    <h3>说明</h3>
+    <ul style="margin-left: 1.5rem; color: #475569;">
+        <li><strong>成功</strong>：通知已成功发送</li>
+        <li><strong>失败</strong>：通知发送失败，可查看错误信息了解原因</li>
+        <li><strong>已跳过</strong>：通知未发送（通常是因为未配置SMTP或目标地址为空）</li>
+        <li>系统最多保留最近100条通知记录</li>
+    </ul>
+</div>
+{% endblock %}

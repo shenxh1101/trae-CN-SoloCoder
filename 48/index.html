@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片记忆配对游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🃏 记忆配对游戏</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>难度：</label>
+                <select id="difficulty">
+                    <option value="easy">简单 (4×4)</option>
+                    <option value="medium">中等 (4×6)</option>
+                    <option value="hard">困难 (6×6)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>主题：</label>
+                <select id="theme">
+                    <option value="animals">动物</option>
+                    <option value="fruits">水果</option>
+                    <option value="emojis">表情符号</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label class="toggle-label">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span>音效</span>
+                </label>
+            </div>
+            
+            <button id="reset-btn">🔄 重新开始</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-label">⏱️ 时间</span>
+                <span id="timer">00:00</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">👆 点击</span>
+                <span id="moves">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">✅ 已配对</span>
+                <span id="matched">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">🔄 剩余</span>
+                <span id="remaining">8</span>
+            </div>
+        </div>
+        
+        <div class="best-records">
+            <span class="best-label">🏆 最佳记录：</span>
+            <span id="best-record">点击: - | 时间: -</span>
+        </div>
+        
+        <div id="game-board" class="game-board"></div>
+    </div>
+    
+    <div id="win-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🎉 恭喜通关！</h2>
+            <p id="win-stats"></p>
+            <p id="new-record" class="new-record hidden">🎊 新纪录！</p>
+            <button id="play-again">再玩一次</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

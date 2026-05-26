@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}历史版本 - {{ note.title }}{% endblock %}
+
+{% block nav_actions %}
+    <a href="{{ url_for('note_history', note_id=note.id) }}" class="btn btn-secondary">← 返回版本列表</a>
+    <a href="{{ url_for('view_note', note_id=note.id) }}" class="btn btn-secondary">📄 查看当前版本</a>
+{% endblock %}
+
+{% block content %}
+<div class="view-page">
+    <div class="view-container">
+        <div class="version-view-header">
+            <div class="version-badge">历史版本</div>
+            <h1 class="note-title">{{ version.title }}</h1>
+            <div class="note-meta">
+                <span class="meta-item">🕐 保存时间: {{ version.saved_at }}</span>
+                {% if version.tags %}
+                    <span class="meta-item">
+                        🏷️ 
+                        {% for tag in version.tags %}
+                            <span class="tag-badge">#{{ tag }}</span>
+                        {% endfor %}
+                    </span>
+                {% endif %}
+            </div>
+            <form action="{{ url_for('restore_version', note_id=note.id, version=version.id) }}" method="post" class="restore-form">
+                <button type="submit" class="btn btn-primary" data-confirm="确定要恢复到此版本吗？当前内容将被保存为新版本。">🔄 恢复此版本</button>
+            </form>
+        </div>
+        <article class="note-article">
+            <div class="note-content">
+                {{ content_html|nl2br|safe }}
+            </div>
+        </article>
+    </div>
+</div>
+{% endblock %}

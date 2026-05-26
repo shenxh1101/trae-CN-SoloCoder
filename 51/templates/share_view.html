@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ note.title }} - 分享的笔记</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar share-navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">📝</span>
+                <span class="logo-text">分享的笔记</span>
+            </div>
+            <div class="nav-actions">
+                <span class="share-badge">🔗 只读分享</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="view-page">
+            <div class="view-container">
+                <article class="note-article">
+                    <header class="note-header">
+                        <h1 class="note-title">{{ note.title }}</h1>
+                        <div class="note-meta">
+                            <span class="meta-item">📅 创建: {{ note.created_at }}</span>
+                            <span class="meta-item">✏️ 修改: {{ note.updated_at }}</span>
+                        </div>
+                        {% if note.tags %}
+                            <div class="note-tags">
+                                {% for tag in note.tags %}
+                                    <span class="tag-badge">#{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </header>
+                    <div class="note-content">
+                        {{ content_html|nl2br|safe }}
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

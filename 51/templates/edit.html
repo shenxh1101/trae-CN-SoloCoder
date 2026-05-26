@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}{% if note %}编辑笔记{% else %}新建笔记{% endif %} - 记事本{% endblock %}
+
+{% block nav_actions %}
+    <div class="save-status" id="saveStatus">
+        <span class="status-indicator status-idle">●</span>
+        <span class="status-text">未保存</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="edit-page">
+    <div class="edit-container">
+        {% if draft_data and (note is none or draft_data.title != note.title or draft_data.content != note.content or draft_data.tags != note.tags|join(', ')) %}
+            <div class="draft-notice">
+                <span class="draft-icon">💾</span>
+                <span>发现未保存的草稿，是否恢复？</span>
+                <button type="button" class="btn btn-primary btn-sm" onclick="restoreDraft()">恢复草稿</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="discardDraft()">丢弃</button>
+            </div>
+        {% endif %}
+
+        <form method="post" id="noteForm" class="note-form">
+            <div class="form-group">
+                <input type="text" id="titleInput" name="title" class="title-input" 
+                       placeholder="输入笔记标题..." 
+                       value="{% if note %}{{ note.title }}{% elif draft_data %}{{ draft_data.title }}{% endif %}"
+                       autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="tagsInput" name="tags" class="tags-input" 
+                       placeholder="输入标签，用逗号分隔..."
+                       value="{% if note %}{{ note.tags|join(', ') }}{% elif draft_data %}{{ draft_data.tags }}{% endif %}"
+                       autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <textarea id="contentInput" name="content" class="content-textarea" 
+                          placeholder="开始记录你的想法...&#10;&#10;提示：使用[[笔记标题]]可以创建指向其他笔记的内部链接">{% if note %}{{ note.content }}{% elif draft_data %}{{ draft_data.content }}{% endif %}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">💾 保存笔记</button>
+                {% if note %}
+                    <a href="{{ url_for('view_note', note_id=note.id) }}" class="btn btn-secondary btn-lg">取消</a>
+                {% else %}
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">取消</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if note %}
+        <div class="note-actions-bar">
+            <div class="actions-left">
+                <form action="{{ url_for('export_pdf', note_id=note.id) }}" method="get" style="display: inline;">
+                    <button type="submit" class="btn btn-secondary">📄 导出PDF</button>
+                </form>
+                <button type="button" class="btn btn-secondary" onclick="generateShareLink('{{ note.id }}')">🔗 分享</button>
+                <a href="{{ url_for('note_history', note_id=note.id) }}" class="btn btn-secondary">📜 历史版本</a>
+            </div>
+            <div class="actions-right">
+                <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post" class="delete-form" style="display: inline;">
+                    <button type="submit" class="btn btn-danger" data-confirm="确定要删除这篇笔记吗？">🗑️ 删除笔记</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+var noteId = {% if note %}"{{ note.id }}"{% else %}"new"{% endif %};
+var autoSaveTimer = null;
+var hasChanges = false;
+
+var titleInput = document.getElementById('titleInput');
+var tagsInput = document.getElementById('tagsInput');
+var contentInput = document.getElementById('contentInput');
+
+function markDirty() {
+    hasChanges = true;
+    updateSaveStatus('changes');
+    scheduleAutoSave();
+}
+
+titleInput.addEventListener('input', markDirty);
+tagsInput.addEventListener('input', markDirty);
+contentInput.addEventListener('input', markDirty);
+
+function scheduleAutoSave() {
+    if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+    }
+    updateSaveStatus('saving');
+    autoSaveTimer = setTimeout(autoSave, 30000);
+}
+
+function autoSave() {
+    var data = {
+        title: titleInput.value,
+        content: contentInput.value,
+        tags: tagsInput.value
+    };
+
+    fetch('/note/' + noteId + '/draft', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            hasChanges = false;
+            updateSaveStatus('saved', data.saved_at);
+        }
+    })
+    .catch(function() {
+        updateSaveStatus('error');
+    });
+}
+
+function updateSaveStatus(status, time) {
+    var indicator = document.querySelector('.status-indicator');
+    var text = document.querySelector('.status-text');
+
+    if (!indicator || !text) return;
+
+    indicator.className = 'status-indicator';
+
+    switch(status) {
+        case 'idle':
+            indicator.classList.add('status-idle');
+            text.textContent = '未保存';
+            break;
+        case 'changes':
+            indicator.classList.add('status-changes');
+            text.textContent = '有未保存的更改';
+            break;
+        case 'saving':
+            indicator.classList.add('status-saving');
+            text.textContent = '正在保存草稿...';
+            break;
+        case 'saved':
+            indicator.classList.add('status-saved');
+            text.textContent = '草稿已保存于 ' + (time || '');
+            break;
+        case 'error':
+            indicator.classList.add('status-error');
+            text.textContent = '保存失败';
+            break;
+    }
+}
+
+function restoreDraft() {
+    {% if draft_data %}
+    var confirmed = confirm('确定要恢复草稿吗？当前未保存的内容将被覆盖。');
+    if (confirmed) {
+        titleInput.value = {{ draft_data.title|tojson }};
+        tagsInput.value = {{ draft_data.tags|tojson }};
+        contentInput.value = {{ draft_data.content|tojson }};
+        document.querySelector('.draft-notice').style.display = 'none';
+        hasChanges = true;
+        updateSaveStatus('changes');
+    }
+    {% endif %}
+}
+
+function discardDraft() {
+    var confirmed = confirm('确定要丢弃草稿吗？');
+    if (confirmed) {
+        document.querySelector('.draft-notice').style.display = 'none';
+    }
+}
+
+document.getElementById('noteForm').addEventListener('submit', function() {
+    if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+    }
+});
+
+var unsavedWarning = false;
+window.addEventListener('beforeunload', function(e) {
+    if (hasChanges) {
+        e.preventDefault();
+        e.returnValue = '您有未保存的更改，确定要离开吗？';
+        return e.returnValue;
+    }
+});
+
+function generateShareLink(noteId) {
+    fetch('/note/' + noteId + '/share', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            document.getElementById('shareLink').value = data.share_url;
+            showShareModal();
+        }
+    });
+}
+</script>
+{% endblock %}

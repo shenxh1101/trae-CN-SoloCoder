@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ note.title }} - 记事本{% endblock %}
+
+{% block nav_actions %}
+    <form action="{{ url_for('export_pdf', note_id=note.id) }}" method="get" style="display: inline;">
+        <button type="submit" class="btn btn-secondary">📄 导出PDF</button>
+    </form>
+    <button type="button" class="btn btn-secondary" onclick="generateShareLink('{{ note.id }}')">🔗 分享</button>
+    <a href="{{ url_for('note_history', note_id=note.id) }}" class="btn btn-secondary">📜 历史</a>
+    <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn btn-primary">✏️ 编辑</a>
+    <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post" class="delete-form" style="display: inline;">
+        <button type="submit" class="btn btn-danger" data-confirm="确定要删除这篇笔记吗？">🗑️ 删除</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+<div class="view-page">
+    <div class="view-container">
+        <article class="note-article">
+            <header class="note-header">
+                <h1 class="note-title">{{ note.title }}</h1>
+                <div class="note-meta">
+                    <span class="meta-item">📅 创建: {{ note.created_at }}</span>
+                    <span class="meta-item">✏️ 修改: {{ note.updated_at }}</span>
+                </div>
+                {% if note.tags %}
+                    <div class="note-tags">
+                        {% for tag in note.tags %}
+                            <a href="{{ url_for('index', tag=tag) }}" class="tag-badge">#{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </header>
+            <div class="note-content">
+                {{ content_html|nl2br|safe }}
+            </div>
+        </article>
+    </div>
+</div>
+
+<script>
+function generateShareLink(noteId) {
+    fetch('/note/' + noteId + '/share', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            document.getElementById('shareLink').value = data.share_url;
+            showShareModal();
+        }
+    });
+}
+</script>
+{% endblock %}

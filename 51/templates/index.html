@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}笔记列表 - 记事本{% endblock %}
+
+{% block nav_actions %}
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索笔记标题..." autocomplete="off">
+    </div>
+    <a href="{{ url_for('new_note') }}" class="btn btn-primary">
+        <span>✏️</span> 新建笔记
+    </a>
+    <a href="{{ url_for('export_zip') }}" class="btn btn-secondary">
+        <span>📦</span> 导出ZIP
+    </a>
+    <label class="btn btn-secondary btn-file">
+        <span>📥</span> 导入ZIP
+        <input type="file" id="zipInput" accept=".zip" style="display: none;">
+    </label>
+{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>🏷️ 标签</h3>
+        </div>
+        <div class="tag-list">
+            <a href="{{ url_for('index') }}" class="tag-item {% if not current_tag %}active{% endif %}">
+                <span class="tag-name">全部笔记</span>
+                <span class="tag-count">{{ notes|length }}</span>
+            </a>
+            {% for tag, count in all_tags %}
+                <a href="{{ url_for('index', tag=tag) }}" class="tag-item {% if current_tag == tag %}active{% endif %}">
+                    <span class="tag-name">#{{ tag }}</span>
+                    <span class="tag-count">{{ count }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <section class="content-area">
+        <div class="content-header">
+            <div class="header-left">
+                <h2>
+                    {% if current_tag %}
+                        <span class="tag-filter-label">🏷️ #{{ current_tag }}</span>
+                        <a href="{{ url_for('index') }}" class="clear-filter">× 清除筛选</a>
+                    {% else %}
+                        📄 所有笔记
+                    {% endif %}
+                </h2>
+                <span class="note-count">共 {{ notes|length }} 篇笔记</span>
+            </div>
+            <div class="header-right">
+                <label class="select-all-wrapper">
+                    <input type="checkbox" id="selectAll">
+                    <span>全选</span>
+                </label>
+                <form action="{{ url_for('batch_delete') }}" method="post" id="batchDeleteForm" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" id="batchDeleteBtn" disabled>
+                        🗑️ 批量删除
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% if notes %}
+            <div class="note-list" id="noteList">
+                {% for note in notes %}
+                    <div class="note-card" data-note-id="{{ note.id }}" data-title="{{ note.title|lower }}">
+                        <div class="card-checkbox">
+                            <input type="checkbox" class="note-checkbox" name="note_ids" value="{{ note.id }}" form="batchDeleteForm">
+                        </div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <h3 class="note-title">
+                                    <a href="{{ url_for('view_note', note_id=note.id) }}">{{ note.title }}</a>
+                                </h3>
+                            </div>
+                            <div class="card-meta">
+                                <span class="meta-item">📅 创建: {{ note.created_at }}</span>
+                                <span class="meta-item">✏️ 修改: {{ note.updated_at }}</span>
+                            </div>
+                            {% if note.tags %}
+                                <div class="card-tags">
+                                    {% for tag in note.tags %}
+                                        <span class="tag-badge">#{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="card-preview">
+                                {{ note.content[:100] }}{% if note.content|length > 100 %}...{% endif %}
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn-icon" title="编辑">✏️</a>
+                            <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post" class="delete-form" style="display: inline;">
+                                <button type="submit" class="btn-icon btn-delete" data-confirm="确定要删除这篇笔记吗？" title="删除">🗑️</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>暂无笔记</h3>
+                <p>{% if current_tag %}该标签下没有笔记{% else %}点击"新建笔记"开始记录{% endif %}</p>
+                <a href="{{ url_for('new_note') }}" class="btn btn-primary btn-lg">✨ 创建第一篇笔记</a>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+<form id="importForm" action="{{ url_for('import_zip') }}" method="post" enctype="multipart/form-data" style="display: none;">
+    <input type="file" name="zipfile" id="importFileInput">
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var selectAll = document.getElementById('selectAll');
+    var checkboxes = document.querySelectorAll('.note-checkbox');
+    var batchDeleteBtn = document.getElementById('batchDeleteBtn');
+
+    function updateBatchButton() {
+        var checkedCount = document.querySelectorAll('.note-checkbox:checked').length;
+        batchDeleteBtn.disabled = checkedCount === 0;
+        batchDeleteBtn.textContent = '🗑️ 批量删除' + (checkedCount > 0 ? ' (' + checkedCount + ')' : '');
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(function(cb) {
+                cb.checked = selectAll.checked;
+            });
+            updateBatchButton();
+        });
+    }
+
+    checkboxes.forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            var allChecked = document.querySelectorAll('.note-checkbox:checked').length === checkboxes.length;
+            if (selectAll) selectAll.checked = allChecked;
+            updateBatchButton();
+        });
+    });
+
+    document.getElementById('batchDeleteBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        var checked = document.querySelectorAll('.note-checkbox:checked');
+        if (checked.length === 0) return;
+        showConfirm('确定要删除选中的 ' + checked.length + ' 篇笔记吗？此操作不可恢复。', function() {
+            document.getElementById('batchDeleteForm').submit();
+        });
+    });
+
+    var zipInput = document.getElementById('zipInput');
+    var importFileInput = document.getElementById('importFileInput');
+    if (zipInput) {
+        zipInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                showConfirm('导入ZIP将替换现有所有笔记，确定继续吗？', function() {
+                    importFileInput.files = e.target.files;
+                    document.getElementById('importForm').submit();
+                });
+            }
+        });
+    }
+
+    var searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        var searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function() {
+                var q = searchInput.value;
+                searchNotes(q);
+            }, 150);
+        });
+    }
+});
+
+function searchNotes(q) {
+    var encodedQ = encodeURIComponent(q);
+    fetch('/search?q=' + encodedQ, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-Charset': 'utf-8'
+        }
+    })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                renderNotes(data.notes);
+            }
+        })
+        .catch(function(error) {
+            console.error('搜索请求失败:', error);
+        });
+}
+
+function renderNotes(notes) {
+    var noteList = document.getElementById('noteList');
+    if (!noteList) return;
+
+    if (notes.length === 0) {
+        noteList.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><h3>未找到匹配的笔记</h3><p>尝试其他关键词</p></div>';
+        return;
+    }
+
+    var html = '';
+    notes.forEach(function(note) {
+        var tagsHtml = '';
+        if (note.tags && note.tags.length > 0) {
+            tagsHtml = '<div class="card-tags">' + note.tags.map(function(t) {
+                return '<span class="tag-badge">#' + t + '</span>';
+            }).join('') + '</div>';
+        }
+        var preview = note.content ? note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '') : '';
+        html += `
+            <div class="note-card" data-note-id="${note.id}" data-title="${note.title}">
+                <div class="card-checkbox">
+                    <input type="checkbox" class="note-checkbox" name="note_ids" value="${note.id}" form="batchDeleteForm">
+                </div>
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="note-title">
+                            <a href="/note/${note.id}">${escapeHtml(note.title)}</a>
+                        </h3>
+                    </div>
+                    <div class="card-meta">
+                        <span class="meta-item">📅 创建: ${note.created_at}</span>
+                        <span class="meta-item">✏️ 修改: ${note.updated_at}</span>
+                    </div>
+                    ${tagsHtml}
+                    <div class="card-preview">${escapeHtml(preview)}</div>
+                </div>
+                <div class="card-actions">
+                    <a href="/note/${note.id}/edit" class="btn-icon" title="编辑">✏️</a>
+                    <form action="/note/${note.id}/delete" method="post" class="delete-form" style="display: inline;">
+                        <button type="submit" class="btn-icon btn-delete" data-confirm="确定要删除这篇笔记吗？" title="删除">🗑️</button>
+                    </form>
+                </div>
+            </div>
+        `;
+    });
+    noteList.innerHTML = html;
+    bindDeleteEvents();
+    updateBatchButton();
+}
+
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function updateBatchButton() {
+    var checkedCount = document.querySelectorAll('.note-checkbox:checked').length;
+    var batchDeleteBtn = document.getElementById('batchDeleteBtn');
+    if (batchDeleteBtn) {
+        batchDeleteBtn.disabled = checkedCount === 0;
+        batchDeleteBtn.textContent = '🗑️ 批量删除' + (checkedCount > 0 ? ' (' + checkedCount + ')' : '');
+    }
+    var selectAll = document.getElementById('selectAll');
+    var checkboxes = document.querySelectorAll('.note-checkbox');
+    if (selectAll && checkboxes.length > 0) {
+        selectAll.checked = document.querySelectorAll('.note-checkbox:checked').length === checkboxes.length;
+    }
+    checkboxes.forEach(function(cb) {
+        cb.addEventListener('change', updateBatchButton);
+    });
+}
+</script>
+{% endblock %}

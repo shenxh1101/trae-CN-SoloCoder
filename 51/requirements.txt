@@ -1,0 +1,4 @@
+Flask>=3.0.0
+WeasyPrint>=60.0
+python-slugify>=8.0.0
+Pygments>=2.17.0

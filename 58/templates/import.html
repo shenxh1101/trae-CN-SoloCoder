@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}批量导入 - URL健康检查{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>批量导入URL</h1>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">返回列表</a>
+</div>
+
+<div class="form-card">
+    <h3>CSV文件格式要求</h3>
+    <p>CSV文件必须包含以下列（列名需匹配）：</p>
+    <ul>
+        <li><code>url</code> - 要监控的URL地址（必填）</li>
+        <li><code>name</code> - URL名称（可选，默认"未命名"）</li>
+        <li><code>method</code> - 请求方法 GET/POST（可选，默认GET）</li>
+        <li><code>interval</code> - 检查间隔秒数（可选，默认60）</li>
+        <li><code>timeout</code> - 超时秒数（可选，默认10）</li>
+        <li><code>expected_status</code> - 期望状态码（可选，默认200）</li>
+        <li><code>body</code> - 请求体（可选）</li>
+        <li><code>headers</code> - 请求头JSON（可选）</li>
+        <li><code>keyword</code> - 关键字验证（可选）</li>
+        <li><code>notification_email</code> - 通知邮箱（可选）</li>
+        <li><code>notification_webhook</code> - Webhook地址（可选）</li>
+    </ul>
+
+    <h4>示例CSV内容：</h4>
+    <pre class="code-block">name,url,method,interval,timeout,expected_status,keyword
+官网首页,https://www.example.com,GET,60,10,200,Welcome
+API接口,https://api.example.com/health,POST,30,5,200,OK</pre>
+
+    <form method="POST" enctype="multipart/form-data" class="mt-3">
+        <div class="form-group">
+            <label>选择CSV文件</label>
+            <input type="file" name="csv_file" accept=".csv" required>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">开始导入</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

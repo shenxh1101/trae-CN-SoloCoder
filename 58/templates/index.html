@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}仪表盘 - URL健康检查{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>监控仪表盘</h1>
+    <a href="{{ url_for('add_url') }}" class="btn btn-primary">+ 添加URL</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ urls|length }}</div>
+        <div class="stat-label">监控总数</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ urls|selectattr('paused', 'equalto', false)|list|length }}</div>
+        <div class="stat-label">运行中</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ urls|selectattr('paused', 'equalto', true)|list|length }}</div>
+        <div class="stat-label">已暂停</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ urls|selectattr('recent_failures', '>', 0)|list|length }}</div>
+        <div class="stat-label">异常中</div>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>名称</th>
+                <th>URL</th>
+                <th>方法</th>
+                <th>间隔</th>
+                <th>可用性</th>
+                <th>24h成功率</th>
+                <th>平均响应</th>
+                <th>最长响应</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for url in urls %}
+            <tr class="{{ 'paused' if url.paused else '' }}">
+                <td>
+                    <a href="{{ url_for('detail', url_id=url.id) }}">{{ url.name }}</a>
+                </td>
+                <td class="url-cell">{{ url.url }}</td>
+                <td><span class="badge badge-method">{{ url.method }}</span></td>
+                <td>{{ url.interval }}s</td>
+                <td>
+                    <div class="progress-bar">
+                        <div class="progress-fill {{ 'success' if url.availability >= 90 else 'warning' if url.availability >= 70 else 'danger' }}"
+                             style="width: {{ url.availability }}%"></div>
+                        <span class="progress-text">{{ url.availability }}%</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="{{ 'text-success' if url.last_24h_rate >= 90 else 'text-warning' if url.last_24h_rate >= 70 else 'text-danger' }}">
+                        {{ url.last_24h_rate }}%
+                    </span>
+                </td>
+                <td>{{ url.avg_response_time }}ms</td>
+                <td>{{ url.max_response_time }}ms</td>
+                <td>
+                    {% if url.paused %}
+                        <span class="status-badge status-paused">已暂停</span>
+                    {% elif url.recent_failures >= 3 %}
+                        <span class="status-badge status-danger">告警</span>
+                    {% elif url.last_result and url.last_result.success %}
+                        <span class="status-badge status-success">正常</span>
+                    {% elif url.last_result %}
+                        <span class="status-badge status-warning">异常</span>
+                    {% else %}
+                        <span class="status-badge status-pending">待检查</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{{ url_for('detail', url_id=url.id) }}" class="btn btn-sm btn-info">详情</a>
+                        <a href="{{ url_for('edit_url', url_id=url.id) }}" class="btn btn-sm btn-secondary">编辑</a>
+                        {% if url.paused %}
+                            <a href="{{ url_for('resume_url', url_id=url.id) }}" class="btn btn-sm btn-success">恢复</a>
+                        {% else %}
+                            <a href="{{ url_for('pause_url', url_id=url.id) }}" class="btn btn-sm btn-warning">暂停</a>
+                        {% endif %}
+                        <a href="{{ url_for('delete_url', url_id=url.id) }}" class="btn btn-sm btn-danger"
+                           onclick="return confirm('确定要删除这个URL监控吗？')">删除</a>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="10" class="empty-state">
+                    暂无监控URL，<a href="{{ url_for('add_url') }}">立即添加</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

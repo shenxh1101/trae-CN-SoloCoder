@@ -1,0 +1,48 @@
+{
+  "name": "自定义测试分子",
+  "formula": "Custom",
+  "description": "测试用自定义分子",
+  "atoms": [
+    {
+      "id": "test1",
+      "element": "O",
+      "position": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "test2",
+      "element": "H",
+      "position": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "test3",
+      "element": "H",
+      "position": [
+        -0.33,
+        0.94,
+        0
+      ]
+    }
+  ],
+  "bonds": [
+    {
+      "id": "bond1",
+      "atom1": "test1",
+      "atom2": "test2",
+      "order": 1
+    },
+    {
+      "id": "bond2",
+      "atom1": "test1",
+      "atom2": "test3",
+      "order": 1
+    }
+  ]
+}

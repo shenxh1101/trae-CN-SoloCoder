@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关键词提取服务</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 中文关键词提取服务</h1>
+            <p>基于TF-IDF算法的智能关键词提取</p>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3>📜 历史记录</h3>
+                    <button class="btn-secondary" onclick="clearHistory()">清空历史</button>
+                    <div id="history-list">
+                        {% if history %}
+                            {% for item in history %}
+                                <div class="history-item" onclick="loadHistory({{ item.id }})">
+                                    <div class="history-text">{{ item.text }}</div>
+                                    <div class="history-time">{{ item.timestamp }}</div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="empty">暂无历史记录</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="card">
+                    <h2>📝 文本分析</h2>
+                    
+                    <div class="form-group">
+                        <label>输入文本：</label>
+                        <textarea id="input-text" placeholder="请输入要分析的中文文本..." rows="6"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>关键词数量：</label>
+                            <input type="number" id="top-n" value="5" min="1" max="20">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="analyzeText()">提取关键词</button>
+                        <label class="btn-secondary file-label">
+                            上传TXT
+                            <input type="file" id="txt-file" accept=".txt" style="display:none" onchange="uploadTxt()">
+                        </label>
+                        <label class="btn-secondary file-label">
+                            批量CSV
+                            <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="uploadCsv()">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card" id="result-card" style="display:none;">
+                    <h2>📊 分析结果</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">字数</span>
+                            <span class="stat-value" id="stat-chars">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">句数</span>
+                            <span class="stat-value" id="stat-sentences">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">词汇数</span>
+                            <span class="stat-value" id="stat-words">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">词汇丰富度</span>
+                            <span class="stat-value" id="stat-diversity">0</span>
+                        </div>
+                    </div>
+
+                    <div class="sentiment">
+                        <span class="sentiment-label">情感极性：</span>
+                        <span class="sentiment-value" id="sentiment-result">中性</span>
+                    </div>
+
+                    <div class="keywords-section">
+                        <h3>🔑 关键词</h3>
+                        <div id="keywords-list" class="keywords-list"></div>
+                    </div>
+
+                    <div class="wordcloud-section" id="wordcloud-section" style="display:none;">
+                        <h3>☁️ 词云</h3>
+                        <img id="wordcloud-img" alt="词云">
+                        <button class="btn-secondary" onclick="downloadWordcloud()">下载词云</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>⚙️ 停用词设置</h2>
+                    <p class="hint">上传自定义停用词表（每行一个词，TXT或CSV格式）</p>
+                    <label class="btn-secondary file-label">
+                        上传停用词
+                        <input type="file" id="stopwords-file" accept=".txt,.csv" style="display:none" onchange="uploadStopwords()">
+                    </label>
+                    <button class="btn-secondary" onclick="clearStopwords()">清除自定义停用词</button>
+                    <div id="stopwords-status"></div>
+                </div>
+
+                <div class="card">
+                    <h2>🔌 API 接口</h2>
+                    <div class="api-info">
+                        <p><strong>POST /api/extract</strong> - 提取关键词</p>
+                        <pre>
+{
+  "text": "要分析的文本",
+  "top_n": 5
+}
+                        </pre>
+                        <p><strong>POST /api/batch_extract</strong> - 批量提取</p>
+                        <pre>
+{
+  "texts": ["文本1", "文本2"],
+  "top_n": 5
+}
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading" style="display:none;">
+        <div class="spinner"></div>
+        <p>处理中...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

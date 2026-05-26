@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ url.name }} - URL健康检查{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ url.name }}</h1>
+        <p class="url-display">{{ url.url }}</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{ url_for('manual_check', url_id=url.id) }}" class="btn btn-info">立即检查</a>
+        {% if url.notification_email or url.notification_webhook %}
+            <a href="{{ url_for('test_notification', url_id=url.id) }}" class="btn btn-purple">测试通知</a>
+        {% endif %}
+        {% if url.paused %}
+            <a href="{{ url_for('resume_url', url_id=url.id) }}" class="btn btn-success">恢复监控</a>
+        {% else %}
+            <a href="{{ url_for('pause_url', url_id=url.id) }}" class="btn btn-warning">暂停监控</a>
+        {% endif %}
+        <a href="{{ url_for('edit_url', url_id=url.id) }}" class="btn btn-secondary">编辑</a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline">返回列表</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value {{ 'text-success' if stats.availability >= 90 else 'text-warning' if stats.availability >= 70 else 'text-danger' }}">
+            {{ stats.availability }}%
+        </div>
+        <div class="stat-label">总可用性</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.last_24h_rate }}%</div>
+        <div class="stat-label">24小时成功率</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_response_time }}ms</div>
+        <div class="stat-label">平均响应时间</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.max_response_time }}ms</div>
+        <div class="stat-label">最长响应时间</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <h3>监控配置</h3>
+    <div class="info-grid">
+        <div><strong>请求方法:</strong> <span class="badge badge-method">{{ url.method }}</span></div>
+        <div><strong>检查间隔:</strong> {{ url.interval }}秒</div>
+        <div><strong>超时时间:</strong> {{ url.timeout }}秒</div>
+        <div><strong>期望状态码:</strong> {{ url.expected_status }}</div>
+        {% if url.keyword %}
+        <div class="full-width"><strong>关键字验证:</strong> "{{ url.keyword }}"</div>
+        {% endif %}
+        {% if url.notification_email %}
+        <div><strong>通知邮箱:</strong> {{ url.notification_email }}</div>
+        {% endif %}
+        {% if url.notification_webhook %}
+        <div class="full-width"><strong>Webhook:</strong> {{ url.notification_webhook }}</div>
+        {% endif %}
+        <div><strong>连续失败:</strong> {{ stats.recent_failures }}次</div>
+        <div><strong>总检查次数:</strong> {{ stats.total }}次</div>
+        <div><strong>成功次数:</strong> {{ stats.success }}次</div>
+        <div><strong>状态:</strong>
+            {% if url.paused %}
+                <span class="status-badge status-paused">已暂停</span>
+            {% elif stats.recent_failures >= 3 %}
+                <span class="status-badge status-danger">告警</span>
+            {% elif stats.last_result and stats.last_result.success %}
+                <span class="status-badge status-success">正常</span>
+            {% else %}
+                <span class="status-badge status-warning">异常</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3>响应时间趋势</h3>
+        <canvas id="responseTimeChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>每日可用性</h3>
+        <canvas id="availabilityChart"></canvas>
+    </div>
+</div>
+
+<div class="chart-card">
+    <h3>可用性热力图</h3>
+    <div id="heatmap-container"></div>
+</div>
+
+<div class="table-container">
+    <h3>最近检查记录</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>状态</th>
+                <th>HTTP状态码</th>
+                <th>响应时间</th>
+                <th>异常</th>
+                <th>错误信息</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.timestamp }}</td>
+                <td>
+                    {% if record.success %}
+                        <span class="status-badge status-success">成功</span>
+                    {% else %}
+                        <span class="status-badge status-danger">失败</span>
+                    {% endif %}
+                </td>
+                <td>{{ record.status_code or '-' }}</td>
+                <td>{{ record.response_time }}ms</td>
+                <td>
+                    {% if record.anomaly %}
+                        <span class="status-badge status-warning">异常</span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="error-cell">{{ record.error or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="empty-state">暂无检查记录</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const urlId = "{{ url.id }}";
+
+fetch(`/api/chart/${urlId}/response_time`)
+    .then(r => r.json())
+    .then(data => {
+        const labels = data.map(d => new Date(d.time).toLocaleTimeString());
+        const values = data.map(d => d.value);
+        const bgColors = data.map(d => d.success ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)');
+        const borderColors = data.map(d => d.success ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)');
+
+        new Chart(document.getElementById('responseTimeChart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: '响应时间 (ms)',
+                    data: values,
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: 'rgb(59, 130, 246)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointBackgroundColor: bgColors,
+                    pointBorderColor: borderColors,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    });
+
+fetch(`/api/chart/${urlId}/availability`)
+    .then(r => r.json())
+    .then(data => {
+        new Chart(document.getElementById('availabilityChart'), {
+            type: 'bar',
+            data: {
+                labels: data.map(d => d.date),
+                datasets: [{
+                    label: '可用性 (%)',
+                    data: data.map(d => d.rate),
+                    backgroundColor: data.map(d =>
+                        d.rate >= 90 ? 'rgba(34, 197, 94, 0.7)' :
+                        d.rate >= 70 ? 'rgba(251, 191, 36, 0.7)' : 'rgba(239, 68, 68, 0.7)'
+                    ),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, max: 100 } }
+            }
+        });
+    });
+
+fetch(`/api/chart/${urlId}/availability`)
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('heatmap-container');
+        if (data.length === 0) {
+            container.innerHTML = '<p class="empty-state">暂无数据</p>';
+            return;
+        }
+
+        let html = '<div class="heatmap">';
+        data.forEach(d => {
+            let colorClass = 'heatmap-0';
+            if (d.rate >= 90) colorClass = 'heatmap-4';
+            else if (d.rate >= 70) colorClass = 'heatmap-3';
+            else if (d.rate >= 50) colorClass = 'heatmap-2';
+            else if (d.rate > 0) colorClass = 'heatmap-1';
+            html += `<div class="heatmap-cell ${colorClass}" title="${d.date}: ${d.rate}%"></div>`;
+        });
+        html += '</div>';
+        html += '<div class="heatmap-legend">';
+        html += '<span><div class="heatmap-cell heatmap-0"></div>0%</span>';
+        html += '<span><div class="heatmap-cell heatmap-1"></div>1-50%</span>';
+        html += '<span><div class="heatmap-cell heatmap-2"></div>50-70%</span>';
+        html += '<span><div class="heatmap-cell heatmap-3"></div>70-90%</span>';
+        html += '<span><div class="heatmap-cell heatmap-4"></div>90-100%</span>';
+        html += '</div>';
+        container.innerHTML = html;
+    });
+</script>
+{% endblock %}

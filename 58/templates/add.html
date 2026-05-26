@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ '编辑URL' if is_edit else '添加URL' }} - URL健康检查{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ '编辑URL监控' if is_edit else '添加URL监控' }}</h1>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">返回列表</a>
+</div>
+
+<form method="POST" class="form-card">
+    <div class="form-grid">
+        <div class="form-group">
+            <label>名称 *</label>
+            <input type="text" name="name" required value="{{ url.name if url else '' }}"
+                   placeholder="例如：官网首页">
+        </div>
+
+        <div class="form-group">
+            <label>URL地址 *</label>
+            <input type="url" name="url" required value="{{ url.url if url else '' }}"
+                   placeholder="https://example.com">
+        </div>
+
+        <div class="form-group">
+            <label>请求方法</label>
+            <select name="method">
+                <option value="GET" {% if url and url.method == 'GET' %}selected{% endif %}>GET</option>
+                <option value="POST" {% if url and url.method == 'POST' %}selected{% endif %}>POST</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>检查间隔 (秒)</label>
+            <input type="number" name="interval" min="5" value="{{ url.interval if url else 60 }}">
+        </div>
+
+        <div class="form-group">
+            <label>超时时间 (秒)</label>
+            <input type="number" name="timeout" min="1" value="{{ url.timeout if url else 10 }}">
+        </div>
+
+        <div class="form-group">
+            <label>期望HTTP状态码</label>
+            <input type="text" name="expected_status" value="{{ url.expected_status if url else '200' }}"
+                   placeholder="200 或 200,302,304">
+        </div>
+
+        <div class="form-group full-width">
+            <label>请求头 (JSON格式)</label>
+            <textarea name="headers" rows="3" placeholder='{"Authorization": "Bearer token", "Content-Type": "application/json"}'>{{ url.headers if url else '' }}</textarea>
+        </div>
+
+        <div class="form-group full-width">
+            <label>请求体 (POST方法)</label>
+            <textarea name="body" rows="3" placeholder='{"key": "value"}'>{{ url.body if url else '' }}</textarea>
+        </div>
+
+        <div class="form-group full-width">
+            <label>关键字验证</label>
+            <input type="text" name="keyword" value="{{ url.keyword if url else '' }}"
+                   placeholder="例如：OK, 响应内容包含此关键字则判定成功">
+        </div>
+
+        <div class="form-group">
+            <label>通知邮箱</label>
+            <input type="email" name="notification_email" value="{{ url.notification_email if url else '' }}"
+                   placeholder="alert@example.com">
+        </div>
+
+        <div class="form-group">
+            <label>Webhook地址</label>
+            <input type="url" name="notification_webhook" value="{{ url.notification_webhook if url else '' }}"
+                   placeholder="https://hooks.example.com/xxx">
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{{ '保存修改' if is_edit else '添加监控' }}</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">取消</a>
+    </div>
+</form>
+{% endblock %}

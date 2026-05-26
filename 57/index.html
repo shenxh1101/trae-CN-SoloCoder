@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D滚球迷宫</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #game-canvas {
+            display: block;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .ui-panel {
+            pointer-events: auto;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+        }
+
+        #top-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-box {
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+
+        #coins-display .stat-value {
+            color: #ffd700;
+        }
+
+        #controls-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .difficulty-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-difficulty {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-difficulty.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        #minimap-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 180px;
+            height: 180px;
+        }
+
+        #minimap {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        #color-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+        }
+
+        .color-inputs {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .color-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .color-group label {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+        }
+
+        #best-record {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        #best-record .stat-value {
+            color: #4caf50;
+            font-size: 18px;
+        }
+
+        #victory-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            z-index: 100;
+        }
+
+        #victory-overlay.show {
+            display: flex;
+        }
+
+        .victory-content {
+            text-align: center;
+            color: white;
+            animation: victoryPop 0.5s ease-out;
+        }
+
+        @keyframes victoryPop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .victory-title {
+            font-size: 64px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 50%, #4ecdc4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .victory-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .victory-stat {
+            text-align: center;
+        }
+
+        .victory-stat-label {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .victory-stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+
+        .victory-stat-value.gold {
+            color: #ffd700;
+        }
+
+        .victory-stat-value.green {
+            color: #4caf50;
+        }
+
+        .new-record {
+            color: #ff6b6b;
+            font-size: 18px;
+            margin-bottom: 20px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        #controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        #controls-hint kbd {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 0 2px;
+            font-family: monospace;
+        }
+
+        #debug-panel {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            font-size: 11px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #debug-panel .stat-label {
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+
+        #debug-panel .stat-value {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .collision-flash {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 4px solid #ff0000;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s;
+        }
+
+        .collision-flash.active {
+            opacity: 0.8;
+            animation: flashExpand 0.3s ease-out;
+        }
+
+        @keyframes flashExpand {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="ui-overlay">
+            <div id="top-bar">
+                <div class="ui-panel stat-box">
+                    <div class="stat-label">⏱️ 用时</div>
+                    <div class="stat-value" id="timer">00:00</div>
+                </div>
+                <div class="ui-panel stat-box">
+                    <div class="stat-label">👣 步数</div>
+                    <div class="stat-value" id="steps">0</div>
+                </div>
+                <div class="ui-panel stat-box" id="coins-display">
+                    <div class="stat-label">💰 金币</div>
+                    <div class="stat-value"><span id="coins-collected">0</span>/<span id="coins-total">3</span></div>
+                </div>
+            </div>
+
+            <div class="ui-panel" id="controls-panel">
+                <button class="btn btn-reset" onclick="resetGame()">🔄 重置游戏</button>
+                <div class="stat-label">选择难度</div>
+                <div class="difficulty-btns">
+                    <button class="btn btn-difficulty active" onclick="setDifficulty('easy', this)">简单</button>
+                    <button class="btn btn-difficulty" onclick="setDifficulty('medium', this)">中等</button>
+                    <button class="btn btn-difficulty" onclick="setDifficulty('hard', this)">困难</button>
+                </div>
+                <button class="btn" onclick="toggleDebug()" id="debug-btn">🐛 调试模式</button>
+            </div>
+
+            <div class="ui-panel" id="best-record">
+                <div class="stat-label">🏆 最快记录</div>
+                <div class="stat-value" id="best-time">--:--</div>
+                <div class="stat-label" style="margin-top: 5px;" id="best-difficulty">--</div>
+            </div>
+
+            <div class="ui-panel" id="minimap-container">
+                <canvas id="minimap" width="160" height="160"></canvas>
+            </div>
+
+            <div class="ui-panel" id="color-panel">
+                <div class="stat-label">🎨 自定义颜色</div>
+                <div class="color-inputs">
+                    <div class="color-group">
+                        <label>墙壁</label>
+                        <input type="color" id="wall-color" value="#4a5568" onchange="updateWallColor(this.value)">
+                    </div>
+                    <div class="color-group">
+                        <label>地面</label>
+                        <input type="color" id="floor-color" value="#2d3748" onchange="updateFloorColor(this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="controls-hint">
+                使用 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 控制小球移动 | 调试模式: <kbd>B</kbd>
+            </div>
+
+            <div class="ui-panel" id="debug-panel" style="display: none;">
+                <div class="stat-label">小球位置 (X, Z)</div>
+                <div class="stat-value" id="debug-pos">0, 0</div>
+                <div class="stat-label">网格位置</div>
+                <div class="stat-value" id="debug-grid">0, 0</div>
+                <div class="stat-label">速度 (X, Z)</div>
+                <div class="stat-value" id="debug-vel">0, 0</div>
+                <div class="stat-label">碰撞检测</div>
+                <div class="stat-value" id="debug-collision">无</div>
+                <div class="stat-label">相机角度</div>
+                <div class="stat-value" id="debug-camera">0°</div>
+            </div>
+        </div>
+
+        <div id="victory-overlay">
+            <div class="victory-content">
+                <div class="victory-title">🎉 恭喜通关！</div>
+                <div class="new-record" id="new-record-badge" style="display: none;">⭐ 新纪录！</div>
+                <div class="victory-stats">
+                    <div class="victory-stat">
+                        <div class="victory-stat-label">用时</div>
+                        <div class="victory-stat-value" id="final-time">00:00</div>
+                    </div>
+                    <div class="victory-stat">
+                        <div class="victory-stat-label">步数</div>
+                        <div class="victory-stat-value" id="final-steps">0</div>
+                    </div>
+                    <div class="victory-stat">
+                        <div class="victory-stat-label">金币</div>
+                        <div class="victory-stat-value gold" id="final-coins">0/3</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="closeVictory()" style="padding: 15px 40px; font-size: 18px;">
+                    再玩一次
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            GRID_SIZE: 15,
+            CELL_SIZE: 2,
+            WALL_HEIGHT: 2,
+            BALL_RADIUS: 0.4,
+            GRAVITY: -25,
+            FRICTION: 0.90,
+            MOVE_FORCE: 20,
+            MAX_SPEED: 10,
+            COIN_COUNT: 3
+        };
+
+        let scene, camera, renderer, ball;
+        let walls = [], floors = [];
+        let coins = [], particles = [];
+        let goal, goalLight;
+        let velocity = { x: 0, y: 0, z: 0 };
+        let keys = {};
+        let gameActive = false;
+        let startTime = 0;
+        let elapsedTime = 0;
+        let steps = 0;
+        let coinsCollected = 0;
+        let currentDifficulty = 'easy';
+        let maze = [];
+        let startPos = { x: 1, z: 1 };
+        let endPos = { x: 13, z: 13 };
+        let coinPositions = [];
+        let wallColor = 0x4a5568;
+        let floorColor = 0x2d3748;
+        let wallColorCss = '#4a5568';
+        let floorColorCss = '#2d3748';
+        let lastGridPos = { x: 1, z: 1 };
+        let cameraAngle = 0;
+        let targetCameraAngle = 0;
+        let debugMode = false;
+        let collisionDebugMeshes = [];
+        let collisionCount = 0;
+
+        function worldToGrid(worldX, worldZ) {
+            const offset = (CONFIG.GRID_SIZE * CONFIG.CELL_SIZE) / 2 - CONFIG.CELL_SIZE / 2;
+            return {
+                x: Math.round((worldX + offset) / CONFIG.CELL_SIZE),
+                z: Math.round((worldZ + offset) / CONFIG.CELL_SIZE)
+            };
+        }
+
+        function gridToWorld(gridX, gridZ) {
+            const offset = (CONFIG.GRID_SIZE * CONFIG.CELL_SIZE) / 2 - CONFIG.CELL_SIZE / 2;
+            return {
+                x: gridX * CONFIG.CELL_SIZE - offset,
+                z: gridZ * CONFIG.CELL_SIZE - offset
+            };
+        }
+
+        function generateMaze(difficulty) {
+            const size = CONFIG.GRID_SIZE;
+            maze = [];
+            
+            for (let x = 0; x < size; x++) {
+                maze[x] = [];
+                for (let z = 0; z < size; z++) {
+                    maze[x][z] = 1;
+                }
+            }
+
+            const wallDensity = {
+                easy: 0.25,
+                medium: 0.35,
+                hard: 0.45
+            }[difficulty];
+
+            for (let x = 0; x < size; x++) {
+                for (let z = 0; z < size; z++) {
+                    if (x === 0 || x === size - 1 || z === 0 || z === size - 1) {
+                        maze[x][z] = 1;
+                    } else {
+                        maze[x][z] = Math.random() < wallDensity ? 1 : 0;
+                    }
+                }
+            }
+
+            maze[1][1] = 0;
+            maze[1][2] = 0;
+            maze[2][1] = 0;
+            maze[2][2] = 0;
+            maze[size - 2][size - 2] = 0;
+            maze[size - 2][size - 3] = 0;
+            maze[size - 3][size - 2] = 0;
+            maze[size - 3][size - 3] = 0;
+
+            ensurePath(1, 1, size - 2, size - 2);
+            generateCoinPositions();
+            
+            startPos = { x: 1, z: 1 };
+            endPos = { x: size - 2, z: size - 2 };
+        }
+
+        function ensurePath(startX, startZ, endX, endZ) {
+            let x = startX;
+            let z = startZ;
+            
+            while (x !== endX || z !== endZ) {
+                maze[x][z] = 0;
+                
+                if (x < endX && (Math.random() > 0.4 || z === endZ)) {
+                    x++;
+                } else if (x > endX && (Math.random() > 0.4 || z === endZ)) {
+                    x--;
+                } else if (z < endZ) {
+                    z++;
+                } else if (z > endZ) {
+                    z--;
+                }
+                
+                if (x > 0 && x < CONFIG.GRID_SIZE - 1 && z > 0 && z < CONFIG.GRID_SIZE - 1) {
+                    maze[x][z] = 0;
+                    if (x + 1 < CONFIG.GRID_SIZE - 1) maze[x + 1][z] = 0;
+                    if (z + 1 < CONFIG.GRID_SIZE - 1) maze[x][z + 1] = 0;
+                }
+            }
+            maze[endX][endZ] = 0;
+        }
+
+        function generateCoinPositions() {
+            coinPositions = [];
+            const availablePositions = [];
+            
+            for (let x = 2; x < CONFIG.GRID_SIZE - 2; x++) {
+                for (let z = 2; z < CONFIG.GRID_SIZE - 2; z++) {
+                    if (maze[x][z] === 0 && 
+                        !(x === startPos.x && z === startPos.z) && 
+                        !(x === endPos.x && z === endPos.z)) {
+                        const distToStart = Math.abs(x - startPos.x) + Math.abs(z - startPos.z);
+                        const distToEnd = Math.abs(x - endPos.x) + Math.abs(z - endPos.z);
+                        if (distToStart > 4 && distToEnd > 4) {
+                            availablePositions.push({ x, z });
+                        }
+                    }
+                }
+            }
+
+            for (let i = 0; i < CONFIG.COIN_COUNT && availablePositions.length > 0; i++) {
+                const idx = Math.floor(Math.random() * availablePositions.length);
+                coinPositions.push(availablePositions.splice(idx, 1)[0]);
+            }
+            
+            document.getElementById('coins-total').textContent = coinPositions.length;
+        }
+
+        function initThree() {
+            const canvas = document.getElementById('game-canvas');
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            scene.fog = new THREE.Fog(0x1a1a2e, 25, 55);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(15, 25, 15);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 60;
+            directionalLight.shadow.camera.left = -35;
+            directionalLight.shadow.camera.right = 35;
+            directionalLight.shadow.camera.top = 35;
+            directionalLight.shadow.camera.bottom = -35;
+            scene.add(directionalLight);
+
+            const pointLight1 = new THREE.PointLight(0x4fc3f7, 0.6, 35);
+            pointLight1.position.set(0, 12, 0);
+            scene.add(pointLight1);
+
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('keydown', (e) => {
+                keys[e.key.toLowerCase()] = true;
+                if (e.key.toLowerCase() === 'b') toggleDebug();
+            });
+            window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+        }
+
+        function createMaze() {
+            walls.forEach(wall => scene.remove(wall));
+            floors.forEach(floor => scene.remove(floor));
+            collisionDebugMeshes.forEach(m => scene.remove(m));
+            walls = [];
+            floors = [];
+            collisionDebugMeshes = [];
+
+            const wallGeo = new THREE.BoxGeometry(CONFIG.CELL_SIZE, CONFIG.WALL_HEIGHT, CONFIG.CELL_SIZE);
+            const wallMat = new THREE.MeshStandardMaterial({ 
+                color: wallColor,
+                roughness: 0.7,
+                metalness: 0.3
+            });
+
+            const floorGeo = new THREE.BoxGeometry(CONFIG.CELL_SIZE, 0.5, CONFIG.CELL_SIZE);
+            const floorMat = new THREE.MeshStandardMaterial({ 
+                color: floorColor,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+
+            for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
+                for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
+                    const worldPos = gridToWorld(x, z);
+
+                    if (maze[x][z] === 1) {
+                        const wall = new THREE.Mesh(wallGeo, wallMat);
+                        wall.position.set(worldPos.x, CONFIG.WALL_HEIGHT / 2 - 0.25, worldPos.z);
+                        wall.castShadow = true;
+                        wall.receiveShadow = true;
+                        wall.userData = { type: 'wall', gridX: x, gridZ: z };
+                        scene.add(wall);
+                        walls.push(wall);
+
+                        if (debugMode) {
+                            const edges = new THREE.EdgesGeometry(wallGeo);
+                            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true }));
+                            line.position.copy(wall.position);
+                            scene.add(line);
+                            collisionDebugMeshes.push(line);
+                        }
+                    } else {
+                        const floor = new THREE.Mesh(floorGeo, floorMat);
+                        floor.position.set(worldPos.x, -0.25, worldPos.z);
+                        floor.receiveShadow = true;
+                        floor.userData = { type: 'floor', gridX: x, gridZ: z };
+                        scene.add(floor);
+                        floors.push(floor);
+                    }
+                }
+            }
+        }
+
+        function createBall() {
+            if (ball) scene.remove(ball);
+            
+            const ballGeo = new THREE.SphereGeometry(CONFIG.BALL_RADIUS, 32, 32);
+            const ballMat = new THREE.MeshStandardMaterial({ 
+                color: 0xef5350,
+                roughness: 0.2,
+                metalness: 0.8,
+                emissive: 0x330000
+            });
+            
+            ball = new THREE.Mesh(ballGeo, ballMat);
+            const startWorld = gridToWorld(startPos.x, startPos.z);
+            ball.position.set(startWorld.x, CONFIG.BALL_RADIUS, startWorld.z);
+            ball.castShadow = true;
+            ball.receiveShadow = true;
+            scene.add(ball);
+
+            velocity = { x: 0, y: 0, z: 0 };
+            lastGridPos = { x: startPos.x, z: startPos.z };
+        }
+
+        function createCoins() {
+            coins.forEach(coin => scene.remove(coin));
+            coins = [];
+
+            const coinGeo = new THREE.TorusGeometry(0.35, 0.12, 16, 32);
+            const coinMat = new THREE.MeshStandardMaterial({ 
+                color: 0xffd700,
+                roughness: 0.2,
+                metalness: 0.9,
+                emissive: 0xffa500,
+                emissiveIntensity: 0.4
+            });
+
+            coinPositions.forEach((pos, idx) => {
+                const coin = new THREE.Mesh(coinGeo, coinMat);
+                const worldPos = gridToWorld(pos.x, pos.z);
+                coin.position.set(worldPos.x, 1, worldPos.z);
+                coin.rotation.x = Math.PI / 2;
+                coin.userData = { type: 'coin', index: idx, collected: false, gridX: pos.x, gridZ: pos.z };
+                scene.add(coin);
+                coins.push(coin);
+            });
+        }
+
+        function createGoal() {
+            if (goal) scene.remove(goal);
+            if (goalLight) scene.remove(goalLight);
+
+            const goalGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 32);
+            const goalMat = new THREE.MeshStandardMaterial({ 
+                color: 0x4caf50,
+                emissive: 0x4caf50,
+                emissiveIntensity: 0.6,
+                transparent: true,
+                opacity: 0.85
+            });
+
+            const endWorld = gridToWorld(endPos.x, endPos.z);
+            
+            goal = new THREE.Mesh(goalGeo, goalMat);
+            goal.position.set(endWorld.x, 0.1, endWorld.z);
+            scene.add(goal);
+
+            goalLight = new THREE.PointLight(0x4caf50, 2.5, 12);
+            goalLight.position.copy(goal.position);
+            goalLight.position.y = 2;
+            scene.add(goalLight);
+        }
+
+        function createParticles(position, color, count = 25) {
+            const particleGeo = new THREE.SphereGeometry(0.1, 8, 8);
+            
+            for (let i = 0; i < count; i++) {
+                const particleMat = new THREE.MeshBasicMaterial({ 
+                    color: color,
+                    transparent: true,
+                    opacity: 1
+                });
+                const particle = new THREE.Mesh(particleGeo, particleMat);
+                particle.position.copy(position);
+                particle.userData = {
+                    velocity: {
+                        x: (Math.random() - 0.5) * 10,
+                        y: Math.random() * 8 + 3,
+                        z: (Math.random() - 0.5) * 10
+                    },
+                    life: 1
+                };
+                scene.add(particle);
+                particles.push(particle);
+            }
+        }
+
+        function updateParticles(delta) {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.userData.velocity.y -= 20 * delta;
+                particle.position.x += particle.userData.velocity.x * delta;
+                particle.position.y += particle.userData.velocity.y * delta;
+                particle.position.z += particle.userData.velocity.z * delta;
+                particle.userData.life -= delta * 2.5;
+                particle.material.opacity = Math.max(0, particle.userData.life);
+                particle.scale.setScalar(Math.max(0.1, particle.userData.life));
+
+                if (particle.userData.life <= 0) {
+                    scene.remove(particle);
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function checkWallCollision(newX, newZ) {
+            const gridPos = worldToGrid(newX, newZ);
+            
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    const checkX = gridPos.x + dx;
+                    const checkZ = gridPos.z + dz;
+                    
+                    if (checkX >= 0 && checkX < CONFIG.GRID_SIZE && 
+                        checkZ >= 0 && checkZ < CONFIG.GRID_SIZE && 
+                        maze[checkX][checkZ] === 1) {
+                        
+                        const wallWorld = gridToWorld(checkX, checkZ);
+                        
+                        const halfCell = CONFIG.CELL_SIZE / 2;
+                        const closestX = Math.max(wallWorld.x - halfCell, Math.min(newX, wallWorld.x + halfCell));
+                        const closestZ = Math.max(wallWorld.z - halfCell, Math.min(newZ, wallWorld.z + halfCell));
+                        
+                        const distX = newX - closestX;
+                        const distZ = newZ - closestZ;
+                        const dist = Math.sqrt(distX * distX + distZ * distZ);
+                        
+                        if (dist < CONFIG.BALL_RADIUS) {
+                            collisionCount++;
+                            window.isColliding = true;
+                            window.lastCollisionInfo = { gridX: checkX, gridZ: checkZ, dist: dist };
+                            if (debugMode) {
+                                document.getElementById('debug-collision').textContent = `第${collisionCount}次 (${checkX},${checkZ})`;
+                            }
+                            return { collision: true, normal: { x: distX / (dist || 1), z: distZ / (dist || 1) } };
+                        }
+                    }
+                }
+            }
+            return { collision: false };
+        }
+
+        function updatePhysics(delta) {
+            if (!gameActive) return;
+
+            let moveX = 0, moveZ = 0;
+            if (keys['w']) moveZ -= 1;
+            if (keys['s']) moveZ += 1;
+            if (keys['a']) moveX -= 1;
+            if (keys['d']) moveX += 1;
+
+            if (moveX !== 0 || moveZ !== 0) {
+                const len = Math.sqrt(moveX * moveX + moveZ * moveZ);
+                moveX /= len;
+                moveZ /= len;
+                
+                velocity.x += moveX * CONFIG.MOVE_FORCE * delta;
+                velocity.z += moveZ * CONFIG.MOVE_FORCE * delta;
+                
+                targetCameraAngle = Math.atan2(moveX, moveZ);
+            }
+
+            velocity.y += CONFIG.GRAVITY * delta;
+            velocity.x *= CONFIG.FRICTION;
+            velocity.z *= CONFIG.FRICTION;
+
+            const speed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
+            if (speed > CONFIG.MAX_SPEED) {
+                velocity.x = (velocity.x / speed) * CONFIG.MAX_SPEED;
+                velocity.z = (velocity.z / speed) * CONFIG.MAX_SPEED;
+            }
+
+            const newX = ball.position.x + velocity.x * delta;
+            const newZ = ball.position.z + velocity.z * delta;
+
+            const collisionX = checkWallCollision(newX, ball.position.z);
+            if (!collisionX.collision) {
+                ball.position.x = newX;
+            } else {
+                velocity.x = -velocity.x * 0.2;
+            }
+
+            const collisionZ = checkWallCollision(ball.position.x, newZ);
+            if (!collisionZ.collision) {
+                ball.position.z = newZ;
+            } else {
+                velocity.z = -velocity.z * 0.2;
+            }
+
+            const currentGridPos = worldToGrid(ball.position.x, ball.position.z);
+            if (currentGridPos.x !== lastGridPos.x || currentGridPos.z !== lastGridPos.z) {
+                steps++;
+                lastGridPos = { x: currentGridPos.x, z: currentGridPos.z };
+            }
+
+            ball.position.y += velocity.y * delta;
+            if (ball.position.y < CONFIG.BALL_RADIUS) {
+                ball.position.y = CONFIG.BALL_RADIUS;
+                velocity.y = 0;
+            }
+
+            if (speed > 0.1) {
+                ball.rotation.x += velocity.z * delta * 2.5;
+                ball.rotation.z -= velocity.x * delta * 2.5;
+            }
+
+            if (debugMode) {
+                document.getElementById('debug-pos').textContent = `${ball.position.x.toFixed(2)}, ${ball.position.z.toFixed(2)}`;
+                document.getElementById('debug-grid').textContent = `${currentGridPos.x}, ${currentGridPos.z}`;
+                document.getElementById('debug-vel').textContent = `${velocity.x.toFixed(2)}, ${velocity.z.toFixed(2)}`;
+                document.getElementById('debug-camera').textContent = `${(cameraAngle * 180 / Math.PI).toFixed(0)}°`;
+            }
+
+            checkCoinCollection();
+            checkGoal();
+        }
+
+        function checkCoinCollection() {
+            coins.forEach(coin => {
+                if (!coin.userData.collected) {
+                    const dist = ball.position.distanceTo(coin.position);
+                    if (dist < CONFIG.BALL_RADIUS + 0.6) {
+                        coin.userData.collected = true;
+                        createParticles(coin.position, 0xffd700, 35);
+                        scene.remove(coin);
+                        coinsCollected++;
+                    }
+                }
+            });
+        }
+
+        function checkGoal() {
+            if (goal) {
+                const dist = Math.sqrt(
+                    Math.pow(ball.position.x - goal.position.x, 2) +
+                    Math.pow(ball.position.z - goal.position.z, 2)
+                );
+                if (dist < 1.2) {
+                    endGame();
+                }
+            }
+        }
+
+        function updateCamera() {
+            cameraAngle += (targetCameraAngle - cameraAngle) * 0.05;
+            
+            const distance = 8;
+            const height = 7;
+            
+            const cameraX = ball.position.x - Math.sin(cameraAngle) * distance;
+            const cameraZ = ball.position.z - Math.cos(cameraAngle) * distance;
+            
+            camera.position.x += (cameraX - camera.position.x) * 0.08;
+            camera.position.y += (ball.position.y + height - camera.position.y) * 0.08;
+            camera.position.z += (cameraZ - camera.position.z) * 0.08;
+
+            camera.lookAt(ball.position);
+        }
+
+        function updateMinimap() {
+            const canvas = document.getElementById('minimap');
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const cellSize = size / CONFIG.GRID_SIZE;
+
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, size, size);
+
+            for (let x = 0; x < CONFIG.GRID_SIZE; x++) {
+                for (let z = 0; z < CONFIG.GRID_SIZE; z++) {
+                    if (maze[x][z] === 1) {
+                        ctx.fillStyle = wallColorCss;
+                    } else {
+                        ctx.fillStyle = floorColorCss;
+                    }
+                    ctx.fillRect(x * cellSize, z * cellSize, cellSize - 1, cellSize - 1);
+                }
+            }
+
+            ctx.fillStyle = '#4caf50';
+            ctx.fillRect(endPos.x * cellSize, endPos.z * cellSize, cellSize, cellSize);
+            
+            ctx.strokeStyle = '#81c784';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(endPos.x * cellSize, endPos.z * cellSize, cellSize, cellSize);
+
+            ctx.fillStyle = '#ffd700';
+            coins.forEach(coin => {
+                if (!coin.userData.collected) {
+                    const cx = coin.userData.gridX * cellSize + cellSize / 2;
+                    const cz = coin.userData.gridZ * cellSize + cellSize / 2;
+                    ctx.beginPath();
+                    ctx.arc(cx, cz, cellSize / 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffeb3b';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            });
+
+            const ballGridPos = worldToGrid(ball.position.x, ball.position.z);
+            
+            ctx.fillStyle = '#ef5350';
+            ctx.beginPath();
+            ctx.arc(
+                ballGridPos.x * cellSize + cellSize / 2,
+                ballGridPos.z * cellSize + cellSize / 2,
+                cellSize / 2.2,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+            
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function updateUI() {
+            document.getElementById('timer').textContent = formatTime(elapsedTime);
+            document.getElementById('steps').textContent = steps;
+            document.getElementById('coins-collected').textContent = coinsCollected;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function loadBestRecord() {
+            const record = localStorage.getItem('maze_best_record');
+            if (record) {
+                const data = JSON.parse(record);
+                document.getElementById('best-time').textContent = formatTime(data.time);
+                document.getElementById('best-difficulty').textContent = 
+                    { easy: '简单', medium: '中等', hard: '困难' }[data.difficulty] || '--';
+            }
+        }
+
+        function saveBestRecord(time, difficulty) {
+            const record = localStorage.getItem('maze_best_record');
+            let isNewRecord = false;
+            
+            if (!record) {
+                isNewRecord = true;
+            } else {
+                const data = JSON.parse(record);
+                if (time < data.time) {
+                    isNewRecord = true;
+                }
+            }
+            
+            if (isNewRecord) {
+                localStorage.setItem('maze_best_record', JSON.stringify({ time, difficulty }));
+                loadBestRecord();
+            }
+            
+            return isNewRecord;
+        }
+
+        function toggleDebug() {
+            debugMode = !debugMode;
+            document.getElementById('debug-panel').style.display = debugMode ? 'block' : 'none';
+            document.getElementById('debug-btn').textContent = debugMode ? '🐛 关闭调试' : '🐛 调试模式';
+            
+            if (debugMode) {
+                createMaze();
+            } else {
+                collisionDebugMeshes.forEach(m => scene.remove(m));
+                collisionDebugMeshes = [];
+                createMaze();
+            }
+        }
+
+        function startGame() {
+            gameActive = true;
+            startTime = Date.now();
+            elapsedTime = 0;
+            steps = 0;
+            coinsCollected = 0;
+            collisionCount = 0;
+            lastGridPos = { x: startPos.x, z: startPos.z };
+            cameraAngle = 0;
+            targetCameraAngle = 0;
+        }
+
+        function endGame() {
+            gameActive = false;
+            window.isVictory = true;
+            const isNewRecord = saveBestRecord(elapsedTime, currentDifficulty);
+            
+            document.getElementById('final-time').textContent = formatTime(elapsedTime);
+            document.getElementById('final-steps').textContent = steps;
+            document.getElementById('final-coins').textContent = `${coinsCollected}/${coinPositions.length}`;
+            
+            if (isNewRecord) {
+                document.getElementById('new-record-badge').style.display = 'block';
+            } else {
+                document.getElementById('new-record-badge').style.display = 'none';
+            }
+            
+            document.getElementById('victory-overlay').classList.add('show');
+        }
+
+        function closeVictory() {
+            document.getElementById('victory-overlay').classList.remove('show');
+            resetGame();
+        }
+
+        function resetGame() {
+            particles.forEach(p => scene.remove(p));
+            particles = [];
+            
+            window.isColliding = false;
+            window.isVictory = false;
+            window.isReset = true;
+            
+            generateMaze(currentDifficulty);
+            createMaze();
+            createBall();
+            createCoins();
+            createGoal();
+            startGame();
+        }
+
+        function setDifficulty(diff, btn) {
+            currentDifficulty = diff;
+            document.querySelectorAll('.btn-difficulty').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            resetGame();
+        }
+
+        function updateWallColor(color) {
+            wallColorCss = color;
+            wallColor = parseInt(color.replace('#', ''), 16);
+            window.ballColor = color;
+            walls.forEach(wall => {
+                wall.material.color.setHex(wallColor);
+            });
+        }
+
+        function updateFloorColor(color) {
+            floorColorCss = color;
+            floorColor = parseInt(color.replace('#', ''), 16);
+            floors.forEach(floor => {
+                floor.material.color.setHex(floorColor);
+            });
+        }
+
+        let lastTime = 0;
+
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+            
+            const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
+            lastTime = currentTime;
+
+            if (gameActive) {
+                elapsedTime = (Date.now() - startTime) / 1000;
+                updateUI();
+            }
+
+            updatePhysics(delta);
+            updateCamera();
+            updateParticles(delta);
+
+            coins.forEach(coin => {
+                if (!coin.userData.collected) {
+                    coin.rotation.y += delta * 3;
+                    coin.position.y = 1 + Math.sin(currentTime * 0.003 + coin.userData.index) * 0.15;
+                }
+            });
+
+            if (goal) {
+                goal.rotation.y += delta * 1.5;
+                const pulse = Math.sin(currentTime * 0.004) * 0.3 + 0.8;
+                goal.material.emissiveIntensity = pulse * 0.6;
+                goalLight.intensity = pulse * 2.5;
+            }
+
+            updateMinimap();
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function exposeGameVars() {
+            window.gameVars = {
+                get ball() { return ball; },
+                get camera() { return camera; },
+                get particles() { return particles; },
+                get coinsCollected() { return coinsCollected; },
+                get coinPositions() { return coinPositions; },
+                get steps() { return steps; },
+                get gameActive() { return gameActive; },
+                get velocity() { return velocity; },
+                get maze() { return maze; },
+                get startPos() { return startPos; },
+                get endPos() { return endPos; },
+                get wallColorCss() { return wallColorCss; },
+                get floorColorCss() { return floorColorCss; },
+                get wallColor() { return wallColor; },
+                get floorColor() { return floorColor; },
+                get currentDifficulty() { return currentDifficulty; },
+                get cameraAngle() { return cameraAngle; },
+                get targetCameraAngle() { return targetCameraAngle; },
+                checkWallCollision: checkWallCollision,
+                worldToGrid: worldToGrid,
+                gridToWorld: gridToWorld
+            };
+            window.isColliding = false;
+            window.isVictory = false;
+            window.isReset = false;
+            window.lastCollisionInfo = null;
+        }
+
+        function init() {
+            initThree();
+            generateMaze(currentDifficulty);
+            createMaze();
+            createBall();
+            createCoins();
+            createGoal();
+            loadBestRecord();
+            exposeGameVars();
+            startGame();
+            animate(0);
+        }
+
+        init();
+    </script>
+</body>
+</html>

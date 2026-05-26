@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ note.title }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+            @top-center {
+                content: "{{ note.title }}";
+            }
+            @bottom-center {
+                content: "第 " counter(page) " 页 / 共 " counter(pages) " 页";
+            }
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            line-height: 1.8;
+            color: #333;
+        }
+        h1 {
+            color: #1e3a5f;
+            border-bottom: 3px solid #1e3a5f;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .meta {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 30px;
+        }
+        .meta span {
+            margin-right: 20px;
+        }
+        .tags {
+            margin-bottom: 20px;
+        }
+        .tag {
+            display: inline-block;
+            background: #f5f7fa;
+            color: #1e3a5f;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        .content {
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .internal-link {
+            color: #f59e0b;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ note.title }}</h1>
+    <div class="meta">
+        <span>创建: {{ note.created_at }}</span>
+        <span>修改: {{ note.updated_at }}</span>
+    </div>
+    {% if note.tags %}
+        <div class="tags">
+            {% for tag in note.tags %}
+                <span class="tag">#{{ tag }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="content">{{ content_html|safe }}</div>
+</body>
+</html>

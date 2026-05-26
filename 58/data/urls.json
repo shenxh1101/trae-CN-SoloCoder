@@ -1,0 +1,20 @@
+{
+  "urls": [
+    {
+      "id": "9fd88c49-a0f8-4d67-b836-dbbe501e7af9",
+      "name": "百度测试",
+      "url": "https://www.baidu.com",
+      "method": "GET",
+      "interval": 10,
+      "timeout": 5,
+      "expected_status": "200",
+      "body": "",
+      "headers": "",
+      "keyword": "百度",
+      "notification_email": "",
+      "notification_webhook": "",
+      "created_at": "2026-05-26T20:23:23.089681",
+      "paused": false
+    }
+  ]
+}
