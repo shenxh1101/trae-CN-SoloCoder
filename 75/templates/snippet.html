@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ snippet.title }} - 代码片段{% endblock %}
+
+{% block content %}
+<div class="snippet-page">
+    <div class="snippet-header">
+        <h2>{{ snippet.title }}</h2>
+        <div class="snippet-actions">
+            <button class="btn btn-secondary" id="copyBtn">复制代码</button>
+            <a href="{{ url_for('raw', short_code=short_code) }}" class="btn btn-secondary" target="_blank">原始代码</a>
+            <a href="{{ url_for('download', short_code=short_code) }}" class="btn btn-secondary">下载</a>
+        </div>
+    </div>
+    
+    <div class="snippet-info">
+        <span class="lang-badge">{{ snippet.language }}</span>
+        <span class="views">{{ snippet.views }} 次查看</span>
+        <span class="date">创建于 {{ snippet.created_at[:19] }}</span>
+        {% if snippet.expire_at %}
+        <span class="expire">过期于 {{ snippet.expire_at[:19] }}</span>
+        {% endif %}
+    </div>
+
+    <div class="code-container">
+        <div class="line-numbers">
+            {% for line in snippet.code.split('\n') %}
+            <span class="line-num">{{ loop.index }}</span>
+            {% endfor %}
+        </div>
+        <pre><code class="language-{{ snippet.language }}" id="codeContent">{{ snippet.code }}</code></pre>
+    </div>
+
+    <div class="snippet-links">
+        <div class="link-group">
+            <label>永久链接：</label>
+            <input type="text" value="{{ url_for('view', short_code=short_code, _external=True) }}" readonly class="link-input">
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">已复制到剪贴板！</div>
+{% endblock %}

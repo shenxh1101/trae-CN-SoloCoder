@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>扫雷游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>💣 扫雷游戏</h1>
+        </header>
+
+        <div class="game-info">
+            <div class="counter mine-counter">
+                <span class="label">剩余地雷</span>
+                <span id="mineCount" class="count">10</span>
+            </div>
+            <button id="faceBtn" class="face-btn">😊</button>
+            <div class="counter timer">
+                <span class="label">用时</span>
+                <span id="timer" class="count">0</span>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <select id="difficultySelect" class="control-btn">
+                <option value="easy">初级 (9×9, 10雷)</option>
+                <option value="medium">中级 (16×16, 40雷)</option>
+                <option value="hard">高级 (16×30, 99雷)</option>
+                <option value="custom">自定义...</option>
+            </select>
+            <button id="settingsBtn" class="control-btn">⚙️ 设置</button>
+            <button id="newGameBtn" class="control-btn primary">🔄 新游戏</button>
+        </div>
+
+        <div class="game-board-wrapper">
+            <div id="gameBoard" class="game-board"></div>
+        </div>
+
+        <div class="high-scores">
+            <h3>🏆 最高分记录</h3>
+            <div class="scores-list">
+                <div class="score-item">
+                    <span class="score-label">初级:</span>
+                    <span id="easyScore" class="score-value">--</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">中级:</span>
+                    <span id="mediumScore" class="score-value">--</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">高级:</span>
+                    <span id="hardScore" class="score-value">--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>⚙️ 游戏设置</h2>
+            
+            <div class="setting-group">
+                <label class="setting-label">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span>🔊 音效</span>
+                </label>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">
+                    <input type="checkbox" id="themeToggle">
+                    <span>🌙 暗色主题</span>
+                </label>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">
+                    <input type="checkbox" id="questionMarkToggle" checked>
+                    <span>❓ 问号标记模式</span>
+                </label>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">
+                    <input type="checkbox" id="autoSaveToggle" checked>
+                    <span>💾 自动保存进度</span>
+                </label>
+            </div>
+
+            <div class="custom-difficulty">
+                <h3>自定义难度</h3>
+                <div class="custom-inputs">
+                    <div class="input-group">
+                        <label>行数:</label>
+                        <input type="number" id="customRows" min="5" max="30" value="9">
+                    </div>
+                    <div class="input-group">
+                        <label>列数:</label>
+                        <input type="number" id="customCols" min="5" max="50" value="9">
+                    </div>
+                    <div class="input-group">
+                        <label>地雷数:</label>
+                        <input type="number" id="customMines" min="1" max="500" value="10">
+                    </div>
+                </div>
+                <button id="applyCustomBtn" class="control-btn primary">应用自定义</button>
+            </div>
+
+            <button id="closeSettingsBtn" class="control-btn">关闭</button>
+        </div>
+    </div>
+
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2 id="gameOverTitle">游戏结束</h2>
+            <p id="gameOverMessage"></p>
+            <p id="gameOverTime"></p>
+            <p id="newRecord" class="new-record" style="display: none;">🎉 新纪录！</p>
+            <button id="playAgainBtn" class="control-btn primary">再玩一次</button>
+        </div>
+    </div>
+
+    <div id="restoreModal" class="modal">
+        <div class="modal-content">
+            <h2>🔄 恢复游戏</h2>
+            <p>检测到未完成的游戏，是否恢复？</p>
+            <p id="restoreInfo"></p>
+            <div class="modal-buttons">
+                <button id="restoreGameBtn" class="control-btn primary">恢复游戏</button>
+                <button id="newGameFromRestoreBtn" class="control-btn">新游戏</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

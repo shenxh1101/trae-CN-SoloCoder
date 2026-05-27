@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>俄罗斯方块 - Tetris</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="game-container">
+    <header class="game-header">
+      <h1>俄罗斯方块</h1>
+      <div class="header-controls">
+        <button id="themeToggle" class="btn-icon" title="切换主题">🌙</button>
+        <button id="soundToggle" class="btn-icon" title="音效开关">🔊</button>
+      </div>
+    </header>
+
+    <main class="game-main">
+      <div class="game-board-wrapper">
+        <canvas id="gameBoard" width="300" height="600"></canvas>
+        <div id="pauseOverlay" class="overlay hidden">
+          <div class="overlay-content">
+            <h2>游戏暂停</h2>
+            <button id="resumeBtn" class="btn-primary">继续游戏</button>
+          </div>
+        </div>
+        <div id="gameOverOverlay" class="overlay hidden">
+          <div class="overlay-content">
+            <h2>游戏结束</h2>
+            <p class="final-score">最终得分: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="btn-primary">重新开始</button>
+          </div>
+        </div>
+        <div id="resumeOverlay" class="overlay hidden">
+          <div class="overlay-content">
+            <h2>检测到存档</h2>
+            <p>是否恢复上次游戏进度？</p>
+            <div class="btn-group">
+              <button id="loadGameBtn" class="btn-primary">恢复游戏</button>
+              <button id="newGameBtn" class="btn-secondary">新游戏</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="game-sidebar">
+        <div class="info-panel">
+          <div class="info-item">
+            <span class="info-label">分数</span>
+            <span class="info-value" id="score">0</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">最高分</span>
+            <span class="info-value" id="highScore">0</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">等级</span>
+            <span class="info-value" id="level">1</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">消除行数</span>
+            <span class="info-value" id="lines">0</span>
+          </div>
+        </div>
+
+        <div class="preview-panel">
+          <h3>下一个</h3>
+          <canvas id="next1" class="preview-canvas" width="120" height="80"></canvas>
+          <canvas id="next2" class="preview-canvas" width="120" height="80"></canvas>
+          <canvas id="next3" class="preview-canvas" width="120" height="80"></canvas>
+        </div>
+
+        <div class="control-panel">
+          <button id="pauseBtn" class="btn-control">⏸ 暂停</button>
+          <button id="resetBtn" class="btn-control">🔄 重置</button>
+        </div>
+
+        <div class="sound-control">
+          <button id="soundToggleMain" class="btn-control">
+            <span class="sound-icon">🔊</span>
+            <span class="sound-text">音效: 开启</span>
+          </button>
+        </div>
+
+        <div class="help-panel">
+          <h4>操作说明</h4>
+          <ul>
+            <li>← → 移动</li>
+            <li>↑ 旋转</li>
+            <li>↓ 加速下落</li>
+            <li>空格 硬到底</li>
+            <li>P 暂停</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <div class="mobile-controls">
+      <div class="control-row">
+        <button class="touch-btn" id="btnRotate">↻</button>
+        <button class="touch-btn" id="btnHardDrop">⬇</button>
+      </div>
+      <div class="control-row">
+        <button class="touch-btn" id="btnLeft">←</button>
+        <button class="touch-btn" id="btnDown">↓</button>
+        <button class="touch-btn" id="btnRight">→</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/tetris.js"></script>
+</body>
+</html>

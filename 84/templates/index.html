@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻聚合器</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-left">
+                <h1>📰 新闻聚合器</h1>
+                <span class="status-badge" id="statusBadge">加载中...</span>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="darkModeBtn" title="切换暗色模式">🌙</button>
+                <button class="btn-icon" id="refreshBtn" title="刷新新闻">🔄</button>
+                <button class="btn-icon" id="dailyReportBtn" title="生成日报">📋</button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>添加RSS源</h3>
+                    <form id="feedForm" class="feed-form">
+                        <input type="url" id="feedUrl" placeholder="RSS源URL" required>
+                        <input type="text" id="feedName" placeholder="名称（可选）">
+                        <button type="submit" class="btn-primary">添加</button>
+                    </form>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>筛选与搜索</h3>
+                    <div class="filter-group">
+                        <input type="text" id="keywordSearch" placeholder="搜索关键词...">
+                    </div>
+                    <div class="filter-group">
+                        <label>时间范围</label>
+                        <select id="timeRange">
+                            <option value="0">全部</option>
+                            <option value="1">最近1天</option>
+                            <option value="3">最近3天</option>
+                            <option value="7">最近7天</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showFavoritesOnly">
+                            仅显示收藏
+                        </label>
+                    </div>
+                    <button class="btn-secondary" id="clearFiltersBtn">清除筛选</button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>OPML 导入/导出</h3>
+                    <div class="opml-buttons">
+                        <label class="btn-secondary opml-upload-btn">
+                            📥 导入OPML
+                            <input type="file" id="opmlFile" accept=".opml,.xml" hidden>
+                        </label>
+                        <button class="btn-secondary" id="exportOpmlBtn">📤 导出OPML</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>订阅源管理</h3>
+                    <div id="feedsList" class="feeds-list">
+                        <p class="empty-text">暂无订阅源</p>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="filter-info" id="filterInfo" style="display:none;"></div>
+
+                <div class="articles-container">
+                    <div id="articlesList" class="articles-list">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>正在加载新闻...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="offlineBanner" class="offline-banner" style="display:none;">
+                    ⚠️ 当前显示的是缓存内容，部分新闻可能不是最新的
+                </div>
+            </main>
+        </div>
+
+        <div class="modal-overlay" id="qrModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>分享二维码</h3>
+                    <button class="modal-close" id="qrModalClose">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="qrImageContainer" class="qr-container"></div>
+                    <p class="qr-url" id="qrUrl"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="reportModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📋 今日日报</h3>
+                    <button class="modal-close" id="reportModalClose">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <pre id="reportContent" class="report-content"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="copyReportBtn">复制报告</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast" style="display:none;"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

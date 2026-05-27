@@ -1,0 +1,429 @@
+:root {
+    --bg-color: #f0f0f0;
+    --container-bg: #ffffff;
+    --text-color: #333333;
+    --border-color: #cccccc;
+    --cell-bg: #c0c0c0;
+    --cell-revealed: #e0e0e0;
+    --cell-border-light: #ffffff;
+    --cell-border-dark: #808080;
+    --mine-color: #ff0000;
+    --flag-color: #ff0000;
+    --question-color: #ff8800;
+    --btn-bg: #e0e0e0;
+    --btn-hover: #d0d0d0;
+    --btn-primary: #4CAF50;
+    --btn-primary-hover: #45a049;
+    --modal-overlay: rgba(0, 0, 0, 0.5);
+    --num-1: #0000ff;
+    --num-2: #008000;
+    --num-3: #ff0000;
+    --num-4: #000080;
+    --num-5: #800000;
+    --num-6: #008080;
+    --num-7: #000000;
+    --num-8: #808080;
+}
+
+body.dark-theme {
+    --bg-color: #1a1a1a;
+    --container-bg: #2d2d2d;
+    --text-color: #e0e0e0;
+    --border-color: #444444;
+    --cell-bg: #3a3a3a;
+    --cell-revealed: #4a4a4a;
+    --cell-border-light: #555555;
+    --cell-border-dark: #222222;
+    --mine-color: #ff4444;
+    --flag-color: #ff4444;
+    --question-color: #ffaa00;
+    --btn-bg: #444444;
+    --btn-hover: #555555;
+    --btn-primary: #2e7d32;
+    --btn-primary-hover: #388e3c;
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --num-1: #4488ff;
+    --num-2: #44ff44;
+    --num-3: #ff4444;
+    --num-4: #8888ff;
+    --num-5: #ff8888;
+    --num-6: #44ffff;
+    --num-7: #ffffff;
+    --num-8: #aaaaaa;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    padding: 10px;
+    transition: background-color 0.3s, color 0.3s;
+    touch-action: manipulation;
+}
+
+.game-container {
+    max-width: 100%;
+    margin: 0 auto;
+    background-color: var(--container-bg);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.game-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+}
+
+.counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+}
+
+.counter .label {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+.counter .count {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+    min-width: 50px;
+    text-align: center;
+}
+
+.mine-counter .count {
+    color: var(--mine-color);
+}
+
+.face-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--btn-bg);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.face-btn:hover {
+    background-color: var(--btn-hover);
+    transform: scale(1.05);
+}
+
+.face-btn:active {
+    transform: scale(0.95);
+}
+
+.game-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--btn-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    background-color: var(--btn-hover);
+}
+
+.control-btn.primary {
+    background-color: var(--btn-primary);
+    color: white;
+    border-color: var(--btn-primary);
+}
+
+.control-btn.primary:hover {
+    background-color: var(--btn-primary-hover);
+}
+
+.game-board-wrapper {
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+}
+
+.game-board {
+    display: inline-grid;
+    gap: 1px;
+    background-color: var(--border-color);
+    padding: 3px;
+    border-radius: 4px;
+}
+
+.cell {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background-color: var(--cell-bg);
+    border: 2px solid;
+    border-color: var(--cell-border-light) var(--cell-border-dark) var(--cell-border-dark) var(--cell-border-light);
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+@media (max-width: 400px) {
+    .cell {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+}
+
+.cell.revealed {
+    background-color: var(--cell-revealed);
+    border: 1px solid var(--border-color);
+}
+
+.cell.mine {
+    background-color: var(--mine-color);
+}
+
+.cell.flagged {
+    color: var(--flag-color);
+}
+
+.cell.question {
+    color: var(--question-color);
+}
+
+.cell.num-1 { color: var(--num-1); }
+.cell.num-2 { color: var(--num-2); }
+.cell.num-3 { color: var(--num-3); }
+.cell.num-4 { color: var(--num-4); }
+.cell.num-5 { color: var(--num-5); }
+.cell.num-6 { color: var(--num-6); }
+.cell.num-7 { color: var(--num-7); }
+.cell.num-8 { color: var(--num-8); }
+
+.cell:active:not(.revealed) {
+    border-color: var(--cell-border-dark) var(--cell-border-light) var(--cell-border-light) var(--cell-border-dark);
+}
+
+.high-scores {
+    text-align: center;
+    padding: 10px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+}
+
+.high-scores h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.scores-list {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.score-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.score-value {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--container-bg);
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+}
+
+.modal-content h3 {
+    margin: 15px 0 10px;
+    font-size: 1.1rem;
+}
+
+.setting-group {
+    margin-bottom: 15px;
+}
+
+.setting-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.setting-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.custom-difficulty {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.custom-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+}
+
+.input-group input {
+    width: 80px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons .control-btn {
+    flex: 1;
+}
+
+.modal-content p {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.new-record {
+    color: #ff9800;
+    font-size: 1.2rem;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+#applyCustomBtn,
+#closeSettingsBtn,
+#playAgainBtn,
+#restoreGameBtn,
+#newGameFromRestoreBtn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+@media (min-width: 768px) {
+    .game-container {
+        max-width: 600px;
+        padding: 20px;
+    }
+    
+    .cell {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+}

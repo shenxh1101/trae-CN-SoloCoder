@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 彩虹圆环</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="control-panel">
+        <h2>3D 彩虹圆环控制台</h2>
+        
+        <div class="stat-display">
+            当前物体数量: <span id="object-count">0</span>
+        </div>
+        
+        <div class="control-group">
+            <label>圆环半径: <span id="radius-value">5</span></label>
+            <input type="range" id="radius-slider" min="2" max="15" step="0.5" value="5">
+        </div>
+        
+        <div class="control-group">
+            <label>物体数量: <span id="count-value">200</span></label>
+            <input type="range" id="count-slider" min="50" max="500" step="10" value="200">
+        </div>
+        
+        <div class="control-group">
+            <label>旋转速度: <span id="speed-value">0.005</span></label>
+            <input type="range" id="speed-slider" min="0" max="0.05" step="0.001" value="0.005">
+        </div>
+        
+        <div class="control-group">
+            <label>物体形状</label>
+            <select id="shape-select">
+                <option value="cube">立方体</option>
+                <option value="sphere">球体</option>
+                <option value="tetrahedron">四面体</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>材质类型</label>
+            <select id="material-select">
+                <option value="standard">标准</option>
+                <option value="metal">金属</option>
+                <option value="emissive">发光</option>
+                <option value="transparent">半透明</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="stars-toggle" checked>
+                背景星空
+            </label>
+        </div>
+        
+        <div class="control-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="flow-toggle">
+                动态流光效果
+            </label>
+        </div>
+        
+        <div class="control-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="autorotate-toggle">
+                自动旋转相机
+            </label>
+        </div>
+        
+        <div class="button-group">
+            <button id="screenshot-btn">截图保存</button>
+            <button id="export-btn">导出配置</button>
+            <label class="file-input-label">
+                导入配置
+                <input type="file" id="import-input" accept=".json" style="display: none;">
+            </label>
+        </div>
+    </div>
+    
+    <script type="module" src="game.js"></script>
+</body>
+</html>

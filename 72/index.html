@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>打地鼠游戏</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="game-container" id="gameContainer">
+  <header class="game-header">
+    <h1 class="game-title">🔨 打地鼠</h1>
+    <div class="header-controls">
+      <div class="difficulty-group">
+        <label>难度：</label>
+        <select id="difficulty">
+          <option value="easy">简单</option>
+          <option value="normal" selected>普通</option>
+          <option value="hard">困难</option>
+        </select>
+      </div>
+      <div class="theme-group">
+        <label>主题：</label>
+        <select id="themeSelect">
+          <option value="grass">🌿 草地</option>
+          <option value="desert">🏜️ 沙漠</option>
+          <option value="snow">❄️ 雪地</option>
+        </select>
+      </div>
+      <div class="sound-group">
+        <label>
+          <input type="checkbox" id="soundToggle" checked />
+          音效
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <section class="stats-panel">
+    <div class="stat-item">
+      <span class="stat-label">⏱️ 时间</span>
+      <span class="stat-value" id="timer">30</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">🎯 得分</span>
+      <span class="stat-value" id="score">0</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">🔥 连击</span>
+      <span class="stat-value" id="combo">0</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">🏆 最高分</span>
+      <span class="stat-value" id="highScore">0</span>
+    </div>
+  </section>
+
+  <section class="game-area" id="gameArea">
+    <div class="grid" id="grid"></div>
+    <div class="combo-float" id="comboFloat"></div>
+    <div class="hit-effect" id="hitEffect"></div>
+  </section>
+
+  <div class="game-overlay" id="startOverlay">
+    <div class="overlay-content">
+      <h2>准备好了吗？</h2>
+      <p>30秒内尽量多打地鼠！</p>
+      <p>⚡ 金色地鼠 +双倍分  💣 炸弹扣分  🔥 连击加分</p>
+      <button class="btn btn-primary" id="startBtn">开始游戏</button>
+    </div>
+  </div>
+
+  <div class="game-overlay hidden" id="endOverlay">
+    <div class="overlay-content">
+      <h2>游戏结束</h2>
+      <div class="score-bar-container">
+        <div class="score-bar" id="scoreBar">
+          <div class="score-bar-fill" id="scoreBarFill"></div>
+        </div>
+        <span class="score-text" id="finalScore">得分：0</span>
+      </div>
+      <p class="comment" id="comment"></p>
+      <p class="high-score-text" id="highScoreText"></p>
+      <button class="btn btn-primary" id="restartBtn">再玩一次</button>
+    </div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

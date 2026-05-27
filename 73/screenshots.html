@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>俄罗斯方块 - 功能截图展示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #fff;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #a0a0c0;
+      font-size: 16px;
+      margin-bottom: 50px;
+    }
+
+    .screenshot-section {
+      max-width: 1100px;
+      margin: 0 auto 60px;
+      background: #252542;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .section-title {
+      color: #fff;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .section-desc {
+      color: #a0a0c0;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    .screenshot-row {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .screenshot-box {
+      border: 2px solid #3a3a5a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+
+    .screenshot-label {
+      color: #a0a0c0;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* ========== 游戏界面模拟 ========== */
+    .game-interface {
+      display: flex;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* 左侧游戏面板 */
+    .game-board-area {
+      background: #0f0f1a;
+      border-right: 1px solid #3a3a5a;
+      padding: 15px;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(10, 18px);
+      grid-template-rows: repeat(18, 18px);
+      gap: 1px;
+      background: #2a2a4a;
+    }
+
+    .cell {
+      background: #0f0f1a;
+      width: 18px;
+      height: 18px;
+    }
+
+    .cell.i { background: #00f0f0; box-shadow: inset 2px 2px 3px rgba(255,255,255,0.3), inset -2px -2px 3px rgba(0,0,0,0.3); }
+    .cell.o { background: #f0f000; box-shadow: inset 2px 2px 3px rgba(255,255,255,0.3), inset -2px -2px 3px rgba(0,0,0,0.3); }
+    .cell.t { background: #a000f0; box-shadow: inset 2px 2px 3px rgba(255,255,255,0.3), inset -2px -2px 3px rgba(0,0,0,0.3); }
+    .cell.s { background: #00f000; box-shadow: inset 2px 2px 3px rgba(255,255,255,0.3), inset -2px -2px 3px rgba(0,0,0,0.3); }
+    .cell.z { background: #f00000; box-shadow: inset 2px 2px 3px rgba(255,255,255,0.3), inset -2px -2px 3px rgba(0,0,0,0.3); }
+    .cell.j { background: #0000f0; box-shadow: inset 2px 2px 3px rgba(255,255,255,0.3), inset -2px -2px 3px rgba(0,0,0,0.3); }
+    .cell.l { background: #f0a000; box-shadow: inset 2px 2px 3px rgba(255,255,255,0.3), inset -2px -2px 3px rgba(0,0,0,0.3); }
+
+    .cell.ghost-i { background: rgba(0,240,240,0.3); border: 1px dashed rgba(0,240,240,0.5); }
+    .cell.ghost-o { background: rgba(240,240,0,0.3); border: 1px dashed rgba(240,240,0,0.5); }
+    .cell.ghost-t { background: rgba(160,0,240,0.3); border: 1px dashed rgba(160,0,240,0.5); }
+    .cell.ghost-j { background: rgba(0,0,240,0.3); border: 1px dashed rgba(0,0,240,0.5); }
+    .cell.ghost-l { background: rgba(240,160,0,0.3); border: 1px dashed rgba(240,160,0,0.5); }
+
+    /* 右侧信息面板 */
+    .info-panel {
+      background: #1a1a2e;
+      padding: 15px;
+      width: 160px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #3a3a5a;
+    }
+
+    .info-label { color: #a0a0c0; font-size: 11px; }
+    .info-value { color: #6366f1; font-size: 16px; font-weight: bold; }
+
+    .preview-section {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .preview-title {
+      color: #a0a0c0;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .mini-board {
+      background: #0f0f1a;
+      border-radius: 4px;
+      padding: 6px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 1px;
+      background: #2a2a4a;
+    }
+
+    .mini-cell {
+      width: 10px;
+      height: 10px;
+      background: #0f0f1a;
+    }
+
+    .mini-cell.i { background: #00f0f0; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3); }
+    .mini-cell.o { background: #f0f000; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3); }
+    .mini-cell.t { background: #a000f0; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3); }
+    .mini-cell.s { background: #00f000; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3); }
+    .mini-cell.z { background: #f00000; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3); }
+    .mini-cell.j { background: #0000f0; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3); }
+    .mini-cell.l { background: #f0a000; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3); }
+
+    .control-btn {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-top: 8px;
+      background: #252542;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .sound-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px;
+      margin-top: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+
+    .sound-btn.on {
+      background: #6366f1;
+      color: #fff;
+      border: none;
+    }
+
+    .sound-btn.off {
+      background: #252542;
+      color: #a0a0c0;
+      border: 2px dashed #3a3a5a;
+    }
+
+    /* 亮色主题 */
+    .game-interface.light .game-board-area {
+      background: #f8fafc;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .game-interface.light .game-board {
+      background: #e2e8f0;
+    }
+
+    .game-interface.light .cell {
+      background: #f8fafc;
+    }
+
+    .game-interface.light .info-panel {
+      background: #ffffff;
+    }
+
+    .game-interface.light .info-item {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .game-interface.light .info-label { color: #64748b; }
+    .game-interface.light .info-value { color: #6366f1; }
+    .game-interface.light .preview-title { color: #64748b; }
+
+    .game-interface.light .mini-board {
+      background: #f8fafc;
+    }
+
+    .game-interface.light .mini-grid {
+      background: #e2e8f0;
+    }
+
+    .game-interface.light .mini-cell {
+      background: #f8fafc;
+    }
+
+    .game-interface.light .control-btn {
+      background: #f1f5f9;
+      color: #333;
+    }
+
+    .game-interface.light .sound-btn.off {
+      background: #f1f5f9;
+      color: #64748b;
+      border-color: #cbd5e1;
+    }
+
+    /* 顶部栏 */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background: #1a1a2e;
+      border-bottom: 1px solid #3a3a5a;
+    }
+
+    .game-interface.light .top-bar {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .game-title {
+      color: #6366f1;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .top-icons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      background: #252542;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .game-interface.light .icon-btn {
+      background: #f1f5f9;
+      color: #333;
+    }
+
+    /* 功能标注 */
+    .annotation {
+      position: absolute;
+      background: rgba(99, 102, 241, 0.95);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+
+    .annotation::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 2px;
+      background: #6366f1;
+    }
+
+    .screenshot-wrapper {
+      position: relative;
+    }
+
+    /* 主题按钮截图 */
+    .theme-sound-demo {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .theme-block {
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .theme-block.dark {
+      background: #1a1a2e;
+    }
+
+    .theme-block.light {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+    }
+
+    .theme-block-title {
+      font-size: 14px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .dark .theme-block-title { color: #a0a0c0; }
+    .light .theme-block-title { color: #64748b; }
+
+    .button-row {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .sound-button-demo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .dark .sound-button-demo.on {
+      background: #6366f1;
+      color: #fff;
+    }
+
+    .dark .sound-button-demo.off {
+      background: #252542;
+      color: #a0a0c0;
+      border: 2px dashed #3a3a5a;
+    }
+
+    .light .sound-button-demo.on {
+      background: #6366f1;
+      color: #fff;
+    }
+
+    .light .sound-button-demo.off {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 2px dashed #cbd5e1;
+    }
+
+    .button-label {
+      font-size: 11px;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .dark .button-label { color: #a0a0c0; }
+    .light .button-label { color: #64748b; }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin: 40px auto;
+      color: #a0a0c0;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link:hover { color: #6366f1; }
+  </style>
+</head>
+<body>
+  <h1>📸 俄罗斯方块功能截图展示</h1>
+  <p class="subtitle">各项功能的视觉效果演示</p>
+
+  <!-- ==================== 1. 阴影预览功能 ==================== -->
+  <section class="screenshot-section">
+    <h2 class="section-title">1. 👻 阴影预览功能</h2>
+    <p class="section-desc">半透明方块显示当前方块的落点位置，帮助玩家预判放置位置</p>
+    <div class="screenshot-row">
+      <div>
+        <div class="screenshot-box screenshot-wrapper">
+          <div class="game-interface" id="ghostDemo">
+            <div class="top-bar">
+              <span class="game-title">俄罗斯方块</span>
+              <div class="top-icons">
+                <button class="icon-btn">🌙</button>
+                <button class="icon-btn">🔊</button>
+              </div>
+            </div>
+            <div style="display:flex;">
+              <div class="game-board-area">
+                <div class="game-board" id="ghostBoard"></div>
+              </div>
+              <div class="info-panel">
+                <div class="info-item">
+                  <span class="info-label">分数</span>
+                  <span class="info-value">1,250</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">最高分</span>
+                  <span class="info-value">5,800</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">等级</span>
+                  <span class="info-value">3</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">消除行数</span>
+                  <span class="info-value">23</span>
+                </div>
+                <div class="preview-section">
+                  <div class="preview-title">下一个</div>
+                  <div class="mini-board">
+                    <div class="mini-grid" id="ghostNext" style="grid-template-columns:repeat(3,10px);"></div>
+                  </div>
+                </div>
+                <button class="control-btn">⏸ 暂停</button>
+                <button class="control-btn">🔄 重置</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="screenshot-label">当前J形方块 + 底部半透明阴影预览落点</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. 方块队列功能 ==================== -->
+  <section class="screenshot-section">
+    <h2 class="section-title">2. 🔮 方块队列功能</h2>
+    <p class="section-desc">显示接下来的3个方块，帮助玩家提前规划策略</p>
+    <div class="screenshot-row">
+      <div>
+        <div class="screenshot-box">
+          <div class="game-interface">
+            <div class="top-bar">
+              <span class="game-title">俄罗斯方块</span>
+              <div class="top-icons">
+                <button class="icon-btn">🌙</button>
+                <button class="icon-btn">🔊</button>
+              </div>
+            </div>
+            <div style="display:flex;">
+              <div class="game-board-area">
+                <div class="game-board" id="queueBoard"></div>
+              </div>
+              <div class="info-panel">
+                <div class="info-item">
+                  <span class="info-label">分数</span>
+                  <span class="info-value">850</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">最高分</span>
+                  <span class="info-value">5,800</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">等级</span>
+                  <span class="info-value">2</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">消除行数</span>
+                  <span class="info-value">15</span>
+                </div>
+                <div class="preview-section">
+                  <div class="preview-title">下一个 (I形)</div>
+                  <div class="mini-board">
+                    <div class="mini-grid" id="queue1" style="grid-template-columns:repeat(4,10px);"></div>
+                  </div>
+                  <div class="preview-title">第二个 (O形)</div>
+                  <div class="mini-board">
+                    <div class="mini-grid" id="queue2" style="grid-template-columns:repeat(2,10px);"></div>
+                  </div>
+                  <div class="preview-title">第三个 (T形)</div>
+                  <div class="mini-board">
+                    <div class="mini-grid" id="queue3" style="grid-template-columns:repeat(3,10px);"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="screenshot-label">右侧显示3个待出现方块队列预览</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. 主题切换功能 ==================== -->
+  <section class="screenshot-section">
+    <h2 class="section-title">3. 🌙☀️ 主题切换</h2>
+    <p class="section-desc">支持暗色和亮色双主题，一键切换，自动保存偏好</p>
+    <div class="screenshot-row">
+      <div>
+        <div class="screenshot-box">
+          <div class="game-interface">
+            <div class="top-bar">
+              <span class="game-title">俄罗斯方块</span>
+              <div class="top-icons">
+                <button class="icon-btn">🌙</button>
+                <button class="icon-btn">🔊</button>
+              </div>
+            </div>
+            <div style="display:flex;">
+              <div class="game-board-area">
+                <div class="game-board" id="darkBoard"></div>
+              </div>
+              <div class="info-panel">
+                <div class="info-item">
+                  <span class="info-label">分数</span>
+                  <span class="info-value">2,400</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">最高分</span>
+                  <span class="info-value">5,800</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">等级</span>
+                  <span class="info-value">4</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">消除行数</span>
+                  <span class="info-value">35</span>
+                </div>
+                <div class="preview-section">
+                  <div class="preview-title">下一个</div>
+                  <div class="mini-board">
+                    <div class="mini-grid" id="darkNext" style="grid-template-columns:repeat(3,10px);"></div>
+                  </div>
+                </div>
+                <button class="control-btn">⏸ 暂停</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="screenshot-label">🌙 暗色主题 - 深色背景护眼</p>
+      </div>
+      <div>
+        <div class="screenshot-box">
+          <div class="game-interface light">
+            <div class="top-bar">
+              <span class="game-title">俄罗斯方块</span>
+              <div class="top-icons">
+                <button class="icon-btn">☀️</button>
+                <button class="icon-btn">🔊</button>
+              </div>
+            </div>
+            <div style="display:flex;">
+              <div class="game-board-area">
+                <div class="game-board" id="lightBoard"></div>
+              </div>
+              <div class="info-panel">
+                <div class="info-item">
+                  <span class="info-label">分数</span>
+                  <span class="info-value">2,400</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">最高分</span>
+                  <span class="info-value">5,800</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">等级</span>
+                  <span class="info-value">4</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">消除行数</span>
+                  <span class="info-value">35</span>
+                </div>
+                <div class="preview-section">
+                  <div class="preview-title">下一个</div>
+                  <div class="mini-board">
+                    <div class="mini-grid" id="lightNext" style="grid-template-columns:repeat(3,10px);"></div>
+                  </div>
+                </div>
+                <button class="control-btn">⏸ 暂停</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="screenshot-label">☀️ 亮色主题 - 明亮清晰</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. 音效开关按钮 ==================== -->
+  <section class="screenshot-section">
+    <h2 class="section-title">4. 🔊 音效开关按钮</h2>
+    <p class="section-desc">双主题下音效按钮的开启/关闭状态视觉效果</p>
+    <div class="screenshot-row">
+      <div class="theme-sound-demo">
+        <div class="theme-block dark">
+          <div class="theme-block-title">暗色主题</div>
+          <div class="button-row">
+            <div>
+              <div class="sound-button-demo on">
+                <span>🔊</span>
+                <span>音效: 开启</span>
+              </div>
+              <div class="button-label">开启状态</div>
+            </div>
+            <div>
+              <div class="sound-button-demo off">
+                <span>🔇</span>
+                <span>音效: 关闭</span>
+              </div>
+              <div class="button-label">关闭状态（虚线边框）</div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-block light">
+          <div class="theme-block-title">亮色主题</div>
+          <div class="button-row">
+            <div>
+              <div class="sound-button-demo on">
+                <span>🔊</span>
+                <span>音效: 开启</span>
+              </div>
+              <div class="button-label">开启状态</div>
+            </div>
+            <div>
+              <div class="sound-button-demo off">
+                <span>🔇</span>
+                <span>音效: 关闭</span>
+              </div>
+              <div class="button-label">关闭状态（虚线边框）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="screenshot-label" style="margin-top:20px;">顶部图标按钮 + 侧边栏详细按钮，两处UI实时同步</p>
+  </section>
+
+  <a href="index.html" class="back-link">🎮 返回游戏体验</a>
+  <a href="features-demo.html" class="back-link">📖 查看功能说明</a>
+
+  <script>
+    function createBoard(containerId, filledCells, ghostCells) {
+      const board = document.getElementById(containerId);
+      for (let y = 0; y < 18; y++) {
+        for (let x = 0; x < 10; x++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          const key = `${x},${y}`;
+          if (filledCells[key]) cell.classList.add(filledCells[key]);
+          if (ghostCells[key]) cell.classList.add(ghostCells[key]);
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    function createMiniGrid(containerId, shape, type) {
+      const grid = document.getElementById(containerId);
+      shape.forEach(row => {
+        row.forEach(c => {
+          const cell = document.createElement('div');
+          cell.className = 'mini-cell' + (c ? ' ' + type : '');
+          grid.appendChild(cell);
+        });
+      });
+    }
+
+    // 阴影预览演示
+    createBoard('ghostBoard', 
+      {
+        // 底部已固定的方块
+        '2,16': 'o', '3,16': 'o', '4,16': 'o', '5,16': 'o', '6,16': 't', '7,16': 't',
+        '1,17': 's', '2,17': 's', '3,17': 'z', '4,17': 'z', '5,17': 'o', '6,17': 'o', '7,17': 'o',
+        '5,15': 'l', '6,15': 't', '7,15': 't',
+        '5,14': 'l', '6,14': 'o', '7,14': 'o',
+        // 当前J形方块
+        '3,5': 'j', '3,6': 'j', '4,6': 'j', '5,6': 'j',
+      },
+      {
+        // 半透明阴影预览（J形落到底部的位置）
+        '3,13': 'ghost-j', '3,12': 'ghost-j', '4,12': 'ghost-j', '5,12': 'ghost-j',
+      }
+    );
+    createMiniGrid('ghostNext', [[1,1,1]], 'l');
+
+    // 方块队列演示
+    createBoard('queueBoard', 
+      {
+        '3,16': 't', '4,16': 't', '5,16': 't',
+        '2,17': 'j', '3,17': 't', '4,17': 't', '5,17': 't', '6,17': 'j', '7,17': 'j',
+        // 当前S形方块
+        '3,8': 's', '4,8': 's', '4,7': 's', '5,7': 's',
+      },
+      {}
+    );
+    createMiniGrid('queue1', [[1,1,1,1]], 'i');
+    createMiniGrid('queue2', [[1,1],[1,1]], 'o');
+    createMiniGrid('queue3', [[0,1,0],[1,1,1]], 't');
+
+    // 暗色主题
+    createBoard('darkBoard', 
+      {
+        '2,15': 'i', '3,15': 'i', '4,15': 'i', '5,15': 'i',
+        '1,16': 'j', '2,16': 'l', '3,16': 'l', '4,16': 't', '5,16': 't', '6,16': 't',
+        '1,17': 'j', '2,17': 's', '3,17': 's', '4,17': 'z', '5,17': 'z', '6,17': 'o', '7,17': 'o',
+      },
+      {}
+    );
+    createMiniGrid('darkNext', [[0,1,0],[1,1,1]], 't');
+
+    // 亮色主题
+    createBoard('lightBoard', 
+      {
+        '2,15': 'i', '3,15': 'i', '4,15': 'i', '5,15': 'i',
+        '1,16': 'j', '2,16': 'l', '3,16': 'l', '4,16': 't', '5,16': 't', '6,16': 't',
+        '1,17': 'j', '2,17': 's', '3,17': 's', '4,17': 'z', '5,17': 'z', '6,17': 'o', '7,17': 'o',
+      },
+      {}
+    );
+    createMiniGrid('lightNext', [[0,1,0],[1,1,1]], 't');
+  </script>
+</body>
+</html>

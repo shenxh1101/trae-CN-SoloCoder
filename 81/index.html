@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2048 游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-theme">
+    <div class="container">
+        <header class="header">
+            <div class="title-section">
+                <h1 class="game-title">2048</h1>
+                <p class="game-subtitle">合并方块，挑战2048！</p>
+            </div>
+            <div class="scores-section">
+                <div class="score-box">
+                    <div class="score-label">分数</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">最高分</div>
+                    <div class="score-value" id="bestScore">0</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="controls-top">
+            <button class="btn btn-primary" id="newGameBtn">🎮 新游戏</button>
+            <button class="btn btn-secondary" id="undoBtn">↩️ 撤销</button>
+            <button class="btn btn-secondary" id="leaderboardBtn">🏆 排行榜</button>
+        </div>
+
+        <div class="controls-middle">
+            <div class="control-group">
+                <label class="control-label">难度:</label>
+                <select class="control-select" id="difficultySelect">
+                    <option value="easy">简单</option>
+                    <option value="normal" selected>普通</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <button class="btn btn-toggle" id="themeBtn">🌙 深色</button>
+                <button class="btn btn-toggle" id="soundBtn">🔊 音效</button>
+                <button class="btn btn-toggle" id="previewBtn">👁️ 预览</button>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <div class="game-message" id="gameMessage">
+                <div class="message-content">
+                    <h2 id="messageTitle">游戏结束</h2>
+                    <p id="messageText">再接再厉！</p>
+                    <div class="message-buttons">
+                        <button class="btn btn-primary" id="messageBtn">再来一局</button>
+                        <button class="btn btn-secondary" id="continueBtn" style="display:none;">继续挑战</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="preview-hint" id="previewHint">下一个: <span id="nextTile">2</span></div>
+            
+            <div class="grid-container" id="gridContainer">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            
+            <div class="tiles-container" id="tilesContainer"></div>
+        </div>
+
+        <div class="instructions">
+            <p>💡 使用 <strong>方向键</strong> 或 <strong>滑动</strong> 移动方块</p>
+            <p>🎯 相同数字碰撞合并，达到 <strong>2048</strong> 获胜！</p>
+        </div>
+    </div>
+
+    <div class="modal" id="leaderboardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏆 排行榜</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ol class="leaderboard-list" id="leaderboardList">
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="milestone-popup" id="milestonePopup">
+        <span id="milestoneText">🎉 达到 128 分！</span>
+    </div>
+
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <script src="storage.js"></script>
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

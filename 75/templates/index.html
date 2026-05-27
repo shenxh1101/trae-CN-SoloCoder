@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}代码片段分享 - 首页{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="form-section">
+        <h2>创建新片段</h2>
+        <form action="{{ url_for('create') }}" method="POST" class="snippet-form">
+            <div class="form-group">
+                <label for="title">标题</label>
+                <input type="text" id="title" name="title" placeholder="输入片段标题...">
+            </div>
+            <div class="form-group">
+                <label for="language">编程语言</label>
+                <select id="language" name="language">
+                    {% for lang in languages %}
+                    <option value="{{ lang }}">{{ lang }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="code">代码内容</label>
+                <textarea id="code" name="code" rows="15" placeholder="在此粘贴或输入代码..." required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">密码保护（可选）</label>
+                    <input type="password" id="password" name="password" placeholder="留空则无需密码">
+                </div>
+                <div class="form-group">
+                    <label for="expire">过期时间</label>
+                    <select id="expire" name="expire">
+                        <option value="">永不过期</option>
+                        <option value="1">1 天</option>
+                        <option value="7">7 天</option>
+                        <option value="30">30 天</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">创建片段</button>
+        </form>
+    </div>
+
+    <div class="list-section">
+        <div class="list-header">
+            <h2>最近片段</h2>
+            <div class="filters">
+                <form method="GET" class="filter-form">
+                    <select name="language" onchange="this.form.submit()">
+                        <option value="">全部语言</option>
+                        {% for lang in available_languages %}
+                        <option value="{{ lang }}" {% if selected_language == lang %}selected{% endif %}>{{ lang }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="search" placeholder="搜索标题或代码..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-small">搜索</button>
+                </form>
+            </div>
+        </div>
+
+        {% if recent_snippets %}
+        <div class="snippet-list">
+            {% for snippet in recent_snippets %}
+            <div class="snippet-item">
+                <div class="snippet-title">
+                    <a href="{{ url_for('view', short_code=snippet.short_code) }}">{{ snippet.title }}</a>
+                </div>
+                <div class="snippet-meta">
+                    <span class="lang-badge">{{ snippet.language }}</span>
+                    <span class="views">{{ snippet.views }} 次查看</span>
+                    <span class="date">{{ snippet.created_at[:10] }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty">暂无片段</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

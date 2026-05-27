@@ -1,0 +1,122 @@
+{
+  "/Users/mac/code/solo coder/83/setup.py": {
+    "path": "/Users/mac/code/solo coder/83/setup.py",
+    "extension": ".py",
+    "size": 1069,
+    "mtime": 1779869823.5576026,
+    "hash": "3d20874975be0f1d4ba28caa3a9a97f6",
+    "total_lines": 30,
+    "blank_lines": 1,
+    "comment_lines": 0,
+    "code_lines": 29,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/report.html": {
+    "path": "/Users/mac/code/solo coder/83/report.html",
+    "extension": ".html",
+    "size": 2573,
+    "mtime": 1779869904.9607537,
+    "hash": "423785db5ede5869fd51b101a1e490cd",
+    "total_lines": 46,
+    "blank_lines": 0,
+    "comment_lines": 0,
+    "code_lines": 46,
+    "language": "HTML"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/scanner.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/scanner.py",
+    "extension": ".py",
+    "size": 5395,
+    "mtime": 1779869511.232118,
+    "hash": "e22cbe6dd9fc73d5649fa531a0d33642",
+    "total_lines": 161,
+    "blank_lines": 30,
+    "comment_lines": 3,
+    "code_lines": 128,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/analyzer.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/analyzer.py",
+    "extension": ".py",
+    "size": 8780,
+    "mtime": 1779869546.5414388,
+    "hash": "001be9e6d26f606c5c937dd70c54674f",
+    "total_lines": 263,
+    "blank_lines": 42,
+    "comment_lines": 3,
+    "code_lines": 218,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/cache.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/cache.py",
+    "extension": ".py",
+    "size": 4950,
+    "mtime": 1779869579.395663,
+    "hash": "a8b8b3868dee27467936818a2c9c5b87",
+    "total_lines": 175,
+    "blank_lines": 33,
+    "comment_lines": 3,
+    "code_lines": 139,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/__init__.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/__init__.py",
+    "extension": ".py",
+    "size": 85,
+    "mtime": 1779869409.7530298,
+    "hash": "ac28cf0bb6fc1c7c9ef4a568bd41fad0",
+    "total_lines": 5,
+    "blank_lines": 1,
+    "comment_lines": 3,
+    "code_lines": 1,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/main.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/main.py",
+    "extension": ".py",
+    "size": 12013,
+    "mtime": 1779869800.7721932,
+    "hash": "be3bd06c2fdd33245bf28e7eb6ecc749",
+    "total_lines": 423,
+    "blank_lines": 80,
+    "comment_lines": 24,
+    "code_lines": 319,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/languages.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/languages.py",
+    "extension": ".py",
+    "size": 8956,
+    "mtime": 1779869486.7218115,
+    "hash": "543a93c87baddfca2e9c5e8abb5e9b08",
+    "total_lines": 307,
+    "blank_lines": 15,
+    "comment_lines": 3,
+    "code_lines": 289,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/compare.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/compare.py",
+    "extension": ".py",
+    "size": 13973,
+    "mtime": 1779869736.0412219,
+    "hash": "bd86513571f0259038ba853beb680a55",
+    "total_lines": 378,
+    "blank_lines": 59,
+    "comment_lines": 3,
+    "code_lines": 316,
+    "language": "Python"
+  },
+  "/Users/mac/code/solo coder/83/cloc_tool/report.py": {
+    "path": "/Users/mac/code/solo coder/83/cloc_tool/report.py",
+    "extension": ".py",
+    "size": 15054,
+    "mtime": 1779869655.793753,
+    "hash": "bdd75204bb7ab33b98f00e3b86c3fe0a",
+    "total_lines": 334,
+    "blank_lines": 51,
+    "comment_lines": 3,
+    "code_lines": 280,
+    "language": "Python"
+  }
+}

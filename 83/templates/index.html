@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户反馈系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 580px; width: 100%; padding: 40px; }
+        h1 { color: #333; margin-bottom: 8px; font-size: 26px; }
+        .subtitle { color: #888; margin-bottom: 28px; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; font-size: 14px; }
+        input[type="text"], input[type="email"], textarea, select { width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: border-color 0.2s; outline: none; font-family: inherit; }
+        input[type="text"]:focus, input[type="email"]:focus, textarea:focus, select:focus { border-color: #667eea; }
+        textarea { resize: vertical; min-height: 120px; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+        .star-rating { display: inline-flex; gap: 6px; }
+        .star-rating input { display: none; }
+        .star-rating label { font-size: 32px; cursor: pointer; color: #ddd; transition: color 0.15s; margin-bottom: 0; }
+        .star-rating label:hover, .star-rating label:hover ~ label { color: #ffc107; }
+        .star-rating input:checked ~ label { color: #ffc107; }
+        .star-rating { direction: rtl; }
+        .star-rating label { color: #ddd; }
+        .star-rating label.selected { color: #ffc107; }
+        button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; width: 100%; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.4); }
+        .flash-error { background: #fee; color: #c33; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; border: 1px solid #fcc; }
+        .top-links { text-align: right; margin-bottom: 16px; }
+        .top-links a { color: #667eea; font-size: 13px; text-decoration: none; }
+        .top-links a:hover { text-decoration: underline; }
+        .field-hint { font-size: 12px; color: #999; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-links">
+            <a href="{{ url_for('query') }}">查询反馈状态</a> |
+            <a href="{{ url_for('admin_login') }}">管理员登录</a>
+        </div>
+        <h1>用户反馈</h1>
+        <p class="subtitle">您的反馈对我们非常重要，请花一点时间告诉我们您的想法</p>
+        {% with messages = get_flashed_messages(category_filter=['error']) %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash-error">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('submit') }}">
+            <div class="form-group">
+                <label>昵称 <span style="color:#e33">*</span></label>
+                <input type="text" name="nickname" placeholder="请输入您的昵称" value="{{ nickname or '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>邮箱</label>
+                <input type="email" name="email" placeholder="请输入您的邮箱（选填）" value="{{ email or '' }}">
+            </div>
+            <div class="form-group">
+                <label>问题类型</label>
+                <select name="category">
+                    {% for opt in category_options %}
+                        <option value="{{ opt.value }}" {% if category == opt.value %}selected{% endif %}>{{ opt.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>评分</label>
+                <div class="star-rating" id="starRating">
+                    {% for i in range(5, 0, -1) %}
+                        <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" {% if (rating|default(3)) == i %}checked{% endif %}>
+                        <label for="star{{ i }}" class="{% if (rating|default(3)) == i %}selected{% endif %}">&#9733;</label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label>反馈内容 <span style="color:#e33">*</span></label>
+                <textarea name="content" placeholder="请详细描述您的反馈..." required>{{ content or '' }}</textarea>
+                <p class="field-hint">提交后系统将为您生成查询码，用于查询反馈处理状态</p>
+            </div>
+            <button type="submit">提交反馈</button>
+        </form>
+    </div>
+    <script>
+        const labels = document.querySelectorAll('#starRating label');
+        labels.forEach((label, idx) => {
+            label.addEventListener('click', () => {
+                labels.forEach(l => l.classList.remove('selected'));
+                for (let i = 0; i <= idx; i++) {
+                    labels[i].classList.add('selected');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

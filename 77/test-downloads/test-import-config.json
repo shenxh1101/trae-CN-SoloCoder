@@ -1,0 +1,10 @@
+{
+  "radius": 10,
+  "turns": 4,
+  "count": 600,
+  "cubeSize": 0.8,
+  "particleMode": true,
+  "autoRotate": false,
+  "motionBlur": true,
+  "background": "darkblue"
+}

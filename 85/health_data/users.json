@@ -1,0 +1,7 @@
+{
+  "users": [
+    "default",
+    "alice"
+  ],
+  "current_user": "default"
+}

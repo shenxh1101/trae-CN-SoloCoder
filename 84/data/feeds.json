@@ -1,0 +1,14 @@
+[
+  {
+    "name": "BBC News",
+    "url": "https://feeds.bbci.co.uk/news/rss.xml",
+    "last_update": "2026-05-27 16:50:33",
+    "article_count": 34
+  },
+  {
+    "name": "TechCrunch",
+    "url": "https://techcrunch.com/feed/",
+    "last_update": "2026-05-27 16:50:33",
+    "article_count": 0
+  }
+]

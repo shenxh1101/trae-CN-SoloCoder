@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>俄罗斯方块 - 功能展示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 36px;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+      font-size: 16px;
+      margin-bottom: 40px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background: white;
+      color: #667eea;
+    }
+
+    .demo-section {
+      display: none;
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .demo-section.active {
+      display: block;
+    }
+
+    .demo-title {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .demo-content {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .demo-preview {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .demo-description {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .demo-description h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .demo-description p {
+      color: #666;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .feature-list {
+      list-style: none;
+    }
+
+    .feature-list li {
+      padding: 8px 0;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feature-list li::before {
+      content: "✓";
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    .mock-game {
+      background: #1a1a2e;
+      border-radius: 8px;
+      padding: 20px;
+      display: inline-block;
+    }
+
+    .mock-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 20px);
+      grid-template-rows: repeat(12, 20px);
+      gap: 1px;
+      background: #2a2a4a;
+    }
+
+    .cell {
+      background: #0f0f1a;
+    }
+
+    .cell.filled {
+      background: #6366f1;
+      box-shadow: inset 2px 2px 4px rgba(255,255,255,0.3),
+                  inset -2px -2px 4px rgba(0,0,0,0.3);
+    }
+
+    .cell.ghost {
+      background: rgba(99, 102, 241, 0.3);
+      border: 1px dashed rgba(99, 102, 241, 0.5);
+    }
+
+    .theme-demo {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .theme-panel {
+      flex: 1;
+      min-width: 250px;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .theme-dark {
+      background: #1a1a2e;
+      color: white;
+    }
+
+    .theme-light {
+      background: #ffffff;
+      color: #333;
+      border: 2px solid #e2e8f0;
+    }
+
+    .theme-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .theme-light .theme-title {
+      border-color: #e2e8f0;
+    }
+
+    .sound-btn-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .sound-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .sound-btn.on {
+      background: #6366f1;
+      color: white;
+    }
+
+    .sound-btn.off {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 2px dashed #cbd5e1;
+    }
+
+    .theme-dark .sound-btn.off {
+      background: #252542;
+      color: #a0a0c0;
+      border-color: #3a3a5a;
+    }
+
+    .queue-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .queue-item {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 10px;
+      width: 120px;
+      text-align: center;
+    }
+
+    .mini-grid {
+      display: inline-grid;
+      gap: 1px;
+      background: #e2e8f0;
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    .mini-cell {
+      width: 12px;
+      height: 12px;
+      background: white;
+    }
+
+    .mini-cell.filled-i { background: #00f0f0; }
+    .mini-cell.filled-o { background: #f0f000; }
+    .mini-cell.filled-t { background: #a000f0; }
+
+    .mobile-demo {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .phone-frame {
+      width: 280px;
+      background: #1a1a2e;
+      border-radius: 24px;
+      padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .phone-screen {
+      background: #0f0f1a;
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .mobile-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 12px);
+      grid-template-rows: repeat(16, 12px);
+      gap: 1px;
+      background: #2a2a4a;
+      margin: 0 auto 15px;
+      width: fit-content;
+    }
+
+    .mobile-controls-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .mobile-btn-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .mobile-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: none;
+      background: #252542;
+      color: white;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-btn:active {
+      background: #6366f1;
+      transform: scale(0.95);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 12px 30px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 25px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      transition: all 0.3s;
+    }
+
+    .back-link:hover {
+      background: white;
+      color: #667eea;
+    }
+
+    .code-ref {
+      background: #f8fafc;
+      border-left: 4px solid #6366f1;
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #475569;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 俄罗斯方块功能展示</h1>
+    <p class="subtitle">全面展示游戏的核心功能与视觉效果</p>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" data-tab="ghost">阴影预览</button>
+      <button class="tab-btn" data-tab="queue">方块队列</button>
+      <button class="tab-btn" data-tab="theme">主题切换</button>
+      <button class="tab-btn" data-tab="sound">音效开关</button>
+      <button class="tab-btn" data-tab="mobile">移动端适配</button>
+    </div>
+
+    <section class="demo-section active" id="ghost">
+      <h2 class="demo-title">👻 阴影预览功能</h2>
+      <div class="demo-content">
+        <div class="demo-preview">
+          <div class="mock-game">
+            <div class="mock-grid" id="ghostGrid"></div>
+            <p style="color:#a0a0c0; font-size:12px; margin-top:10px; text-align:center;">
+              半透明方块显示落点位置预览
+            </p>
+          </div>
+        </div>
+        <div class="demo-description">
+          <h3>功能说明</h3>
+          <p>阴影预览功能通过在方块落点位置显示半透明的预览效果，帮助玩家预判方块下落位置，提高游戏策略性。</p>
+          <ul class="feature-list">
+            <li>实时计算方块落点位置</li>
+            <li>半透明效果不干扰游戏视野</li>
+            <li>与当前方块颜色保持一致</li>
+            <li>30% 透明度提供清晰预览</li>
+          </ul>
+          <div class="code-ref">
+            实现位置: js/tetris.js #L264-L277 (drawGhost函数)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="queue">
+      <h2 class="demo-title">🔮 下一方块队列</h2>
+      <div class="demo-content">
+        <div class="demo-preview">
+          <div class="queue-demo">
+            <div class="queue-item">
+              <div style="font-size:12px; color:#666; margin-bottom:5px;">下一个</div>
+              <div class="mini-grid" id="queue1"></div>
+            </div>
+            <div class="queue-item">
+              <div style="font-size:12px; color:#666; margin-bottom:5px;">第二个</div>
+              <div class="mini-grid" id="queue2"></div>
+            </div>
+            <div class="queue-item">
+              <div style="font-size:12px; color:#666; margin-bottom:5px;">第三个</div>
+              <div class="mini-grid" id="queue3"></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-description">
+          <h3>功能说明</h3>
+          <p>显示接下来的3个方块，帮助玩家提前规划策略，做出更明智的放置决策。</p>
+          <ul class="feature-list">
+            <li>队列显示3个待出现方块</li>
+            <li>每个方块使用对应颜色渲染</li>
+            <li>自动滚动更新队列</li>
+            <li>预览画布居中对齐</li>
+          </ul>
+          <div class="code-ref">
+            实现位置: js/tetris.js #L293-L325 (drawPreview函数)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="theme">
+      <h2 class="demo-title">🌙☀️ 主题切换</h2>
+      <div class="demo-content">
+        <div class="demo-preview" style="width:100%;">
+          <div class="theme-demo">
+            <div class="theme-panel theme-dark">
+              <div class="theme-title">🌙 暗色主题</div>
+              <div style="display:grid; grid-template-columns:repeat(5,20px); gap:1px; background:#2a2a4a; margin-bottom:15px;">
+                <div style="height:20px; background:#0f0f1a;"></div>
+                <div style="height:20px; background:#00f0f0; box-shadow:inset 1px 1px 2px rgba(255,255,255,0.3);"></div>
+                <div style="height:20px; background:#f0f000; box-shadow:inset 1px 1px 2px rgba(255,255,255,0.3);"></div>
+                <div style="height:20px; background:#a000f0; box-shadow:inset 1px 1px 2px rgba(255,255,255,0.3);"></div>
+                <div style="height:20px; background:#0f0f1a;"></div>
+              </div>
+              <div style="font-size:13px; color:#a0a0c0;">深色背景护眼，适合夜间游戏</div>
+            </div>
+            <div class="theme-panel theme-light">
+              <div class="theme-title">☀️ 亮色主题</div>
+              <div style="display:grid; grid-template-columns:repeat(5,20px); gap:1px; background:#e2e8f0; margin-bottom:15px;">
+                <div style="height:20px; background:#f8fafc;"></div>
+                <div style="height:20px; background:#00d4d4; box-shadow:inset 1px 1px 2px rgba(255,255,255,0.5);"></div>
+                <div style="height:20px; background:#e6e600; box-shadow:inset 1px 1px 2px rgba(255,255,255,0.5);"></div>
+                <div style="height:20px; background:#9000e0; box-shadow:inset 1px 1px 2px rgba(255,255,255,0.5);"></div>
+                <div style="height:20px; background:#f8fafc;"></div>
+              </div>
+              <div style="font-size:13px; color:#64748b;">明亮清晰，适合白天游玩</div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-description" style="width:100%;">
+          <h3>功能说明</h3>
+          <p>支持暗色和亮色双主题切换，自动保存用户偏好设置，下次打开自动应用。</p>
+          <ul class="feature-list">
+            <li>CSS 变量实现主题系统</li>
+            <li>点击顶部按钮一键切换</li>
+            <li>localStorage 保存主题偏好</li>
+            <li>平滑过渡动画效果</li>
+          </ul>
+          <div class="code-ref">
+            实现位置: css/style.css #L1-L28 (主题变量定义)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="sound">
+      <h2 class="demo-title">🔊 音效开关按钮</h2>
+      <div class="demo-content">
+        <div class="demo-preview">
+          <div class="sound-btn-demo">
+            <div style="padding:15px; background:#f8fafc; border-radius:8px;">
+              <div style="font-size:14px; color:#666; margin-bottom:10px;">亮色主题 - 按钮状态</div>
+              <div style="display:flex; gap:15px;">
+                <button class="sound-btn on">
+                  <span>🔊</span>
+                  <span>音效: 开启</span>
+                </button>
+                <button class="sound-btn off">
+                  <span>🔇</span>
+                  <span>音效: 关闭</span>
+                </button>
+              </div>
+            </div>
+            <div style="padding:15px; background:#1a1a2e; border-radius:8px;">
+              <div style="font-size:14px; color:#a0a0c0; margin-bottom:10px;">暗色主题 - 按钮状态</div>
+              <div style="display:flex; gap:15px;">
+                <button class="sound-btn on" style="background:#6366f1;">
+                  <span>🔊</span>
+                  <span style="color:white;">音效: 开启</span>
+                </button>
+                <button class="sound-btn off" style="background:#252542; color:#a0a0c0; border:2px dashed #3a3a5a;">
+                  <span>🔇</span>
+                  <span>音效: 关闭</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-description">
+          <h3>功能说明</h3>
+          <p>双位置音效开关设计，顶部快速切换 + 侧边栏详细状态显示，两处UI实时同步。</p>
+          <ul class="feature-list">
+            <li>顶部图标按钮：快速切换</li>
+            <li>侧边栏按钮：显示详细状态</li>
+            <li>关闭时虚线边框视觉提示</li>
+            <li>开启时播放确认音效</li>
+            <li>双主题样式适配</li>
+          </ul>
+          <div class="code-ref">
+            实现位置: js/tetris.js #L511-L531 (updateSoundUI函数)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="mobile">
+      <h2 class="demo-title">📱 移动端适配</h2>
+      <div class="demo-content">
+        <div class="demo-preview" style="width:100%;">
+          <div class="mobile-demo">
+            <div class="phone-frame">
+              <div style="color:white; font-size:14px; text-align:center; margin-bottom:10px;">竖屏模式</div>
+              <div class="phone-screen">
+                <div class="mobile-grid" id="mobileGrid"></div>
+                <div class="mobile-controls-demo">
+                  <div class="mobile-btn-row">
+                    <button class="mobile-btn">↻</button>
+                    <button class="mobile-btn">⬇</button>
+                  </div>
+                  <div class="mobile-btn-row">
+                    <button class="mobile-btn">←</button>
+                    <button class="mobile-btn">↓</button>
+                    <button class="mobile-btn">→</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1; min-width:250px;">
+              <h3 style="color:white; margin-bottom:15px;">移动端特性</h3>
+              <ul class="feature-list" style="color:rgba(255,255,255,0.9);">
+                <li style="color:rgba(255,255,255,0.9);">响应式布局，自动适配屏幕</li>
+                <li style="color:rgba(255,255,255,0.9);">虚拟方向按钮，触摸友好</li>
+                <li style="color:rgba(255,255,255,0.9);">长按连续移动功能</li>
+                <li style="color:rgba(255,255,255,0.9);">按下发光反馈效果</li>
+                <li style="color:rgba(255,255,255,0.9);">画布滑动手势支持</li>
+                <li style="color:rgba(255,255,255,0.9);">按钮最小 44x44px 可点击区域</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="demo-description" style="width:100%;">
+          <div class="code-ref">
+            实现位置: css/style.css #L372-L523 (移动端媒体查询)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <a href="index.html" class="back-link">🎮 进入游戏体验</a>
+  </div>
+
+  <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.demo-section');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.tab;
+        tabBtns.forEach(b => b.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    function initGhostGrid() {
+      const grid = document.getElementById('ghostGrid');
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 10; x++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (y >= 10) {
+            if (x >= 2 && x <= 5) cell.classList.add('filled');
+          }
+          if (y >= 8 && y <= 9) {
+            if (x >= 4 && x <= 5) cell.classList.add('filled');
+          }
+          if (y >= 3 && y <= 4) {
+            if (x >= 4 && x <= 7) cell.classList.add('ghost');
+          }
+          if (y == 2) {
+            if (x >= 4 && x <= 7) cell.classList.add('filled');
+          }
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function initQueueGrids() {
+      const q1 = document.getElementById('queue1');
+      const q2 = document.getElementById('queue2');
+      const q3 = document.getElementById('queue3');
+
+      q1.style.gridTemplateColumns = 'repeat(4, 12px)';
+      q2.style.gridTemplateColumns = 'repeat(3, 12px)';
+      q3.style.gridTemplateColumns = 'repeat(3, 12px)';
+
+      const iShape = [[1,1,1,1]];
+      iShape.forEach(row => row.forEach(c => {
+        const cell = document.createElement('div');
+        cell.className = 'mini-cell' + (c ? ' filled-i' : '');
+        q1.appendChild(cell);
+      }));
+
+      const tShape = [[0,1,0],[1,1,1]];
+      tShape.forEach(row => row.forEach(c => {
+        const cell = document.createElement('div');
+        cell.className = 'mini-cell' + (c ? ' filled-t' : '');
+        q2.appendChild(cell);
+      }));
+
+      const oShape = [[1,1],[1,1]];
+      oShape.forEach(row => row.forEach(c => {
+        const cell = document.createElement('div');
+        cell.className = 'mini-cell' + (c ? ' filled-o' : '');
+        q3.appendChild(cell);
+      }));
+    }
+
+    function initMobileGrid() {
+      const grid = document.getElementById('mobileGrid');
+      for (let y = 0; y < 16; y++) {
+        for (let x = 0; x < 10; x++) {
+          const cell = document.createElement('div');
+          cell.style.background = '#0f0f1a';
+          cell.style.width = '11px';
+          cell.style.height = '11px';
+          if (y >= 14) {
+            if (x >= 3 && x <= 6) cell.style.background = '#6366f1';
+          }
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    initGhostGrid();
+    initQueueGrids();
+    initMobileGrid();
+  </script>
+</body>
+</html>
