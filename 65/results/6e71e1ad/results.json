@@ -1,0 +1,494 @@
+{
+  "task_id": "6e71e1ad",
+  "start_url": "https://httpbin.org/links/10/0",
+  "max_depth": 2,
+  "status": "completed",
+  "pages_crawled": 10,
+  "links_found": 45,
+  "start_time": 1779850241.038333,
+  "end_time": 1779850390.7802958,
+  "duration": 149.7419629096985,
+  "pages": [
+    {
+      "url": "https://httpbin.org/links/10/0",
+      "depth": 0,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:50:44",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/1",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:50:53",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/2",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:51:08",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/3",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:51:22",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/4",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:51:31",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/5",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:51:41",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/6",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:51:51",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/7",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:52:02",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/8",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/9",
+          "text": "9"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:52:58",
+      "content_length": 313
+    },
+    {
+      "url": "https://httpbin.org/links/10/9",
+      "depth": 1,
+      "title": "Links",
+      "summary": "Links 0 1 2 3 4 5 6 7 8 9",
+      "text": "Links 0 1 2 3 4 5 6 7 8 9",
+      "links": [
+        {
+          "url": "https://httpbin.org/links/10/0",
+          "text": "0"
+        },
+        {
+          "url": "https://httpbin.org/links/10/1",
+          "text": "1"
+        },
+        {
+          "url": "https://httpbin.org/links/10/2",
+          "text": "2"
+        },
+        {
+          "url": "https://httpbin.org/links/10/3",
+          "text": "3"
+        },
+        {
+          "url": "https://httpbin.org/links/10/4",
+          "text": "4"
+        },
+        {
+          "url": "https://httpbin.org/links/10/5",
+          "text": "5"
+        },
+        {
+          "url": "https://httpbin.org/links/10/6",
+          "text": "6"
+        },
+        {
+          "url": "https://httpbin.org/links/10/7",
+          "text": "7"
+        },
+        {
+          "url": "https://httpbin.org/links/10/8",
+          "text": "8"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:53:05",
+      "content_length": 313
+    }
+  ],
+  "error_count": 0
+}

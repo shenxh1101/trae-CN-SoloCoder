@@ -1,0 +1,68 @@
+[
+  {
+    "ip": "8.8.8.8",
+    "is_proxy": false,
+    "proxy_types": [],
+    "detected_ports": [],
+    "anonymity_level": "N/A",
+    "risk_score": 20,
+    "geolocation": {
+      "country": "United States",
+      "country_code": "US",
+      "city": "Ashburn",
+      "region": "Virginia",
+      "isp": "Google LLC",
+      "org": "Google Public DNS",
+      "as": "AS15169 Google LLC",
+      "timezone": "America/New_York",
+      "latitude": 39.03,
+      "longitude": -77.5
+    },
+    "threat_intel": {
+      "blacklist_count": 1,
+      "total_sources": 2,
+      "success_sources": 2,
+      "threats": [
+        "数据中心/托管IP"
+      ],
+      "details": [
+        "查询来源: IPInfo, IP-API"
+      ],
+      "abuse_score": 0,
+      "reports": 0
+    },
+    "timestamp": "2026-05-27 10:43:05"
+  },
+  {
+    "ip": "1.1.1.1",
+    "is_proxy": false,
+    "proxy_types": [],
+    "detected_ports": [
+      80
+    ],
+    "anonymity_level": "未知",
+    "risk_score": 3,
+    "geolocation": {
+      "country": "Unknown",
+      "country_code": "Unknown",
+      "city": "Unknown",
+      "region": "Unknown",
+      "isp": "Unknown",
+      "org": "Unknown",
+      "as": "Unknown",
+      "timezone": "Unknown",
+      "latitude": null,
+      "longitude": null
+    },
+    "threat_intel": {
+      "blacklist_count": 0,
+      "total_sources": 2,
+      "success_sources": 0,
+      "threats": [],
+      "details": [],
+      "abuse_score": 0,
+      "reports": 0
+    },
+    "timestamp": "2026-05-27 10:41:27"
+  }
+]

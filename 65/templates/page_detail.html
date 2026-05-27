@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面详情 - {{ page.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 页面详情</h1>
+            <a href="{{ url_for('task_detail', task_id=task_id) }}" class="btn btn-small">← 返回任务</a>
+        </header>
+
+        <div class="card">
+            <div class="page-detail-header">
+                <div>
+                    <h2>{{ page.title }}</h2>
+                    <p class="page-url-full">
+                        <a href="{{ page.url }}" target="_blank" rel="noopener">{{ page.url }}</a>
+                    </p>
+                </div>
+                <div class="page-badges">
+                    <span class="badge depth">深度 {{ page.depth }}</span>
+                    <span class="badge status code-{{ page.status_code }}">{{ page.status_code }}</span>
+                    <span class="badge size">{{ page.content_length }} 字符</span>
+                </div>
+            </div>
+
+            <div class="page-meta-row">
+                <span>🕐 爬取时间: {{ page.crawled_at }}</span>
+            </div>
+
+            <div class="action-bar">
+                <a href="{{ url_for('download_text', task_id=task_id, filename=page.url | safe_filename) }}"
+                   class="btn btn-primary">
+                    📥 下载纯文本版本
+                </a>
+                <a href="{{ page.url }}" target="_blank" rel="noopener" class="btn btn-secondary">
+                    🔗 访问原网页
+                </a>
+            </div>
+
+            <div class="content-section">
+                <h3>内容摘要</h3>
+                <div class="summary-box">
+                    {{ page.summary }}
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>完整内容</h3>
+                <div class="full-text-box">
+                    {{ page.text | replace('\n', '<br>') | safe }}
+                </div>
+            </div>
+
+            {% if page.links %}
+                <div class="content-section">
+                    <h3>发现的链接 ({{ page.links | length }})</h3>
+                    <div class="links-list">
+                        {% for link in page.links %}
+                            <div class="link-item">
+                                <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.text or link.url }}</a>
+                                <span class="link-url">{{ link.url }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

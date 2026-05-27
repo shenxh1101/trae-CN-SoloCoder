@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}批量检测 - 代理IP检测服务{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>📁 批量IP检测</h2>
+        
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" action="{{ url_for('batch_detect') }}" enctype="multipart/form-data" class="batch-form">
+            <div class="form-group">
+                <label for="file">上传IP列表文件</label>
+                <input type="file" id="file" name="file" accept=".txt" required>
+                <small class="form-text">支持TXT格式文件，每行一个IP地址，单次最多100个IP</small>
+            </div>
+            
+            <div class="form-group">
+                <label>文件格式示例:</label>
+                <pre class="file-example">8.8.8.8
+1.1.1.1
+208.67.222.222</pre>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">开始批量检测</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}代理IP检测服务{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 代理IP检测服务</h1>
+            <nav>
+                <a href="{{ url_for('index') }}">单IP检测</a>
+                <a href="{{ url_for('batch_detect') }}">批量检测</a>
+                <a href="#api-docs">API文档</a>
+            </nav>
+        </header>
+        
+        <div class="main-content">
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>📋 历史记录</h3>
+                    {% if history %}
+                        <ul class="history-list">
+                            {% for item in history %}
+                                <li>
+                                    <a href="{{ url_for('view_history', ip=item.ip) }}">
+                                        <span class="ip">{{ item.ip }}</span>
+                                        <span class="risk risk-{{ item.risk_score|risk_color }}">
+                                            {{ item.risk_score }}分
+                                        </span>
+                                    </a>
+                                    <small>{{ item.timestamp }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="empty">暂无历史记录</p>
+                    {% endif %}
+                </div>
+            </aside>
+        </div>
+        
+        <footer>
+            <p>代理IP检测服务 | 检测结果仅供参考</p>
+        </footer>
+    </div>
+</body>
+</html>

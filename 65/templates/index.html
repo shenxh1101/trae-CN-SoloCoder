@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络爬虫调度器</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🕷️ 网络爬虫调度器</h1>
+            <p class="subtitle">创建并管理你的爬虫任务</p>
+        </header>
+
+        <div class="card">
+            <h2>创建新任务</h2>
+            <form method="POST" action="{{ url_for('create_task') }}" class="task-form">
+                <div class="form-group">
+                    <label for="start_url">起始URL *</label>
+                    <input type="url" id="start_url" name="start_url" required
+                           placeholder="https://example.com" pattern="https?://.*">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="max_depth">爬取深度 (最大3层)</label>
+                        <select id="max_depth" name="max_depth">
+                            <option value="1">1 层</option>
+                            <option value="2">2 层</option>
+                            <option value="3" selected>3 层</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="request_interval">请求间隔 (秒)</label>
+                        <input type="number" id="request_interval" name="request_interval"
+                               value="1" min="0" max="60" step="0.5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="respect_robots" checked>
+                        遵守 robots.txt 规则
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="allowed_domains">允许的域名 (逗号分隔，留空则使用起始URL域名)</label>
+                    <input type="text" id="allowed_domains" name="allowed_domains"
+                           placeholder="example.com, sub.example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="keywords">关键词过滤 (逗号分隔，留空则保存所有页面)</label>
+                    <input type="text" id="keywords" name="keywords"
+                           placeholder="技术, 新闻, 教程">
+                </div>
+
+                <button type="submit" class="btn btn-primary">🚀 开始爬取</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>任务历史记录</h2>
+            {% if tasks %}
+                <div class="task-list">
+                    {% for task in tasks %}
+                        <div class="task-item status-{{ task.status }}">
+                            <div class="task-header">
+                                <div class="task-info">
+                                    <span class="status-badge">{{ task.status }}</span>
+                                    <span class="task-url">{{ task.start_url }}</span>
+                                </div>
+                                <div class="task-stats">
+                                    <span>📄 {{ task.pages_crawled }} 页</span>
+                                    <span>🔗 {{ task.links_found }} 链接</span>
+                                    {% if task.duration %}
+                                        <span>⏱️ {{ "%.2f"|format(task.duration) }}s</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="task-footer">
+                                <span class="task-id">ID: {{ task.task_id }}</span>
+                                <span class="task-depth">深度: {{ task.max_depth }} 层</span>
+                                {% if task.start_time %}
+                                    <span class="task-time">
+                                        {{ task.start_time | int | datetimeformat }}
+                                    </span>
+                                {% endif %}
+                                <a href="{{ url_for('task_detail', task_id=task.task_id) }}"
+                                   class="btn btn-small">查看详情</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">暂无任务记录，创建你的第一个爬虫任务吧！</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

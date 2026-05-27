@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务详情 - {{ task.task_id }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 任务详情</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-small">← 返回列表</a>
+        </header>
+
+        <div class="card">
+            <div class="task-header-large">
+                <div>
+                    <h2>{{ task.start_url }}</h2>
+                    <p class="task-meta">
+                        任务ID: <code>{{ task.task_id }}</code> |
+                        深度: {{ task.max_depth }} 层 |
+                        {% if task.respect_robots %}遵守 robots.txt{% else %}忽略 robots.txt{% endif %} |
+                        请求间隔: {{ task.request_interval }}s
+                    </p>
+                    {% if task.allowed_domains %}
+                        <p class="task-meta">允许域名: {{ task.allowed_domains | join(', ') }}</p>
+                    {% endif %}
+                    {% if task.keywords %}
+                        <p class="task-meta">关键词: {{ task.keywords | join(', ') }}</p>
+                    {% endif %}
+                </div>
+                <div class="status-indicator status-{{ task.status }}">
+                    <span class="status-text">{{ task.status }}</span>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="pages-count">{{ task.pages_crawled }}</div>
+                        <div class="stat-label">已爬取页面</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="links-count">{{ task.links_found }}</div>
+                        <div class="stat-label">发现链接</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="duration">{{ "%.2f"|format(task.duration or 0) }}s</div>
+                        <div class="stat-label">耗时</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="errors">{{ task.error_count if task.error_count else 0 }}</div>
+                        <div class="stat-label">错误</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                {% if task.status == 'running' %}
+                    <a href="{{ url_for('pause_task', task_id=task.task_id) }}" class="btn btn-warning">⏸️ 暂停</a>
+                {% endif %}
+                {% if task.status == 'paused' %}
+                    <a href="{{ url_for('resume_task', task_id=task.task_id) }}" class="btn btn-success">▶️ 恢复</a>
+                {% endif %}
+                {% if task.status in ['running', 'paused'] %}
+                    <a href="{{ url_for('cancel_task', task_id=task.task_id) }}" class="btn btn-danger"
+                       onclick="return confirm('确定要取消此任务吗？')">❌ 取消</a>
+                {% endif %}
+                {% if task.status in ['completed', 'cancelled', 'failed'] %}
+                    {% if pages %}
+                        <a href="{{ url_for('export_csv', task_id=task.task_id) }}" class="btn btn-primary">📊 导出 CSV</a>
+                        <a href="{{ url_for('export_json', task_id=task.task_id) }}" class="btn btn-secondary">📄 导出 JSON</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📄 爬取到的页面 ({{ pages | length }})</h2>
+            {% if pages %}
+                <div class="page-list">
+                    {% for page in pages %}
+                        <div class="page-item">
+                            <div class="page-header">
+                                <span class="page-depth">深度 {{ page.depth }}</span>
+                                <span class="page-status code-{{ page.status_code }}">{{ page.status_code }}</span>
+                            </div>
+                            <h3 class="page-title">
+                                <a href="{{ url_for('view_page', task_id=task.task_id, page_index=loop.index0) }}">
+                                    {{ page.title }}
+                                </a>
+                            </h3>
+                            <p class="page-url">{{ page.url }}</p>
+                            <p class="page-summary">{{ page.summary }}</p>
+                            <div class="page-meta">
+                                <span>🕐 {{ page.crawled_at }}</span>
+                                <span>📝 {{ page.content_length }} 字符</span>
+                                <span>🔗 {{ page.links | length }} 个链接</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">
+                    {% if task.status in ['running', 'pending', 'paused'] %}
+                        正在爬取中，请稍候...
+                    {% else %}
+                        没有找到符合条件的页面
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const taskId = "{{ task.task_id }}";
+        const currentStatus = "{{ task.status }}";
+
+        if (['running', 'paused'].includes(currentStatus)) {
+            const refreshInterval = setInterval(() => {
+                fetch(`/api/progress/${taskId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            clearInterval(refreshInterval);
+                            return;
+                        }
+
+                        document.getElementById('pages-count').textContent = data.pages_crawled;
+                        document.getElementById('links-count').textContent = data.links_found;
+                        document.getElementById('duration').textContent = data.duration + 's';
+                        document.getElementById('errors').textContent = data.error_count || 0;
+
+                        if (!['running', 'paused'].includes(data.status)) {
+                            clearInterval(refreshInterval);
+                            setTimeout(() => window.location.reload(), 1000);
+                        }
+                    })
+                    .catch(() => clearInterval(refreshInterval));
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

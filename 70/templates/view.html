@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ code }} - 文本粘贴服务{% endblock %}
+
+{% block content %}
+<div class="info-bar">
+    <div class="info-item">
+        <span>📋</span>
+        <span>访问码：<strong>{{ code }}</strong></span>
+    </div>
+    <div class="info-item">
+        <span>👁️</span>
+        <span>查看次数：<strong>{{ views }}</strong></span>
+    </div>
+    <div class="info-item">
+        <span>🕐</span>
+        <span>创建时间：<strong>{{ created_at|datetime_format }}</strong></span>
+    </div>
+    <div class="info-item">
+        <span>⏳</span>
+        <span>剩余时间：<strong>{{ expires_at|time_remaining }}</strong></span>
+    </div>
+    {% if language %}
+    <div class="info-item">
+        <span>🖥️</span>
+        <span>语言：<strong>{{ language }}</strong></span>
+    </div>
+    {% endif %}
+</div>
+
+{% if one_time %}
+<div class="warning">
+    ⚠️ 这是一次性阅读文本，刷新页面后将无法再次查看。
+</div>
+{% endif %}
+
+{% if highlighted %}
+    {{ highlighted|safe }}
+{% else %}
+    <pre style="background: #f8f9fa; padding: 20px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap;">{{ content }}</pre>
+{% endif %}
+
+<div class="actions">
+    <a href="{{ url_for('view_raw', code=code) }}" class="btn btn-secondary" target="_blank">查看原文</a>
+    <a href="{{ url_for('download', code=code) }}" class="btn btn-success">下载TXT</a>
+    <a href="{{ url_for('index') }}" class="btn">返回首页</a>
+</div>
+{% endblock %}

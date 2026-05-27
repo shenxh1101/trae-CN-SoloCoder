@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}提交成功 - 文本粘贴服务{% endblock %}
+
+{% block content %}
+<div class="result-box">
+    <h3>✅ 提交成功！</h3>
+    <div class="result-item">
+        <span class="label">访问链接：</span>
+        <span class="value">{{ base_url }}/s/{{ code }}</span>
+    </div>
+    <div class="result-item">
+        <span class="label">访问码：</span>
+        <span class="value">{{ code }}</span>
+    </div>
+    <div class="result-item">
+        <span class="label">删除密钥：</span>
+        <span class="value">{{ delete_key }}</span>
+    </div>
+</div>
+
+<div class="warning">
+    ⚠️ 请妥善保管删除密钥，用于后续删除该文本。
+</div>
+
+<div class="qr-code">
+    <img src="{{ url_for('qrcode_view') }}?code={{ code }}" alt="二维码">
+    <p>扫码访问</p>
+</div>
+
+<div class="actions">
+    <a href="{{ url_for('view', code=code) }}" class="btn" target="_blank">查看文本</a>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">继续提交</a>
+</div>
+{% endblock %}

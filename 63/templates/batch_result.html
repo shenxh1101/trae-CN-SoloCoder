@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}批量检测结果 - 代理IP检测服务{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="result-header">
+            <h2>📊 批量检测结果</h2>
+            <a href="{{ url_for('export_csv') }}" class="btn btn-success">📥 导出CSV</a>
+        </div>
+        
+        <div class="batch-stats">
+            <div class="stat-item">
+                <span class="stat-label">总检测数</span>
+                <span class="stat-value">{{ results|length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">代理IP数</span>
+                <span class="stat-value text-danger">{{ results|selectattr('is_proxy')|list|length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">高风险</span>
+                <span class="stat-value text-danger">{{ results|selectattr('risk_level', 'equalto', '高风险')|list|length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">中风险</span>
+                <span class="stat-value text-warning">{{ results|selectattr('risk_level', 'equalto', '中风险')|list|length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">低风险</span>
+                <span class="stat-value text-success">{{ results|selectattr('risk_level', 'equalto', '低风险')|list|length }}</span>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>IP地址</th>
+                        <th>是否代理</th>
+                        <th>代理类型</th>
+                        <th>匿名级别</th>
+                        <th>风险评分</th>
+                        <th>风险等级</th>
+                        <th>国家/城市</th>
+                        <th>运营商</th>
+                        <th>黑名单</th>
+                        <th>检测时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                        <tr class="{% if result.risk_level == '高风险' %}table-danger{% elif result.risk_level == '中风险' %}table-warning{% endif %}">
+                            <td>
+                                <a href="{{ url_for('view_history', ip=result.ip) }}">{{ result.ip }}</a>
+                                {% if result.from_cache %}
+                                    <span class="cache-indicator" title="来自缓存">⚡</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if result.is_proxy %}
+                                    <span class="badge badge-danger">是</span>
+                                {% else %}
+                                    <span class="badge badge-success">否</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ result.proxy_types|join('/') if result.proxy_types else '-' }}</td>
+                            <td>{{ result.anonymity_level }}</td>
+                            <td>
+                                <span class="risk risk-{{ result.risk_score|risk_color }}">
+                                    {{ result.risk_score }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ result.risk_score|risk_color }}">
+                                    {{ result.risk_level }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if result.geolocation.country != 'Unknown' %}
+                                    {{ result.geolocation.country }}<br>
+                                    <small>{{ result.geolocation.city }}</small>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ result.geolocation.isp if result.geolocation.isp != 'Unknown' else '-' }}</td>
+                            <td>
+                                {% if result.threat_intel.blacklist_count > 0 %}
+                                    <span class="text-danger">{{ result.threat_intel.blacklist_count }}</span>
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
+                            <td><small>{{ result.timestamp }}</small></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="result-footer">
+            <a href="{{ url_for('batch_detect') }}" class="btn btn-secondary">返回批量检测</a>
+        </div>
+    </div>
+{% endblock %}

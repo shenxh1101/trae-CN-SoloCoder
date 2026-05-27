@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - 文本粘贴服务{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('submit') }}" onsubmit="return validateForm()">
+    <div class="form-group">
+        <label for="content">文本内容</label>
+        <textarea id="content" name="content" placeholder="在此输入要分享的文本内容..." oninput="updateCharCount()"></textarea>
+        <div class="char-count" id="charCount">0 / 102400 字符</div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="password">阅读密码（可选）</label>
+                <input type="password" id="password" name="password" placeholder="留空则无需密码">
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label for="expiration">过期时间</label>
+                <select id="expiration" name="expiration">
+                    {% for value, label in expiration_options %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="checkbox-group">
+        <input type="checkbox" id="one_time" name="one_time">
+        <label for="one_time">一次性阅读（查看后自动删除）</label>
+    </div>
+    
+    <button type="submit" class="btn">提交文本</button>
+</form>
+
+<script>
+function updateCharCount() {
+    const content = document.getElementById('content').value;
+    const bytes = new Blob([content]).size;
+    const counter = document.getElementById('charCount');
+    counter.textContent = `${bytes} / 102400 字节`;
+    counter.classList.toggle('warning', bytes > 90000);
+}
+
+function validateForm() {
+    const content = document.getElementById('content').value;
+    const bytes = new Blob([content]).size;
+    if (bytes > 102400) {
+        alert('文本大小不能超过100KB');
+        return false;
+    }
+    if (!content.trim()) {
+        alert('请输入文本内容');
+        return false;
+    }
+    return true;
+}
+</script>
+{% endblock %}

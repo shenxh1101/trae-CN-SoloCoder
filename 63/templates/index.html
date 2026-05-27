@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}单IP检测 - 代理IP检测服务{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>🔍 单IP检测</h2>
+        
+        <div class="api-config-status">
+            <h4>API配置状态</h4>
+            <div class="api-status-list">
+                <span class="api-item">
+                    AbuseIPDB: 
+                    <span class="api-status {{ 'configured' if api_keys_configured.abuseipdb else 'not-configured' }}">
+                        {{ '已配置' if api_keys_configured.abuseipdb else '未配置' }}
+                    </span>
+                </span>
+                <span class="api-item">
+                    IPQualityScore: 
+                    <span class="api-status {{ 'configured' if api_keys_configured.ipqualityscore else 'not-configured' }}">
+                        {{ '已配置' if api_keys_configured.ipqualityscore else '未配置' }}
+                    </span>
+                </span>
+                <span class="api-item">
+                    VirusTotal: 
+                    <span class="api-status {{ 'configured' if api_keys_configured.virus_total else 'not-configured' }}">
+                        {{ '已配置' if api_keys_configured.virus_total else '未配置' }}
+                    </span>
+                </span>
+            </div>
+            <small class="form-text">配置环境变量即可启用: ABUSEIPDB_API_KEY, IPQUALITYSCORE_API_KEY, VIRUSTOTAL_API_KEY</small>
+        </div>
+        
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" action="{{ url_for('detect') }}" class="detect-form">
+            <div class="form-group">
+                <label for="ip">IP地址</label>
+                <input type="text" id="ip" name="ip" placeholder="例如: 8.8.8.8" required>
+            </div>
+            
+            <div class="form-group">
+                <label>端口扫描选项（可选，留空则扫描全部）</label>
+                <div class="port-options">
+                    <div class="port-group">
+                        <h4>HTTP代理端口</h4>
+                        <div class="port-checkboxes">
+                            {% for port in common_ports.HTTP %}
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="ports" value="{{ port }}">
+                                    {{ port }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="port-group">
+                        <h4>SOCKS代理端口</h4>
+                        <div class="port-checkboxes">
+                            {% for port in common_ports.SOCKS %}
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="ports" value="{{ port }}">
+                                    {{ port }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">开始检测</button>
+        </form>
+    </div>
+    
+    <div class="card" id="api-docs">
+        <h2>📚 API文档</h2>
+        
+        <div class="api-section">
+            <h3>单IP检测</h3>
+            <div class="api-info">
+                <code>GET /api/detect?ip=IP地址[&ports=端口1&ports=端口2...]</code>
+            </div>
+            <div class="api-info">
+                <code>POST /api/detect</code>
+                <pre>Body: {"ip": "8.8.8.8", "ports": [8080, 1080]}</pre>
+            </div>
+            
+            <h4>响应示例:</h4>
+            <pre class="code-block">{
+  "ip": "8.8.8.8",
+  "is_proxy": false,
+  "proxy_types": [],
+  "detected_ports": [],
+  "anonymity_level": "N/A",
+  "risk_score": 5,
+  "risk_level": "低风险",
+  "geolocation": {
+    "country": "United States",
+    "city": "Mountain View",
+    "isp": "Google LLC"
+  },
+  "threat_intel": {
+    "blacklist_count": 0,
+    "threats": []
+  },
+  "timestamp": "2024-01-01 12:00:00",
+  "from_cache": false
+}</pre>
+        </div>
+        
+        <div class="api-section">
+            <h3>批量检测</h3>
+            <div class="api-info">
+                <code>POST /api/batch</code>
+                <pre>Body: {"ips": ["8.8.8.8", "1.1.1.1"]}</pre>
+            </div>
+        </div>
+        
+        <div class="api-section">
+            <h3>获取历史记录</h3>
+            <div class="api-info">
+                <code>GET /api/history</code>
+            </div>
+        </div>
+    </div>
+{% endblock %}

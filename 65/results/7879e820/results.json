@@ -1,0 +1,53 @@
+{
+  "task_id": "7879e820",
+  "start_url": "https://httpbin.org",
+  "max_depth": 2,
+  "status": "completed",
+  "pages_crawled": 2,
+  "links_found": 4,
+  "start_time": 1779850093.500627,
+  "end_time": 1779850112.1042519,
+  "duration": 18.60362482070923,
+  "pages": [
+    {
+      "url": "https://httpbin.org",
+      "depth": 0,
+      "title": "httpbin.org",
+      "summary": "httpbin.org httpbin.org 0.9.2 [ Base URL: httpbin.org/ ] A simple HTTP Request & Response Service. Run locally: $ docker run -p 80:80 kennethreitz/httpbin the developer - Website Send email to the developer [Powered by Flasgger ] Other Utilities HTML form that posts to /post /forms/post",
+      "text": "httpbin.org httpbin.org 0.9.2 [ Base URL: httpbin.org/ ] A simple HTTP Request & Response Service. Run locally: $ docker run -p 80:80 kennethreitz/httpbin the developer - Website Send email to the developer [Powered by Flasgger ] Other Utilities HTML form that posts to /post /forms/post",
+      "links": [
+        {
+          "url": "https://github.com/requests/httpbin",
+          "text": ""
+        },
+        {
+          "url": "https://kennethreitz.org",
+          "text": "the developer - Website"
+        },
+        {
+          "url": "https://github.com/rochacbruno/flasgger",
+          "text": "Flasgger"
+        },
+        {
+          "url": "https://httpbin.org/forms/post",
+          "text": "HTML form"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:48:21",
+      "content_length": 9591
+    },
+    {
+      "url": "https://httpbin.org/forms/post",
+      "depth": 1,
+      "title": "https://httpbin.org/forms/post",
+      "summary": "Customer name: Telephone: E-mail address: Pizza Size Small Medium Large Pizza Toppings Bacon Extra Cheese Onion Mushroom Preferred delivery time: Delivery instructions: Submit order",
+      "text": "Customer name: Telephone: E-mail address: Pizza Size Small Medium Large Pizza Toppings Bacon Extra Cheese Onion Mushroom Preferred delivery time: Delivery instructions: Submit order",
+      "links": [],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:48:29",
+      "content_length": 1397
+    }
+  ],
+  "error_count": 0
+}

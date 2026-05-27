@@ -1,0 +1,148 @@
+[
+  {
+    "task_id": "fb7fe4d6",
+    "start_url": "https://example.com",
+    "max_depth": 1,
+    "respect_robots": true,
+    "request_interval": 0.5,
+    "allowed_domains": [
+      "example.com"
+    ],
+    "keywords": [],
+    "status": "completed",
+    "pages_crawled": 1,
+    "links_found": 1,
+    "error_count": 0,
+    "start_time": 1779848635.046769,
+    "end_time": 1779848647.564401,
+    "duration": 12.517632007598877
+  },
+  {
+    "task_id": "f042b51d",
+    "start_url": "https://example.com",
+    "max_depth": 1,
+    "respect_robots": true,
+    "request_interval": 0.5,
+    "allowed_domains": [
+      "example.com"
+    ],
+    "keywords": [],
+    "status": "completed",
+    "pages_crawled": 1,
+    "links_found": 1,
+    "error_count": 0,
+    "start_time": 1779848685.763991,
+    "end_time": 1779848705.733866,
+    "duration": 19.9698748588562
+  },
+  {
+    "task_id": "4e308cab",
+    "start_url": "https://httpbin.org",
+    "max_depth": 1,
+    "respect_robots": false,
+    "request_interval": 0.5,
+    "allowed_domains": [
+      "httpbin.org"
+    ],
+    "keywords": [],
+    "status": "completed",
+    "pages_crawled": 2,
+    "links_found": 4,
+    "error_count": 0,
+    "start_time": 1779849216.8134441,
+    "end_time": 1779849229.82352,
+    "duration": 13.010075807571411
+  },
+  {
+    "task_id": "97d19b02",
+    "start_url": "https://example.com",
+    "max_depth": 1,
+    "respect_robots": false,
+    "request_interval": 0.5,
+    "allowed_domains": [
+      "example.com"
+    ],
+    "keywords": [
+      "Example Domain"
+    ],
+    "status": "completed",
+    "pages_crawled": 1,
+    "links_found": 1,
+    "error_count": 0,
+    "start_time": 1779849418.0511858,
+    "end_time": 1779849421.374343,
+    "duration": 3.3231570720672607
+  },
+  {
+    "task_id": "9ca20460",
+    "start_url": "https://example.com",
+    "max_depth": 2,
+    "respect_robots": false,
+    "request_interval": 0.3,
+    "allowed_domains": [
+      "example.com"
+    ],
+    "keywords": [],
+    "status": "completed",
+    "pages_crawled": 1,
+    "links_found": 1,
+    "error_count": 0,
+    "start_time": 1779849616.5405629,
+    "end_time": 1779849618.4574301,
+    "duration": 1.9168672561645508
+  },
+  {
+    "task_id": "85a437a8",
+    "start_url": "https://httpbin.org",
+    "max_depth": 2,
+    "respect_robots": false,
+    "request_interval": 2.0,
+    "allowed_domains": [
+      "httpbin.org"
+    ],
+    "keywords": [],
+    "status": "completed",
+    "pages_crawled": 2,
+    "links_found": 4,
+    "error_count": 0,
+    "start_time": 1779849809.739329,
+    "end_time": 1779849823.411231,
+    "duration": 13.671901941299438
+  },
+  {
+    "task_id": "7879e820",
+    "start_url": "https://httpbin.org",
+    "max_depth": 2,
+    "respect_robots": false,
+    "request_interval": 3.0,
+    "allowed_domains": [
+      "httpbin.org"
+    ],
+    "keywords": [],
+    "status": "completed",
+    "pages_crawled": 2,
+    "links_found": 4,
+    "error_count": 0,
+    "start_time": 1779850093.500627,
+    "end_time": 1779850112.1042519,
+    "duration": 18.60362482070923
+  },
+  {
+    "task_id": "6e71e1ad",
+    "start_url": "https://httpbin.org/links/10/0",
+    "max_depth": 2,
+    "respect_robots": false,
+    "request_interval": 5.0,
+    "allowed_domains": [
+      "httpbin.org"
+    ],
+    "keywords": [],
+    "status": "completed",
+    "pages_crawled": 10,
+    "links_found": 45,
+    "error_count": 0,
+    "start_time": 1779850241.038333,
+    "end_time": 1779850390.7802958,
+    "duration": 149.7419629096985
+  }
+]

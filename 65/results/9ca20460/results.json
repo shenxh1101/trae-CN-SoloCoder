@@ -1,0 +1,30 @@
+{
+  "task_id": "9ca20460",
+  "start_url": "https://example.com",
+  "max_depth": 2,
+  "status": "completed",
+  "pages_crawled": 1,
+  "links_found": 1,
+  "start_time": 1779849616.5405629,
+  "end_time": 1779849618.4574301,
+  "duration": 1.9168672561645508,
+  "pages": [
+    {
+      "url": "https://example.com",
+      "depth": 0,
+      "title": "Example Domain",
+      "summary": "Example Domain Example Domain This domain is for use in documentation examples without needing permission. Avoid use in operations. Learn more",
+      "text": "Example Domain Example Domain This domain is for use in documentation examples without needing permission. Avoid use in operations. Learn more",
+      "links": [
+        {
+          "url": "https://iana.org/domains/example",
+          "text": "Learn more"
+        }
+      ],
+      "status_code": 200,
+      "crawled_at": "2026-05-27 10:40:18",
+      "content_length": 528
+    }
+  ],
+  "error_count": 0
+}

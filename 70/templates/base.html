@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}文本粘贴服务{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+        nav a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+        .content {
+            padding: 30px;
+        }
+        .flash {
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .flash.error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        .flash.success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        textarea, input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1;
+            min-width: 200px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        .codehilite {
+            background: #272822;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .codehilite pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .codehilite .linenos {
+            color: #909080;
+            padding-right: 15px;
+            border-right: 1px solid #49483e;
+            margin-right: 15px;
+            user-select: none;
+        }
+        .info-bar {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        .info-item strong {
+            color: #333;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-primary {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .badge-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        .badge-success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        .badge-info {
+            background: #e0f7fa;
+            color: #00838f;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code img {
+            max-width: 200px;
+            border: 5px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .result-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-item .label {
+            font-weight: 500;
+            color: #666;
+        }
+        .result-item .value {
+            font-family: monospace;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: #667eea;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeeba;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        .char-count {
+            text-align: right;
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .char-count.warning {
+            color: #f57c00;
+        }
+
+        .hll { background-color: #49483e }
+        .c { color: #75715e }
+        .err { color: #960050; background-color: #1e0010 }
+        .k { color: #66d9ef }
+        .l { color: #ae81ff }
+        .n { color: #f8f8f2 }
+        .o { color: #f92672 }
+        .p { color: #f8f8f2 }
+        .cm { color: #75715e }
+        .cp { color: #75715e }
+        .c1 { color: #75715e }
+        .cs { color: #75715e }
+        .ge { font-style: italic }
+        .gs { font-weight: bold }
+        .kc { color: #66d9ef }
+        .kd { color: #66d9ef }
+        .kn { color: #f92672 }
+        .kp { color: #66d9ef }
+        .kr { color: #66d9ef }
+        .kt { color: #66d9ef }
+        .ld { color: #e6db74 }
+        .m { color: #ae81ff }
+        .s { color: #e6db74 }
+        .na { color: #a6e22e }
+        .nb { color: #f8f8f2 }
+        .nc { color: #a6e22e }
+        .no { color: #66d9ef }
+        .nd { color: #a6e22e }
+        .ni { color: #f8f8f2 }
+        .ne { color: #a6e22e }
+        .nf { color: #a6e22e }
+        .nl { color: #f8f8f2 }
+        .nn { color: #f8f8f2 }
+        .nx { color: #a6e22e }
+        .py { color: #f8f8f2 }
+        .nt { color: #f92672 }
+        .nv { color: #f8f8f2 }
+        .ow { color: #f92672 }
+        .w { color: #f8f8f2 }
+        .mf { color: #ae81ff }
+        .mh { color: #ae81ff }
+        .mi { color: #ae81ff }
+        .mo { color: #ae81ff }
+        .sb { color: #e6db74 }
+        .sc { color: #e6db74 }
+        .sd { color: #e6db74 }
+        .s2 { color: #e6db74 }
+        .se { color: #ae81ff }
+        .sh { color: #e6db74 }
+        .si { color: #e6db74 }
+        .sx { color: #e6db74 }
+        .sr { color: #e6db74 }
+        .s1 { color: #e6db74 }
+        .ss { color: #e6db74 }
+        .bp { color: #f8f8f2 }
+        .vc { color: #f8f8f2 }
+        .vg { color: #f8f8f2 }
+        .vi { color: #f8f8f2 }
+        .il { color: #ae81ff }
+        .gu { color: #75715e }
+        .gd { color: #f92672 }
+        .gi { color: #a6e22e }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 文本粘贴服务</h1>
+            <nav>
+                <a href="{{ url_for('index') }}">首页</a>
+                <a href="{{ url_for('list_pastes') }}">列表</a>
+                <a href="{{ url_for('delete') }}">删除</a>
+            </nav>
+        </header>
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

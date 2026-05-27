@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D旋转多面体棱镜</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        #controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(20, 20, 30, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            color: #fff;
+            z-index: 100;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #controls::-webkit-scrollbar {
+            width: 6px;
+        }
+        #controls::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        #controls::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #4fc3f7;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #ccc;
+        }
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+        select option {
+            background: #333;
+            color: #fff;
+        }
+        .slider-value {
+            display: inline-block;
+            float: right;
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        button {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        button.primary {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+        }
+        button.primary:hover {
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            transform: translateY(-2px);
+        }
+        button.secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        button.secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        button.active {
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        #stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(20, 20, 30, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            color: #fff;
+            z-index: 100;
+            min-width: 180px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #stats h3 {
+            font-size: 14px;
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+        #stats p {
+            font-size: 13px;
+            margin: 5px 0;
+            color: #ccc;
+        }
+        #stats span {
+            color: #ffd54f;
+            font-weight: bold;
+        }
+        #face-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(20, 20, 30, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            color: #fff;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #face-info h3 {
+            font-size: 14px;
+            color: #ff7043;
+            margin-bottom: 10px;
+        }
+        #face-info p {
+            font-size: 13px;
+            margin: 5px 0;
+            color: #ccc;
+        }
+        #face-info span {
+            color: #81c784;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div id="controls">
+        <h2>🔷 3D棱镜控制台</h2>
+        
+        <div class="control-group">
+            <label>棱柱类型</label>
+            <select id="prism-type">
+                <option value="3">三棱柱</option>
+                <option value="4">四棱柱</option>
+                <option value="5">五棱柱</option>
+                <option value="6" selected>六棱柱</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>高度 <span class="slider-value" id="height-value">2.0</span></label>
+            <input type="range" id="height-slider" min="0.5" max="5" step="0.1" value="2">
+        </div>
+        
+        <div class="control-group">
+            <label>底面半径 <span class="slider-value" id="radius-value">1.0</span></label>
+            <input type="range" id="radius-slider" min="0.3" max="2.5" step="0.1" value="1">
+        </div>
+        
+        <div class="control-group">
+            <label>材质模式</label>
+            <div class="btn-group">
+                <button class="primary active" data-material="solid">实体</button>
+                <button class="secondary" data-material="transparent">半透明</button>
+                <button class="secondary" data-material="wireframe">线框</button>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>背景</label>
+            <div class="btn-group">
+                <button class="primary active" data-bg="black">黑色</button>
+                <button class="secondary" data-bg="darkblue">深蓝</button>
+                <button class="secondary" data-bg="stars">星空</button>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>光晕强度 <span class="slider-value" id="glow-value">0.5</span></label>
+            <input type="range" id="glow-slider" min="0" max="1" step="0.1" value="0.5">
+        </div>
+        
+        <div class="control-group">
+            <div class="btn-group">
+                <button class="secondary" id="shadow-toggle">阴影: 关</button>
+                <button class="primary active" id="rotation-toggle">自动旋转</button>
+                <button class="secondary" id="bbox-toggle">包围盒: 关</button>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <div class="btn-group">
+                <button class="primary" id="export-btn">导出JSON</button>
+                <button class="secondary" id="import-btn">导入JSON</button>
+                <input type="file" id="file-input" accept=".json">
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <button class="primary" id="screenshot-btn" style="width: 100%;">📸 保存截图</button>
+        </div>
+    </div>
+    
+    <div id="stats">
+        <h3>📊 几何体统计</h3>
+        <p>顶点数: <span id="vertex-count">0</span></p>
+        <p>边数: <span id="edge-count">0</span></p>
+        <p>面数: <span id="face-count">0</span></p>
+    </div>
+    
+    <div id="face-info">
+        <h3>🎯 选中面信息</h3>
+        <p>面序号: <span id="face-index">-</span></p>
+        <p>面面积: <span id="face-area">-</span></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="prism.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>井字棋游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-classic">
+    <div class="container">
+        <header>
+            <h1>井字棋游戏</h1>
+            <div class="theme-toggle">
+                <button id="themeBtn" class="btn btn-secondary">切换主题</button>
+            </div>
+        </header>
+
+        <div class="settings-panel">
+            <div class="setting-group">
+                <label>游戏模式:</label>
+                <select id="gameMode" class="select">
+                    <option value="pvp">双人对战</option>
+                    <option value="pve-easy">人机对战 (简单)</option>
+                    <option value="pve-medium">人机对战 (中级)</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>先手选择:</label>
+                <select id="firstPlayer" class="select">
+                    <option value="X">X 先手</option>
+                    <option value="O">O 先手</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="soundEnabled" checked>
+                    音效
+                </label>
+            </div>
+        </div>
+
+        <div class="scoreboard">
+            <div class="score-item">
+                <span class="score-label">X 胜</span>
+                <span id="scoreX" class="score-value">0</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">平局</span>
+                <span id="scoreDraw" class="score-value">0</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">O 胜</span>
+                <span id="scoreO" class="score-value">0</span>
+            </div>
+        </div>
+
+        <div class="game-status">
+            <span id="statusText">X 的回合</span>
+        </div>
+
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="controls">
+            <button id="undoBtn" class="btn btn-secondary" disabled>悔棋</button>
+            <button id="resetBtn" class="btn btn-primary">重新开始</button>
+            <button id="resetScoreBtn" class="btn btn-secondary">重置分数</button>
+        </div>
+
+        <div class="history-panel">
+            <h3>对战记录 (最近5局)</h3>
+            <div id="historyList" class="history-list">
+                <p class="empty-history">暂无记录</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="winModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modalTitle">游戏结束</h2>
+            <p id="modalMessage"></p>
+            <button id="modalCloseBtn" class="btn btn-primary">再来一局</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

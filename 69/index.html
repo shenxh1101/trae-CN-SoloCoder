@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数字华容道 · Puzzle Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Noto+Sans+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0f0f1e;
+  --bg-panel: #1a1a2e;
+  --bg-card: #252542;
+  --bg-tile: #3a3a5c;
+  --bg-empty: #12122a;
+  --accent: #e94560;
+  --accent-glow: #ff6b8a;
+  --gold: #ffd166;
+  --gold-glow: #ffe08a;
+  --text: #f0f0f5;
+  --text-dim: #a0a0b8;
+  --success: #4ade80;
+  --border: #3d3d6b;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --tile-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg-deep);
+  background-image: 
+    radial-gradient(ellipse at 20% 20%, rgba(233,69,96,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255,209,102,0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #0f0f1e 0%, #15152e 100%);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+header {
+  text-align: center;
+  padding: 30px 20px 15px;
+  position: relative;
+  z-index: 1;
+}
+
+header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 4px;
+  text-shadow: 0 0 60px rgba(233,69,96,0.3);
+}
+
+header p {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  margin-top: 6px;
+  letter-spacing: 2px;
+}
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 25px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.info-panel {
+  width: 230px;
+  flex-shrink: 0;
+}
+
+.info-panel h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.stat-value.danger { color: var(--accent); }
+.stat-value.success { color: var(--success); }
+
+.best-section { margin-top: 10px; }
+
+.best-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+
+.best-item .bi-label { color: var(--text-dim); }
+.best-item .bi-value { font-family: 'Orbitron', sans-serif; color: var(--gold); font-weight: 600; }
+
+.puzzle-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.puzzle-wrapper {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.puzzle-grid {
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-empty);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, var(--bg-tile), #4a4a7c);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--tile-shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.tile:hover:not(.empty):not(.disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(233,69,96,0.4);
+  z-index: 10;
+}
+
+.tile:active:not(.empty):not(.disabled) {
+  transform: scale(0.95);
+}
+
+.tile.empty {
+  background: var(--bg-empty);
+  border: 1px dashed var(--border);
+  box-shadow: none;
+  cursor: default;
+}
+
+.tile.hint {
+  background: linear-gradient(145deg, var(--gold), var(--gold-glow)) !important;
+  color: var(--bg-deep) !important;
+  animation: hintPulse 1s ease-in-out infinite;
+  box-shadow: 0 0 25px rgba(255,209,102,0.6);
+}
+
+@keyframes hintPulse {
+  0%, 100% { box-shadow: 0 0 25px rgba(255,209,102,0.6); }
+  50% { box-shadow: 0 0 40px rgba(255,209,102,0.9); }
+}
+
+.tile.solved {
+  background: linear-gradient(145deg, #2d5a3d, #4ade80) !important;
+  animation: solvedGlow 0.5s ease;
+}
+
+@keyframes solvedGlow {
+  0% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.tile.moving {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tile-num {
+  font-size: inherit;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.tile .tile-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.thumbnail-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.thumb-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.thumb-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 15px rgba(233,69,96,0.3);
+}
+
+.thumb-num {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  background: linear-gradient(145deg, var(--bg-tile), var(--bg-card));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  border: 2px solid var(--accent);
+}
+
+.control-panel {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.control-panel h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover {
+  background: var(--bg-tile);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.btn.active {
+  background: linear-gradient(135deg, var(--accent), #c73654);
+  border-color: var(--accent);
+  box-shadow: 0 0 15px rgba(233,69,96,0.4);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #c73654);
+  border: none;
+  font-weight: 600;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-glow), var(--accent));
+  box-shadow: 0 4px 20px rgba(233,69,96,0.5);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #e6b84a);
+  border: none;
+  font-weight: 600;
+  color: var(--bg-deep);
+}
+
+.btn-gold:hover {
+  box-shadow: 0 4px 20px rgba(255,209,102,0.5);
+}
+
+.btn-full {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-top: 10px;
+}
+
+.settings-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  max-width: 800px;
+  margin: 0 auto 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle input { display: none; }
+
+.toggle-switch {
+  width: 44px;
+  height: 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s ease;
+}
+
+.toggle input:checked + .toggle-switch {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.toggle input:checked + .toggle-switch::after {
+  left: 24px;
+  background: white;
+}
+
+.toggle-label {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+
+.file-upload {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  left: -9999px;
+}
+
+.file-upload .btn {
+  width: 100%;
+  text-align: center;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  padding: 40px 50px;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(233,69,96,0.3);
+  transform: scale(0.8);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 420px;
+  width: 90%;
+}
+
+.modal-overlay.show .modal {
+  transform: scale(1);
+}
+
+.modal h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.modal .confetti {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  animation: bounce 0.6s ease infinite alternate;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+
+.modal-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0;
+}
+
+.modal-stat {
+  text-align: center;
+}
+
+.modal-stat .ms-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.modal-stat .ms-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.modal-record {
+  color: var(--success);
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+  letter-spacing: 1px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+  max-width: 140px;
+}
+
+.hint-btn {
+  background: linear-gradient(135deg, var(--gold), #e6b84a);
+  border: none;
+  color: var(--bg-deep);
+  font-weight: 600;
+}
+
+.solve-btn {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+.solve-btn:hover {
+  box-shadow: 0 4px 20px rgba(139,92,246,0.5);
+}
+
+@media (max-width: 1100px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+  }
+  .info-panel, .control-panel {
+    width: 100%;
+    max-width: 420px;
+  }
+  .info-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .info-panel h3 { grid-column: 1 / -1; }
+  .stat-card { margin-bottom: 0; }
+}
+
+@media (max-width: 600px) {
+  header h1 { font-size: 2rem; }
+  .puzzle-grid { gap: 3px; padding: 3px; }
+  .tile { border-radius: 8px; }
+  .info-panel { grid-template-columns: 1fr; }
+  .settings-bar { flex-wrap: wrap; gap: 14px; }
+}
+
+.game-log {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: center;
+  min-height: 18px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PUZZLE MASTER</h1>
+  <p>数字华容道 · 挑战你的逻辑极限</p>
+</header>
+
+<div class="game-container">
+  <div class="panel info-panel">
+    <h3>游戏信息</h3>
+    <div class="stat-card">
+      <div class="stat-label">步数</div>
+      <div class="stat-value" id="movesDisplay">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">用时</div>
+      <div class="stat-value" id="timeDisplay">00:00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">当前难度</div>
+      <div class="stat-value" id="difficultyDisplay" style="font-size:1.2rem">3 × 3</div>
+    </div>
+
+    <h3 class="best-section" style="margin-top:20px">最佳记录</h3>
+    <div id="bestRecordsContainer"></div>
+  </div>
+
+  <div class="puzzle-area">
+    <div class="puzzle-wrapper">
+      <div class="puzzle-grid" id="puzzleGrid"></div>
+    </div>
+    <div class="thumbnail-box">
+      <span class="thumb-label">目标:</span>
+      <div class="thumb-img" id="thumbImg" style="display:none"></div>
+      <div class="thumb-num" id="thumbNum">1-8</div>
+    </div>
+    <div class="game-log" id="gameLog"></div>
+  </div>
+
+  <div class="panel control-panel">
+    <h3>难度选择</h3>
+    <div class="btn-group" id="difficultyBtns">
+      <button class="btn active" data-size="3">3×3</button>
+      <button class="btn" data-size="4">4×4</button>
+      <button class="btn" data-size="5">5×5</button>
+    </div>
+
+    <h3>游戏操作</h3>
+    <button class="btn btn-full btn-primary" id="shuffleBtn">🔀 打乱拼图</button>
+    <button class="btn btn-full hint-btn" id="hintBtn">💡 提示</button>
+    <button class="btn btn-full solve-btn" id="solveBtn">🤖 自动求解</button>
+
+    <h3 style="margin-top:20px">图片设置</h3>
+    <label class="file-upload">
+      <span class="btn btn-full">📷 上传图片</span>
+      <input type="file" id="imageUpload" accept="image/*">
+    </label>
+    <button class="btn btn-full" id="resetImageBtn" style="display:none">↩️ 恢复默认</button>
+  </div>
+</div>
+
+<div class="settings-bar">
+  <label class="toggle">
+    <input type="checkbox" id="modeToggle">
+    <span class="toggle-switch"></span>
+    <span class="toggle-label">数字模式</span>
+  </label>
+  <label class="toggle">
+    <input type="checkbox" id="soundToggle" checked>
+    <span class="toggle-switch"></span>
+    <span class="toggle-label">音效</span>
+  </label>
+</div>
+
+<div class="modal-overlay" id="winModal">
+  <div class="modal">
+    <div class="confetti">🎉</div>
+    <h2>恭喜完成！</h2>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <div class="ms-label">步数</div>
+        <div class="ms-value" id="finalMoves">0</div>
+      </div>
+      <div class="modal-stat">
+        <div class="ms-label">用时</div>
+        <div class="ms-value" id="finalTime">00:00</div>
+      </div>
+    </div>
+    <div class="modal-record" id="recordMsg"></div>
+    <div class="modal-actions">
+      <button class="btn" id="closeModalBtn">关闭</button>
+      <button class="btn btn-primary" id="playAgainBtn">再玩一次</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const DEFAULT_IMAGES = [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&h=400&fit=crop'
+  ];
+
+  const state = {
+    gridSize: 3,
+    tiles: [],
+    moves: 0,
+    startTime: null,
+    elapsedTime: 0,
+    timerInterval: null,
+    isPlaying: false,
+    isSolved: false,
+    mode: 'image',
+    soundEnabled: true,
+    hintActive: false,
+    customImage: null,
+    currentImage: null,
+    imagePieces: [],
+    solveInProgress: false,
+    shufflePath: []
+  };
+
+  const $ = id => document.getElementById(id);
+  const grid = $('puzzleGrid');
+  const movesDisplay = $('movesDisplay');
+  const timeDisplay = $('timeDisplay');
+  const difficultyDisplay = $('difficultyDisplay');
+  const bestRecordsContainer = $('bestRecordsContainer');
+  const thumbImg = $('thumbImg');
+  const thumbNum = $('thumbNum');
+  const gameLog = $('gameLog');
+
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playSound(type) {
+    if (!state.soundEnabled) return;
+    try {
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'move') {
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(660, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.1);
+      } else if (type === 'win') {
+        const notes = [523, 659, 784, 1047];
+        notes.forEach((freq, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.12);
+          g.gain.setValueAtTime(0.15, audioCtx.currentTime + i * 0.12);
+          g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.15);
+          o.start(audioCtx.currentTime + i * 0.12);
+          o.stop(audioCtx.currentTime + i * 0.12 + 0.15);
+        });
+      } else if (type === 'hint') {
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.15);
+      }
+    } catch(e) { console.warn('Audio error:', e); }
+  }
+
+  function countInversions(arr) {
+    const filtered = arr.filter(x => x !== 0);
+    let inv = 0;
+    for (let i = 0; i < filtered.length; i++) {
+      for (let j = i + 1; j < filtered.length; j++) {
+        if (filtered[i] > filtered[j]) inv++;
+      }
+    }
+    return inv;
+  }
+
+  function isSolvable(tiles, size) {
+    const inv = countInversions(tiles);
+    if (size % 2 === 1) {
+      return inv % 2 === 0;
+    } else {
+      const emptyRow = Math.floor(tiles.indexOf(0) / size);
+      const rowFromBottom = size - emptyRow;
+      return (inv + rowFromBottom) % 2 === 1;
+    }
+  }
+
+  function isSolved(tiles) {
+    for (let i = 0; i < tiles.length - 1; i++) {
+      if (tiles[i] !== i + 1) return false;
+    }
+    return tiles[tiles.length - 1] === 0;
+  }
+
+  function shuffleTiles(size) {
+    const total = size * size;
+    let tiles;
+    do {
+      tiles = Array.from({length: total}, (_, i) => i);
+      for (let i = tiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+      }
+    } while (!isSolvable(tiles, size) || isSolved(tiles));
+    return tiles;
+  }
+
+  function getAdjacentIndices(index, size) {
+    const row = Math.floor(index / size);
+    const col = index % size;
+    const adjacent = [];
+    if (row > 0) adjacent.push(index - size);
+    if (row < size - 1) adjacent.push(index + size);
+    if (col > 0) adjacent.push(index - 1);
+    if (col < size - 1) adjacent.push(index + 1);
+    return adjacent;
+  }
+
+  function canMove(tileIndex, emptyIndex, size) {
+    const tileRow = Math.floor(tileIndex / size);
+    const tileCol = tileIndex % size;
+    const emptyRow = Math.floor(emptyIndex / size);
+    const emptyCol = emptyIndex % size;
+    return (Math.abs(tileRow - emptyRow) + Math.abs(tileCol - emptyCol)) === 1;
+  }
+
+  function moveTile(tileIndex) {
+    if (state.isSolved || state.solveInProgress) return;
+    const emptyIndex = state.tiles.indexOf(0);
+    if (!canMove(tileIndex, emptyIndex, state.gridSize)) return;
+
+    [state.tiles[tileIndex], state.tiles[emptyIndex]] = [state.tiles[emptyIndex], state.tiles[tileIndex]];
+    state.moves++;
+
+    if (!state.isPlaying) {
+      state.isPlaying = true;
+      state.startTime = Date.now();
+      startTimer();
+    }
+
+    playSound('move');
+    renderGrid();
+    updateStats();
+
+    if (isSolved(state.tiles)) {
+      handleWin();
+    }
+  }
+
+  function startTimer() {
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(() => {
+      if (state.isPlaying && !state.isSolved) {
+        state.elapsedTime = Math.floor((Date.now() - state.startTime) / 1000);
+        timeDisplay.textContent = formatTime(state.elapsedTime);
+      }
+    }, 100);
+  }
+
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function updateStats() {
+    movesDisplay.textContent = state.moves;
+    difficultyDisplay.textContent = `${state.gridSize} × ${state.gridSize}`;
+  }
+
+  function renderGrid() {
+    const size = state.gridSize;
+    const tileSize = size === 3 ? 90 : (size === 4 ? 70 : 56);
+    grid.style.gridTemplateColumns = `repeat(${size}, ${tileSize}px)`;
+    grid.style.gridTemplateRows = `repeat(${size}, ${tileSize}px)`;
+    grid.innerHTML = '';
+
+    state.tiles.forEach((value, index) => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.style.fontSize = (size === 3 ? '2rem' : size === 4 ? '1.5rem' : '1.1rem');
+
+      if (value === 0) {
+        tile.classList.add('empty');
+      } else {
+        if (state.mode === 'number') {
+          tile.innerHTML = `<span class="tile-num">${value}</span>`;
+        } else if (state.imagePieces.length > 0) {
+          tile.innerHTML = `<span class="tile-img" style="background-image:url('${state.imagePieces[value - 1]}')"></span>`;
+        } else {
+          tile.innerHTML = `<span class="tile-num">${value}</span>`;
+        }
+
+        if (state.hintActive) {
+          const emptyIdx = state.tiles.indexOf(0);
+          const solvedValue = emptyIdx + 1;
+          if (value === solvedValue && emptyIdx < state.tiles.length - 1) {
+            tile.classList.add('hint');
+          }
+        }
+
+        tile.addEventListener('click', () => moveTile(index));
+      }
+
+      grid.appendChild(tile);
+    });
+  }
+
+  function updateThumbnail() {
+    if (state.mode === 'number') {
+      thumbImg.style.display = 'none';
+      thumbNum.style.display = 'flex';
+      const max = state.gridSize * state.gridSize - 1;
+      thumbNum.textContent = `1-${max}`;
+    } else if (state.currentImage) {
+      thumbImg.style.display = 'block';
+      thumbNum.style.display = 'none';
+      thumbImg.style.backgroundImage = `url('${state.currentImage}')`;
+    } else {
+      thumbImg.style.display = 'none';
+      thumbNum.style.display = 'flex';
+      const max = state.gridSize * state.gridSize - 1;
+      thumbNum.textContent = `1-${max}`;
+    }
+  }
+
+  function handleWin() {
+    state.isSolved = true;
+    state.isPlaying = false;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    playSound('win');
+
+    const records = loadBestRecords();
+    const key = state.gridSize.toString();
+    let isRecord = false;
+    let recordMsg = '';
+
+    if (!records[key] || state.moves < records[key].moves) {
+      records[key] = { moves: state.moves, time: state.elapsedTime };
+      isRecord = true;
+      recordMsg = '🏆 新纪录！最少步数！';
+    } else if (state.elapsedTime < records[key].time) {
+      records[key].time = state.elapsedTime;
+      isRecord = true;
+      recordMsg = '🏆 新纪录！最短时间！';
+    }
+    saveBestRecords(records);
+    renderBestRecords();
+
+    $('finalMoves').textContent = state.moves;
+    $('finalTime').textContent = formatTime(state.elapsedTime);
+    $('recordMsg').textContent = recordMsg;
+
+    setTimeout(() => {
+      $('winModal').classList.add('show');
+    }, 300);
+  }
+
+  function loadBestRecords() {
+    try {
+      const data = localStorage.getItem('puzzle_best_records');
+      return data ? JSON.parse(data) : {};
+    } catch(e) { return {}; }
+  }
+
+  function saveBestRecords(records) {
+    try {
+      localStorage.setItem('puzzle_best_records', JSON.stringify(records));
+    } catch(e) { console.warn('Storage error:', e); }
+  }
+
+  function renderBestRecords() {
+    const records = loadBestRecords();
+    const sizes = [3, 4, 5];
+    bestRecordsContainer.innerHTML = sizes.map(size => {
+      const key = size.toString();
+      const rec = records[key];
+      if (rec) {
+        return `<div class="best-item">
+          <span class="bi-label">${size}×${size}</span>
+          <span class="bi-value">${rec.moves}步 · ${formatTime(rec.time)}</span>
+        </div>`;
+      }
+      return `<div class="best-item">
+        <span class="bi-label">${size}×${size}</span>
+        <span class="bi-value" style="color:var(--text-dim)">--</span>
+      </div>`;
+    }).join('');
+  }
+
+  function setDifficulty(size) {
+    if (state.solveInProgress) return;
+    state.gridSize = size;
+    state.moves = 0;
+    state.elapsedTime = 0;
+    state.isPlaying = false;
+    state.isSolved = false;
+    state.hintActive = false;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+
+    document.querySelectorAll('#difficultyBtns .btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.size) === size);
+    });
+
+    if (state.currentImage) {
+      sliceImage(state.currentImage, size);
+    }
+    state.tiles = shuffleTiles(size);
+    state.shufflePath = [];
+    updateStats();
+    timeDisplay.textContent = '00:00';
+    updateThumbnail();
+    renderGrid();
+    gameLog.textContent = `${size}×${size} 拼图已就绪，点击方块开始游戏！`;
+  }
+
+  function handleShuffle() {
+    if (state.solveInProgress) return;
+    state.tiles = shuffleTiles(state.gridSize);
+    state.moves = 0;
+    state.elapsedTime = 0;
+    state.isPlaying = false;
+    state.isSolved = false;
+    state.hintActive = false;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.shufflePath = [];
+    timeDisplay.textContent = '00:00';
+    updateStats();
+    renderGrid();
+    gameLog.textContent = '拼图已打乱，祝你好运！';
+    playSound('move');
+  }
+
+  function showHint() {
+    if (state.isSolved || state.solveInProgress) return;
+    state.hintActive = true;
+    playSound('hint');
+    renderGrid();
+    gameLog.textContent = '💡 高亮显示的方块应移动到空格位置';
+    setTimeout(() => {
+      state.hintActive = false;
+      renderGrid();
+    }, 2000);
+  }
+
+  function solvePuzzle() {
+    if (state.solveInProgress || state.isSolved) return;
+    if (state.isPlaying && !confirm('自动求解将重置当前游戏，确定继续吗？')) return;
+
+    state.solveInProgress = true;
+
+    const size = state.gridSize;
+    const scrambleSteps = size === 3 ? 30 : (size === 4 ? 40 : 50);
+
+    gameLog.textContent = `🤖 正在生成演示 (打乱 ${scrambleSteps} 步)...`;
+
+    const total = size * size;
+    let tiles = Array.from({length: total}, (_, i) => (i + 1) % total);
+    let emptyIdx = tiles.indexOf(0);
+    const scramblePath = [];
+
+    for (let i = 0; i < scrambleSteps; i++) {
+      const adj = getAdjacentIndices(emptyIdx, size).filter(idx => {
+        return scramblePath.length === 0 || scramblePath[scramblePath.length - 1] !== idx;
+      });
+      if (adj.length === 0) break;
+      const nextIdx = adj[Math.floor(Math.random() * adj.length)];
+      [tiles[emptyIdx], tiles[nextIdx]] = [tiles[nextIdx], tiles[emptyIdx]];
+      scramblePath.push(emptyIdx);
+      emptyIdx = nextIdx;
+    }
+
+    const solution = [...scramblePath].reverse();
+
+    state.tiles = tiles;
+    state.moves = 0;
+    state.elapsedTime = 0;
+    state.isPlaying = false;
+    state.isSolved = false;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    timeDisplay.textContent = '00:00';
+    updateStats();
+    renderGrid();
+
+    gameLog.textContent = `🤖 解法路径已生成，共 ${solution.length} 步，开始演示...`;
+
+    let step = 0;
+
+    function doStep() {
+      if (step >= solution.length || !state.solveInProgress) {
+        state.solveInProgress = false;
+        if (isSolved(state.tiles)) {
+          gameLog.textContent = '✅ 演示完成！（演示模式，不记录成绩）';
+        }
+        return;
+      }
+
+      const moveIdx = solution[step];
+      const emptyIdxNow = state.tiles.indexOf(0);
+
+      if (canMove(moveIdx, emptyIdxNow, size)) {
+        [state.tiles[moveIdx], state.tiles[emptyIdxNow]] = [state.tiles[emptyIdxNow], state.tiles[moveIdx]];
+        state.moves++;
+        playSound('move');
+        renderGrid();
+        updateStats();
+      }
+
+      step++;
+      setTimeout(doStep, 300);
+    }
+
+    setTimeout(doStep, 600);
+  }
+
+  function sliceImage(imageSrc, size) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const pieceSize = 400;
+      canvas.width = pieceSize;
+      canvas.height = pieceSize;
+      const ctx = canvas.getContext('2d');
+
+      const scale = Math.max(pieceSize / img.width, pieceSize / img.height);
+      const sw = pieceSize / scale;
+      const sh = pieceSize / scale;
+      const sx = (img.width - sw) / 2;
+      const sy = (img.height - sh) / 2;
+
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, pieceSize, pieceSize);
+
+      state.imagePieces = [];
+      const tilePx = Math.floor(pieceSize / size);
+
+      for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+          const pieceCanvas = document.createElement('canvas');
+          pieceCanvas.width = tilePx;
+          pieceCanvas.height = tilePx;
+          const pctx = pieceCanvas.getContext('2d');
+          pctx.drawImage(
+            canvas,
+            col * tilePx, row * tilePx, tilePx, tilePx,
+            0, 0, tilePx, tilePx
+          );
+          state.imagePieces.push(pieceCanvas.toDataURL());
+        }
+      }
+      renderGrid();
+      updateThumbnail();
+    };
+    img.onerror = function() {
+      console.warn('Image load failed, using number mode');
+    };
+    img.src = imageSrc;
+  }
+
+  function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      state.customImage = ev.target.result;
+      state.currentImage = ev.target.result;
+      state.mode = 'image';
+      $('modeToggle').checked = false;
+      sliceImage(ev.target.result, state.gridSize);
+      $('resetImageBtn').style.display = 'block';
+      gameLog.textContent = '图片已上传并切割完成！';
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+
+  function resetImage() {
+    state.customImage = null;
+    state.currentImage = null;
+    state.imagePieces = [];
+    $('resetImageBtn').style.display = 'none';
+    renderGrid();
+    updateThumbnail();
+    gameLog.textContent = '已恢复默认模式';
+  }
+
+  function toggleMode() {
+    const isNumber = $('modeToggle').checked;
+    state.mode = isNumber ? 'number' : 'image';
+
+    if (!isNumber && !state.currentImage && state.imagePieces.length === 0) {
+      const randomImg = DEFAULT_IMAGES[Math.floor(Math.random() * DEFAULT_IMAGES.length)];
+      state.currentImage = randomImg;
+      sliceImage(randomImg, state.gridSize);
+    }
+
+    updateThumbnail();
+    renderGrid();
+  }
+
+  function initEventListeners() {
+    $('difficultyBtns').addEventListener('click', e => {
+      if (e.target.classList.contains('btn')) {
+        setDifficulty(parseInt(e.target.dataset.size));
+      }
+    });
+
+    $('shuffleBtn').addEventListener('click', handleShuffle);
+    $('hintBtn').addEventListener('click', showHint);
+    $('solveBtn').addEventListener('click', solvePuzzle);
+
+    $('imageUpload').addEventListener('change', handleImageUpload);
+    $('resetImageBtn').addEventListener('click', resetImage);
+
+    $('modeToggle').addEventListener('change', toggleMode);
+    $('soundToggle').addEventListener('change', e => {
+      state.soundEnabled = e.target.checked;
+    });
+
+    $('closeModalBtn').addEventListener('click', () => {
+      $('winModal').classList.remove('show');
+    });
+
+    $('playAgainBtn').addEventListener('click', () => {
+      $('winModal').classList.remove('show');
+      handleShuffle();
+    });
+
+    $('winModal').addEventListener('click', e => {
+      if (e.target === $('winModal')) {
+        $('winModal').classList.remove('show');
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (state.isSolved || state.solveInProgress) return;
+      const emptyIdx = state.tiles.indexOf(0);
+      const size = state.gridSize;
+      const row = Math.floor(emptyIdx / size);
+      const col = emptyIdx % size;
+      let target = -1;
+
+      if (e.key === 'ArrowUp' && row < size - 1) target = emptyIdx + size;
+      else if (e.key === 'ArrowDown' && row > 0) target = emptyIdx - size;
+      else if (e.key === 'ArrowLeft' && col < size - 1) target = emptyIdx + 1;
+      else if (e.key === 'ArrowRight' && col > 0) target = emptyIdx - 1;
+
+      if (target !== -1) {
+        e.preventDefault();
+        moveTile(target);
+      }
+
+      if (e.key === 'h' || e.key === 'H') showHint();
+      if (e.key === 's' || e.key === 'S') handleShuffle();
+    });
+  }
+
+  function init() {
+    const randomImg = DEFAULT_IMAGES[Math.floor(Math.random() * DEFAULT_IMAGES.length)];
+    state.currentImage = randomImg;
+    sliceImage(randomImg, state.gridSize);
+    state.tiles = shuffleTiles(3);
+    initEventListeners();
+    renderBestRecords();
+    updateStats();
+    updateThumbnail();
+    renderGrid();
+    gameLog.textContent = '欢迎来到数字华容道！点击方块开始游戏 🎮';
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>

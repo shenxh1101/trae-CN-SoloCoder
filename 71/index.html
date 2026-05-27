@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数字华容道</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <canvas id="fireworksCanvas"></canvas>
+    
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🧩 数字华容道</h1>
+            <p class="subtitle">将数字按顺序排列，空格在右下角</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-label">步数</span>
+                <span class="stat-value" id="moves">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">用时</span>
+                <span class="stat-value" id="time">00:00</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">差异</span>
+                <span class="stat-value" id="diff">0</span>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="shuffleBtn" title="打乱">
+                🔀 打乱
+            </button>
+            <button class="btn btn-secondary" id="hintBtn" title="提示">
+                💡 提示
+            </button>
+            <button class="btn btn-secondary" id="undoBtn" title="撤回">
+                ↩️ 撤回
+            </button>
+            <button class="btn btn-secondary" id="resetBtn" title="重置">
+                🔄 重置
+            </button>
+        </div>
+
+        <div class="settings">
+            <div class="setting-group">
+                <label class="setting-label">难度</label>
+                <div class="difficulty-selector">
+                    <button class="diff-btn" data-size="3">3×3</button>
+                    <button class="diff-btn active" data-size="4">4×4</button>
+                    <button class="diff-btn" data-size="5">5×5</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">显示模式</label>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="colorMode" checked>
+                    <label for="colorMode" class="toggle-label">
+                        <span class="toggle-text">彩色</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">音效</label>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="soundMode" checked>
+                    <label for="soundMode" class="toggle-label">
+                        <span class="toggle-text">开启</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="best-records">
+            <h3 class="records-title">🏆 最佳记录</h3>
+            <div class="records-grid">
+                <div class="record-item">
+                    <span class="record-size">3×3</span>
+                    <span class="record-value" id="best3">-</span>
+                </div>
+                <div class="record-item">
+                    <span class="record-size">4×4</span>
+                    <span class="record-value" id="best4">-</span>
+                </div>
+                <div class="record-item">
+                    <span class="record-size">5×5</span>
+                    <span class="record-value" id="best5">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🎉 恭喜通关！</h2>
+            <div class="modal-stats">
+                <p>步数: <span id="winMoves">0</span></p>
+                <p>用时: <span id="winTime">00:00</span></p>
+            </div>
+            <button class="btn btn-primary" id="playAgainBtn">再来一局</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

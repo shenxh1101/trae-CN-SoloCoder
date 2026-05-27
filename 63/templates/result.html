@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}检测结果 - {{ result.ip }} - 代理IP检测服务{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="result-header">
+            <h2>📊 检测结果: {{ result.ip }}</h2>
+            {% if result.from_cache %}
+                <span class="cache-badge">⚡ 来自缓存</span>
+            {% endif %}
+        </div>
+        
+        <div class="result-summary">
+            <div class="summary-item">
+                <div class="label">是否为代理</div>
+                <div class="value">
+                    {% if result.is_proxy %}
+                        <span class="badge badge-danger">是</span>
+                    {% else %}
+                        <span class="badge badge-success">否</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="summary-item">
+                <div class="label">代理类型</div>
+                <div class="value">
+                    {% if result.proxy_types %}
+                        {% for ptype in result.proxy_types %}
+                            <span class="badge badge-info">{{ ptype }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">无</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="summary-item">
+                <div class="label">匿名级别</div>
+                <div class="value">
+                    <span class="badge badge-secondary">{{ result.anonymity_level }}</span>
+                </div>
+            </div>
+            <div class="summary-item">
+                <div class="label">风险评分</div>
+                <div class="value">
+                    <div class="risk-score">
+                        <div class="score-bar">
+                            <div class="score-fill risk-{{ result.risk_score|risk_color }}" 
+                                 style="width: {{ result.risk_score }}%"></div>
+                        </div>
+                        <span class="score-value risk-{{ result.risk_score|risk_color }}">
+                            {{ result.risk_score }}/100
+                        </span>
+                        <span class="risk-level">({{ risk_level }})</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if result.detected_ports %}
+            <div class="result-section">
+                <h3>🔌 检测到的开放端口</h3>
+                <div class="port-list">
+                    {% for port in result.detected_ports %}
+                        <span class="port-badge">{{ port }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="result-section">
+            <h3>🌍 IP归属地信息</h3>
+            <div class="geo-info">
+                <div class="geo-item">
+                    <span class="geo-label">国家:</span>
+                    <span class="geo-value">{{ result.geolocation.country }}</span>
+                </div>
+                <div class="geo-item">
+                    <span class="geo-label">城市:</span>
+                    <span class="geo-value">{{ result.geolocation.city }}</span>
+                </div>
+                <div class="geo-item">
+                    <span class="geo-label">运营商:</span>
+                    <span class="geo-value">{{ result.geolocation.isp }}</span>
+                </div>
+                <div class="geo-item">
+                    <span class="geo-label">区域:</span>
+                    <span class="geo-value">{{ result.geolocation.region }}</span>
+                </div>
+                <div class="geo-item">
+                    <span class="geo-label">时区:</span>
+                    <span class="geo-value">{{ result.geolocation.timezone }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="result-section">
+            <h3>⚠️ 威胁情报摘要</h3>
+            <div class="threat-info">
+                <div class="threat-stats-grid">
+                    <div class="threat-stat">
+                        <span class="threat-label">黑名单收录数量:</span>
+                        <span class="threat-value {% if result.threat_intel.blacklist_count > 0 %}text-danger{% endif %}">
+                            {{ result.threat_intel.blacklist_count }}
+                        </span>
+                    </div>
+                    <div class="threat-stat">
+                        <span class="threat-label">查询来源:</span>
+                        <span class="threat-value">
+                            {{ result.threat_intel.success_sources }}/{{ result.threat_intel.total_sources }}
+                        </span>
+                    </div>
+                    {% if result.threat_intel.abuse_score > 0 %}
+                    <div class="threat-stat">
+                        <span class="threat-label">滥用评分:</span>
+                        <span class="threat-value {% if result.threat_intel.abuse_score > 80 %}text-danger{% elif result.threat_intel.abuse_score > 50 %}text-warning{% endif %}">
+                            {{ result.threat_intel.abuse_score }}%
+                        </span>
+                    </div>
+                    {% endif %}
+                    {% if result.threat_intel.reports > 0 %}
+                    <div class="threat-stat">
+                        <span class="threat-label">被报告次数:</span>
+                        <span class="threat-value text-danger">
+                            {{ result.threat_intel.reports }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if result.threat_intel.threats %}
+                    <div class="threat-tags">
+                        {% for threat in result.threat_intel.threats %}
+                            <span class="threat-tag">{{ threat }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% if result.threat_intel.details %}
+                    <div class="threat-details">
+                        {% for detail in result.threat_intel.details %}
+                            <p class="detail-item">• {{ detail }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% if not result.threat_intel.threats and not result.threat_intel.details %}
+                    <p class="text-muted">暂无威胁情报</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if result.blacklist_parsed %}
+        <div class="result-section">
+            <h3>🔍 黑名单详细分析</h3>
+            <div class="blacklist-flags">
+                <div class="flag-item {% if result.blacklist_parsed.is_proxy %}flag-active{% endif %}">
+                    <span class="flag-icon">🌐</span>
+                    <span class="flag-label">代理IP</span>
+                    <span class="flag-status">{{ '是' if result.blacklist_parsed.is_proxy else '否' }}</span>
+                </div>
+                <div class="flag-item {% if result.blacklist_parsed.is_vpn %}flag-active{% endif %}">
+                    <span class="flag-icon">🔒</span>
+                    <span class="flag-label">VPN节点</span>
+                    <span class="flag-status">{{ '是' if result.blacklist_parsed.is_vpn else '否' }}</span>
+                </div>
+                <div class="flag-item {% if result.blacklist_parsed.is_tor %}flag-active{% endif %}">
+                    <span class="flag-icon">🧅</span>
+                    <span class="flag-label">Tor节点</span>
+                    <span class="flag-status">{{ '是' if result.blacklist_parsed.is_tor else '否' }}</span>
+                </div>
+                <div class="flag-item {% if result.blacklist_parsed.is_hosting %}flag-active{% endif %}">
+                    <span class="flag-icon">🖥️</span>
+                    <span class="flag-label">数据中心</span>
+                    <span class="flag-status">{{ '是' if result.blacklist_parsed.is_hosting else '否' }}</span>
+                </div>
+                <div class="flag-item {% if result.blacklist_parsed.malicious %}flag-active{% endif %}">
+                    <span class="flag-icon">☠️</span>
+                    <span class="flag-label">恶意IP</span>
+                    <span class="flag-status">{{ '是' if result.blacklist_parsed.malicious else '否' }}</span>
+                </div>
+                <div class="flag-item {% if result.blacklist_parsed.spam %}flag-active{% endif %}">
+                    <span class="flag-icon">📧</span>
+                    <span class="flag-label">垃圾邮件</span>
+                    <span class="flag-status">{{ '是' if result.blacklist_parsed.spam else '否' }}</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if result.anonymity_tests %}
+        <div class="result-section">
+            <h3>🔐 匿名性测试详情</h3>
+            <div class="anonymity-tests">
+                {% for test in result.anonymity_tests %}
+                    <div class="test-item {% if test.success %}test-success{% else %}test-failed{% endif %}">
+                        <span class="test-url">{{ test.url }}</span>
+                        {% if test.success %}
+                            <span class="test-result">返回IP: {{ test.returned_ip }}</span>
+                        {% else %}
+                            <span class="test-result text-danger">测试失败: {{ test.error }}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="result-footer">
+            <p class="timestamp">检测时间: {{ result.timestamp }}</p>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">返回检测</a>
+        </div>
+    </div>
+{% endblock %}

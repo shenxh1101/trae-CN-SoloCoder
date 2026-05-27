@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}文本列表 - 文本粘贴服务{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 20px;">📋 所有未过期的文本</h2>
+
+{% if pastes %}
+<table>
+    <thead>
+        <tr>
+            <th>访问码</th>
+            <th>创建时间</th>
+            <th>剩余时间</th>
+            <th>查看次数</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for paste in pastes %}
+        <tr>
+            <td><code>{{ paste.code }}</code></td>
+            <td>{{ paste.created_at|datetime_format }}</td>
+            <td>{{ paste.expires_at|time_remaining }}</td>
+            <td>{{ paste.views }}</td>
+            <td>
+                {% if paste.has_password %}
+                <span class="badge badge-warning">🔒 密码</span>
+                {% endif %}
+                {% if paste.one_time %}
+                <span class="badge badge-info">⚡ 一次</span>
+                {% endif %}
+                {% if not paste.has_password and not paste.one_time %}
+                <span class="badge badge-success">公开</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('view', code=paste.code) }}" class="btn btn-sm btn-secondary" target="_blank">查看</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <h3>暂无文本</h3>
+    <p>还没有任何人提交文本</p>
+</div>
+{% endif %}
+{% endblock %}

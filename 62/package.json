@@ -1,0 +1,19 @@
+{
+  "name": "tic-tac-toe",
+  "version": "1.0.0",
+  "description": "井字棋游戏 - 支持双人对战和人机对战",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug"
+  },
+  "keywords": ["tic-tac-toe", "game"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0"
+  }
+}
