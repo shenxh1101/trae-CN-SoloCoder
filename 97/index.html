@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虚拟钢琴模拟器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🎹 虚拟钢琴</h1>
+            <p class="subtitle">用鼠标或键盘演奏，支持录音与MIDI导出</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="current-note">
+                <span class="label">当前音符:</span>
+                <span id="currentNoteDisplay" class="note-value">-</span>
+            </div>
+            <div class="volume-control">
+                <span class="label">音量:</span>
+                <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                <span id="volumeValue">70%</span>
+            </div>
+            <button id="sustainBtn" class="sustain-btn">
+                <span class="pedal-icon">🦶</span>
+                <span>延音踏板</span>
+            </button>
+        </div>
+
+        <div class="control-panel">
+            <div class="control-group">
+                <h3>🎵 录音控制</h3>
+                <div class="btn-group">
+                    <button id="recordBtn" class="btn btn-record">
+                        <span class="icon">●</span> 录音
+                    </button>
+                    <button id="stopBtn" class="btn btn-stop" disabled>
+                        <span class="icon">■</span> 停止
+                    </button>
+                    <button id="playBtn" class="btn btn-play" disabled>
+                        <span class="icon">▶</span> 回放
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>🎼 MIDI</h3>
+                <div class="btn-group">
+                    <button id="exportMidiBtn" class="btn" disabled>
+                        <span class="icon">💾</span> 导出MIDI
+                    </button>
+                    <label class="btn file-label">
+                        <span class="icon">📂</span> 导入MIDI
+                        <input type="file" id="importMidiInput" accept=".mid,.midi" hidden>
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>🎸 乐器选择</h3>
+                <select id="instrumentSelect" class="select-control">
+                    <option value="piano">钢琴</option>
+                    <option value="synth">电子琴</option>
+                    <option value="organ">风琴</option>
+                    <option value="guitar">吉他</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <h3>⏱️ 节拍器</h3>
+                <div class="metronome-controls">
+                    <button id="metronomeToggle" class="btn">
+                        <span class="icon">▶</span> 启动
+                    </button>
+                    <div class="bpm-control">
+                        <label>BPM:</label>
+                        <input type="number" id="bpmInput" min="40" max="240" value="120">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>🎶 示范曲</h3>
+                <select id="demoSongSelect" class="select-control">
+                    <option value="twinkle">小星星</option>
+                    <option value="odeToJoy">欢乐颂</option>
+                    <option value="maryHadALittleLamb">玛丽有只小羊羔</option>
+                </select>
+                <button id="playDemoBtn" class="btn btn-play-demo">
+                    <span class="icon">▶</span> 播放
+                </button>
+            </div>
+        </div>
+
+        <div class="teaching-panel" id="teachingPanel">
+            <div class="teaching-header">
+                <h3>📚 教学模式</h3>
+                <button id="teachingToggle" class="btn">开始练习</button>
+            </div>
+            <div class="teaching-content">
+                <div class="score-display">
+                    <span>得分: <strong id="scoreValue">0</strong></span>
+                    <span>连续正确: <strong id="streakValue">0</strong></span>
+                </div>
+                <div class="note-question" id="noteQuestion">
+                    <span class="question-label">请按下:</span>
+                    <span class="target-note" id="targetNote">-</span>
+                </div>
+                <div class="timer-display">
+                    <div class="timer-bar" id="timerBar"></div>
+                </div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+
+        <div class="piano-container">
+            <div class="piano" id="piano">
+            </div>
+        </div>
+
+        <div class="keyboard-hint">
+            <p>💡 键盘映射: 白键 A-K | 黑键 W E T Y U O P</p>
+        </div>
+    </div>
+
+    <script src="js/audioEngine.js"></script>
+    <script src="js/piano.js"></script>
+    <script src="js/recorder.js"></script>
+    <script src="js/midiHandler.js"></script>
+    <script src="js/metronome.js"></script>
+    <script src="js/teachingMode.js"></script>
+    <script src="js/demoSongs.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

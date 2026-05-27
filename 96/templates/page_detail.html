@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}页面详情 - {{ page.title }}{% endblock %}
+{% block content %}
+<div class="page-detail-container">
+    <div class="page-header">
+        <a href="{{ url_for('task_detail', task_id=task.task_id) }}" class="btn btn-secondary">← 返回任务</a>
+        <div>
+            <h1>{{ page.title or '无标题' }}</h1>
+            <p class="page-url">{{ page.url }}</p>
+        </div>
+    </div>
+
+    <div class="page-info">
+        <div class="info-item">
+            <span class="info-label">任务ID</span>
+            <span class="info-value"><code>{{ task.task_id }}</code></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">页面索引</span>
+            <span class="info-value">#{{ page_index + 1 }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">状态码</span>
+            <span class="info-value">{{ page.status_code or 'N/A' }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">内容类型</span>
+            <span class="info-value">{{ page.content_type or 'N/A' }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">内容大小</span>
+            <span class="info-value">{{ page.content_length or 0 }} 字节</span>
+        </div>
+    </div>
+
+    <div class="page-summary">
+        <h2>📝 内容摘要</h2>
+        <p>{{ page.summary or '无摘要' }}</p>
+    </div>
+
+    {% if page.links %}
+    <div class="page-links">
+        <h2>🔗 页面链接 ({{ page.links | length }})</h2>
+        <div class="links-list">
+            {% for link in page.links[:50] %}
+            <div class="link-item">
+                <a href="{{ link.url }}" target="_blank" rel="noopener">
+                    <span class="link-text">{{ link.text or link.url }}</span>
+                    <span class="link-url">{{ link.url }}</span>
+                </a>
+            </div>
+            {% endfor %}
+            {% if page.links | length > 50 %}
+            <p class="more-links">还有 {{ page.links | length - 50 }} 个链接未显示...</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,314 @@
+[
+  {
+    "date": "2026-05-27",
+    "city": "Beijing",
+    "temperature": -2.0,
+    "humidity": 29,
+    "condition": "Windy",
+    "timestamp": "2026-05-27T21:02:37.367532"
+  },
+  {
+    "date": "2026-05-27",
+    "city": "Shanghai",
+    "temperature": 37.5,
+    "humidity": 89,
+    "condition": "Windy",
+    "timestamp": "2026-05-27T21:03:21.510767"
+  },
+  {
+    "date": "2026-05-27",
+    "city": "Guangzhou",
+    "temperature": 30.6,
+    "humidity": 62,
+    "condition": "Rainy",
+    "timestamp": "2026-05-27T21:03:21.511103"
+  },
+  {
+    "date": "2026-05-27",
+    "city": "Shenzhen",
+    "temperature": 30.5,
+    "humidity": 28,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:21.511591"
+  },
+  {
+    "date": "2026-05-21",
+    "city": "Beijing",
+    "temperature": 16.2,
+    "humidity": 39,
+    "condition": "Cloudy",
+    "timestamp": "2026-05-27T21:03:32.291754"
+  },
+  {
+    "date": "2026-05-22",
+    "city": "Beijing",
+    "temperature": 38.5,
+    "humidity": 57,
+    "condition": "Sunny",
+    "timestamp": "2026-05-27T21:03:32.292075"
+  },
+  {
+    "date": "2026-05-23",
+    "city": "Beijing",
+    "temperature": 4.8,
+    "humidity": 87,
+    "condition": "Snowy",
+    "timestamp": "2026-05-27T21:03:32.292618"
+  },
+  {
+    "date": "2026-05-24",
+    "city": "Beijing",
+    "temperature": -2.7,
+    "humidity": 84,
+    "condition": "Cloudy",
+    "timestamp": "2026-05-27T21:03:32.292881"
+  },
+  {
+    "date": "2026-05-25",
+    "city": "Beijing",
+    "temperature": 1.5,
+    "humidity": 25,
+    "condition": "Partly Cloudy",
+    "timestamp": "2026-05-27T21:03:32.293065"
+  },
+  {
+    "date": "2026-05-26",
+    "city": "Beijing",
+    "temperature": 28.8,
+    "humidity": 55,
+    "condition": "Rainy",
+    "timestamp": "2026-05-27T21:03:32.293372"
+  },
+  {
+    "date": "2026-05-20",
+    "city": "Chengdu",
+    "temperature": 25.5,
+    "humidity": 75,
+    "condition": "Sunny",
+    "timestamp": "2026-05-27T21:03:42.919534"
+  },
+  {
+    "date": "2026-05-21",
+    "city": "Chengdu",
+    "temperature": 28.0,
+    "humidity": 60,
+    "condition": "Partly Cloudy",
+    "timestamp": "2026-05-27T21:03:42.967539"
+  },
+  {
+    "date": "2026-05-01",
+    "city": "Beijing",
+    "temperature": 24.1,
+    "humidity": 65,
+    "condition": "Partly Cloudy",
+    "timestamp": "2026-05-27T21:03:54.020279"
+  },
+  {
+    "date": "2026-05-02",
+    "city": "Beijing",
+    "temperature": 14.4,
+    "humidity": 74,
+    "condition": "Snowy",
+    "timestamp": "2026-05-27T21:03:54.020616"
+  },
+  {
+    "date": "2026-05-03",
+    "city": "Beijing",
+    "temperature": 28.7,
+    "humidity": 72,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:54.021163"
+  },
+  {
+    "date": "2026-05-04",
+    "city": "Beijing",
+    "temperature": 37.9,
+    "humidity": 50,
+    "condition": "Rainy",
+    "timestamp": "2026-05-27T21:03:54.021355"
+  },
+  {
+    "date": "2026-05-05",
+    "city": "Beijing",
+    "temperature": 33.1,
+    "humidity": 86,
+    "condition": "Windy",
+    "timestamp": "2026-05-27T21:03:54.021701"
+  },
+  {
+    "date": "2026-05-06",
+    "city": "Beijing",
+    "temperature": 33.4,
+    "humidity": 49,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:54.021877"
+  },
+  {
+    "date": "2026-05-07",
+    "city": "Beijing",
+    "temperature": 37.7,
+    "humidity": 38,
+    "condition": "Thunderstorm",
+    "timestamp": "2026-05-27T21:03:54.022062"
+  },
+  {
+    "date": "2026-05-08",
+    "city": "Beijing",
+    "temperature": 11.7,
+    "humidity": 41,
+    "condition": "Sunny",
+    "timestamp": "2026-05-27T21:03:54.022249"
+  },
+  {
+    "date": "2026-05-09",
+    "city": "Beijing",
+    "temperature": 18.7,
+    "humidity": 66,
+    "condition": "Thunderstorm",
+    "timestamp": "2026-05-27T21:03:54.022443"
+  },
+  {
+    "date": "2026-05-10",
+    "city": "Beijing",
+    "temperature": -8.7,
+    "humidity": 84,
+    "condition": "Cloudy",
+    "timestamp": "2026-05-27T21:03:54.022642"
+  },
+  {
+    "date": "2026-05-11",
+    "city": "Beijing",
+    "temperature": 0.7,
+    "humidity": 81,
+    "condition": "Windy",
+    "timestamp": "2026-05-27T21:03:54.022835"
+  },
+  {
+    "date": "2026-05-12",
+    "city": "Beijing",
+    "temperature": 28.0,
+    "humidity": 33,
+    "condition": "Thunderstorm",
+    "timestamp": "2026-05-27T21:03:54.023146"
+  },
+  {
+    "date": "2026-05-13",
+    "city": "Beijing",
+    "temperature": -6.1,
+    "humidity": 40,
+    "condition": "Windy",
+    "timestamp": "2026-05-27T21:03:54.023394"
+  },
+  {
+    "date": "2026-05-14",
+    "city": "Beijing",
+    "temperature": 9.5,
+    "humidity": 53,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:54.023624"
+  },
+  {
+    "date": "2026-05-15",
+    "city": "Beijing",
+    "temperature": -7.4,
+    "humidity": 68,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:54.023834"
+  },
+  {
+    "date": "2026-05-16",
+    "city": "Beijing",
+    "temperature": -4.1,
+    "humidity": 52,
+    "condition": "Rainy",
+    "timestamp": "2026-05-27T21:03:54.024180"
+  },
+  {
+    "date": "2026-05-17",
+    "city": "Beijing",
+    "temperature": 31.3,
+    "humidity": 38,
+    "condition": "Cloudy",
+    "timestamp": "2026-05-27T21:03:54.024485"
+  },
+  {
+    "date": "2026-05-18",
+    "city": "Beijing",
+    "temperature": 15.0,
+    "humidity": 48,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:54.024857"
+  },
+  {
+    "date": "2026-05-19",
+    "city": "Beijing",
+    "temperature": 6.2,
+    "humidity": 85,
+    "condition": "Sunny",
+    "timestamp": "2026-05-27T21:03:54.025139"
+  },
+  {
+    "date": "2026-05-20",
+    "city": "Beijing",
+    "temperature": 10.5,
+    "humidity": 31,
+    "condition": "Cloudy",
+    "timestamp": "2026-05-27T21:03:54.025518"
+  },
+  {
+    "date": "2026-05-28",
+    "city": "Beijing",
+    "temperature": -0.7,
+    "humidity": 53,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:54.025801"
+  },
+  {
+    "date": "2026-05-29",
+    "city": "Beijing",
+    "temperature": 24.8,
+    "humidity": 54,
+    "condition": "Snowy",
+    "timestamp": "2026-05-27T21:03:54.026038"
+  },
+  {
+    "date": "2026-05-30",
+    "city": "Beijing",
+    "temperature": 22.3,
+    "humidity": 95,
+    "condition": "Foggy",
+    "timestamp": "2026-05-27T21:03:54.026265"
+  },
+  {
+    "date": "2026-05-31",
+    "city": "Beijing",
+    "temperature": 2.3,
+    "humidity": 24,
+    "condition": "Rainy",
+    "timestamp": "2026-05-27T21:03:54.026644"
+  },
+  {
+    "date": "2026-05-27",
+    "city": "Harbin",
+    "temperature": 14.7,
+    "humidity": 46,
+    "condition": "Partly Cloudy",
+    "timestamp": "2026-05-27T21:14:23.897168"
+  },
+  {
+    "date": "2026-05-27",
+    "city": "TestCity",
+    "temperature": 5.5,
+    "humidity": 47,
+    "condition": "Sunny",
+    "timestamp": "2026-05-27T21:14:30.964273"
+  },
+  {
+    "date": "2026-05-27",
+    "city": "HotCity",
+    "temperature": 8.2,
+    "humidity": 24,
+    "condition": "Snowy",
+    "timestamp": "2026-05-27T21:14:34.402606"
+  }
+]

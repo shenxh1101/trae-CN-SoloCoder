@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}新建任务 - 爬虫调度服务{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>🚀 新建爬取任务</h1>
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+    <form method="POST" class="crawler-form">
+        <div class="form-group">
+            <label for="url">目标URL <span class="required">*</span></label>
+            <input type="url" id="url" name="url" placeholder="https://example.com" required
+                   value="{{ request.form.get('url', '') }}">
+            <small class="form-hint">请输入完整的URL，包含协议(http://或https://)</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="max_depth">爬取深度</label>
+                <select id="max_depth" name="max_depth">
+                    <option value="1">1 - 仅爬取首页</option>
+                    <option value="2" selected>2 - 首页及其子页面</option>
+                    <option value="3">3 - 深度爬取</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="crawl_interval">爬取间隔(秒)</label>
+                <input type="number" id="crawl_interval" name="crawl_interval" value="1.0" min="0" step="0.1">
+                <small class="form-hint">请求间隔，避免被封禁</small>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="timeout">超时时间(秒)</label>
+                <input type="number" id="timeout" name="timeout" value="30" min="1" max="120">
+            </div>
+            <div class="form-group">
+                <label for="keywords">关键词过滤</label>
+                <input type="text" id="keywords" name="keywords" placeholder="可选，多个用逗号分隔">
+                <small class="form-hint">只保存包含这些关键词的页面</small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="allowed_domains">限定域名</label>
+            <input type="text" id="allowed_domains" name="allowed_domains" placeholder="可选，多个域名用逗号分隔">
+            <small class="form-hint">默认限定为目标URL的域名，不跳转到外部网站</small>
+        </div>
+        <div class="form-checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="respect_robots" name="respect_robots" checked>
+                <span>遵守robots.txt规则</span>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="save_html" name="save_html">
+                <span>保存爬取页面为HTML文件</span>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">🚀 开始爬取</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

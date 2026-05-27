@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}定时任务 - 爬虫调度服务{% endblock %}
+{% block content %}
+<div class="list-container">
+    <div class="list-header">
+        <h1>⏰ 定时任务</h1>
+        <a href="{{ url_for('new_schedule') }}" class="btn btn-primary">+ 新建定时任务</a>
+    </div>
+    {% if schedules %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>任务名称</th>
+                    <th>Cron表达式</th>
+                    <th>目标URL</th>
+                    <th>状态</th>
+                    <th>运行次数</th>
+                    <th>上次运行</th>
+                    <th>下次运行</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in schedules %}
+                <tr>
+                    <td>{{ s.name }}</td>
+                    <td><code>{{ s.cron_expr }}</code></td>
+                    <td class="url-cell">{{ s.config.get('url', '') }}</td>
+                    <td>
+                        {% if s.enabled %}
+                        <span class="status-badge status-running">启用</span>
+                        {% else %}
+                        <span class="status-badge status-paused">禁用</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ s.run_count }}</td>
+                    <td>{{ s.last_run_time or '从未' }}</td>
+                    <td>{{ s.next_run_time or 'N/A' }}</td>
+                    <td class="actions-cell">
+                        <button onclick="toggleSchedule('{{ s.schedule_id }}', {{ 'false' if s.enabled else 'true' }})"
+                                class="btn btn-sm {{ 'btn-warning' if s.enabled else 'btn-success' }}">
+                            {{ '禁用' if s.enabled else '启用' }}
+                        </button>
+                        <button onclick="deleteSchedule('{{ s.schedule_id }}')" class="btn btn-sm btn-danger">删除</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">⏰</div>
+        <p>暂无定时任务</p>
+        <a href="{{ url_for('new_schedule') }}" class="btn btn-primary">创建第一个定时任务</a>
+    </div>
+    {% endif %}
+    <div class="cron-help">
+        <h3>📖 Cron表达式说明</h3>
+        <p>支持5或6个字段：</p>
+        <code>分钟 小时 日 月 周</code> 或 <code>秒 分钟 小时 日 月 周</code>
+        <ul>
+            <li><code>* * * * *</code> - 每分钟执行</li>
+            <li><code>0 * * * *</code> - 每小时整点执行</li>
+            <li><code>0 9 * * *</code> - 每天早上9点执行</li>
+            <li><code>0 9 * * 1-5</code> - 工作日每天9点执行</li>
+            <li><code>0 0 1 * *</code> - 每月1号零点执行</li>
+            <li><code>*/30 * * * *</code> - 每30分钟执行</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

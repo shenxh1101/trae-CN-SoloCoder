@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ share.title }} - 书签分享</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔗 {{ share.title }}</h1>
+            <p class="share-subtitle">共 {{ share.bookmarks|length }} 个书签</p>
+        </header>
+
+        <main class="content">
+            {% if share.bookmarks %}
+                {% for bm in share.bookmarks %}
+                <div class="bookmark-item {{ 'bookmark-error' if bm.status == 'error' }}">
+                    <div class="bookmark-info">
+                        <h3 class="bookmark-title">
+                            <a href="{{ bm.url }}" target="_blank" rel="noopener">{{ bm.title }}</a>
+                        </h3>
+                        <div class="bookmark-url">{{ bm.url }}</div>
+                        <div class="bookmark-meta">
+                            <span class="bookmark-category">📁 {{ bm.category }}</span>
+                            {% if bm.tags %}
+                            <span class="bookmark-tags">
+                                {% for tag in bm.tags %}
+                                <span class="tag-item">#{{ tag }}</span>
+                                {% endfor %}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>暂无书签</p>
+                </div>
+            {% endif %}
+        </main>
+
+        <footer class="share-footer">
+            <p>生成于 {{ share.created_at }}</p>
+        </footer>
+    </div>
+</body>
+</html>

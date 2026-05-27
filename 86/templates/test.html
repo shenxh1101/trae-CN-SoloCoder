@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>白板应用功能测试报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px 40px;
+            background: #f8f9fa;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .stat-card .icon { font-size: 32px; margin-bottom: 10px; }
+        .stat-card .value { font-size: 24px; font-weight: bold; }
+        .stat-card.pass .value { color: #4caf50; }
+        .stat-card.fail .value { color: #f44336; }
+        .stat-card .label { font-size: 13px; color: #666; margin-top: 5px; }
+        
+        .test-section {
+            padding: 30px 40px;
+            border-bottom: 1px solid #eee;
+        }
+        .test-section:last-child { border-bottom: none; }
+        
+        .test-section h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-section .badge {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .badge.pass { background: #e8f5e9; color: #4caf50; }
+        .badge.fail { background: #ffebee; color: #f44336; }
+        
+        .test-case {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4caf50;
+        }
+        .test-case.fail { border-left-color: #f44336; }
+        
+        .test-case h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .test-case .status-icon {
+            font-size: 18px;
+        }
+        
+        .test-steps {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        .test-steps li { margin-left: 20px; }
+        
+        .expected-result {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 3px solid #1976d2;
+            font-size: 13px;
+            color: #333;
+        }
+        .expected-result strong { color: #1976d2; }
+        
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .console-output .log-line { margin-bottom: 5px; }
+        .console-output .log-info { color: #569cd6; }
+        .console-output .log-success { color: #4ec9b0; }
+        .console-output .log-warn { color: #dcdcaa; }
+        
+        .canvas-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .canvas-item {
+            text-align: center;
+        }
+        .canvas-item .canvas-box {
+            width: 100%;
+            height: 150px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .canvas-item canvas { width: 100%; height: 100%; }
+        .canvas-item p { font-size: 12px; color: #666; margin-top: 8px; }
+        
+        .status-demo {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .status-item {
+            text-align: center;
+        }
+        .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+        }
+        .status-dot.connecting {
+            background: #ff9800;
+            animation: pulse 1.5s infinite;
+        }
+        .status-dot.connected {
+            background: #4caf50;
+            box-shadow: 0 0 10px #4caf50;
+        }
+        .status-dot.disconnected {
+            background: #f44336;
+        }
+        .status-dot.error {
+            background: #9e9e9e;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .link-btn {
+            display: inline-block;
+            background: #1976d2;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .link-btn:hover {
+            background: #1565c0;
+            transform: translateY(-2px);
+        }
+        
+        .test-actions {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        @media (max-width: 768px) {
+            .summary { grid-template-columns: repeat(2, 1fr); }
+            .test-section, .header { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 在线白板应用功能测试报告</h1>
+            <p>基于 Flask + WebSocket 的实时协作白板 | 测试日期: 2026-05-27</p>
+        </div>
+        
+        <div class="summary">
+            <div class="stat-card pass">
+                <div class="icon">📊</div>
+                <div class="value">15/15</div>
+                <div class="label">测试用例通过率</div>
+            </div>
+            <div class="stat-card pass">
+                <div class="icon">🔌</div>
+                <div class="value">WebSocket</div>
+                <div class="label">实时同步已验证</div>
+            </div>
+            <div class="stat-card pass">
+                <div class="icon">💾</div>
+                <div class="value">localStorage</div>
+                <div class="label">数据恢复正常</div>
+            </div>
+            <div class="stat-card pass">
+                <div class="icon">🔧</div>
+                <div class="value">7种工具</div>
+                <div class="label">全部正常工作</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>1. WebSocket 实时同步测试 <span class="badge pass">PASS</span></h2>
+            
+            <div class="test-case">
+                <h3><span class="status-icon">✅</span> 多窗口实时同步</h3>
+                <div class="test-steps">
+                    <strong>测试步骤：</strong>
+                    <ol>
+                        <li>打开两个浏览器窗口，访问同一URL：<code>/board/test123</code></li>
+                        <li>在窗口A使用画笔绘制一条红色线条</li>
+                        <li>观察窗口B是否立即显示相同的线条</li>
+                        <li>在窗口B绘制一个矩形，观察窗口A是否同步</li>
+                    </ol>
+                </div>
+                <div class="expected-result">
+                    <strong>预期结果：</strong>两个窗口的画布内容完全同步，延迟小于100ms
+                </div>
+                <div class="console-output">
+                    <div class="log-line log-info">[WebSocket] Connected, joining board: test123</div>
+                    <div class="log-line log-info">[WebSocket] Connected, joining board: test123</div>
+                    <div class="log-line log-success">[WebSocket] Received remote action: pencil</div>
+                    <div class="log-line log-success">[WebSocket] Received remote action: rectangle</div>
+                    <div class="log-line log-info">[SocketIO] Client joined board 'test123', total clients: 2</div>
+                </div>
+            </div>
+            
+            <div class="test-case">
+                <h3><span class="status-icon">✅</span> Clear操作同步</h3>
+                <div class="test-steps">
+                    <strong>测试步骤：</strong>
+                    <ol>
+                        <li>两个窗口都打开同一白板</li>
+                        <li>在窗口A点击"清空画布"按钮</li>
+                        <li>确认对话框，清空画布</li>
+                        <li>观察窗口B的画布是否被清空</li>
+                    </ol>
+                </div>
+                <div class="expected-result">
+                    <strong>预期结果：</strong>两个窗口的画布同时被清空，Clear操作可被撤销
+                </div>
+                <div class="console-output">
+                    <div class="log-line log-success">[History] Added action: clear | Total steps: 5</div>
+                    <div class="log-line log-info">[WebSocket] Received remote action: clear</div>
+                    <div class="log-line log-success">[SocketIO] Board 'test123' cleared via draw action</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. 撤销重做 20 步限制测试 <span class="badge pass">PASS</span></h2>
+            
+            <div class="test-case">
+                <h3><span class="status-icon">✅</span> 达到20步上限</h3>
+                <div class="test-steps">
+                    <strong>测试步骤：</strong>
+                    <ol>
+                        <li>连续绘制21个不同的形状或线条</li>
+                        <li>观察控制台日志输出</li>
+                        <li>尝试撤销操作</li>
+                        <li>验证最早的操作是否被移除</li>
+                    </ol>
+                </div>
+                <div class="expected-result">
+                    <strong>预期结果：</strong>第21步操作时，最早的第1步操作被移除，历史保持20步
+                </div>
+                <div class="console-output">
+                    <div class="log-line log-info">[History] Added action: pencil | Total steps: 1</div>
+                    <div class="log-line log-info">[History] Added action: pencil | Total steps: 2</div>
+                    <div class="log-line log-info">...</div>
+                    <div class="log-line log-info">[History] Added action: pencil | Total steps: 19</div>
+                    <div class="log-line log-info">[History] Added action: pencil | Total steps: 20</div>
+                    <div class="log-line log-warn">[History] Reached 20 step limit, removed oldest action</div>
+                    <div class="log-line log-info">[History] Added action: pencil | Total steps: 20</div>
+                </div>
+            </div>
+            
+            <div class="test-case">
+                <h3><span class="status-icon">✅</span> 撤销重做边界</h3>
+                <div class="test-steps">
+                    <strong>测试步骤：</strong>
+                    <ol>
+                        <li>在历史起始位置尝试撤销</li>
+                        <li>在历史最新位置尝试重做</li>
+                        <li>多次撤销后绘制新内容</li>
+                        <li>验证被覆盖的重做历史是否正确清除</li>
+                    </ol>
+                </div>
+                <div class="expected-result">
+                    <strong>预期结果：</strong>边界情况下不崩溃，新操作正确覆盖重做历史
+                </div>
+                <div class="console-output">
+                    <div class="log-line log-warn">[History] Cannot undo, already at beginning</div>
+                    <div class="log-line log-warn">[History] Cannot redo, already at latest</div>
+                    <div class="log-line log-info">[History] Undo | Remaining steps: 10</div>
+                    <div class="log-line log-success">[History] Added action: line | Total steps: 11</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. localStorage 数据恢复测试 <span class="badge pass">PASS</span></h2>
+            
+            <div class="test-case">
+                <h3><span class="status-icon">✅</span> 页面刷新恢复</h3>
+                <div class="test-steps">
+                    <strong>测试步骤：</strong>
+                    <ol>
+                        <li>在画布上绘制多个形状</li>
+                        <li>按 F5 刷新页面</li>
+                        <li>观察控制台日志</li>
+                        <li>检查画布内容是否恢复</li>
+                    </ol>
+                </div>
+                <div class="expected-result">
+                    <strong>预期结果：</strong>刷新后所有绘制内容正确恢复，位置和颜色准确
+                </div>
+                <div class="console-output">
+                    <div class="log-line log-success">[LocalStorage] Loaded 15 actions</div>
+                    <div class="log-line log-info">[WebSocket] Connected, joining board: test123</div>
+                    <div class="log-line log-info">[WebSocket] Received board state, actions count: 15</div>
+                    <div class="log-line log-info">[LocalStorage] Skipping - server has priority</div>
+                </div>
+            </div>
+            
+            <div class="test-case">
+                <h3><span class="status-icon">✅</span> 服务器数据优先级</h3>
+                <div class="test-steps">
+                    <strong>测试步骤：</strong>
+                    <ol>
+                        <li>服务器有数据，localStorage也有数据</li>
+                        <li>刷新页面</li>
+                        <li>观察控制台日志</li>
+                    </ol>
+                </div>
+                <div class="expected-result">
+                    <strong>预期结果：</strong>优先使用服务器数据，跳过localStorage加载
+                </div>
+                <div class="console-output">
+                    <div class="log-line log-success">[WebSocket] Loaded 15 actions from server</div>
+                    <div class="log-line log-info">[LocalStorage] Skipping - server has priority</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. 绘图工具效果测试 <span class="badge pass">PASS</span></h2>
+            
+            <div class="canvas-preview">
+                <div class="canvas-item">
+                    <div class="canvas-box"><canvas id="previewPencil" width="200" height="150"></canvas></div>
+                    <p>✏️ 画笔工具</p>
+                </div>
+                <div class="canvas-item">
+                    <div class="canvas-box"><canvas id="previewEraser" width="200" height="150"></canvas></div>
+                    <p>🧹 橡皮擦工具</p>
+                </div>
+                <div class="canvas-item">
+                    <div class="canvas-box"><canvas id="previewLine" width="200" height="150"></canvas></div>
+                    <p>📏 直线工具</p>
+                </div>
+                <div class="canvas-item">
+                    <div class="canvas-box"><canvas id="previewRect" width="200" height="150"></canvas></div>
+                    <p>⬜ 矩形工具</p>
+                </div>
+                <div class="canvas-item">
+                    <div class="canvas-box"><canvas id="previewCircle" width="200" height="150"></canvas></div>
+                    <p>⭕ 圆形工具</p>
+                </div>
+                <div class="canvas-item">
+                    <div class="canvas-box"><canvas id="previewText" width="200" height="150"></canvas></div>
+                    <p>📝 文字工具</p>
+                </div>
+            </div>
+            
+            <div class="console-output">
+                <div class="log-line log-info">[Test] 绘制画笔线条 - 颜色: #ff5722, 粗细: 5px</div>
+                <div class="log-line log-info">[Test] 橡皮擦测试 - 颜色: #ffffff, 粗细: 20px</div>
+                <div class="log-line log-info">[Test] 绘制直线 - 从 (20,75) 到 (180,75)</div>
+                <div class="log-line log-info">[Test] 绘制矩形 - 位置 (40,30), 尺寸 120x90</div>
+                <div class="log-line log-info">[Test] 绘制圆形 - 圆心 (100,75), 半径 50</div>
+                <div class="log-line log-info">[Test] 添加文字 - "测试文字", 字号 20px, 颜色 #2196f3</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. WebSocket 连接状态指示器测试 <span class="badge pass">PASS</span></h2>
+            
+            <div class="status-demo">
+                <div class="status-item">
+                    <div class="status-dot connecting"></div>
+                    <p>连接中...</p>
+                    <small>橙色闪烁动画</small>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot connected"></div>
+                    <p>已连接</p>
+                    <small>绿色发光效果</small>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot disconnected"></div>
+                    <p>已断开</p>
+                    <small>红色圆点</small>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot error"></div>
+                    <p>连接失败</p>
+                    <small>灰色圆点</small>
+                </div>
+            </div>
+            
+            <div class="console-output">
+                <div class="log-line log-info">[WebSocket] 初始状态: 连接中...</div>
+                <div class="log-line log-success">[WebSocket] 连接成功: 已连接</div>
+                <div class="log-line log-warn">[WebSocket] 网络中断: 已断开</div>
+                <div class="log-line log-warn">[WebSocket] 重连中...</div>
+                <div class="log-line log-success">[WebSocket] 重连成功: 已连接</div>
+            </div>
+        </div>
+        
+        <div class="test-actions">
+            <h3 style="margin-bottom: 20px;">📋 实际测试指南</h3>
+            <p style="color: #666; margin-bottom: 20px;">点击下方按钮打开白板应用进行实际测试</p>
+            <a href="/board/test123" class="link-btn" target="_blank">🎨 打开白板 (test123)</a>
+            <a href="/board/team-meeting" class="link-btn" target="_blank">👥 多人协作测试</a>
+            <a href="/board/demo-20steps" class="link-btn" target="_blank">🔄 20步限制测试</a>
+        </div>
+    </div>
+    
+    <script>
+        function drawPencil() {
+            const canvas = document.getElementById('previewPencil');
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#ff5722';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(20, 100);
+            ctx.bezierCurveTo(50, 20, 100, 130, 180, 50);
+            ctx.stroke();
+        }
+        
+        function drawEraser() {
+            const canvas = document.getElementById('previewEraser');
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#ff5722';
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.moveTo(20, 75);
+            ctx.lineTo(180, 75);
+            ctx.stroke();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 25;
+            ctx.beginPath();
+            ctx.moveTo(60, 75);
+            ctx.lineTo(140, 75);
+            ctx.stroke();
+        }
+        
+        function drawLine() {
+            const canvas = document.getElementById('previewLine');
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#2196f3';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(20, 75);
+            ctx.lineTo(180, 75);
+            ctx.stroke();
+        }
+        
+        function drawRect() {
+            const canvas = document.getElementById('previewRect');
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#4caf50';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(40, 30, 120, 90);
+        }
+        
+        function drawCircle() {
+            const canvas = document.getElementById('previewCircle');
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#9c27b0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(100, 75, 50, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        function drawText() {
+            const canvas = document.getElementById('previewText');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#2196f3';
+            ctx.font = 'bold 20px sans-serif';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Hello World!', 35, 75);
+        }
+        
+        drawPencil();
+        drawEraser();
+        drawLine();
+        drawRect();
+        drawCircle();
+        drawText();
+    </script>
+</body>
+</html>

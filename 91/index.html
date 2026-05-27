@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弹球打砖块增强版</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game-container">
+  <div id="hud">
+    <div class="hud-item"><span class="hud-label">分数</span><span id="score">0</span></div>
+    <div class="hud-item"><span class="hud-label">关卡</span><span id="level">1</span></div>
+    <div class="hud-item"><span class="hud-label">生命</span><span id="lives">❤❤❤</span></div>
+    <div class="hud-item"><span class="hud-label">最高分</span><span id="highscore">0</span></div>
+    <div class="hud-item" id="powerup-preview-wrap">
+      <span class="hud-label">下一个道具</span>
+      <span id="powerup-preview">—</span>
+    </div>
+  </div>
+
+  <div id="controls-bar">
+    <button id="btn-pause" class="ctrl-btn">⏸ 暂停</button>
+    <button id="btn-sound" class="ctrl-btn">🔊 音效</button>
+    <button id="btn-editor" class="ctrl-btn">✏ 编辑器</button>
+  </div>
+
+  <canvas id="game-canvas" width="800" height="600"></canvas>
+
+  <div id="overlay" class="overlay hidden">
+    <div class="overlay-content">
+      <h2 id="overlay-title">游戏暂停</h2>
+      <p id="overlay-text">按空格键或点击继续按钮恢复游戏</p>
+      <button id="btn-resume" class="ctrl-btn big-btn">▶ 继续</button>
+      <button id="btn-restart" class="ctrl-btn big-btn">🔄 重新开始</button>
+    </div>
+  </div>
+
+  <div id="gameover-overlay" class="overlay hidden">
+    <div class="overlay-content">
+      <h2>游戏结束</h2>
+      <p>最终分数: <span id="final-score">0</span></p>
+      <p>最高分: <span id="final-highscore">0</span></p>
+      <button id="btn-gameover-restart" class="ctrl-btn big-btn">🔄 重新开始</button>
+    </div>
+  </div>
+
+  <div id="levelclear-overlay" class="overlay hidden">
+    <div class="overlay-content">
+      <h2 id="levelclear-title">过关！</h2>
+      <p id="levelclear-text">准备进入下一关</p>
+      <button id="btn-next-level" class="ctrl-btn big-btn">▶ 下一关</button>
+    </div>
+  </div>
+
+  <div id="editor-overlay" class="overlay hidden">
+    <div class="overlay-content editor-content">
+      <h2>关卡编辑器</h2>
+      <div class="editor-toolbar">
+        <label>砖块类型:</label>
+        <select id="brick-type-select">
+          <option value="0">空</option>
+          <option value="1">普通(红)</option>
+          <option value="2">普通(橙)</option>
+          <option value="3">普通(黄)</option>
+          <option value="4">普通(绿)</option>
+          <option value="5">普通(蓝)</option>
+          <option value="6">普通(紫)</option>
+          <option value="7">银色(2次)</option>
+          <option value="8">金色(道具)</option>
+          <option value="9">炸弹</option>
+        </select>
+        <button id="btn-clear-grid" class="ctrl-btn">清空</button>
+        <button id="btn-save-level" class="ctrl-btn">💾 保存</button>
+        <button id="btn-load-level" class="ctrl-btn">📂 加载</button>
+        <button id="btn-play-level" class="ctrl-btn">▶ 开始</button>
+        <button id="btn-close-editor" class="ctrl-btn">✖ 关闭</button>
+      </div>
+      <canvas id="editor-canvas" width="700" height="300"></canvas>
+      <p class="editor-hint">点击网格放置砖块，选择"空"可擦除。保存后可在游戏中选择"加载"使用自定义关卡。</p>
+    </div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

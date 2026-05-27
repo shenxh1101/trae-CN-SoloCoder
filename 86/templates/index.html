@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>在线白板 - {{ board_id }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="toolbar">
+        <div class="tool-group">
+            <button class="tool-btn active" data-tool="pencil" title="画笔">✏️</button>
+            <button class="tool-btn" data-tool="eraser" title="橡皮擦">🧹</button>
+            <button class="tool-btn" data-tool="line" title="直线">📏</button>
+            <button class="tool-btn" data-tool="rectangle" title="矩形">⬜</button>
+            <button class="tool-btn" data-tool="circle" title="圆形">⭕</button>
+            <button class="tool-btn" data-tool="text" title="文字">📝</button>
+            <button class="tool-btn" data-tool="eyedropper" title="吸管">💧</button>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="tool-group">
+            <label class="color-label">
+                <input type="color" id="colorPicker" value="#000000">
+            </label>
+            <div class="thickness-control">
+                <input type="range" id="thicknessSlider" min="1" max="50" value="3">
+                <span id="thicknessValue">3</span>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="tool-group">
+            <button id="undoBtn" title="撤销 (Ctrl+Z)">↶</button>
+            <button id="redoBtn" title="重做 (Ctrl+Y)">↷</button>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="tool-group">
+            <button id="gridBtn" title="背景网格">📐</button>
+            <button id="clearBtn" title="清空画布">🗑️</button>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="tool-group">
+            <button id="savePngBtn" title="保存为PNG">💾 PNG</button>
+            <button id="saveSvgBtn" title="保存为SVG">💾 SVG</button>
+        </div>
+        
+        <div class="board-id-display">
+            白板ID: <strong>{{ board_id }}</strong>
+        </div>
+        
+        <div class="connection-status" id="connectionStatus" title="连接状态">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-text" id="statusText">连接中...</span>
+        </div>
+    </div>
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+    
+    <div id="textInputModal" class="modal hidden">
+        <div class="modal-content">
+            <input type="text" id="textInput" placeholder="输入文字..." maxlength="100">
+            <div class="modal-buttons">
+                <button id="textCancel">取消</button>
+                <button id="textConfirm">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="eyedropperTooltip" class="hidden">
+        <div id="eyedropperColor"></div>
+        <span id="eyedropperHex">#000000</span>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        window.boardId = {{ board_id|tojson }};
+    </script>
+</body>
+</html>

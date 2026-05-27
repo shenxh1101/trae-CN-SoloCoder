@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分类: 开发工具 - 书签分享</title>
+<style>
+:root { --bg-primary: #ffffff; --bg-secondary: #f5f7fa; --text-primary: #1a1a2e; --text-secondary: #4a5568; --text-muted: #718096; --border-color: #e2e8f0; --accent: #4f46e5; --accent-hover: #4338ca; --danger: #ef4444; --success: #10b981; --warning: #f59e0b; --card-bg: #ffffff; --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background-color: var(--bg-secondary); color: var(--text-primary); line-height: 1.6; }
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+.header { text-align: center; padding: 30px 0; border-bottom: 1px solid var(--border-color); margin-bottom: 30px; }
+.header h1 { font-size: 2rem; margin-bottom: 8px; }
+.share-subtitle { color: var(--text-muted); font-size: 1.1rem; }
+.bookmark-item { background-color: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 12px; box-shadow: var(--shadow); transition: all 0.2s; border-left: 4px solid transparent; }
+.bookmark-item:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.bookmark-item.bookmark-error { border-left-color: var(--danger); background-color: #fef2f2; }
+.bookmark-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 6px; }
+.bookmark-title a { color: var(--text-primary); text-decoration: none; transition: color 0.2s; }
+.bookmark-title a:hover { color: var(--accent); }
+.bookmark-url { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; word-break: break-all; }
+.bookmark-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-secondary); }
+.bookmark-category { display: inline-flex; align-items: center; gap: 4px; }
+.bookmark-tags { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.tag-item { background-color: var(--bg-secondary); color: var(--text-secondary); padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; }
+.share-footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border-color); margin-top: 40px; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+@media (max-width: 600px) { .container { padding: 10px; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1>🔗 分类: 开发工具</h1>
+        <p class="share-subtitle">共 2 个书签</p>
+    </header>
+    <main class="content">
+        
+            <div class="bookmark-item ">
+                <h3 class="bookmark-title">
+                    <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+                </h3>
+                <div class="bookmark-url">https://github.com</div>
+                <div class="bookmark-meta">
+                    <span class="bookmark-category">📁 开发工具</span>
+                    <span class="bookmark-tags"><span class="tag-item">#code</span><span class="tag-item">#git</span><span class="tag-item">#开源</span></span>
+                </div>
+            </div>
+            <div class="bookmark-item bookmark-error">
+                <h3 class="bookmark-title">
+                    <a href="https://stackoverflow.com" target="_blank" rel="noopener">Stack Overflow</a>
+                </h3>
+                <div class="bookmark-url">https://stackoverflow.com</div>
+                <div class="bookmark-meta">
+                    <span class="bookmark-category">📁 开发工具</span>
+                    <span class="bookmark-tags"><span class="tag-item">#qa</span><span class="tag-item">#code</span><span class="tag-item">#社区</span></span>
+                </div>
+            </div>
+    </main>
+    <footer class="share-footer">
+        <p>生成于 2026-05-27T20:53:03.989554</p>
+    </footer>
+</div>
+</body>
+</html>

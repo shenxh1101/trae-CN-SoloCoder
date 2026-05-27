@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}任务详情 - {{ task.task_id }}{% endblock %}
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+        <div>
+            <h1>📄 任务详情</h1>
+            <p class="task-id">任务ID: <code>{{ task.task_id }}</code></p>
+        </div>
+        <div class="header-actions">
+            {% if task.status == 'running' %}
+            <button onclick="pauseTask('{{ task.task_id }}')" class="btn btn-warning">⏸️ 暂停</button>
+            <button onclick="cancelTask('{{ task.task_id }}')" class="btn btn-danger">🚫 取消</button>
+            {% elif task.status == 'paused' %}
+            <button onclick="resumeTask('{{ task.task_id }}')" class="btn btn-success">▶️ 恢复</button>
+            <button onclick="cancelTask('{{ task.task_id }}')" class="btn btn-danger">🚫 取消</button>
+            {% elif task.status in ['completed', 'failed', 'cancelled'] %}
+            <a href="{{ url_for('export_json', task_id=task.task_id) }}" class="btn btn-info">📥 导出JSON</a>
+            <a href="{{ url_for('export_csv', task_id=task.task_id) }}" class="btn btn-success">📊 导出CSV</a>
+            <button onclick="deleteTask('{{ task.task_id }}')" class="btn btn-danger">🗑️ 删除</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="info-cards">
+        <div class="info-card">
+            <div class="info-label">状态</div>
+            <span class="status-badge status-{{ task.status }}">
+                {% if task.status == 'running' %}运行中
+                {% elif task.status == 'pending' %}等待中
+                {% elif task.status == 'paused' %}已暂停
+                {% elif task.status == 'completed' %}已完成
+                {% elif task.status == 'failed' %}失败
+                {% elif task.status == 'cancelled' %}已取消
+                {% else %}{{ task.status }}
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-card">
+            <div class="info-label">进度</div>
+            <div class="progress-bar-container large">
+                <div class="progress-bar" style="width: {{ task.progress }}%"></div>
+                <span class="progress-text">{{ task.progress }}%</span>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="info-label">爬取页面数</div>
+            <div class="info-value" id="result-count">{{ task.result_count }}</div>
+        </div>
+        <div class="info-card">
+            <div class="info-label">目标URL</div>
+            <div class="info-value url-value">{{ task.config.get('url', '') }}</div>
+        </div>
+    </div>
+
+    <div class="config-panel">
+        <h3>⚙️ 任务配置</h3>
+        <div class="config-grid">
+            <div class="config-item">
+                <span class="config-label">最大深度</span>
+                <span class="config-value">{{ task.config.get('max_depth', 2) }}</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">爬取间隔</span>
+                <span class="config-value">{{ task.config.get('crawl_interval', 1) }}秒</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">超时时间</span>
+                <span class="config-value">{{ task.config.get('timeout', 15) }}秒</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">遵守robots.txt</span>
+                <span class="config-value">{{ '是' if task.config.get('respect_robots') else '否' }}</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">保存HTML</span>
+                <span class="config-value">{{ '是' if task.config.get('save_html') else '否' }}</span>
+            </div>
+            {% if task.config.get('keywords') %}
+            <div class="config-item">
+                <span class="config-label">关键词过滤</span>
+                <span class="config-value">{{ task.config.get('keywords', []) | join(', ') }}</span>
+            </div>
+            {% endif %}
+            {% if task.config.get('allowed_domains') %}
+            <div class="config-item">
+                <span class="config-label">限定域名</span>
+                <span class="config-value">{{ task.config.get('allowed_domains', []) | join(', ') }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if task.error %}
+    <div class="alert alert-error">
+        <strong>错误信息:</strong> {{ task.error }}
+    </div>
+    {% endif %}
+
+    <div class="results-section">
+        <div class="results-header">
+            <h2>📄 爬取结果</h2>
+            <div class="search-box">
+                <input type="text" id="result-search" placeholder="🔍 在结果中搜索关键词..." onkeyup="searchResults('{{ task.task_id }}')">
+            </div>
+        </div>
+        <div id="results-container">
+            <div class="loading-indicator">
+                <div class="spinner"></div>
+                <p>加载爬取结果...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const taskId = '{{ task.task_id }}';
+    const taskStatus = '{{ task.status }}';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadResults();
+        if (taskStatus === 'running' || taskStatus === 'paused') {
+            setInterval(updateStatus, 3000);
+        }
+    });
+
+    function loadResults(keyword = '') {
+        const url = `/task/${taskId}/results${keyword ? '?q=' + encodeURIComponent(keyword) : ''}`;
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                renderResults(data);
+            })
+            .catch(err => console.error(err));
+    }
+
+    function searchResults(taskId) {
+        const keyword = document.getElementById('result-search').value;
+        loadResults(keyword);
+    }
+
+    function renderResults(data) {
+        const container = document.getElementById('results-container');
+        const results = data.results;
+        const count = data.total;
+
+        document.getElementById('result-count').textContent = count;
+
+        if (results.length === 0) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>暂无爬取结果</p></div>';
+            return;
+        }
+
+        let html = `<div class="results-meta">共找到 <strong>${count}</strong> 个页面</div>`;
+        html += '<div class="results-grid">';
+        results.forEach((page, index) => {
+            html += `
+                <div class="result-card">
+                    <div class="result-card-header">
+                        <h3><a href="/task/${taskId}/page/${index}">${escapeHtml(page.title || '无标题')}</a></h3>
+                    </div>
+                    <div class="result-card-body">
+                        <p class="result-url">${escapeHtml(page.url)}</p>
+                        <p class="result-summary">${escapeHtml((page.summary || '').substring(0, 200))}${page.summary && page.summary.length > 200 ? '...' : ''}</p>
+                    </div>
+                    <div class="result-card-footer">
+                        <span class="result-meta">${page.content_type || ''}</span>
+                        <span class="result-meta">${formatSize(page.content_length || 0)}</span>
+                        <a href="/task/${taskId}/page/${index}" class="btn btn-sm btn-info">查看详情</a>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function updateStatus() {
+        fetch(`/api/task/${taskId}/status`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'completed' || data.status === 'failed' || data.status === 'cancelled') {
+                    location.reload();
+                } else {
+                    loadResults();
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+</script>
+{% endblock %}

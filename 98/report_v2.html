@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Analysis Report</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        h1 { color: white; text-align: center; margin-bottom: 30px;
+              text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        h2 { color: #2d3748; margin-bottom: 20px; font-size: 1.5rem;
+              border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                         gap: 20px; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white; padding: 20px; border-radius: 10px; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: bold; }
+        .stat-label { opacity: 0.9; font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #f7fafc; color: #2d3748; text-align: left;
+             padding: 12px; font-weight: 600; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        tr:hover { background: #f7fafc; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem;
+                  font-weight: 600; }
+        .badge-success { background: #c6f6d5; color: #22543d; }
+        .badge-info { background: #bee3f8; color: #2a4365; }
+        .badge-warning { background: #feebc8; color: #744210; }
+        .badge-danger { background: #fed7d7; color: #742a2a; }
+        .status-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .status-fill { height: 100%; }
+        .alert { padding: 16px; border-radius: 8px; margin-bottom: 12px; }
+        .alert-warning { background: #fff3cd; border-left: 4px solid #ffc107; }
+        .alert-danger { background: #f8d7da; border-left: 4px solid #dc3545; }
+        .hourly-chart { display: flex; align-items: flex-end; height: 200px; gap: 2px;
+                         padding: 10px 0; }
+        .hourly-bar { flex: 1; background: linear-gradient(to top, #667eea, #764ba2);
+                       min-width: 4px; border-radius: 2px 2px 0 0; position: relative; }
+        .geo-map { font-family: monospace; white-space: pre; background: #f7fafc;
+                    padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Web Server Log Analysis Report</h1>
+
+        <div class="card">
+            <h2>📋 Summary</h2>
+            <div class="summary-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1,150</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">19</div>
+                    <div class="stat-label">Unique IPs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Unique URLs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">17.51 MB</div>
+                    <div class="stat-label">Total Transfer</div>
+                </div>
+            </div>
+            <p style="margin-top: 20px; color: #718096;">
+                <strong>Time Range:</strong> 2026-05-26T20:27:38+00:00 to 2026-05-27T08:28:23+00:00
+                (12.01 hours)
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>📈 Status Code Distribution</h2>
+            <table>
+                <tr><th>Code</th><th>Count</th><th>Percentage</th><th>Distribution</th></tr>
+
+                <tr>
+                    <td><span class="badge badge-success">2xx</span></td>
+                    <td>856</td>
+                    <td>74.4%</td>
+                    <td><div class="status-bar"><div class="status-fill" style="width: 74.43478260869566%; background: #48bb78"></div></div></td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-info">3xx</span></td>
+                    <td>94</td>
+                    <td>8.2%</td>
+                    <td><div class="status-bar"><div class="status-fill" style="width: 8.17391304347826%; background: #4299e1"></div></div></td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-warning">4xx</span></td>
+                    <td>109</td>
+                    <td>9.5%</td>
+                    <td><div class="status-bar"><div class="status-fill" style="width: 9.478260869565219%; background: #ecc94b"></div></div></td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-danger">5xx</span></td>
+                    <td>91</td>
+                    <td>7.9%</td>
+                    <td><div class="status-bar"><div class="status-fill" style="width: 7.91304347826087%; background: #f56565"></div></div></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="two-col">
+            <div class="card">
+                <h2>🏆 Top 10 IPs</h2>
+                <table>
+                    <tr><th>#</th><th>IP Address</th><th>Requests</th></tr>
+<tr><td>1</td><td><code>203.0.113.99</code></td><td>150</td></tr><tr><td>2</td><td><code>104.244.42.1</code></td><td>70</td></tr><tr><td>3</td><td><code>192.168.1.100</code></td><td>69</td></tr><tr><td>4</td><td><code>198.51.100.88</code></td><td>66</td></tr><tr><td>5</td><td><code>114.114.114.114</code></td><td>60</td></tr><tr><td>6</td><td><code>157.240.1.35</code></td><td>60</td></tr><tr><td>7</td><td><code>123.125.115.110</code></td><td>57</td></tr><tr><td>8</td><td><code>1.1.1.1</code></td><td>57</td></tr><tr><td>9</td><td><code>8.8.8.8</code></td><td>55</td></tr><tr><td>10</td><td><code>223.5.5.5</code></td><td>54</td></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>🔥 Top 10 URLs</h2>
+                <table>
+                    <tr><th>#</th><th>Path</th><th>Hits</th></tr>
+<tr><td>1</td><td><code>/</code></td><td>100</td></tr><tr><td>2</td><td><code>/index.html</code></td><td>87</td></tr><tr><td>3</td><td><code>/phpmyadmin</code></td><td>57</td></tr><tr><td>4</td><td><code>/css/style.css</code></td><td>52</td></tr><tr><td>5</td><td><code>/api/test</code></td><td>52</td></tr><tr><td>6</td><td><code>/api/products</code></td><td>51</td></tr><tr><td>7</td><td><code>/blog/post-2</code></td><td>50</td></tr><tr><td>8</td><td><code>/contact</code></td><td>50</td></tr><tr><td>9</td><td><code>/login</code></td><td>49</td></tr><tr><td>10</td><td><code>/dashboard</code></td><td>49</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <div class="card">
+                <h2>🌐 Browser Distribution</h2>
+                <table>
+                    <tr><th>Browser</th><th>Count</th><th>%</th></tr>
+<tr><td>Firefox</td><td>250</td><td>42.7%</td></tr><tr><td>Safari</td><td>215</td><td>36.7%</td></tr><tr><td>Chrome</td><td>121</td><td>20.6%</td></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>💻 OS Distribution</h2>
+                <table>
+                    <tr><th>OS</th><th>Count</th><th>%</th></tr>
+<tr><td>Other</td><td>679</td><td>59.0%</td></tr><tr><td>Linux</td><td>135</td><td>11.7%</td></tr><tr><td>Windows 10</td><td>121</td><td>10.5%</td></tr><tr><td>macOS</td><td>112</td><td>9.7%</td></tr><tr><td>iOS</td><td>103</td><td>9.0%</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⏰ Hourly Request Distribution</h2>
+            <div class="hourly-chart">
+<div class="hourly-bar" style="height: 91.28630705394191%;" title="2026-05-26 20:00: 220"></div><div class="hourly-bar" style="height: 100.0%;" title="2026-05-26 21:00: 241"></div><div class="hourly-bar" style="height: 70.53941908713693%;" title="2026-05-26 22:00: 170"></div><div class="hourly-bar" style="height: 51.037344398340245%;" title="2026-05-26 23:00: 123"></div><div class="hourly-bar" style="height: 40.66390041493776%;" title="2026-05-27 00:00: 98"></div><div class="hourly-bar" style="height: 29.87551867219917%;" title="2026-05-27 01:00: 72"></div><div class="hourly-bar" style="height: 14.522821576763487%;" title="2026-05-27 02:00: 35"></div><div class="hourly-bar" style="height: 12.448132780082988%;" title="2026-05-27 03:00: 30"></div><div class="hourly-bar" style="height: 4.564315352697095%;" title="2026-05-27 04:00: 11"></div><div class="hourly-bar" style="height: 62.24066390041494%;" title="2026-05-27 08:00: 150"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌍 Geographic Distribution</h2>
+
+            <div class="geo-map" style="font-family: monospace; white-space: pre; background: #f7fafc;
+                    padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 12px; line-height: 1.4;">
+
+  GEOGRAPHIC DISTRIBUTION
+  =======================
+
+                                                                                  
+                                                                                  
+           .--.               .--.                       .---.                    
+         .`    `.           .`    `.                    /     \       .---.       
+        /     ○  \         /        \                  |       |     /     \      
+       |          |       |          |                 |   .---.     |      |█     
+       |   .---.  |       |   .---.  |       .---.     |  /     \    |      |      
+        \ /     \|        \  /     \ |      /     \    | |       |   |      |      
+         |       |         | |      ||     |       |   | \       /    \     /      
+          \     /           \|      ||      \     /     \  `---` /      `---`       
+           `---`             `------`        `---`        `-----`                  
+                                                                                  
+                                                                                  
+                    .---.                     .----.        .---.                 
+                   /     \                   /      \      /     \                
+                  |       |                 |        |    |       |               
+                   \     /                  |        |     \     /                
+                    `---`                    \      /       `---`                 
+                                              `----`                             
+                                                                                  
+                                                                                  
+
+  Country Distribution:
+  ---------------------
+  CN China                     476 ( 41.4%) │████████████████░░░░░░░░░░░░░░░░░░░░░░░░│
+  US United States             299 ( 26.0%) │██████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
+  Local Local Network             218 ( 19.0%) │███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
+  AU Australia                  47 (  4.1%) │█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
+  ?? Unknown                   110 (  9.6%)
+
+  Legend: · Low  • Medium  ○ High  ● Very High  ■ Extreme
+
+            </div>
+
+            <table>
+                <tr><th>Country</th><th>Count</th><th>%</th></tr>
+<tr><td>CN - China</td><td>476</td><td>41.4%</td></tr><tr><td>US - United States</td><td>299</td><td>26.0%</td></tr><tr><td>Local - Local Network</td><td>218</td><td>19.0%</td></tr><tr><td>Unknown - Unknown</td><td>110</td><td>9.6%</td></tr><tr><td>AU - Australia</td><td>47</td><td>4.1%</td></tr>
+            </table>
+
+        </div>
+
+        <div class="card">
+            <h2>⚠️ Anomalies & Alerts</h2>
+<div class="alert alert-warning"><strong>Flooding IPs:</strong><ul style="margin-top: 10px;"><li><code>203.0.113.99</code>: 150 requests (2.5/s) [medium]</li></ul></div><div class="alert alert-danger"><strong>Sensitive Path Access:</strong><ul style="margin-top: 10px;"><li><code>31.13.71.36</code> → <code>/.env</code> (200)</li><li><code>14.215.177.39</code> → <code>/phpmyadmin</code> (404)</li><li><code>198.51.100.88</code> → <code>/.env</code> (200)</li><li><code>180.101.49.12</code> → <code>/admin</code> (200)</li><li><code>114.114.114.114</code> → <code>/phpmyadmin</code> (200)</li></ul></div></div>
+        <div class="card" style="text-align: center; color: #718096; font-size: 0.9rem;">
+            Generated on 2026-05-27 20:57:27
+        </div>
+    </div>
+</body>
+</html>

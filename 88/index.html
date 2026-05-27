@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Geometry Showcase</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <aside class="control-panel" id="controlPanel">
+        <header class="panel-header">
+            <h1>3D Geometry</h1>
+            <button class="collapse-btn" id="collapseBtn" title="折叠/展开">‹</button>
+        </header>
+
+        <div class="panel-content">
+            <section class="control-group">
+                <div class="group-header" data-group="geometry">
+                    <span class="group-icon">◆</span>
+                    <span class="group-title">几何体</span>
+                    <span class="group-arrow">▾</span>
+                </div>
+                <div class="group-body" id="group-geometry">
+                    <div class="control-item">
+                        <label>类型</label>
+                        <select id="geometryType">
+                            <option value="box">立方体</option>
+                            <option value="sphere">球体</option>
+                            <option value="cylinder">圆柱体</option>
+                            <option value="cone">圆锥体</option>
+                            <option value="torus">环面</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label>缩放 <span id="scaleValue" class="slider-value">1.00</span></label>
+                        <input type="range" id="scaleSlider" min="0.2" max="3" step="0.01" value="1">
+                    </div>
+                </div>
+            </section>
+
+            <section class="control-group">
+                <div class="group-header" data-group="material">
+                    <span class="group-icon">◈</span>
+                    <span class="group-title">材质</span>
+                    <span class="group-arrow">▾</span>
+                </div>
+                <div class="group-body" id="group-material">
+                    <div class="control-item">
+                        <label>金属度 <span id="metalnessValue" class="slider-value">0.50</span></label>
+                        <input type="range" id="metalnessSlider" min="0" max="1" step="0.01" value="0.5">
+                    </div>
+                    <div class="control-item">
+                        <label>粗糙度 <span id="roughnessValue" class="slider-value">0.30</span></label>
+                        <input type="range" id="roughnessSlider" min="0" max="1" step="0.01" value="0.3">
+                    </div>
+                    <div class="control-item toggle-item">
+                        <label>线框模式</label>
+                        <label class="switch">
+                            <input type="checkbox" id="wireframeToggle">
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="control-group">
+                <div class="group-header" data-group="animation">
+                    <span class="group-icon">⟳</span>
+                    <span class="group-title">动画</span>
+                    <span class="group-arrow">▾</span>
+                </div>
+                <div class="group-body" id="group-animation">
+                    <div class="control-item">
+                        <label>模式</label>
+                        <select id="animationMode">
+                            <option value="rotate">自转</option>
+                            <option value="float">上下浮动</option>
+                            <option value="pulse">脉冲缩放</option>
+                        </select>
+                    </div>
+                    <div class="control-item toggle-item">
+                        <label>自动旋转</label>
+                        <label class="switch">
+                            <input type="checkbox" id="autoRotateToggle" checked>
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="control-group">
+                <div class="group-header" data-group="lights">
+                    <span class="group-icon">☀</span>
+                    <span class="group-title">光照</span>
+                    <span class="group-arrow">▾</span>
+                </div>
+                <div class="group-body" id="group-lights">
+                    <div class="control-item toggle-item">
+                        <label>环境光</label>
+                        <label class="switch">
+                            <input type="checkbox" id="ambientLightToggle" checked>
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                    <div class="control-item toggle-item">
+                        <label>点光源</label>
+                        <label class="switch">
+                            <input type="checkbox" id="pointLightToggle" checked>
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="control-group">
+                <div class="group-header" data-group="background">
+                    <span class="group-icon">◉</span>
+                    <span class="group-title">背景</span>
+                    <span class="group-arrow">▾</span>
+                </div>
+                <div class="group-body" id="group-background">
+                    <div class="control-item">
+                        <label>类型</label>
+                        <select id="backgroundType">
+                            <option value="solid">纯色</option>
+                            <option value="gradient">渐变色</option>
+                            <option value="starry">星空图</option>
+                        </select>
+                    </div>
+                    <div class="control-item toggle-item">
+                        <label>地面反射</label>
+                        <label class="switch">
+                            <input type="checkbox" id="reflectionToggle" checked>
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="control-group">
+                <div class="group-header" data-group="display">
+                    <span class="group-icon">▦</span>
+                    <span class="group-title">显示模式</span>
+                    <span class="group-arrow">▾</span>
+                </div>
+                <div class="group-body" id="group-display">
+                    <div class="control-item toggle-item">
+                        <label>多几何体(2×2)</label>
+                        <label class="switch">
+                            <input type="checkbox" id="multiGeometryToggle">
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="control-group export-group">
+                <div class="control-item">
+                    <button class="btn btn-primary" id="screenshotBtn">
+                        <span>📷</span> 截图保存
+                    </button>
+                </div>
+                <div class="control-item">
+                    <button class="btn btn-secondary" id="exportObjBtn">
+                        <span>📦</span> 导出OBJ
+                    </button>
+                </div>
+            </section>
+        </div>
+    </aside>
+
+    <div class="stats-panel" id="statsPanel">
+        <div class="stats-row">
+            <span class="stats-label">顶点数</span>
+            <span class="stats-value" id="vertexCount">0</span>
+        </div>
+        <div class="stats-row">
+            <span class="stats-label">面数</span>
+            <span class="stats-value" id="faceCount">0</span>
+        </div>
+        <div class="stats-row">
+            <span class="stats-label">几何体</span>
+            <span class="stats-value" id="geometryName">立方体</span>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+[
+  {
+    "id": "905ba7dd-f879-41c8-9b16-7a176172214c",
+    "title": "GitHub",
+    "url": "https://github.com",
+    "category": "开发工具",
+    "tags": [
+      "code",
+      "git",
+      "开源"
+    ],
+    "clicks": 0,
+    "status": "active",
+    "status_code": 200,
+    "last_checked": "2026-05-27T20:52:25.487941",
+    "created_at": "2026-05-27T20:47:35.053014",
+    "updated_at": "2026-05-27T20:47:35.053024"
+  },
+  {
+    "id": "7972acc5-2ee3-4b53-98b5-61856d2dbbe2",
+    "title": "Stack Overflow",
+    "url": "https://stackoverflow.com",
+    "category": "开发工具",
+    "tags": [
+      "qa",
+      "code",
+      "社区"
+    ],
+    "clicks": 0,
+    "status": "error",
+    "status_code": 403,
+    "last_checked": "2026-05-27T20:52:27.552399",
+    "created_at": "2026-05-27T20:47:35.053031",
+    "updated_at": "2026-05-27T20:47:35.053032"
+  },
+  {
+    "id": "d8eeb8e6-9522-469e-9c5c-70788635b744",
+    "title": "MDN Web Docs",
+    "url": "https://developer.mozilla.org",
+    "category": "文档",
+    "tags": [
+      "前端",
+      "文档",
+      "web"
+    ],
+    "clicks": 0,
+    "status": "active",
+    "status_code": 200,
+    "last_checked": "2026-05-27T20:52:28.230858",
+    "created_at": "2026-05-27T20:47:35.053036",
+    "updated_at": "2026-05-27T20:47:35.053037"
+  },
+  {
+    "id": "73507024-683a-4314-a73d-fe12baaff5bf",
+    "title": "知乎",
+    "url": "https://www.zhihu.com",
+    "category": "资讯",
+    "tags": [
+      "问答",
+      "社区",
+      "中文"
+    ],
+    "clicks": 0,
+    "status": "error",
+    "status_code": 405,
+    "last_checked": "2026-05-27T20:52:28.351327",
+    "created_at": "2026-05-27T20:47:35.053041",
+    "updated_at": "2026-05-27T20:47:35.053042"
+  },
+  {
+    "id": "1181e364-0c2f-4dce-a7ce-c71cc2bd26de",
+    "title": "Python 官方文档",
+    "url": "https://docs.python.org",
+    "category": "文档",
+    "tags": [
+      "python",
+      "文档",
+      "官方"
+    ],
+    "clicks": 0,
+    "status": "active",
+    "status_code": 200,
+    "last_checked": "2026-05-27T20:52:28.914631",
+    "created_at": "2026-05-27T20:47:35.053045",
+    "updated_at": "2026-05-27T20:47:35.053046"
+  },
+  {
+    "id": "d4acab88-d971-4a7b-8663-f67ed1bffa27",
+    "title": "GitLab",
+    "url": "https://gitlab.com",
+    "category": "未分类",
+    "tags": [],
+    "clicks": 0,
+    "status": "active",
+    "status_code": 200,
+    "last_checked": "2026-05-27T20:52:32.423465",
+    "created_at": "2026-05-27T20:52:14.154155",
+    "updated_at": "2026-05-27T20:52:14.154157"
+  }
+]

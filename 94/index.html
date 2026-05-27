@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D漂浮岛屿</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div id="ui-panel">
+        <div class="ui-group">
+            <h3>场景控制</h3>
+            <button id="btn-day">白天模式</button>
+            <button id="btn-night">夜晚模式</button>
+            <button id="btn-auto-fly">自动环绕</button>
+            <button id="btn-screenshot">截图保存</button>
+        </div>
+        
+        <div class="ui-group">
+            <h3>背景切换</h3>
+            <button id="bg-sky" class="bg-btn active">天空蓝</button>
+            <button id="bg-sunset" class="bg-btn">日落橙</button>
+            <button id="bg-night" class="bg-btn">星空黑</button>
+        </div>
+        
+        <div class="ui-group">
+            <h3>粒子控制</h3>
+            <label for="particle-slider">萤火虫数量: <span id="particle-count">200</span></label>
+            <input type="range" id="particle-slider" min="50" max="500" value="200" step="10">
+        </div>
+        
+        <div class="ui-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="show-fps" checked>
+                显示帧率
+            </label>
+        </div>
+    </div>
+    
+    <div id="fps-counter">FPS: 60</div>
+    
+    <div id="info-panel" class="hidden">
+        <div class="info-content">
+            <h2 id="info-title">岛屿名称</h2>
+            <p id="info-description">岛屿描述</p>
+            <button id="close-info">关闭</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

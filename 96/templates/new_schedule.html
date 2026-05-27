@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}新建定时任务 - 爬虫调度服务{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>⏰ 新建定时任务</h1>
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+    <form method="POST" class="crawler-form">
+        <div class="form-group">
+            <label for="name">任务名称 <span class="required">*</span></label>
+            <input type="text" id="name" name="name" placeholder="例如：每日新闻爬取" required
+                   value="{{ request.form.get('name', '') }}">
+        </div>
+        <div class="form-group">
+            <label for="cron_expr">Cron表达式 <span class="required">*</span></label>
+            <input type="text" id="cron_expr" name="cron_expr" placeholder="例如：0 9 * * * (每天早上9点)" required
+                   value="{{ request.form.get('cron_expr', '') }}">
+            <small class="form-hint">5或6个字段：分 时 日 月 周 或 秒 分 时 日 月 周</small>
+        </div>
+        <div class="form-group">
+            <label for="url">目标URL <span class="required">*</span></label>
+            <input type="url" id="url" name="url" placeholder="https://example.com" required
+                   value="{{ request.form.get('url', '') }}">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="max_depth">爬取深度</label>
+                <select id="max_depth" name="max_depth">
+                    <option value="1">1 - 仅爬取首页</option>
+                    <option value="2" selected>2 - 首页及其子页面</option>
+                    <option value="3">3 - 深度爬取</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="timeout">超时时间(秒)</label>
+                <input type="number" id="timeout" name="timeout" value="30" min="1" max="120">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="crawl_interval">爬取间隔(秒)</label>
+            <input type="number" id="crawl_interval" name="crawl_interval" value="1.0" min="0" step="0.1">
+        </div>
+        <div class="form-group">
+            <label for="keywords">关键词过滤</label>
+            <input type="text" id="keywords" name="keywords" placeholder="可选，多个用逗号分隔">
+        </div>
+        <div class="form-checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="respect_robots" name="respect_robots" checked>
+                <span>遵守robots.txt规则</span>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="save_html" name="save_html">
+                <span>保存爬取页面为HTML文件</span>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">💾 保存定时任务</button>
+            <a href="{{ url_for('schedules') }}" class="btn btn-secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

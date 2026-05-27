@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>太空射击</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="hud">
+            <div class="hud-item">
+                <span class="hud-label">得分</span>
+                <span id="score" class="hud-value">0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">生命</span>
+                <span id="lives" class="hud-value">❤❤❤</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">最高分</span>
+                <span id="high-score" class="hud-value">0</span>
+            </div>
+        </div>
+
+        <div id="powerup-indicator"></div>
+
+        <div id="sound-toggle" class="sound-toggle" title="音效开关">
+            <span id="sound-icon">🔊</span>
+        </div>
+
+        <div id="pause-btn" class="pause-btn" title="暂停 (ESC)">
+            <span>⏸</span>
+        </div>
+
+        <div id="start-screen" class="overlay active">
+            <div class="overlay-content">
+                <h1 class="game-title">太空射击</h1>
+                <p class="subtitle">SPACE SHOOTER</p>
+                <div class="high-score-display">
+                    <span>最高分：</span>
+                    <span id="menu-high-score">0</span>
+                </div>
+                <button id="start-btn" class="btn btn-primary">开始游戏</button>
+                <div class="instructions">
+                    <p>🖱️ 鼠标移动瞄准，点击发射</p>
+                    <p>📱 手机触摸位置发射</p>
+                    <p>ESC 暂停游戏</p>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="enemy-dot normal"></span>
+                        <span>普通敌人 1分</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="enemy-dot fast"></span>
+                        <span>快速敌人 2分</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="enemy-dot armored"></span>
+                        <span>装甲敌人 3分(需3击)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pause-screen" class="overlay">
+            <div class="overlay-content">
+                <h2 class="overlay-title">游戏暂停</h2>
+                <button id="resume-btn" class="btn btn-primary">继续游戏</button>
+                <button id="restart-btn" class="btn btn-secondary">重新开始</button>
+                <button id="quit-btn" class="btn btn-secondary">返回主菜单</button>
+            </div>
+        </div>
+
+        <div id="gameover-screen" class="overlay">
+            <div class="overlay-content">
+                <h2 class="overlay-title">游戏结束</h2>
+                <div class="final-score">
+                    <p>最终得分</p>
+                    <span id="final-score">0</span>
+                </div>
+                <div id="new-record" class="new-record hidden">🎉 新纪录！</div>
+                <button id="retry-btn" class="btn btn-primary">再玩一次</button>
+                <button id="menu-btn" class="btn btn-secondary">返回主菜单</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

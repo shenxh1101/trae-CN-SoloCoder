@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}首页 - 爬虫调度服务{% endblock %}
+{% block content %}
+<div class="home-container">
+    <div class="hero-section">
+        <h1>🕷️ 网页爬虫调度服务</h1>
+        <p class="subtitle">提交URL，启动爬取任务，获取结构化数据</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('new_task') }}" class="btn btn-primary btn-lg">🚀 新建爬取任务</a>
+            <a href="{{ url_for('task_list') }}" class="btn btn-secondary btn-lg">📋 查看任务列表</a>
+        </div>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>深度爬取</h3>
+            <p>支持1-3级深度爬取，自动提取页面标题、内容摘要和链接</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>Robots.txt</h3>
+            <p>自动检测并遵守robots.txt规则，可选择是否遵守</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>并行调度</h3>
+            <p>支持多个爬虫任务同时运行，实时监控进度状态</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⏸️</div>
+            <h3>任务控制</h3>
+            <p>支持任务暂停、恢复和取消操作</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>数据导出</h3>
+            <p>支持JSON和CSV格式导出爬取结果</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔑</div>
+            <h3>关键词过滤</h3>
+            <p>只保存包含特定关键词的页面，精准获取所需内容</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>域名限定</h3>
+            <p>限定爬取域名范围，不跳转到外部网站</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⏰</div>
+            <h3>定时爬取</h3>
+            <p>支持Cron表达式设置定时爬取任务</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>结果搜索</h3>
+            <p>在已爬取内容中搜索关键词，快速定位</p>
+        </div>
+    </div>
+    {% if tasks %}
+    <div class="recent-tasks">
+        <h2>📋 最近任务</h2>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>任务ID</th>
+                        <th>URL</th>
+                        <th>状态</th>
+                        <th>进度</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks[:5] %}
+                    <tr>
+                        <td><code>{{ task.task_id }}</code></td>
+                        <td class="url-cell">{{ task.config.get('url', '') }}</td>
+                        <td>
+                            <span class="status-badge status-{{ task.status }}">
+                                {% if task.status == 'running' %}运行中
+                                {% elif task.status == 'pending' %}等待中
+                                {% elif task.status == 'paused' %}已暂停
+                                {% elif task.status == 'completed' %}已完成
+                                {% elif task.status == 'failed' %}失败
+                                {% elif task.status == 'cancelled' %}已取消
+                                {% else %}{{ task.status }}
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: {{ task.progress }}%"></div>
+                                <span class="progress-text">{{ task.progress }}%</span>
+                            </div>
+                        </td>
+                        <td>{{ task.created_at }}</td>
+                        <td>
+                            <a href="{{ url_for('task_detail', task_id=task.task_id) }}" class="btn btn-sm btn-info">查看</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

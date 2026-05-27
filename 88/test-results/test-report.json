@@ -1,0 +1,77 @@
+{
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "passRate": "100.0%"
+  },
+  "results": [
+    {
+      "testName": "页面初始加载",
+      "passed": true,
+      "details": "Canvas成功渲染",
+      "timestamp": "2026-05-27T11:27:20.688Z"
+    },
+    {
+      "testName": "控制面板可见性",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-27T11:27:20.722Z"
+    },
+    {
+      "testName": "几何体切换",
+      "passed": true,
+      "details": "所有5种几何体切换成功",
+      "timestamp": "2026-05-27T11:27:26.618Z"
+    },
+    {
+      "testName": "截图保存PNG",
+      "passed": true,
+      "details": "文件大小: 54.7 KB",
+      "timestamp": "2026-05-27T11:27:27.179Z"
+    },
+    {
+      "testName": "OBJ导出",
+      "passed": true,
+      "details": "顶点: 24, 面: 12",
+      "timestamp": "2026-05-27T11:27:27.739Z"
+    },
+    {
+      "testName": "线框模式切换",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-27T11:27:30.178Z"
+    },
+    {
+      "testName": "动画模式切换",
+      "passed": true,
+      "details": "三种模式均成功切换",
+      "timestamp": "2026-05-27T11:27:32.718Z"
+    },
+    {
+      "testName": "背景切换",
+      "passed": true,
+      "details": "三种背景均成功切换",
+      "timestamp": "2026-05-27T11:27:36.921Z"
+    },
+    {
+      "testName": "多几何体2x2网格",
+      "passed": true,
+      "details": "统计: 4个几何体",
+      "timestamp": "2026-05-27T11:27:39.691Z"
+    },
+    {
+      "testName": "统计面板信息",
+      "passed": true,
+      "details": "顶点: 2,401, 面: 4,512",
+      "timestamp": "2026-05-27T11:27:42.532Z"
+    },
+    {
+      "testName": "材质滑块调节",
+      "passed": true,
+      "details": "",
+      "timestamp": "2026-05-27T11:27:44.273Z"
+    }
+  ],
+  "timestamp": "2026-05-27T11:27:44.674Z"
+}

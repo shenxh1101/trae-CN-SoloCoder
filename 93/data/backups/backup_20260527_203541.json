@@ -1,0 +1,28 @@
+{
+  "bookmarks": [
+    {
+      "id": "a2ee6381-6df0-498a-ad18-cae8ecee6e48",
+      "title": "GitHub",
+      "url": "https://github.com",
+      "category": "开发工具",
+      "tags": [
+        "code",
+        "dev"
+      ],
+      "clicks": 0,
+      "status": "pending",
+      "status_code": null,
+      "last_checked": null,
+      "created_at": "2026-05-27T20:35:33.534649",
+      "updated_at": "2026-05-27T20:35:33.534661"
+    }
+  ],
+  "categories": [
+    {
+      "id": "3d52c917-0e93-44a2-81b8-ac09a7d7c6e5",
+      "name": "开发工具",
+      "created_at": "2026-05-27T20:35:33.534395"
+    }
+  ],
+  "created_at": "2026-05-27T20:35:41.757581"
+}

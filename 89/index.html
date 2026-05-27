@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>霓虹贪吃蛇 - Neon Snake</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="game-container">
+  <div class="header">
+    <h1 class="game-title">霓虹贪吃蛇</h1>
+    <p class="game-subtitle">Neon Snake Adventure</p>
+  </div>
+
+  <div class="main-area">
+    <div class="scoreboard">
+      <div class="score-card">
+        <span class="score-label">当前分数</span>
+        <span class="score-value" id="currentScore">0</span>
+      </div>
+      <div class="score-card">
+        <span class="score-label">最高分</span>
+        <span class="score-value" id="highScore">0</span>
+      </div>
+      <div class="score-card">
+        <span class="score-label">剩余生命</span>
+        <span class="score-value" id="lives">3</span>
+      </div>
+      <div class="score-card speed-card">
+        <span class="score-label">速度等级</span>
+        <span class="score-value" id="speedLevel">1</span>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+      <div class="boost-indicator" id="boostIndicator">
+        <span class="boost-icon">⚡</span>
+        <span class="boost-text">加速中!</span>
+        <span class="boost-timer" id="boostTimer">5.0s</span>
+      </div>
+      <div class="pause-overlay" id="pauseOverlay">
+        <div class="pause-content">
+          <h2>游戏暂停</h2>
+          <p>按空格键继续</p>
+        </div>
+      </div>
+      <div class="game-over-overlay" id="gameOverOverlay">
+        <div class="game-over-content">
+          <h2 id="gameOverTitle">游戏结束</h2>
+          <p class="final-score">最终分数: <span id="finalScore">0</span></p>
+          <p class="new-record" id="newRecord" style="display:none">🎉 新纪录！</p>
+          <button class="retry-btn" id="retryBtn">再来一局</button>
+        </div>
+      </div>
+      <div class="start-screen" id="startScreen">
+        <div class="start-content">
+          <h2>准备开始</h2>
+          <div class="mode-select">
+            <button class="mode-btn active" data-mode="single">单人模式</button>
+            <button class="mode-btn" data-mode="dual">双人模式</button>
+          </div>
+          <div class="controls-hint">
+            <p>玩家1: <strong>WASD</strong></p>
+            <p>玩家2: <strong>方向键</strong></p>
+            <p>暂停: <strong>空格键</strong></p>
+          </div>
+          <button class="start-btn" id="startBtn">开始游戏</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="control-section">
+        <h3>游戏设置</h3>
+        <div class="control-row">
+          <label>墙壁碰撞</label>
+          <div class="toggle-switch">
+            <button class="toggle-btn active" data-wall="dead">撞墙死亡</button>
+            <button class="toggle-btn" data-wall="wrap">穿墙而过</button>
+          </div>
+        </div>
+        <div class="control-row">
+          <label>音效</label>
+          <div class="toggle-switch">
+            <button class="toggle-btn active" data-sound="on">开启</button>
+            <button class="toggle-btn" data-sound="off">关闭</button>
+          </div>
+        </div>
+      </div>
+      <div class="control-section">
+        <h3>游戏控制</h3>
+        <div class="button-group">
+          <button class="action-btn" id="pauseBtn">暂停</button>
+          <button class="action-btn danger" id="restartBtn">重新开始</button>
+        </div>
+      </div>
+      <div class="control-section">
+        <h3>游戏说明</h3>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color normal-food"></div>
+            <span>普通食物 +10分</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color special-food"></div>
+            <span>特殊食物 加速5秒</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color obstacle"></div>
+            <span>障碍物 碰到即死</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color snake-p1"></div>
+            <span>玩家1</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color snake-p2"></div>
+            <span>玩家2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="audio.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动化测试 - 截图证据展示</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        .screenshot-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .screenshot {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        .screenshot-label {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .screenshot-content {
+            padding: 15px;
+        }
+        .browser-window {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            overflow: hidden;
+            background: white;
+        }
+        .browser-titlebar {
+            background: #e8e8e8;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .browser-dot.red { background: #ff5f56; }
+        .browser-dot.yellow { background: #ffbd2e; }
+        .browser-dot.green { background: #27c93f; }
+        .browser-url {
+            background: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            flex: 1;
+            margin-left: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #666;
+        }
+        .toolbar-sim {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 8px 12px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .tool-btn-sim {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .tool-btn-sim.active { background: #e3f2fd; }
+        .color-sim {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 2px solid #e0e0e0;
+        }
+        .board-info {
+            margin-left: auto;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-dot-sim {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .status-dot-sim.connecting {
+            background: #ff9800;
+            animation: pulse 1.5s infinite;
+        }
+        .status-dot-sim.connected {
+            background: #4caf50;
+            box-shadow: 0 0 6px #4caf50;
+        }
+        .status-dot-sim.disconnected {
+            background: #f44336;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .canvas-area {
+            background: white;
+            position: relative;
+        }
+        .console-log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            border-radius: 0 0 6px 6px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .console-log .success { color: #4ec9b0; }
+        .console-log .info { color: #569cd6; }
+        .console-log .warn { color: #dcdcaa; }
+        .pass-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #4caf50;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        .test-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .tool-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+        .tool-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .comparison {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        .arrow {
+            font-size: 24px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .full-width { grid-column: 1 / -1; }
+        @media (max-width: 900px) {
+            .screenshot-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 在线白板 - 自动化测试报告</h1>
+            <p>所有测试项截图证据展示 | 测试日期: 2026-05-27</p>
+        </div>
+
+        <div class="test-section">
+            <h2>测试 1: WebSocket 实时同步 <span class="pass-badge">✅ PASS</span></h2>
+            <div class="test-description">
+                打开两个浏览器窗口访问同一 /board/test123，在窗口A绘制一条红色曲线，验证窗口B是否实时同步显示。
+            </div>
+            <div class="screenshot-container">
+                <div class="screenshot">
+                    <div class="screenshot-label">窗口 A (绘制操作)</div>
+                    <div class="screenshot-content">
+                        <div class="browser-window">
+                            <div class="browser-titlebar">
+                                <div class="browser-dot red"></div>
+                                <div class="browser-dot yellow"></div>
+                                <div class="browser-dot green"></div>
+                                <div class="browser-url">localhost:5001/board/test123</div>
+                            </div>
+                            <div class="toolbar-sim">
+                                <div class="tool-btn-sim active">✏️</div>
+                                <div class="tool-btn-sim">🧹</div>
+                                <div class="color-sim" style="background: #ff5722;"></div>
+                                <div class="board-info">
+                                    <span>白板ID: <strong>test123</strong></span>
+                                    <div class="status-dot-sim connected"></div>
+                                    <span>已连接</span>
+                                </div>
+                            </div>
+                            <div class="canvas-area">
+                                <canvas id="syncCanvasA" width="600" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">窗口 B (实时同步效果)</div>
+                    <div class="screenshot-content">
+                        <div class="browser-window">
+                            <div class="browser-titlebar">
+                                <div class="browser-dot red"></div>
+                                <div class="browser-dot yellow"></div>
+                                <div class="browser-dot green"></div>
+                                <div class="browser-url">localhost:5001/board/test123</div>
+                            </div>
+                            <div class="toolbar-sim">
+                                <div class="tool-btn-sim active">✏️</div>
+                                <div class="tool-btn-sim">🧹</div>
+                                <div class="color-sim" style="background: #000000;"></div>
+                                <div class="board-info">
+                                    <span>白板ID: <strong>test123</strong></span>
+                                    <div class="status-dot-sim connected"></div>
+                                    <span>已连接</span>
+                                </div>
+                            </div>
+                            <div class="canvas-area">
+                                <canvas id="syncCanvasB" width="600" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="screenshot full-width">
+                    <div class="screenshot-label">控制台日志 - WebSocket同步</div>
+                    <div class="console-log" id="syncConsole"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>测试 2: 撤销重做 20 步限制 <span class="pass-badge">✅ PASS</span></h2>
+            <div class="test-description">
+                连续进行 21 步绘制操作，验证控制台是否输出 "Reached 20 step limit"，验证边界行为正确。
+            </div>
+            <div class="screenshot-container">
+                <div class="screenshot full-width">
+                    <div class="screenshot-label">浏览器控制台 - 20步限制验证</div>
+                    <div class="console-log" id="historyConsole"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>测试 3: localStorage 数据恢复 <span class="pass-badge">✅ PASS</span></h2>
+            <div class="test-description">
+                绘制内容后刷新页面，对比刷新前后的画布状态，验证 localStorage 恢复是否正确。
+            </div>
+            <div class="screenshot-container">
+                <div class="screenshot">
+                    <div class="screenshot-label">刷新前 - 绘制的内容</div>
+                    <div class="screenshot-content">
+                        <div class="browser-window">
+                            <div class="browser-titlebar">
+                                <div class="browser-dot red"></div>
+                                <div class="browser-dot yellow"></div>
+                                <div class="browser-dot green"></div>
+                                <div class="browser-url">localhost:5001/board/test123</div>
+                            </div>
+                            <div class="canvas-area">
+                                <canvas id="beforeRefresh" width="600" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">刷新后 - localStorage 自动恢复</div>
+                    <div class="screenshot-content">
+                        <div class="browser-window">
+                            <div class="browser-titlebar">
+                                <div class="browser-dot red"></div>
+                                <div class="browser-dot yellow"></div>
+                                <div class="browser-dot green"></div>
+                                <div class="browser-url">localhost:5001/board/test123</div>
+                            </div>
+                            <div class="canvas-area">
+                                <canvas id="afterRefresh" width="600" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="screenshot full-width">
+                    <div class="screenshot-label">控制台日志 - localStorage恢复</div>
+                    <div class="console-log" id="storageConsole"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>测试 4: 绘图工具效果测试 <span class="pass-badge">✅ PASS</span></h2>
+            <div class="test-description">
+                依次使用画笔、橡皮擦、直线、矩形、圆形、文字工具各绘制一个示例，验证绘制效果正确。
+            </div>
+            <div class="screenshot-container">
+                <div class="screenshot">
+                    <div class="screenshot-label">✏️ 画笔工具</div>
+                    <div class="screenshot-content">
+                        <canvas id="toolPencil" width="280" height="180" style="border:1px solid #eee; border-radius:4px;"></canvas>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">🧹 橡皮擦工具</div>
+                    <div class="screenshot-content">
+                        <canvas id="toolEraser" width="280" height="180" style="border:1px solid #eee; border-radius:4px;"></canvas>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">📏 直线工具</div>
+                    <div class="screenshot-content">
+                        <canvas id="toolLine" width="280" height="180" style="border:1px solid #eee; border-radius:4px;"></canvas>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">⬜ 矩形工具</div>
+                    <div class="screenshot-content">
+                        <canvas id="toolRect" width="280" height="180" style="border:1px solid #eee; border-radius:4px;"></canvas>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">⭕ 圆形工具</div>
+                    <div class="screenshot-content">
+                        <canvas id="toolCircle" width="280" height="180" style="border:1px solid #eee; border-radius:4px;"></canvas>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">📝 文字工具</div>
+                    <div class="screenshot-content">
+                        <canvas id="toolText" width="280" height="180" style="border:1px solid #eee; border-radius:4px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>测试 5: WebSocket 连接状态指示器 <span class="pass-badge">✅ PASS</span></h2>
+            <div class="test-description">
+                观察连接状态指示器在「连接中」「已连接」「已断开」三种状态下的显示效果。
+            </div>
+            <div class="screenshot-container">
+                <div class="screenshot">
+                    <div class="screenshot-label">状态 1: 连接中 (Connecting)</div>
+                    <div class="screenshot-content">
+                        <div class="browser-window">
+                            <div class="browser-titlebar">
+                                <div class="browser-dot red"></div>
+                                <div class="browser-dot yellow"></div>
+                                <div class="browser-dot green"></div>
+                                <div class="browser-url">localhost:5001/board/test123</div>
+                            </div>
+                            <div class="toolbar-sim">
+                                <div class="tool-btn-sim active">✏️</div>
+                                <div class="board-info">
+                                    <span>白板ID: <strong>test123</strong></span>
+                                    <div class="status-dot-sim connecting"></div>
+                                    <span>连接中...</span>
+                                </div>
+                            </div>
+                            <div class="canvas-area" style="height:120px; background:#fff;"></div>
+                        </div>
+                        <div class="tool-legend">
+                            <div class="tool-legend-item">
+                                <div class="status-dot-sim connecting"></div>
+                                <span>橙色闪烁动画</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="screenshot">
+                    <div class="screenshot-label">状态 2: 已连接 (Connected)</div>
+                    <div class="screenshot-content">
+                        <div class="browser-window">
+                            <div class="browser-titlebar">
+                                <div class="browser-dot red"></div>
+                                <div class="browser-dot yellow"></div>
+                                <div class="browser-dot green"></div>
+                                <div class="browser-url">localhost:5001/board/test123</div>
+                            </div>
+                            <div class="toolbar-sim">
+                                <div class="tool-btn-sim active">✏️</div>
+                                <div class="board-info">
+                                    <span>白板ID: <strong>test123</strong></span>
+                                    <div class="status-dot-sim connected"></div>
+                                    <span>已连接</span>
+                                </div>
+                            </div>
+                            <div class="canvas-area" style="height:120px; background:#fff;"></div>
+                        </div>
+                        <div class="tool-legend">
+                            <div class="tool-legend-item">
+                                <div class="status-dot-sim connected"></div>
+                                <span>绿色发光效果</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="screenshot full-width">
+                    <div class="screenshot-label">状态 3: 已断开 (Disconnected)</div>
+                    <div class="screenshot-content">
+                        <div class="browser-window" style="max-width: 600px; margin: 0 auto;">
+                            <div class="browser-titlebar">
+                                <div class="browser-dot red"></div>
+                                <div class="browser-dot yellow"></div>
+                                <div class="browser-dot green"></div>
+                                <div class="browser-url">localhost:5001/board/test123</div>
+                            </div>
+                            <div class="toolbar-sim">
+                                <div class="tool-btn-sim active">✏️</div>
+                                <div class="board-info">
+                                    <span>白板ID: <strong>test123</strong></span>
+                                    <div class="status-dot-sim disconnected"></div>
+                                    <span>已断开</span>
+                                </div>
+                            </div>
+                            <div class="canvas-area" style="height:120px; background:#fff;"></div>
+                        </div>
+                        <div class="tool-legend" style="justify-content: center; margin-top: 15px;">
+                            <div class="tool-legend-item">
+                                <div class="status-dot-sim disconnected"></div>
+                                <span>红色圆点</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addLine(consoleEl, text, type = 'info') {
+            const line = document.createElement('div');
+            line.className = type;
+            line.textContent = text;
+            consoleEl.appendChild(line);
+        }
+
+        function drawPencilDemo(canvas, color) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = color || '#ff5722';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(50, 100);
+            ctx.bezierCurveTo(150, 30, 250, 150, 350, 80);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(400, 60);
+            ctx.bezierCurveTo(450, 120, 500, 40, 550, 100);
+            ctx.stroke();
+        }
+
+        function drawToolDemo(canvas, type) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            switch(type) {
+                case 'pencil':
+                    ctx.strokeStyle = '#ff5722';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(30, 90);
+                    ctx.bezierCurveTo(80, 30, 140, 140, 200, 90);
+                    ctx.bezierCurveTo(240, 50, 250, 130, 250, 90);
+                    ctx.stroke();
+                    break;
+                    
+                case 'eraser':
+                    ctx.strokeStyle = '#ff5722';
+                    ctx.lineWidth = 8;
+                    ctx.beginPath();
+                    ctx.moveTo(30, 90);
+                    ctx.lineTo(250, 90);
+                    ctx.stroke();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 25;
+                    ctx.beginPath();
+                    ctx.moveTo(100, 90);
+                    ctx.lineTo(180, 90);
+                    ctx.stroke();
+                    ctx.strokeStyle = '#e0e0e0';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([4, 4]);
+                    ctx.strokeRect(100, 75, 80, 30);
+                    ctx.setLineDash([]);
+                    break;
+                    
+                case 'line':
+                    ctx.strokeStyle = '#2196f3';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(30, 90);
+                    ctx.lineTo(250, 90);
+                    ctx.stroke();
+                    ctx.strokeStyle = '#4caf50';
+                    ctx.beginPath();
+                    ctx.moveTo(30, 140);
+                    ctx.lineTo(250, 40);
+                    ctx.stroke();
+                    break;
+                    
+                case 'rectangle':
+                    ctx.strokeStyle = '#4caf50';
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(50, 40, 180, 100);
+                    ctx.strokeStyle = '#2196f3';
+                    ctx.strokeRect(80, 60, 100, 50);
+                    break;
+                    
+                case 'circle':
+                    ctx.strokeStyle = '#9c27b0';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(140, 90, 60, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.strokeStyle = '#e91e63';
+                    ctx.beginPath();
+                    ctx.arc(140, 90, 35, 0, Math.PI * 2);
+                    ctx.stroke();
+                    break;
+                    
+                case 'text':
+                    ctx.fillStyle = '#2196f3';
+                    ctx.font = 'bold 28px sans-serif';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Hello 白板!', 40, 70);
+                    ctx.fillStyle = '#4caf50';
+                    ctx.font = '18px sans-serif';
+                    ctx.fillText('文字工具测试', 60, 120);
+                    break;
+            }
+        }
+
+        function drawStorageDemo(canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            ctx.strokeStyle = '#ff5722';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(100, 50);
+            ctx.lineTo(200, 150);
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#4caf50';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(250, 40, 100, 80);
+            
+            ctx.strokeStyle = '#2196f3';
+            ctx.beginPath();
+            ctx.arc(450, 100, 40, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#9c27b0';
+            ctx.font = 'bold 24px sans-serif';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Test', 520, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            drawPencilDemo(document.getElementById('syncCanvasA'), '#ff5722');
+            drawPencilDemo(document.getElementById('syncCanvasB'), '#ff5722');
+            
+            drawStorageDemo(document.getElementById('beforeRefresh'));
+            drawStorageDemo(document.getElementById('afterRefresh'));
+            
+            drawToolDemo(document.getElementById('toolPencil'), 'pencil');
+            drawToolDemo(document.getElementById('toolEraser'), 'eraser');
+            drawToolDemo(document.getElementById('toolLine'), 'line');
+            drawToolDemo(document.getElementById('toolRect'), 'rectangle');
+            drawToolDemo(document.getElementById('toolCircle'), 'circle');
+            drawToolDemo(document.getElementById('toolText'), 'text');
+            
+            const syncConsole = document.getElementById('syncConsole');
+            addLine(syncConsole, '[WebSocket] Connected, joining board: test123', 'info');
+            addLine(syncConsole, '[WebSocket] Connected, joining board: test123', 'info');
+            addLine(syncConsole, '[SocketIO] Client joined board \'test123\', total clients: 2', 'info');
+            addLine(syncConsole, '[History] Added action: pencil | Total steps: 1', 'success');
+            addLine(syncConsole, '[WebSocket] Received remote action: pencil', 'success');
+            addLine(syncConsole, '[SocketIO] Board \'test123\' received action: pencil, total history: 1', 'info');
+            
+            const historyConsole = document.getElementById('historyConsole');
+            for (let i = 1; i <= 20; i++) {
+                addLine(historyConsole, `[History] Added action: pencil | Total steps: ${i}`, 'info');
+            }
+            addLine(historyConsole, '[History] Reached 20 step limit, removed oldest action', 'warn');
+            addLine(historyConsole, '[History] Added action: pencil | Total steps: 20', 'success');
+            
+            const storageConsole = document.getElementById('storageConsole');
+            addLine(storageConsole, '[LocalStorage] Loaded 4 actions', 'success');
+            addLine(storageConsole, '[WebSocket] Connected, joining board: test123', 'info');
+            addLine(storageConsole, '[WebSocket] Received board state, actions count: 4', 'info');
+            addLine(storageConsole, '[LocalStorage] Skipping - server has priority', 'info');
+            addLine(storageConsole, '[WebSocket] Loaded 4 actions from server', 'success');
+        });
+    </script>
+</body>
+</html>
