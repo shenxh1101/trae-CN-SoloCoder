@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ note.title }}{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{{ url_for('index') }}">← 返回列表</a>
+</div>
+
+<div class="card">
+    <h1 style="margin-bottom: 15px;">
+        {% if note.pinned %}📌 {% endif %}{{ note.title }}
+    </h1>
+    <div class="note-meta" style="margin-bottom: 20px;">
+        创建于 {{ note.created_at_formatted }}
+        {% if note.tags %}
+            &nbsp;|&nbsp;
+            {% for tag in note.tags %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="markdown-content">
+        {{ note.content | replace('\n', '<br>') | safe }}
+    </div>
+    <div class="note-actions">
+        <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn btn-primary">编辑</a>
+        <form action="{{ url_for('pin_note', note_id=note.id) }}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-secondary">
+                {% if note.pinned %}取消置顶{% else %}置顶{% endif %}
+            </button>
+        </form>
+        <form action="{{ url_for('copy_note', note_id=note.id) }}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-secondary">复制</button>
+        </form>
+        <button type="button" class="btn btn-danger" onclick="showDeleteModal('{{ url_for('delete_note', note_id=note.id) }}')">删除</button>
+    </div>
+</div>
+
+{% if versions %}
+<div class="card">
+    <h3 style="margin-bottom: 15px;">历史版本</h3>
+    {% for version in versions %}
+    <div class="version-item">
+        <div>
+            <strong>{{ version.title }}</strong>
+            <span style="color: var(--text-secondary); font-size: 12px; margin-left: 10px;">{{ version.created_at }}</span>
+        </div>
+        <div>
+            <a href="{{ url_for('view_version', note_id=note.id, version_id=version.id) }}" class="btn btn-sm btn-secondary">查看</a>
+            <form action="{{ url_for('restore_version', note_id=note.id, version_id=version.id) }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-sm btn-success">恢复</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

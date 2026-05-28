@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}统计信息{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 30px;">📊 统计信息</h2>
+
+<div class="stats-grid">
+    <div class="card stat-card">
+        <div class="stat-number">{{ total_notes }}</div>
+        <div class="stat-label">总笔记数</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-number">{{ tag_count }}</div>
+        <div class="stat-label">标签数量</div>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 20px;">📅 创作日历</h3>
+    <div id="calendarHeatmap" class="calendar-heatmap"></div>
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 15px; font-size: 12px; color: var(--text-secondary);">
+        <span>少</span>
+        <div class="calendar-cell"></div>
+        <div class="calendar-cell level-1"></div>
+        <div class="calendar-cell level-2"></div>
+        <div class="calendar-cell level-3"></div>
+        <div class="calendar-cell level-4"></div>
+        <span>多</span>
+    </div>
+</div>
+
+{% if top_tags %}
+<div class="card">
+    <h3 style="margin-bottom: 20px;">🏷️ 热门标签</h3>
+    {% for tag, count in top_tags %}
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+        <span class="tag">{{ tag }}</span>
+        <span style="color: var(--text-secondary);">{{ count }} 篇笔记</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<script>
+const calendarData = {{ calendar_data | safe }};
+
+function generateCalendar() {
+    const container = document.getElementById('calendarHeatmap');
+    const today = new Date();
+    const oneYearAgo = new Date(today);
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+    
+    const weeks = [];
+    let currentWeek = [];
+    let currentDate = new Date(oneYearAgo);
+    
+    while (currentDate.getDay() !== 0) {
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    while (currentDate <= today) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const count = calendarData[dateStr] || 0;
+        
+        let level = 0;
+        if (count >= 1) level = 1;
+        if (count >= 3) level = 2;
+        if (count >= 5) level = 3;
+        if (count >= 8) level = 4;
+        
+        currentWeek.push({ date: dateStr, count, level });
+        
+        if (currentDate.getDay() === 6) {
+            weeks.push(currentWeek);
+            currentWeek = [];
+        }
+        
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    if (currentWeek.length > 0) {
+        weeks.push(currentWeek);
+    }
+    
+    const days = ['日', '一', '二', '三', '四', '五', '六'];
+    let html = '<div style="display: flex;">';
+    html += '<div style="font-size: 10px; color: var(--text-secondary); margin-right: 8px; text-align: right; line-height: 15px;">';
+    for (let i = 0; i < 7; i += 2) {
+        html += `<div style="height: 15px;">${days[i]}</div>`;
+    }
+    html += '</div><div style="display: flex; gap: 3px;">';
+    
+    weeks.forEach(week => {
+        html += '<div style="display: flex; flex-direction: column; gap: 3px;">';
+        week.forEach(day => {
+            const levelClass = day.level > 0 ? `level-${day.level}` : '';
+            html += `<div class="calendar-cell ${levelClass}" title="${day.date}: ${day.count} 篇"></div>`;
+        });
+        html += '</div>';
+    });
+    
+    html += '</div></div>';
+    container.innerHTML = html;
+}
+
+generateCalendar();
+</script>
+{% endblock %}

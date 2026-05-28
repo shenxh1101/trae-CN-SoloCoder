@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}回收站{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 20px;">🗑️ 回收站</h2>
+
+{% if notes %}
+    {% for note in notes %}
+    <div class="card">
+        <h3 style="margin-bottom: 10px;">{{ note.title }}</h3>
+        <div class="note-meta">
+            {{ note.created_at_formatted }}
+            {% if note.tags %}
+                &nbsp;|&nbsp;
+                {% for tag in note.tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <p class="note-summary">{{ note.summary }}</p>
+        <div class="note-actions">
+            <form action="{{ url_for('restore_note', note_id=note.id) }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-sm btn-success">恢复</button>
+            </form>
+            <form action="{{ url_for('permanent_delete_note', note_id=note.id) }}" method="post" style="display: inline;" 
+                  onsubmit="return confirm('确定要永久删除这篇笔记吗？此操作不可恢复！');">
+                <button type="submit" class="btn btn-sm btn-danger">永久删除</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        <h3>回收站为空</h3>
+        <p>删除的笔记会出现在这里</p>
+    </div>
+{% endif %}
+{% endblock %}

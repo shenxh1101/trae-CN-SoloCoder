@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}笔记列表{% endblock %}
+
+{% block content %}
+<div class="search-bar">
+    <form action="{{ url_for('index') }}" method="get" style="display: flex; flex: 1; gap: 10px;">
+        <input type="text" name="q" class="form-control" placeholder="搜索笔记标题或内容..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+    <a href="{{ url_for('create_note') }}" class="btn btn-primary">+ 新建笔记</a>
+</div>
+
+{% if all_tags %}
+<div class="tag-filter">
+    <a href="{{ url_for('index') }}" class="all {% if not selected_tags %}active{% endif %}">全部</a>
+    {% for tag in all_tags %}
+    <a href="{{ url_for('index', tag=tag, q=search_query) }}" 
+       class="tag-item {% if tag in selected_tags %}active{% endif %}">
+        {{ tag }}
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if notes %}
+    {% for note in notes %}
+    <div class="card {% if note.pinned %}pinned{% endif %}">
+        <a href="{{ url_for('view_note', note_id=note.id) }}" class="note-title">
+            {% if note.pinned %}📌 {% endif %}{{ note.title }}
+        </a>
+        <div class="note-meta">
+            {{ note.created_at_formatted }}
+            {% if note.tags %}
+                &nbsp;|&nbsp;
+                {% for tag in note.tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <p class="note-summary">{{ note.summary }}</p>
+        <div class="note-actions">
+            <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn btn-sm btn-primary">编辑</a>
+            <form action="{{ url_for('pin_note', note_id=note.id) }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-sm btn-secondary">
+                    {% if note.pinned %}取消置顶{% else %}置顶{% endif %}
+                </button>
+            </form>
+            <form action="{{ url_for('copy_note', note_id=note.id) }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-sm btn-secondary">复制</button>
+            </form>
+            <button type="button" class="btn btn-sm btn-danger" onclick="showDeleteModal('{{ url_for('delete_note', note_id=note.id) }}')">删除</button>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3>暂无笔记</h3>
+        <p>{% if search_query or selected_tags %}没有找到匹配的笔记{% else %}点击上方按钮创建你的第一篇笔记吧{% endif %}</p>
+        {% if not search_query and not selected_tags %}
+        <a href="{{ url_for('create_note') }}" class="btn btn-primary">创建笔记</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

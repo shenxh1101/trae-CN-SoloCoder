@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}历史版本 - {{ note.title }}{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{{ url_for('view_note', note_id=note_id) }}">← 返回笔记</a>
+</div>
+
+<div class="card">
+    <div style="background-color: var(--warning-color); color: white; padding: 10px 15px; border-radius: 6px; margin-bottom: 20px;">
+        ⚠️ 这是历史版本，查看时为只读状态
+    </div>
+    
+    <h1 style="margin-bottom: 15px;">{{ note.title }}</h1>
+    <div class="note-meta" style="margin-bottom: 20px;">
+        版本ID: {{ version_id }}
+        {% if note.tags %}
+            &nbsp;|&nbsp;
+            {% for tag in note.tags %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="markdown-content">
+        {{ note.content | replace('\n', '<br>') | safe }}
+    </div>
+    <div class="note-actions">
+        <a href="{{ url_for('view_note', note_id=note_id) }}" class="btn btn-secondary">返回当前版本</a>
+        <form action="{{ url_for('restore_version', note_id=note_id, version_id=version_id) }}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-success" onclick="return confirm('确定要恢复到此版本吗？当前版本将被保存为历史版本。')">
+                恢复此版本
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>魔法宝石三消</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">✨ 魔法宝石三消 ✨</h1>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <span class="info-label">分数</span>
+                <span class="info-value" id="score">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">目标</span>
+                <span class="info-value" id="target">1000</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">步数</span>
+                <span class="info-value" id="moves">30</span>
+            </div>
+            <div class="info-item" id="timer-container" style="display: none;">
+                <span class="info-label">时间</span>
+                <span class="info-value" id="timer">60</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">关卡</span>
+                <span class="info-value" id="level">1</span>
+            </div>
+        </div>
+
+        <div class="game-board" id="game-board"></div>
+
+        <div class="controls">
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="level">关卡模式</button>
+                <button class="mode-btn" data-mode="timed">计时模式</button>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn" id="undo-btn" disabled>↶ 撤销 (3)</button>
+                <button class="action-btn" id="sound-btn">🔊 音效</button>
+                <button class="action-btn" id="restart-btn">🔄 重新开始</button>
+            </div>
+        </div>
+
+        <div class="high-score">
+            <span>🏆 最高分: </span>
+            <span id="high-score">0</span>
+        </div>
+
+        <div class="modal" id="game-over-modal">
+            <div class="modal-content">
+                <h2 id="modal-title">游戏结束</h2>
+                <p id="modal-message">你的分数: 0</p>
+                <button class="modal-btn" id="modal-btn">继续</button>
+            </div>
+        </div>
+
+        <div class="special-gems-info">
+            <div class="gem-info">
+                <span class="gem-preview bomb"></span>
+                <span>炸弹宝石 (4连消)</span>
+            </div>
+            <div class="gem-info">
+                <span class="gem-preview rainbow"></span>
+                <span>彩虹宝石 (5连消)</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

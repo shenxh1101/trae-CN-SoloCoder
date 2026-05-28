@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}导入笔记{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{{ url_for('index') }}">← 返回列表</a>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 20px;">📥 导入笔记</h2>
+    
+    <p style="margin-bottom: 20px; color: var(--text-secondary);">
+        支持导入 Markdown 文件 (.md)。系统会自动解析标题和标签。
+    </p>
+    
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">选择文件（可多选）</label>
+            <input type="file" id="file" name="file" class="form-control" 
+                   accept=".md" multiple required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">导入</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary" style="margin-left: 10px;">取消</a>
+    </form>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 15px;">Markdown 文件格式说明</h3>
+    <p style="margin-bottom: 10px;">推荐的 Markdown 文件格式：</p>
+    <pre style="background-color: var(--bg-tertiary); padding: 15px; border-radius: 6px; overflow-x: auto;">
+# 笔记标题
+
+**标签**: 标签1, 标签2, 标签3
+
+**创建时间**: 2024-01-01 12:00:00
+
+---
+
+这里是笔记内容...
+    </pre>
+    <p style="margin-top: 15px; color: var(--text-secondary); font-size: 14px;">
+        提示：标签和创建时间部分是可选的。如果没有 # 标题，将使用文件名作为标题。
+    </p>
+</div>
+{% endblock %}

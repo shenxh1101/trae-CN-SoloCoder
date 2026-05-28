@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{% if note %}编辑笔记{% else %}新建笔记{% endif %}{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{{ url_for('index') }}">← 返回列表</a>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 20px;">{% if note %}编辑笔记{% else %}新建笔记{% endif %}</h2>
+    
+    <form method="post" id="noteForm">
+        <div class="form-group">
+            <label for="title">标题</label>
+            <input type="text" id="title" name="title" class="form-control" 
+                   value="{{ note.title if note else '' }}" placeholder="输入笔记标题...">
+        </div>
+        
+        <div class="form-group">
+            <label for="tags">标签（用逗号分隔）</label>
+            <input type="text" id="tags" name="tags" class="form-control" 
+                   value="{{ note.tags | join(', ') if note and note.tags else '' }}" 
+                   placeholder="例如: 工作, 重要, 待办">
+        </div>
+        
+        <div class="form-group">
+            <label for="content">内容</label>
+            <textarea id="content" name="content" class="form-control" 
+                      placeholder="在这里写下你的笔记内容...">{{ note.content if note else '' }}</textarea>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary" style="margin-left: 10px;">取消</a>
+            <span id="autosaveStatus" class="autosave-status"></span>
+        </div>
+    </form>
+</div>
+
+<script>
+const noteId = '{{ note.id if note else "new" }}';
+let autosaveTimer = null;
+let lastSavedContent = '';
+
+function autosave() {
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+    const tags = document.getElementById('tags').value;
+    
+    const currentContent = title + content + tags;
+    if (currentContent === lastSavedContent) return;
+    
+    fetch(`/autosave/${noteId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            title: title,
+            content: content,
+            tags: tags.split(',').map(t => t.trim()).filter(t => t)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        lastSavedContent = currentContent;
+        const statusEl = document.getElementById('autosaveStatus');
+        statusEl.textContent = '✓ 自动保存于 ' + new Date().toLocaleTimeString();
+        setTimeout(() => {
+            statusEl.textContent = '';
+        }, 3000);
+    });
+}
+
+function setupAutosave() {
+    const inputs = ['title', 'content', 'tags'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+            if (autosaveTimer) clearTimeout(autosaveTimer);
+            autosaveTimer = setTimeout(autosave, 30000);
+        });
+    });
+}
+
+function loadDraft() {
+    if (noteId === 'new') return;
+    
+    fetch(`/draft/${noteId}`)
+    .then(response => response.json())
+    .then(draft => {
+        if (draft) {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+            if (!title && !content && (draft.title || draft.content)) {
+                if (confirm('发现未保存的草稿，是否恢复？')) {
+                    document.getElementById('title').value = draft.title || '';
+                    document.getElementById('content').value = draft.content || '';
+                    document.getElementById('tags').value = (draft.tags || []).join(', ');
+                }
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupAutosave();
+    setTimeout(loadDraft, 500);
+});
+</script>
+{% endblock %}
