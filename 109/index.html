@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猜词游戏 - Hangman</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <button class="btn btn-icon settings-btn" onclick="toggleSettings()" title="设置">
+    ⚙️
+  </button>
+
+  <div class="container">
+    <header>
+      <h1>🎯 猜词游戏</h1>
+      <div class="high-score">
+        最高分: <span id="highScore">0</span>
+      </div>
+    </header>
+
+    <div class="game-card">
+      <div class="game-status">
+        <div class="hearts" id="hearts">
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+        </div>
+        <div class="score-display">
+          得分: <span id="currentScore">0</span>
+        </div>
+        <div class="category-badge" id="categoryBadge">动物</div>
+      </div>
+
+      <div id="dualScores" class="dual-scores" style="display: none;">
+        <div class="dual-player" id="player1">
+          <div>玩家 1</div>
+          <div class="dual-player-score" id="player1Score">0</div>
+        </div>
+        <div class="dual-player" id="player2">
+          <div>玩家 2</div>
+          <div class="dual-player-score" id="player2Score">0</div>
+        </div>
+      </div>
+      <div class="round-indicator" id="roundIndicator" style="display: none;">
+        第 <span id="roundNum">1</span> 轮
+      </div>
+
+      <div id="dualInputSection" class="dual-input-section" style="display: none;">
+        <h3>玩家 <span id="inputPlayer">1</span> 请输入单词</h3>
+        <input type="text" id="dualWordInput" class="dual-input" placeholder="输入英文单词" maxlength="15">
+        <input type="text" id="dualHintInput" class="dual-input" placeholder="输入提示（可选）">
+        <button class="btn btn-primary" onclick="confirmDualWord()">确认开始</button>
+      </div>
+
+      <div id="gameArea" style="display: block;">
+        <div class="hangman-container">
+          <svg id="hangman-svg" viewBox="0 0 200 250">
+            <line class="base-structure" x1="40" y1="230" x2="160" y2="230" />
+            <line class="base-structure" x1="60" y1="230" x2="60" y2="20" />
+            <line class="base-structure" x1="60" y1="20" x2="140" y2="20" />
+            <line class="base-structure" x1="140" y1="20" x2="140" y2="50" />
+            <circle class="hangman-part" data-part="0" cx="140" cy="70" r="20" />
+            <line class="hangman-part" data-part="1" x1="140" y1="90" x2="140" y2="150" />
+            <line class="hangman-part" data-part="2" x1="140" y1="110" x2="110" y2="130" />
+            <line class="hangman-part" data-part="3" x1="140" y1="110" x2="170" y2="130" />
+            <line class="hangman-part" data-part="4" x1="140" y1="150" x2="115" y2="190" />
+            <line class="hangman-part" data-part="5" x1="140" y1="150" x2="165" y2="190" />
+          </svg>
+        </div>
+
+        <div id="hintDisplay" class="hint-display" style="display: none;"></div>
+
+        <div class="word-display" id="wordDisplay"></div>
+
+        <div class="guessed-letters">
+          <div class="guessed-letters-label">已猜错的字母</div>
+          <div class="guessed-letters-list" id="guessedLettersList"></div>
+        </div>
+
+        <div class="keyboard" id="keyboard">
+          <div class="keyboard-row">
+            <button class="key" data-key="q">q</button>
+            <button class="key" data-key="w">w</button>
+            <button class="key" data-key="e">e</button>
+            <button class="key" data-key="r">r</button>
+            <button class="key" data-key="t">t</button>
+            <button class="key" data-key="y">y</button>
+            <button class="key" data-key="u">u</button>
+            <button class="key" data-key="i">i</button>
+            <button class="key" data-key="o">o</button>
+            <button class="key" data-key="p">p</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key" data-key="a">a</button>
+            <button class="key" data-key="s">s</button>
+            <button class="key" data-key="d">d</button>
+            <button class="key" data-key="f">f</button>
+            <button class="key" data-key="g">g</button>
+            <button class="key" data-key="h">h</button>
+            <button class="key" data-key="j">j</button>
+            <button class="key" data-key="k">k</button>
+            <button class="key" data-key="l">l</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key" data-key="z">z</button>
+            <button class="key" data-key="x">x</button>
+            <button class="key" data-key="c">c</button>
+            <button class="key" data-key="v">v</button>
+            <button class="key" data-key="b">b</button>
+            <button class="key" data-key="n">n</button>
+            <button class="key" data-key="m">m</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-warning" onclick="showHint()">💡 提示</button>
+        <button class="btn btn-primary" onclick="startNewGame()">🔄 新游戏</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <h2>⚙️ 设置</h2>
+      <button class="close-btn" onclick="toggleSettings()">✕</button>
+    </div>
+    <div class="settings-content">
+      <div class="setting-group">
+        <label>游戏模式</label>
+        <select id="modeSelect" onchange="changeMode(this.value)">
+          <option value="single">单人模式</option>
+          <option value="dual">双人对战</option>
+        </select>
+      </div>
+
+      <div class="setting-group" id="singleSettings">
+        <label>词库分类</label>
+        <select id="categorySelect" onchange="changeCategory(this.value)"></select>
+      </div>
+
+      <div class="setting-group" id="difficultySettings">
+        <label>难度选择</label>
+        <select id="difficultySelect" onchange="changeDifficulty(this.value)">
+          <option value="easy">简单 (4-5个字母)</option>
+          <option value="hard">困难 (8-10个字母)</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label>音效</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="soundToggle" onchange="toggleSound(this.checked)" checked>
+          <span class="toggle-slider"></span>
+          <span id="soundLabel">开启</span>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label>导入自定义词库</label>
+        <label class="file-upload">
+          <input type="file" accept=".json" onchange="importWordList(this)">
+          <div class="file-upload-icon">📁</div>
+          <div class="file-upload-text">点击上传 JSON 文件</div>
+        </label>
+        <small style="color: var(--text-secondary); margin-top: 10px; display: block;">
+          JSON格式: {"custom": {"name": "自定义", "words": [{"word": "test", "hint": "测试"}]}}
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="resultModal">
+    <div class="modal">
+      <div class="modal-icon" id="modalIcon">🎉</div>
+      <div class="modal-title" id="modalTitle">恭喜你赢了！</div>
+      <div class="modal-word" id="modalWord">TEST</div>
+      <div class="modal-score">得分: <strong id="modalScore">100</strong></div>
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="closeModalAndNewGame()">再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/wordlists.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Sound.init();
+      Game.init();
+      initUI();
+      startNewGame();
+    });
+
+    function initUI() {
+      populateCategorySelect();
+      const settings = Storage.getSettings();
+      document.getElementById('categorySelect').value = settings.category;
+      document.getElementById('difficultySelect').value = settings.difficulty;
+      document.getElementById('soundToggle').checked = settings.soundEnabled;
+      document.getElementById('soundLabel').textContent = settings.soundEnabled ? '开启' : '关闭';
+      updateHighScore();
+      setupKeyboardListeners();
+    }
+
+    function populateCategorySelect() {
+      const select = document.getElementById('categorySelect');
+      const allLists = Storage.getAllWordLists();
+      select.innerHTML = '';
+      
+      for (const [key, data] of Object.entries(allLists)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = data.name;
+        select.appendChild(option);
+      }
+
+      const customLists = Storage.getCustomWordLists();
+      for (const [key] of Object.entries(customLists)) {
+        select.querySelector(`option[value="${key}"]`).textContent += ' ⭐';
+      }
+    }
+
+    function setupKeyboardListeners() {
+      document.querySelectorAll('.key').forEach(key => {
+        key.addEventListener('click', () => {
+          handleKeyPress(key.dataset.key);
+        });
+        key.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          handleKeyPress(key.dataset.key);
+        });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        const letter = e.key.toLowerCase();
+        if (/^[a-z]$/.test(letter)) {
+          handleKeyPress(letter);
+        }
+      });
+    }
+
+    function handleKeyPress(letter) {
+      if (Game.state.isGameOver) return;
+      if (Game.state.mode === 'dual' && Game.state.dualPhase === 'input') return;
+      
+      const result = Game.guessLetter(letter);
+      if (result === null) return;
+
+      const keyBtn = document.querySelector(`.key[data-key="${letter}"]`);
+      if (keyBtn) {
+        keyBtn.classList.add(result ? 'correct' : 'wrong');
+      }
+
+      updateUI();
+
+      if (Game.state.isGameOver) {
+        setTimeout(() => showGameResult(), 500);
+      }
+    }
+
+    function updateUI() {
+      renderWordDisplay();
+      renderHangman();
+      renderHearts();
+      renderGuessedLetters();
+      updateScore();
+    }
+
+    function renderWordDisplay() {
+      const container = document.getElementById('wordDisplay');
+      container.innerHTML = '';
+
+      for (const letter of Game.state.currentWord) {
+        const box = document.createElement('div');
+        box.className = 'letter-box';
+        
+        if (letter === ' ') {
+          box.classList.add('space');
+        } else if (Game.state.guessedLetters.includes(letter)) {
+          box.textContent = letter;
+          box.classList.add('revealed');
+        }
+        
+        container.appendChild(box);
+      }
+    }
+
+    function renderHangman() {
+      const parts = document.querySelectorAll('.hangman-part');
+      parts.forEach((part, index) => {
+        if (index < Game.state.wrongGuesses) {
+          part.classList.add('visible');
+        } else {
+          part.classList.remove('visible');
+        }
+      });
+
+      if (Game.state.wrongGuesses > 0) {
+        const container = document.querySelector('.hangman-container');
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 400);
+      }
+    }
+
+    function renderHearts() {
+      const hearts = document.querySelectorAll('.heart');
+      hearts.forEach((heart, index) => {
+        if (index < Game.state.wrongGuesses) {
+          heart.classList.add('lost');
+        } else {
+          heart.classList.remove('lost');
+        }
+      });
+    }
+
+    function renderGuessedLetters() {
+      const container = document.getElementById('guessedLettersList');
+      container.innerHTML = '';
+
+      const wrongLetters = Game.state.guessedLetters.filter(
+        letter => !Game.state.currentWord.includes(letter)
+      );
+
+      wrongLetters.forEach(letter => {
+        const span = document.createElement('span');
+        span.className = 'guessed-letter';
+        span.textContent = letter;
+        container.appendChild(span);
+      });
+    }
+
+    function updateScore() {
+      document.getElementById('currentScore').textContent = Game.state.score;
+    }
+
+    function updateHighScore() {
+      const highScore = Storage.getHighScore(Game.state.category, Game.state.difficulty);
+      document.getElementById('highScore').textContent = highScore;
+    }
+
+    function startNewGame() {
+      closeModal();
+      Game.startNewGame();
+      resetKeyboard();
+      hideHint();
+
+      if (Game.state.mode === 'dual') {
+        showDualInput();
+      } else {
+        hideDualInput();
+        updateUI();
+      }
+      
+      updateHighScore();
+      updateCategoryBadge();
+    }
+
+    function resetKeyboard() {
+      document.querySelectorAll('.key').forEach(key => {
+        key.classList.remove('correct', 'wrong');
+      });
+    }
+
+    function showHint() {
+      if (Game.state.isGameOver) return;
+      if (Game.state.mode === 'dual' && Game.state.dualPhase === 'input') return;
+
+      const hint = Game.getHint();
+      const display = document.getElementById('hintDisplay');
+      
+      if (hint.type === 'letter') {
+        display.textContent = `💡 提示字母: ${hint.value.toUpperCase()}`;
+      } else {
+        display.textContent = `💡 ${hint.value}`;
+      }
+      
+      display.style.display = 'block';
+      updateUI();
+
+      if (Game.state.isGameOver) {
+        setTimeout(() => showGameResult(), 500);
+      }
+    }
+
+    function hideHint() {
+      document.getElementById('hintDisplay').style.display = 'none';
+    }
+
+    function showGameResult() {
+      const modal = document.getElementById('resultModal');
+      const icon = document.getElementById('modalIcon');
+      const title = document.getElementById('modalTitle');
+      const word = document.getElementById('modalWord');
+      const score = document.getElementById('modalScore');
+
+      word.textContent = Game.state.currentWord;
+
+      if (Game.state.isWin) {
+        icon.textContent = '🎉';
+        title.textContent = '恭喜你赢了！';
+        title.className = 'modal-title win';
+        score.textContent = Game.state.score;
+        createConfetti();
+      } else {
+        icon.textContent = '😢';
+        title.textContent = '游戏结束';
+        title.className = 'modal-title lose';
+        score.textContent = '0';
+      }
+
+      if (Game.state.mode === 'dual') {
+        const gameComplete = Game.finishDualRound();
+        if (gameComplete) {
+          const winner = Game.state.player1Score > Game.state.player2Score ? '玩家 1' : 
+                        Game.state.player2Score > Game.state.player1Score ? '玩家 2' : '平局';
+          title.textContent = winner === '平局' ? '平局！' : `${winner} 获胜！`;
+          icon.textContent = winner === '平局' ? '🤝' : '🏆';
+          score.textContent = `玩家1: ${Game.state.player1Score} - 玩家2: ${Game.state.player2Score}`;
+        } else {
+          setTimeout(() => {
+            closeModal();
+            showDualInput();
+          }, 1500);
+          return;
+        }
+      }
+
+      modal.classList.add('open');
+      updateHighScore();
+    }
+
+    function closeModal() {
+      document.getElementById('resultModal').classList.remove('open');
+    }
+
+    function closeModalAndNewGame() {
+      if (Game.state.mode === 'dual') {
+        Game.resetDualGame();
+      }
+      startNewGame();
+    }
+
+    function toggleSettings() {
+      const panel = document.getElementById('settingsPanel');
+      const overlay = document.getElementById('settingsOverlay');
+      panel.classList.toggle('open');
+      overlay.classList.toggle('open');
+      Sound.playClick();
+    }
+
+    function changeMode(mode) {
+      Game.setMode(mode);
+      const singleSettings = document.getElementById('singleSettings');
+      const difficultySettings = document.getElementById('difficultySettings');
+      const dualScores = document.getElementById('dualScores');
+      const roundIndicator = document.getElementById('roundIndicator');
+
+      if (mode === 'dual') {
+        singleSettings.style.display = 'none';
+        difficultySettings.style.display = 'none';
+        dualScores.style.display = 'flex';
+        roundIndicator.style.display = 'block';
+      } else {
+        singleSettings.style.display = 'block';
+        difficultySettings.style.display = 'block';
+        dualScores.style.display = 'none';
+        roundIndicator.style.display = 'none';
+      }
+
+      startNewGame();
+    }
+
+    function changeCategory(category) {
+      Game.setCategory(category);
+      updateCategoryBadge();
+      startNewGame();
+    }
+
+    function changeDifficulty(difficulty) {
+      Game.setDifficulty(difficulty);
+      startNewGame();
+    }
+
+    function toggleSound(enabled) {
+      Game.setSoundEnabled(enabled);
+      document.getElementById('soundLabel').textContent = enabled ? '开启' : '关闭';
+    }
+
+    function updateCategoryBadge() {
+      const allLists = Storage.getAllWordLists();
+      const categoryData = allLists[Game.state.category];
+      document.getElementById('categoryBadge').textContent = categoryData?.name || '动物';
+    }
+
+    function importWordList(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          for (const [key, listData] of Object.entries(data)) {
+            if (listData.name && listData.words) {
+              Storage.saveCustomWordList(key, listData);
+            }
+          }
+          populateCategorySelect();
+          alert('词库导入成功！');
+        } catch (err) {
+          alert('导入失败，请检查JSON格式是否正确');
+        }
+      };
+      reader.readAsText(file);
+      input.value = '';
+    }
+
+    function showDualInput() {
+      document.getElementById('gameArea').style.display = 'none';
+      document.getElementById('dualInputSection').style.display = 'block';
+      document.getElementById('inputPlayer').textContent = Game.state.currentPlayer;
+      document.getElementById('dualWordInput').value = '';
+      document.getElementById('dualHintInput').value = '';
+      document.getElementById('dualWordInput').focus();
+      document.getElementById('player1').classList.toggle('active', Game.state.currentPlayer === 1);
+      document.getElementById('player2').classList.toggle('active', Game.state.currentPlayer === 2);
+      document.getElementById('player1Score').textContent = Game.state.player1Score;
+      document.getElementById('player2Score').textContent = Game.state.player2Score;
+      document.getElementById('roundNum').textContent = Game.state.round;
+    }
+
+    function hideDualInput() {
+      document.getElementById('gameArea').style.display = 'block';
+      document.getElementById('dualInputSection').style.display = 'none';
+    }
+
+    function confirmDualWord() {
+      const word = document.getElementById('dualWordInput').value.trim().toLowerCase();
+      const hint = document.getElementById('dualHintInput').value.trim();
+
+      if (!word || !/^[a-z\s]+$/.test(word)) {
+        alert('请输入有效的英文单词');
+        return;
+      }
+
+      Game.setDualWord(word, hint);
+      hideDualInput();
+      updateUI();
+    }
+
+    function createConfetti() {
+      const colors = ['#667eea', '#764ba2', '#38a169', '#e53e3e', '#d69e2e'];
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+  </script>
+</body>
+</html>

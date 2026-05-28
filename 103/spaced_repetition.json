@@ -1,0 +1,62 @@
+{
+  "abandon": {
+    "interval": 1,
+    "repetitions": 1,
+    "ease_factor": 2.5,
+    "next_review": "2026-05-29"
+  },
+  "abroad": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  },
+  "access": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  },
+  "achieve": {
+    "interval": 1,
+    "repetitions": 1,
+    "ease_factor": 2.5,
+    "next_review": "2026-05-29"
+  },
+  "accomplish": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  },
+  "acquire": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  },
+  "account": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  },
+  "abstract": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  },
+  "across": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  },
+  "abundant": {
+    "interval": 1,
+    "repetitions": 0,
+    "ease_factor": 2.3,
+    "next_review": "2026-05-29"
+  }
+}

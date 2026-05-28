@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <h3>📜 历史记录</h3>
+            <p class="sidebar-hint">最近生成的10个密码</p>
+            <div id="history-list" class="history-list">
+                {% if history %}
+                    {% for item in history %}
+                    <div class="history-item" data-password="{{ item.password }}">
+                        <div class="history-password" onclick="copyToClipboard('{{ item.password }}', this)">
+                            <span class="password-mask">{{ item.password[:4] }}{{ '*' * (item.password|length - 4) if item.password|length > 4 else '' }}</span>
+                            <button class="reveal-btn" onclick="event.stopPropagation(); revealPassword(this, '{{ item.password }}')">👁</button>
+                        </div>
+                        <div class="history-meta">
+                            <span class="history-type">{{ item.type }}</span>
+                            <span class="history-length">{{ item.length }}位</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-history">暂无历史记录</p>
+                {% endif %}
+            </div>
+            <button id="clear-history-btn" class="btn btn-danger btn-small">清空历史</button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="generate">🎲 密码生成</button>
+            <button class="tab-btn" data-tab="passphrase">📝 密码短语</button>
+            <button class="tab-btn" data-tab="wifi">📶 WiFi配置</button>
+            <button class="tab-btn" data-tab="check">🔍 强度检测</button>
+            <button class="tab-btn" data-tab="batch">📊 批量检测</button>
+            <button class="tab-btn" data-tab="export">💾 导出</button>
+        </div>
+
+        <div class="tab-content active" id="tab-generate">
+            <div class="card">
+                <h2>生成随机密码</h2>
+                <form id="generate-form">
+                    <div class="form-group">
+                        <label for="length">密码长度 (4-64)</label>
+                        <input type="range" id="length" name="length" min="4" max="64" value="12">
+                        <span id="length-value">12</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="count">生成数量 (1-10)</label>
+                        <input type="number" id="count" name="count" min="1" max="10" value="1">
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="include_upper" checked> 大写字母 (A-Z)</label>
+                        <label><input type="checkbox" name="include_lower" checked> 小写字母 (a-z)</label>
+                        <label><input type="checkbox" name="include_digits" checked> 数字 (0-9)</label>
+                        <label><input type="checkbox" name="include_special" checked> 特殊符号 (!@#$%)</label>
+                        <label><input type="checkbox" name="exclude_confusing" checked> 排除易混淆字符 (0, O, 1, l, I)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">生成密码</button>
+                </form>
+                <div id="generate-result" class="result-section"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-passphrase">
+            <div class="card">
+                <h2>生成可读密码短语</h2>
+                <p class="form-hint">由常见英文单词组成，便于记忆</p>
+                <form id="passphrase-form">
+                    <div class="form-group">
+                        <label for="num_words">单词数量 (2-8)</label>
+                        <input type="number" id="num_words" name="num_words" min="2" max="8" value="4">
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="include_number" checked> 添加随机数字</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">生成密码短语</button>
+                </form>
+                <div id="passphrase-result" class="result-section"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-wifi">
+            <div class="card">
+                <h2>WiFi配置生成</h2>
+                <p class="form-hint">生成可扫描的WiFi配置二维码</p>
+                <form id="wifi-form">
+                    <div class="form-group">
+                        <label for="ssid">WiFi名称 (SSID)</label>
+                        <input type="text" id="ssid" name="ssid" placeholder="MyWiFi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="encryption">加密方式</label>
+                        <select id="encryption" name="encryption">
+                            <option value="WPA">WPA/WPA2/WPA3</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">无密码</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="wifi_password">WiFi密码 (留空自动生成)</label>
+                        <input type="text" id="wifi_password" name="wifi_password" placeholder="留空自动生成强密码">
+                    </div>
+                    <button type="submit" class="btn btn-primary">生成配置</button>
+                </form>
+                <div id="wifi-result" class="result-section"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-check">
+            <div class="card">
+                <h2>密码强度检测</h2>
+                <form id="check-form">
+                    <div class="form-group">
+                        <label for="check_password">输入要检测的密码</label>
+                        <input type="text" id="check_password" name="password" placeholder="输入密码..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">检测强度</button>
+                </form>
+                <div id="check-result" class="result-section"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-batch">
+            <div class="card">
+                <h2>批量密码检测</h2>
+                <p class="form-hint">上传TXT文件，每行一个密码</p>
+                <form id="batch-form">
+                    <div class="form-group">
+                        <label for="batch_file">选择TXT文件</label>
+                        <input type="file" id="batch_file" name="file" accept=".txt" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">开始检测</button>
+                </form>
+                <div id="batch-result" class="result-section"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-export">
+            <div class="card">
+                <h2>导出加密密码列表</h2>
+                <p class="form-hint">将历史密码导出为加密的ZIP文件</p>
+                <form id="export-form">
+                    <div class="form-group">
+                        <label for="encryption_password">加密密码 (至少6位)</label>
+                        <input type="password" id="encryption_password" name="encryption_password" placeholder="设置加密密码" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">导出加密CSV</button>
+                </form>
+                <div id="export-result" class="result-section"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/lib/qrcode.min.js') }}"></script>
+{% endblock %}

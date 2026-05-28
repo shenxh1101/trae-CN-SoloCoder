@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}页面不存在 - CodeShare{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="fas fa-question-circle"></i>
+        </div>
+        <h1>404 - 页面不存在</h1>
+        <p>您访问的代码片段不存在或已被删除。</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> 返回首页
+        </a>
+    </div>
+</div>
+{% endblock %}

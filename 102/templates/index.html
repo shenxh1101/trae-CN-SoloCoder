@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}CodeShare - 分享你的代码{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero-section">
+        <h1><i class="fas fa-share-alt"></i> 代码片段分享</h1>
+        <p>简单、快速、安全的代码分享平台。支持语法高亮、密码保护、过期自动删除。</p>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="main-grid">
+        <div class="form-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-pen-fancy"></i> 提交新代码片段</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="snippet-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="title"><i class="fas fa-heading"></i> 标题</label>
+                                <input type="text" id="title" name="title" placeholder="代码片段标题" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="author"><i class="fas fa-user"></i> 作者</label>
+                                <input type="text" id="author" name="author" placeholder="匿名用户" maxlength="50">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="language"><i class="fas fa-code"></i> 编程语言</label>
+                                <select id="language" name="language">
+                                    {% for lang in languages %}
+                                    <option value="{{ lang }}">{{ lang|title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="expires"><i class="fas fa-clock"></i> 过期时间</label>
+                                <select id="expires" name="expires">
+                                    <option value="1h">1小时</option>
+                                    <option value="1d">1天</option>
+                                    <option value="7d">7天</option>
+                                    <option value="never" selected>永不过期</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password"><i class="fas fa-lock"></i> 访问密码（可选）</label>
+                            <input type="password" id="password" name="password" placeholder="留空则无需密码">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content"><i class="fas fa-file-code"></i> 代码内容 <span class="required">*</span></label>
+                            <textarea id="content" name="content" rows="15" placeholder="在此粘贴你的代码..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-upload"></i> 提交代码片段
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-search"></i> 搜索筛选</h2>
+                </div>
+                <div class="card-body">
+                    <form method="GET" class="search-form">
+                        <div class="form-group">
+                            <input type="text" name="search" placeholder="搜索标题..." value="{{ search }}">
+                        </div>
+                        <div class="form-group">
+                            <select name="lang" onchange="this.form.submit()">
+                                <option value="">所有语言</option>
+                                {% for lang in used_languages %}
+                                <option value="{{ lang }}" {% if lang_filter == lang %}selected{% endif %}>{{ lang|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-block">
+                            <i class="fas fa-search"></i> 搜索
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> 最近片段</h2>
+                </div>
+                <div class="card-body">
+                    {% if snippets %}
+                    <div class="snippet-list">
+                        {% for snippet in snippets %}
+                        <a href="{{ url_for('view_snippet', snippet_id=snippet.id) }}" class="snippet-item">
+                            <div class="snippet-title">
+                                <i class="fas fa-file-code"></i>
+                                {{ snippet.title }}
+                            </div>
+                            <div class="snippet-meta">
+                                <span class="lang-badge">{{ snippet.language }}</span>
+                                <span class="views"><i class="fas fa-eye"></i> {{ snippet.views }}</span>
+                                <span class="author">{{ snippet.author }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>暂无代码片段</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contentTextarea = document.getElementById('content');
+    if (contentTextarea) {
+        contentTextarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

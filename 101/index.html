@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D十二面体日历</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="date-display" class="corner-display">
+        <div id="current-date"></div>
+    </div>
+    
+    <div id="stats-display" class="stats-display">
+        <div>顶点数: <span id="vertex-count">0</span></div>
+        <div>面数: <span id="face-count">0</span></div>
+    </div>
+    
+    <div id="control-panel" class="control-panel">
+        <h3>🎮 控制面板</h3>
+        
+        <div class="control-group">
+            <label>显示模式</label>
+            <select id="display-mode">
+                <option value="name">月份名称</option>
+                <option value="days">每月天数</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>材质类型</label>
+            <select id="material-type">
+                <option value="solid">实体材质</option>
+                <option value="wireframe">线框材质</option>
+                <option value="transparent">半透明材质</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="auto-rotate" checked>
+                自动旋转
+            </label>
+        </div>
+        
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="glow-effect" checked>
+                外发光效果
+            </label>
+        </div>
+        
+        <div class="control-group">
+            <button id="reset-view">🔄 重置视角</button>
+            <button id="screenshot">📷 截图保存</button>
+        </div>
+    </div>
+    
+    <div id="month-info" class="month-info hidden">
+        <div class="month-info-content">
+            <span class="close-btn" id="close-info">&times;</span>
+            <h2 id="info-month">一月</h2>
+            <div class="info-details">
+                <div class="info-item">
+                    <span class="info-label">📅 天数:</span>
+                    <span id="info-days">31</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🌟 节气:</span>
+                    <span id="info-solar">小寒、大寒</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">♈ 星座:</span>
+                    <span id="info-zodiac">摩羯座、水瓶座</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

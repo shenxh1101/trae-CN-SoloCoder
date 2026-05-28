@@ -1,0 +1,243 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.corner-display {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 12px;
+    padding: 15px 25px;
+    color: #fff;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+#current-date {
+    font-size: 18px;
+    color: #ffd700;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.stats-display {
+    position: fixed;
+    top: 20px;
+    right: 260px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: #fff;
+    z-index: 100;
+    font-size: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.stats-display div {
+    margin: 5px 0;
+    color: #64c8ff;
+}
+
+.control-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 220px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.control-panel h3 {
+    margin-bottom: 20px;
+    color: #ffd700;
+    text-align: center;
+    font-size: 18px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    padding-bottom: 10px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.control-group select {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-group select:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.control-group select option {
+    background: #1a1a3a;
+    color: #fff;
+}
+
+.control-group input[type="checkbox"] {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.control-group button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-group button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.control-group button:active {
+    transform: translateY(0);
+}
+
+.month-info {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    animation: fadeIn 0.3s ease;
+}
+
+.month-info.hidden {
+    display: none;
+}
+
+.month-info-content {
+    background: linear-gradient(135deg, #1a1a3a 0%, #2a2a5a 100%);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: scaleIn 0.3s ease;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 30px;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #ffd700;
+}
+
+.month-info-content h2 {
+    color: #ffd700;
+    font-size: 32px;
+    margin-bottom: 25px;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.info-details {
+    margin-top: 20px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-label {
+    color: #aaa;
+    font-size: 16px;
+}
+
+.info-item span:last-child {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .control-panel {
+        width: 180px;
+        padding: 15px;
+    }
+    
+    .stats-display {
+        right: 210px;
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}

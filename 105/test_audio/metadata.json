@@ -1,0 +1,21 @@
+[
+  {
+    "file": "test_audio/test_song.mp3",
+    "format": "MP3",
+    "tags": {
+      "title": "测试标题",
+      "artist": "批量艺术家",
+      "album": "批量专辑",
+      "date": "2024",
+      "genre": "流行"
+    },
+    "has_cover": true,
+    "technical": {
+      "bitrate": 192000,
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration": 372.7150833333333,
+      "duration_str": "6:12"
+    }
+  }
+]

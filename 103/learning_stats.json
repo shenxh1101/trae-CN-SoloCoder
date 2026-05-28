@@ -1,0 +1,13 @@
+{
+  "total_correct": 2,
+  "total_wrong": 8,
+  "daily_stats": {
+    "2026-05-28": {
+      "correct": 2,
+      "wrong": 8
+    }
+  },
+  "learning_days": [
+    "2026-05-28"
+  ]
+}

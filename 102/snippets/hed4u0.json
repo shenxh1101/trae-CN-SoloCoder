@@ -1,0 +1,12 @@
+{
+  "id": "hed4u0",
+  "title": "Backup Script",
+  "author": "SysAdmin",
+  "language": "bash",
+  "created_at": "2026-05-28T10:01:10.546859",
+  "expires_at": "2026-06-04T10:01:10.546853",
+  "password_hash": "scrypt:32768:8:1$HV04N6idRYdI5jE2$99f7079d714875e4c1858aa7d07334f6f849b325f5b40cd528b1c1add49b697c5380d48ce4f110539af1ac98c34cfd2418222cee13c7b209003e5460ac29473d",
+  "views": 2,
+  "reported": false,
+  "report_reason": ""
+}

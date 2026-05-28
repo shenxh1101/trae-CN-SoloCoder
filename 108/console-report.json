@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-05-28T03:51:48.184Z",
+  "url": "http://localhost:8000/index.html",
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)"
+  ],
+  "warnings": [],
+  "screenshots": [
+    "galaxy-screenshot.png",
+    "galaxy-20000-particles.png",
+    "galaxy-2-arms.png",
+    "galaxy-4-arms.png",
+    "galaxy-thick.png",
+    "galaxy-no-glow.png"
+  ]
+}

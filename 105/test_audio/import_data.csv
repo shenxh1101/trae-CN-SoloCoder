@@ -1,0 +1,3 @@
+file,title,artist,album,year,genre
+test_audio/test_song.mp3,Imported Title,Imported Artist,Imported Album,2025,Jazz
+test_audio/test_song2.mp3,Another Import,New Artist,New Album,2026,Classical
