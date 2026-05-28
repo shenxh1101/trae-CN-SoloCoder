@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消消乐配对游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 消消乐配对游戏</h1>
+        </header>
+
+        <div class="game-controls">
+            <div class="control-group">
+                <label>主题：</label>
+                <select id="themeSelect">
+                    <option value="animals">🐾 动物</option>
+                    <option value="fruits">🍎 水果</option>
+                    <option value="vehicles">🚗 交通工具</option>
+                    <option value="emojis">😀 表情符号</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>难度：</label>
+                <select id="difficultySelect">
+                    <option value="4">简单 (4×4)</option>
+                    <option value="6" selected>中等 (6×6)</option>
+                    <option value="8">困难 (8×8)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>模式：</label>
+                <select id="modeSelect">
+                    <option value="single">单人模式</option>
+                    <option value="dual">双人对战</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <button id="soundToggle" class="btn">🔊 音效</button>
+                <button id="shuffleBtn" class="btn">🔀 洗牌</button>
+                <button id="hintBtn" class="btn">💡 提示</button>
+                <button id="restartBtn" class="btn btn-primary">🔄 重新开始</button>
+            </div>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat">
+                <span class="stat-label">⏱️ 时间</span>
+                <span id="timer" class="stat-value">00:00</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">👆 步数</span>
+                <span id="moves" class="stat-value">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">✅ 配对</span>
+                <span id="pairs" class="stat-value">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">📦 剩余</span>
+                <span id="remaining" class="stat-value">18</span>
+            </div>
+            <div class="stat" id="player1Stat">
+                <span class="stat-label">🎯 玩家1</span>
+                <span id="player1Score" class="stat-value">0</span>
+            </div>
+            <div class="stat" id="player2Stat">
+                <span class="stat-label">🎯 玩家2</span>
+                <span id="player2Score" class="stat-value">0</span>
+            </div>
+        </div>
+
+        <div class="current-player" id="currentPlayerDisplay">
+            <span id="currentPlayerText">当前回合: 玩家1</span>
+        </div>
+
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="high-score">
+            <span>🏆 最高分: </span>
+            <span id="highScore">0</span>
+        </div>
+    </div>
+
+    <div id="victoryModal" class="modal">
+        <div class="modal-content">
+            <h2 id="victoryTitle">🎉 恭喜获胜！</h2>
+            <div id="victoryStats"></div>
+            <button id="playAgainBtn" class="btn btn-primary">再玩一次</button>
+        </div>
+    </div>
+
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script src="script.js"></script>
+</body>
+</html>

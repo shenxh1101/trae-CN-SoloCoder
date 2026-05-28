@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}我的文件 - 管理{% endblock %}
+{% block content %}
+<div class="manage-files">
+    <div class="manage-header">
+        <h2>📂 我的文件</h2>
+        <p class="subtitle">共 {{ files|length }} 个文件</p>
+    </div>
+    <div class="manage-key-section">
+        <label>管理密钥</label>
+        <div class="link-input-group">
+            <input type="text" value="{{ manage_key }}" readonly id="manageKey">
+            <button class="btn btn-small" onclick="copyToClipboard('manageKey')">复制</button>
+        </div>
+    </div>
+    {% if files %}
+    <div class="file-table">
+        <div class="table-header">
+            <div class="col-name">文件名</div>
+            <div class="col-size">大小</div>
+            <div class="col-downloads">下载次数</div>
+            <div class="col-expiry">剩余时间</div>
+            <div class="col-actions">操作</div>
+        </div>
+        {% for file in files %}
+        <div class="table-row">
+            <div class="col-name">
+                <span class="file-name">{{ file.original_filename }}</span>
+                <br>
+                <span class="short-code">#{{ file.short_code }}</span>
+            </div>
+            <div class="col-size">{{ file.formatted_size }}</div>
+            <div class="col-downloads">{{ file.download_count }}{% if file.max_downloads %} / {{ file.max_downloads }}{% endif %}</div>
+            <div class="col-expiry">{{ file.remaining_time }}</div>
+            <div class="col-actions">
+                <a href="{{ file.detail_url }}" class="btn btn-small" target="_blank">详情</a>
+                <a href="{{ file.download_url }}" class="btn btn-small">下载</a>
+                <button class="btn btn-danger btn-small" onclick="deleteFile('{{ file.short_code }}', '{{ file.manage_key }}')">删除</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>暂无文件</h3>
+        <p>您还没有上传任何文件，或文件已过期被删除</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">去上传文件</a>
+    </div>
+    {% endif %}
+</div>
+<script>
+async function deleteFile(shortCode, manageKey) {
+    if (!confirm('确定要删除此文件吗？删除后无法恢复。')) {
+        return;
+    }
+    try {
+        const response = await fetch(`/api/delete/${shortCode}/${manageKey}`, {
+            method: 'POST'
+        });
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert('删除失败');
+        }
+    } catch (err) {
+        alert('删除失败');
+    }
+}
+</script>
+{% endblock %}

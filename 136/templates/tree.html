@@ -1,0 +1,70 @@
+{% macro render_tree(items, level=0) %}
+<ul class="tree-list" style="padding-left: {{ level * 16 }}px;">
+    {% for item in items %}
+    <li class="tree-item {% if item.type == 'folder' %}folder{% else %}document{% endif %}{% if item.pinned %} pinned{% endif %}"
+        data-path="{{ item.path }}" data-type="{{ item.type }}">
+        <div class="tree-item-content">
+            {% if item.type == 'folder' %}
+            <span class="tree-toggle" onclick="toggleFolder(this)">▶</span>
+            <span class="tree-icon">📁</span>
+            {% else %}
+            <span class="tree-toggle"></span>
+            <span class="tree-icon">📄</span>
+            {% endif %}
+
+            {% if item.pinned %}
+            <span class="pin-icon" title="已置顶">📌</span>
+            {% endif %}
+
+            {% if item.type == 'folder' %}
+            <a href="{{ url_for('browse_folder', folder_path=item.path) }}" class="tree-name">{{ item.name }}</a>
+            {% else %}
+            <a href="{{ url_for('view_document', doc_path=item.path) }}" class="tree-name">{{ item.name }}</a>
+            {% endif %}
+
+            <div class="tree-actions">
+                {% if item.type == 'document' %}
+                <button class="tree-action-btn pin-btn" onclick="togglePin('{{ item.path }}')" title="置顶/取消置顶">
+                    {% if item.pinned %}📌{% else %}📍{% endif %}
+                </button>
+                {% endif %}
+                {% if item.type == 'folder' %}
+                <a class="tree-action-btn" href="{{ url_for('new_document', folder_path=item.path) }}" title="在文件夹中新建">✏️</a>
+                {% endif %}
+                {% if (item.type == 'folder' and item.children|length == 0) or item.type == 'document' %}
+                <form action="{{ url_for('delete_document', doc_path=item.path) }}" method="post" class="inline-form" onsubmit="return confirm('确定要删除吗？');">
+                    <button type="submit" class="tree-action-btn delete-btn" title="删除">🗑️</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if item.type == 'document' %}
+        <div class="tree-meta">
+            {% if item.tags %}
+            <span class="tree-tags">
+                {% for tag in item.tags[:3] %}
+                <span class="mini-tag">{{ tag }}</span>
+                {% endfor %}
+                {% if item.tags|length > 3 %}
+                <span class="mini-tag">+{{ item.tags|length - 3 }}</span>
+                {% endif %}
+            </span>
+            {% endif %}
+            <span class="tree-stats" title="查看: {{ item.views | default(0) }} 编辑: {{ item.edits | default(0) }}">
+                👁️ {{ item.views | default(0) }} ✏️ {{ item.edits | default(0) }}
+            </span>
+        </div>
+        {% endif %}
+
+        {% if item.type == 'folder' and item.children %}
+        <div class="tree-children">
+            {{ render_tree(item.children, level + 1) }}
+        </div>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endmacro %}
+
+{{ render_tree(tree) }}

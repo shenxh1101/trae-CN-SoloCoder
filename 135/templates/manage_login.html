@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}管理文件 - 登录{% endblock %}
+{% block content %}
+<div class="manage-login">
+    <div class="login-card">
+        <div class="login-icon">🔑</div>
+        <h2>管理文件</h2>
+        <p>请输入您的管理密钥查看上传的文件</p>
+        <form action="{{ url_for('manage_files') }}" method="GET">
+            <input type="text" name="key" placeholder="请输入管理密钥" required>
+            <button type="submit" class="btn btn-primary btn-large">查看我的文件</button>
+        </form>
+        <p class="hint">管理密钥在上传文件成功后显示，请妥善保存</p>
+    </div>
+</div>
+{% endblock %}

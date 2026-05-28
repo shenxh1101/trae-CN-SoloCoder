@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}搜索: {{ query }} - Markdown文档管理系统{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <div class="page-header">
+        <h1>🔍 搜索结果</h1>
+        <p class="search-query">查询: <strong>"{{ query }}"</strong> - 找到 {{ results|length }} 个结果</p>
+    </div>
+
+    {% if results %}
+    <div class="search-results">
+        {% for result in results %}
+        <div class="search-result">
+            <h3 class="result-title">
+                <a href="{{ url_for('view_document', doc_path=result.path) }}">{{ result.title }}</a>
+            </h3>
+            <div class="result-meta">
+                <span class="result-path">📁 {{ result.path }}</span>
+                {% if result.title_match %}<span class="match-badge">标题匹配</span>{% endif %}
+                {% if result.tag_match %}<span class="match-badge">标签匹配</span>{% endif %}
+                {% if result.content_match %}<span class="match-badge">内容匹配</span>{% endif %}
+            </div>
+            {% if result.snippet %}
+            <p class="result-snippet">{{ result.snippet }}</p>
+            {% endif %}
+            {% if result.tags %}
+            <div class="result-tags">
+                {% for tag in result.tags %}
+                <a href="{{ url_for('filter_by_tag', tag_name=tag) }}" class="tag">{{ tag }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="result-stats">
+                <span>👁️ {{ result.views }} 次查看</span>
+                <span>✏️ {{ result.edits }} 次编辑</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>🔍 未找到包含 "{{ query }}" 的文档</p>
+        <p class="text-muted">尝试使用其他关键词，或检查拼写是否正确。</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">返回文档列表</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

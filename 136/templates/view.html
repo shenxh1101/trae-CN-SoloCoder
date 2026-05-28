@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Markdown文档管理系统{% endblock %}
+
+{% block content %}
+<div class="view-page">
+    <div class="view-header">
+        <div class="view-title-section">
+            <h1>
+                {% if is_pinned %}<span class="pin-badge">📌</span>{% endif %}
+                {{ title }}
+            </h1>
+            {% if tags %}
+            <div class="doc-tags">
+                {% for tag in tags %}
+                <a href="{{ url_for('filter_by_tag', tag_name=tag) }}" class="tag">{{ tag }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="view-actions">
+            <button onclick="togglePin('{{ doc_path }}')" class="btn" title="置顶/取消置顶">
+                {% if is_pinned %}📌 已置顶{% else %}📍 置顶{% endif %}
+            </button>
+            <a href="{{ url_for('edit_document', doc_path=doc_path) }}" class="btn btn-primary">✏️ 编辑</a>
+            <div class="dropdown">
+                <button class="btn">📤 导出</button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('export_document', doc_path=doc_path, format_type='md') }}">📄 Markdown</a>
+                    <a href="{{ url_for('export_document', doc_path=doc_path, format_type='html') }}">🌐 HTML</a>
+                    <a href="{{ url_for('export_document', doc_path=doc_path, format_type='pdf') }}">📕 PDF</a>
+                </div>
+            </div>
+            <button onclick="generateShare('{{ doc_path }}')" class="btn" title="生成分享链接">
+                🔗 分享
+            </button>
+            <form action="{{ url_for('delete_document', doc_path=doc_path) }}" method="post" class="inline-form" onsubmit="return confirm('确定要删除这篇文档吗？');">
+                <button type="submit" class="btn btn-danger">🗑️ 删除</button>
+            </form>
+        </div>
+    </div>
+
+    {% if share_id %}
+    <div class="share-info">
+        <span>🔗 分享链接已生成:</span>
+        <code id="share-url">{{ url_for('view_shared', share_id=share_id, _external=True) }}</code>
+        <button onclick="copyShareUrl()" class="btn btn-sm">复制</button>
+        <form action="{{ url_for('revoke_share', share_id=share_id) }}" method="post" class="inline-form">
+            <button type="submit" class="btn btn-sm btn-danger">撤销</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="view-body">
+        <div class="content-area">
+            <article class="markdown-body">
+                {{ html_content | safe }}
+            </article>
+        </div>
+
+        <aside class="side-panel">
+            {% if history %}
+            <div class="panel-section">
+                <h3>📜 历史版本</h3>
+                <div class="history-list">
+                    {% for version in history %}
+                    <div class="history-item">
+                        <span class="history-time">{{ version.time }}</span>
+                        <span class="history-size">{{ version.size }} 字节</span>
+                        <div class="history-actions">
+                            <a href="{{ url_for('view_history', doc_path=doc_path, version=version.filename) }}" class="btn btn-sm">查看</a>
+                            <form action="{{ url_for('restore_history', doc_path=doc_path, version=version.filename) }}" method="post" class="inline-form" onsubmit="return confirm('确定要恢复到此版本吗？');">
+                                <button type="submit" class="btn btn-sm btn-primary">恢复</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="panel-section">
+                <h3>📊 文档信息</h3>
+                <div class="doc-info">
+                    <p><strong>路径:</strong> {{ doc_path }}</p>
+                    <p><strong>查看次数:</strong> {{ views if views is defined else 0 }}</p>
+                    <p><strong>编辑次数:</strong> {{ edits if edits is defined else 0 }}</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<div id="share-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>🔗 分享文档</h3>
+        <p>生成只读链接，他人可访问但不能编辑。</p>
+        <div class="share-link-container">
+            <input type="text" id="modal-share-url" readonly>
+            <button onclick="copyModalShareUrl()" class="btn btn-primary">复制链接</button>
+        </div>
+        <div class="modal-actions">
+            <button onclick="closeModal()" class="btn">关闭</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function generateShare(docPath) {
+    fetch(`/generate-share/${docPath}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('modal-share-url').value = data.share_url;
+            document.getElementById('share-modal').style.display = 'flex';
+        }
+    });
+}
+
+function copyShareUrl() {
+    const url = document.getElementById('share-url').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('链接已复制到剪贴板！');
+    });
+}
+
+function copyModalShareUrl() {
+    const url = document.getElementById('modal-share-url').value;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('链接已复制到剪贴板！');
+    });
+}
+
+function closeModal() {
+    document.getElementById('share-modal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('share-modal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+</script>
+{% endblock %}

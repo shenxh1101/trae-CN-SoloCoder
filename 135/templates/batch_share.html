@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}批量文件分享{% endblock %}
+{% block content %}
+<div class="batch-share">
+    <div class="batch-header">
+        <h2>📦 批量文件分享</h2>
+        <p class="subtitle">共 {{ files|length }} 个文件 · 剩余 {{ remaining_time }}</p>
+    </div>
+    {% if qr_code %}
+    <div class="qr-section">
+        <img src="{{ qr_code }}" alt="分享二维码" class="qr-code">
+        <p class="qr-hint">手机扫码访问分享页面</p>
+    </div>
+    {% endif %}
+    <div class="link-section">
+        <div class="link-item">
+            <label>分享链接</label>
+            <div class="link-input-group">
+                <input type="text" value="{{ share_url }}" readonly id="shareLink">
+                <button class="btn btn-small" onclick="copyToClipboard('shareLink')">复制</button>
+            </div>
+        </div>
+    </div>
+    <div class="batch-files">
+        {% for file in files %}
+        <div class="batch-file-item">
+            <div class="file-icon">
+                {% set ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else '' %}
+                {% if ext in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg'] %}
+                🖼️
+                {% elif ext == 'pdf' %}
+                📄
+                {% elif ext in ['zip', 'rar', '7z', 'tar', 'gz'] %}
+                📦
+                {% elif ext in ['mp3', 'wav', 'ogg', 'flac'] %}
+                🎵
+                {% elif ext in ['mp4', 'avi', 'mkv', 'mov', 'webm'] %}
+                🎬
+                {% else %}
+                📁
+                {% endif %}
+            </div>
+            <div class="file-info">
+                <div class="filename">{{ file.filename }}</div>
+                <div class="filesize">{{ file.formatted_size }}</div>
+            </div>
+            <div class="file-actions">
+                {% if file.is_previewable %}
+                <a href="{{ file.detail_url }}" class="btn btn-small" target="_blank">预览</a>
+                {% endif %}
+                <a href="{{ file.download_url }}" class="btn btn-primary btn-small">下载</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="download-all">
+        <a href="#" class="btn btn-primary btn-large" id="downloadAllBtn">⬇️ 全部下载</a>
+    </div>
+</div>
+{% endblock %}

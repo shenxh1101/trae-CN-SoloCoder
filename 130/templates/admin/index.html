@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API代理管理面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #667eea;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+        }
+        
+        .rule-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+        
+        .rule-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .rule-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .rule-path {
+            color: #667eea;
+            font-family: monospace;
+        }
+        
+        .rule-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .rule-details {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-right: 6px;
+        }
+        
+        .badge-enabled {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .badge-disabled {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .badge-cache {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .badge-lb {
+            background: #fce7f3;
+            color: #db2777;
+        }
+        
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        .log-table th,
+        .log-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .log-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .log-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .status-200 {
+            color: #059669;
+            font-weight: 500;
+        }
+        
+        .status-404, .status-403, .status-401 {
+            color: #f59e0b;
+            font-weight: 500;
+        }
+        
+        .status-500, .status-502 {
+            color: #ef4444;
+            font-weight: 500;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        
+        .array-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .array-input input {
+            flex: 1;
+        }
+        
+        .test-result {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔌 API代理管理面板</h1>
+    </div>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="rules">转发规则</button>
+            <button class="tab" data-tab="logs">请求日志</button>
+            <button class="tab" data-tab="test">测试工具</button>
+            <button class="tab" data-tab="settings">系统设置</button>
+        </div>
+        
+        <div id="rules" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>转发规则列表</h2>
+                    <button class="btn btn-primary" onclick="openRuleModal()">+ 添加规则</button>
+                </div>
+                <div id="rules-list"></div>
+            </div>
+        </div>
+        
+        <div id="logs" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>请求日志</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary btn-sm" onclick="loadLogs()">刷新</button>
+                        <button class="btn btn-danger btn-sm" onclick="clearLogs()">清空</button>
+                    </div>
+                </div>
+                <div id="logs-table" style="overflow-x: auto;"></div>
+            </div>
+        </div>
+        
+        <div id="test" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>代理测试工具</h2>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>请求方法</label>
+                        <select id="test-method">
+                            <option>GET</option>
+                            <option>POST</option>
+                            <option>PUT</option>
+                            <option>DELETE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>目标URL</label>
+                        <input type="text" id="test-url" placeholder="https://api.example.com/endpoint">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="runTest()">发送请求</button>
+                <div style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 10px;">响应结果</h4>
+                    <div class="test-result" id="test-result">等待测试...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>导入导出</h2>
+                </div>
+                <div class="actions-bar">
+                    <button class="btn btn-success" onclick="exportRules()">导出规则 (JSON)</button>
+                    <label class="btn btn-secondary">
+                        导入规则
+                        <input type="file" id="import-file" style="display: none" accept=".json" onchange="importRules(event)">
+                    </label>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>缓存管理</h2>
+                </div>
+                <button class="btn btn-danger" onclick="clearCache()">清空缓存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="rule-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">添加转发规则</h3>
+                <button class="modal-close" onclick="closeRuleModal()">&times;</button>
+            </div>
+            <form id="rule-form" onsubmit="saveRule(event)">
+                <input type="hidden" id="rule-id">
+                
+                <div class="form-group">
+                    <label>规则名称</label>
+                    <input type="text" id="rule-name" required placeholder="例如：示例API转发">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>源路径</label>
+                        <input type="text" id="rule-source" required placeholder="/api/users/:id">
+                    </div>
+                    <div class="form-group">
+                        <label>目标URL</label>
+                        <input type="text" id="rule-target" required placeholder="https://api.example.com/users/:id">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>多目标URL (负载均衡，每行一个，可选)</label>
+                    <textarea id="rule-targets" rows="3" placeholder="https://server1.example.com/api&#10;https://server2.example.com/api"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>包含请求头 (逗号分隔)</label>
+                        <input type="text" id="rule-include-headers" placeholder="Authorization, Content-Type">
+                    </div>
+                    <div class="form-group">
+                        <label>排除请求头 (逗号分隔)</label>
+                        <input type="text" id="rule-exclude-headers" placeholder="X-Internal-Token">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="rule-enabled" checked>
+                        <label for="rule-enabled">启用规则</label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="rule-cache">
+                        <label for="rule-cache">启用缓存</label>
+                    </div>
+                </div>
+                
+                <div class="form-row" id="cache-settings" style="display: none;">
+                    <div class="form-group">
+                        <label>缓存TTL (秒)</label>
+                        <input type="number" id="rule-cache-ttl" value="300">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>IP白名单 (逗号分隔，空表示不限制)</label>
+                    <input type="text" id="rule-ip-whitelist" placeholder="192.168.1.1, 10.0.0.0/8">
+                </div>
+                
+                <div class="form-group">
+                    <label>API密钥 (空表示不验证)</label>
+                    <input type="text" id="rule-api-key" placeholder="my-secret-key">
+                </div>
+                
+                <div class="form-group">
+                    <label>响应体替换规则 (JSON格式)</label>
+                    <textarea id="rule-replacements" rows="3" placeholder='[{"old": "http://", "new": "https://"}]'></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeRuleModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                
+                if (tab.dataset.tab === 'logs') loadLogs();
+            });
+        });
+        
+        document.getElementById('rule-cache').addEventListener('change', (e) => {
+            document.getElementById('cache-settings').style.display = e.target.checked ? 'grid' : 'none';
+        });
+        
+        async function loadRules() {
+            const res = await fetch('/admin/api/rules');
+            const rules = await res.json();
+            const container = document.getElementById('rules-list');
+            
+            if (rules.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">暂无规则，点击上方按钮添加</p>';
+                return;
+            }
+            
+            container.innerHTML = rules.map(rule => `
+                <div class="rule-item">
+                    <div class="rule-header">
+                        <div>
+                            <div class="rule-title">${rule.name || '未命名规则'}</div>
+                            <div class="rule-path">${rule.source_path} → ${rule.target_url || (rule.target_urls && rule.target_urls[0])}</div>
+                        </div>
+                        <div class="rule-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editRule('${rule.id}')">编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteRule('${rule.id}')">删除</button>
+                        </div>
+                    </div>
+                    <div class="rule-details">
+                        <span class="badge ${rule.enabled !== false ? 'badge-enabled' : 'badge-disabled'}">
+                            ${rule.enabled !== false ? '已启用' : '已禁用'}
+                        </span>
+                        ${rule.cache_enabled ? '<span class="badge badge-cache">缓存</span>' : ''}
+                        ${rule.target_urls && rule.target_urls.length > 1 ? '<span class="badge badge-lb">负载均衡</span>' : ''}
+                        ${rule.ip_whitelist && rule.ip_whitelist.length ? `<span class="badge">IP限制</span>` : ''}
+                        ${rule.api_key ? `<span class="badge">API密钥</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function loadLogs() {
+            const res = await fetch('/admin/api/logs?limit=100');
+            const logs = await res.json();
+            const container = document.getElementById('logs-table');
+            
+            container.innerHTML = `
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>IP</th>
+                            <th>方法</th>
+                            <th>路径</th>
+                            <th>状态码</th>
+                            <th>耗时</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${logs.map(log => `
+                            <tr>
+                                <td>${log.timestamp ? log.timestamp.replace('T', ' ').slice(0, 19) : '-'}</td>
+                                <td>${log.client_ip || '-'}</td>
+                                <td>${log.method || '-'}</td>
+                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${log.path || ''}">${log.path || '-'}</td>
+                                <td class="status-${log.status_code}">${log.status_code || '-'}</td>
+                                <td>${log.duration_ms || 0}ms</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        async function clearLogs() {
+            if (confirm('确定要清空所有日志吗？')) {
+                await fetch('/admin/api/logs', { method: 'DELETE' });
+                loadLogs();
+            }
+        }
+        
+        async function clearCache() {
+            if (confirm('确定要清空所有缓存吗？')) {
+                await fetch('/admin/api/cache', { method: 'DELETE' });
+                alert('缓存已清空');
+            }
+        }
+        
+        function openRuleModal() {
+            document.getElementById('modal-title').textContent = '添加转发规则';
+            document.getElementById('rule-form').reset();
+            document.getElementById('rule-id').value = '';
+            document.getElementById('cache-settings').style.display = 'none';
+            document.getElementById('rule-modal').classList.add('active');
+        }
+        
+        function closeRuleModal() {
+            document.getElementById('rule-modal').classList.remove('active');
+        }
+        
+        async function editRule(id) {
+            const res = await fetch('/admin/api/rules');
+            const rules = await res.json();
+            const rule = rules.find(r => r.id === id);
+            
+            if (rule) {
+                document.getElementById('modal-title').textContent = '编辑转发规则';
+                document.getElementById('rule-id').value = rule.id;
+                document.getElementById('rule-name').value = rule.name || '';
+                document.getElementById('rule-source').value = rule.source_path || '';
+                document.getElementById('rule-target').value = rule.target_url || '';
+                document.getElementById('rule-targets').value = (rule.target_urls || []).join('\n');
+                document.getElementById('rule-include-headers').value = (rule.include_headers || []).join(', ');
+                document.getElementById('rule-exclude-headers').value = (rule.exclude_headers || []).join(', ');
+                document.getElementById('rule-enabled').checked = rule.enabled !== false;
+                document.getElementById('rule-cache').checked = rule.cache_enabled || false;
+                document.getElementById('rule-cache-ttl').value = rule.cache_ttl || 300;
+                document.getElementById('rule-ip-whitelist').value = (rule.ip_whitelist || []).join(', ');
+                document.getElementById('rule-api-key').value = rule.api_key || '';
+                document.getElementById('rule-replacements').value = JSON.stringify(rule.response_replacements || [], null, 2);
+                document.getElementById('cache-settings').style.display = rule.cache_enabled ? 'grid' : 'none';
+                document.getElementById('rule-modal').classList.add('active');
+            }
+        }
+        
+        async function saveRule(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('rule-id').value;
+            const targets = document.getElementById('rule-targets').value.split('\n').filter(t => t.trim());
+            
+            const data = {
+                name: document.getElementById('rule-name').value,
+                source_path: document.getElementById('rule-source').value,
+                target_url: document.getElementById('rule-target').value,
+                target_urls: targets.length > 0 ? targets : null,
+                include_headers: document.getElementById('rule-include-headers').value.split(',').map(h => h.trim()).filter(h => h),
+                exclude_headers: document.getElementById('rule-exclude-headers').value.split(',').map(h => h.trim()).filter(h => h),
+                enabled: document.getElementById('rule-enabled').checked,
+                cache_enabled: document.getElementById('rule-cache').checked,
+                cache_ttl: parseInt(document.getElementById('rule-cache-ttl').value),
+                ip_whitelist: document.getElementById('rule-ip-whitelist').value.split(',').map(ip => ip.trim()).filter(ip => ip),
+                api_key: document.getElementById('rule-api-key').value || null,
+                response_replacements: (() => {
+                    try {
+                        return JSON.parse(document.getElementById('rule-replacements').value || '[]');
+                    } catch {
+                        return [];
+                    }
+                })()
+            };
+            
+            const url = id ? `/admin/api/rules/${id}` : '/admin/api/rules';
+            const method = id ? 'PUT' : 'POST';
+            
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            closeRuleModal();
+            loadRules();
+        }
+        
+        async function deleteRule(id) {
+            if (confirm('确定要删除这个规则吗？')) {
+                await fetch(`/admin/api/rules/${id}`, { method: 'DELETE' });
+                loadRules();
+            }
+        }
+        
+        async function runTest() {
+            const method = document.getElementById('test-method').value;
+            const url = document.getElementById('test-url').value;
+            const resultEl = document.getElementById('test-result');
+            
+            resultEl.textContent = '请求中...';
+            
+            try {
+                const res = await fetch('/admin/api/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ method, url })
+                });
+                const data = await res.json();
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                resultEl.textContent = '错误: ' + e.message;
+            }
+        }
+        
+        async function exportRules() {
+            const a = document.createElement('a');
+            a.href = '/admin/api/rules/export';
+            a.download = 'proxy-rules.json';
+            a.click();
+        }
+        
+        async function importRules(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            await fetch('/admin/api/rules/import', {
+                method: 'POST',
+                body: formData
+            });
+            
+            loadRules();
+            alert('导入成功');
+            e.target.value = '';
+        }
+        
+        loadRules();
+    </script>
+</body>
+</html>

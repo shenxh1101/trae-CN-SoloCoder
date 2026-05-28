@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_new %}新建文档{% else %}编辑: {{ title }}{% endif %} - Markdown文档管理系统{% endblock %}
+
+{% block content %}
+<div class="edit-page">
+    <div class="edit-header">
+        <h1>{% if is_new %}✏️ 新建文档{% else %}📝 编辑: {{ title }}{% endif %}</h1>
+        <div class="edit-actions">
+            {% if not is_new %}
+            <a href="{{ url_for('view_document', doc_path=doc_path) }}" class="btn">取消</a>
+            {% else %}
+            <a href="{{ url_for('index') }}" class="btn">取消</a>
+            {% endif %}
+            <button type="submit" form="edit-form" class="btn btn-primary">💾 保存</button>
+        </div>
+    </div>
+
+    <form id="edit-form" method="post" class="edit-form">
+        <div class="form-group">
+            <label for="title">文档标题</label>
+            <input type="text" id="title" name="title" value="{{ title }}" required placeholder="输入文档标题...">
+        </div>
+
+        <div class="form-group">
+            <label for="tags">标签 (用逗号分隔)</label>
+            <input type="text" id="tags" name="tags" value="{{ tags }}" placeholder="例如: Python, Flask, 教程">
+            {% if all_tags %}
+            <div class="tag-suggestions">
+                <span class="text-muted">常用标签:</span>
+                {% for tag in all_tags %}
+                <button type="button" class="tag-btn" onclick="addTag('{{ tag }}')">{{ tag }}</button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        {% if folder_path %}
+        <input type="hidden" name="folder" value="{{ folder_path }}">
+        {% endif %}
+
+        <div class="editor-container">
+            <div class="editor-pane">
+                <div class="pane-header">
+                    <span>📝 Markdown 编辑器</span>
+                    <div class="editor-toolbar">
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('**', '**')" title="粗体">B</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('*', '*')" title="斜体">I</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('~~', '~~')" title="删除线">S</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('# ', '')" title="标题">H</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('[', '](url)')" title="链接">🔗</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('![', '](url)')" title="图片">🖼️</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('`', '`')" title="行内代码">&lt;/&gt;</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('\n```\n', '\n```\n')" title="代码块">📦</button>
+                        <button type="button" class="toolbar-btn" onclick="insertFormat('- [ ] ', '')" title="任务列表">☑️</button>
+                        <button type="button" class="toolbar-btn" onclick="insertTable()" title="表格">📊</button>
+                        <button type="button" class="toolbar-btn" onclick="insertMermaid()" title="Mermaid">📈</button>
+                        <button type="button" class="toolbar-btn" onclick="insertLatex()" title="LaTeX">∑</button>
+                    </div>
+                </div>
+                <textarea id="editor" name="content" placeholder="在此输入Markdown内容...">{{ content }}</textarea>
+            </div>
+            <div class="preview-pane">
+                <div class="pane-header">
+                    <span>👁️ 实时预览</span>
+                    <label class="auto-update">
+                        <input type="checkbox" id="auto-update" checked>
+                        自动更新
+                    </label>
+                </div>
+                <div id="preview" class="markdown-body">
+                    {{ html_content | safe if html_content else '<p class="text-muted">预览将在这里显示...</p>' }}
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="markdown-help">
+        <h4>📖 Markdown 扩展语法支持</h4>
+        <div class="help-grid">
+            <div class="help-item">
+                <strong>表格:</strong>
+                <pre>| 列1 | 列2 |
+|-----|-----|
+| A   | B   |</pre>
+            </div>
+            <div class="help-item">
+                <strong>任务列表:</strong>
+                <pre>- [x] 已完成
+- [ ] 待完成</pre>
+            </div>
+            <div class="help-item">
+                <strong>LaTeX公式:</strong>
+                <pre>$E = mc^2$
+
+$$
+\sum_{i=1}^{n} x_i
+$$</pre>
+            </div>
+            <div class="help-item">
+                <strong>Mermaid流程图:</strong>
+                <pre>```mermaid
+graph TD
+    A-->B
+    B-->C
+```</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+<script>
+const previewUrl = "{{ url_for('preview') }}";
+</script>
+{% endblock %}

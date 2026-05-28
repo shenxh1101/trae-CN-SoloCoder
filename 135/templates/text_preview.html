@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ filename }} - 预览{% endblock %}
+{% block content %}
+<div class="text-preview">
+    <div class="preview-header">
+        <h2>📄 {{ filename }}</h2>
+        <a href="{{ url_for('download_file', short_code=request.path.split('/')[-1]) }}" class="btn btn-primary">下载原文件</a>
+    </div>
+    <div class="preview-content">
+        <pre>{{ content }}</pre>
+    </div>
+</div>
+{% endblock %}

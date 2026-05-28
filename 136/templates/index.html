@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}文档列表 - Markdown文档管理系统{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        {% if current_tag %}
+        🏷️ 标签: {{ current_tag }}
+        {% elif current_folder %}
+        📁 {{ current_folder }}
+        {% else %}
+        📚 全部文档
+        {% endif %}
+    </h1>
+    <div class="header-actions">
+        {% if current_tag %}
+        <a href="{{ url_for('index') }}" class="btn">显示全部</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if tree %}
+<div class="doc-list">
+    {% set ns = namespace(doc_count=0) %}
+    {% for item in tree recursive %}
+        {% if item.type == 'document' %}
+            {% set ns.doc_count = ns.doc_count + 1 %}
+            <div class="doc-card {% if item.pinned %}pinned{% endif %}">
+                <div class="doc-card-header">
+                    <h3 class="doc-title">
+                        {% if item.pinned %}<span class="pin-badge">📌</span>{% endif %}
+                        <a href="{{ url_for('view_document', doc_path=item.path) }}">{{ item.name }}</a>
+                    </h3>
+                    <div class="doc-actions">
+                        <a href="{{ url_for('edit_document', doc_path=item.path) }}" class="btn btn-sm">编辑</a>
+                        <a href="{{ url_for('export_document', doc_path=item.path, format_type='md') }}" class="btn btn-sm">下载</a>
+                    </div>
+                </div>
+                {% if item.tags %}
+                <div class="doc-tags">
+                    {% for tag in item.tags %}
+                    <span class="tag">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="doc-meta">
+                    <span>📝 修改于 {{ item.modified }}</span>
+                    <span>👁️ {{ item.views | default(0) }} 次查看</span>
+                    <span>✏️ {{ item.edits | default(0) }} 次编辑</span>
+                </div>
+            </div>
+        {% elif item.type == 'folder' and item.children %}
+            {{ loop(item.children) }}
+        {% endif %}
+    {% endfor %}
+
+    {% if ns.doc_count == 0 %}
+    <div class="empty-state">
+        <p>📭 暂无文档</p>
+        <a href="{{ url_for('new_document') }}" class="btn btn-primary">创建第一个文档</a>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>📭 暂无文档</p>
+    <a href="{{ url_for('new_document') }}" class="btn btn-primary">创建第一个文档</a>
+</div>
+{% endif %}
+{% endblock %}

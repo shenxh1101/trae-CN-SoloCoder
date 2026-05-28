@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="旋转拼图游戏 - 将扇形图片碎片拼回正确位置" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <title>🎡 旋转拼图 - Rotating Puzzle Game</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎡</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <div class="container">
+    <header class="header">
+      <h1 class="title">🎡 旋转拼图</h1>
+      <p class="subtitle">旋转转盘，将所有扇形拼回正确位置</p>
+    </header>
+
+    <main class="main-content">
+      <div class="game-section">
+        <div class="wheel-container">
+          <div class="pointer" id="pointer">
+            <div class="pointer-triangle"></div>
+            <div class="pointer-glow"></div>
+            <div class="pointer-line"></div>
+          </div>
+          
+          <div class="wheel" id="wheel">
+            <div class="wheel-inner" id="wheelInner">
+            </div>
+            <div class="wheel-center">
+              <div class="wheel-center-dot"></div>
+            </div>
+          </div>
+
+          <div class="hint-bubble hidden" id="hintBubble">
+            💡 将编号为 1 的扇形转到顶部
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="info-panel">
+          <div class="info-card">
+            <div class="info-icon spin-icon">🔄</div>
+            <div class="info-label">旋转次数</div>
+            <div class="info-value" id="spinCount">0</div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon time-icon">⏱️</div>
+            <div class="info-label">用时</div>
+            <div class="info-value" id="elapsedTime">00:00</div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon check-icon">✅</div>
+            <div class="info-label">已对齐</div>
+            <div class="info-value"><span id="alignedCount">0</span><span class="info-separator">/</span><span id="totalCount">8</span></div>
+          </div>
+        </div>
+
+        <div class="best-record hidden" id="bestRecord">
+          <div class="record-header">
+            <span class="record-icon">🏆</span>
+            <span class="record-title">历史最佳记录</span>
+          </div>
+          <div class="record-content">
+            <div class="record-item">
+              <span class="record-label">最少旋转</span>
+              <span class="record-value" id="bestSpins">-</span>
+            </div>
+            <div class="record-item">
+              <span class="record-label">最快时间</span>
+              <span class="record-value" id="bestTime">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="completion-banner hidden" id="completionBanner">
+          <div class="completion-content">
+            <span class="completion-emoji">🎉</span>
+            <span class="completion-text">恭喜完成！</span>
+          </div>
+        </div>
+
+        <div class="difficulty-selector">
+          <div class="selector-label">选择难度</div>
+          <div class="difficulty-buttons">
+            <button class="difficulty-btn" data-difficulty="4">简单 (4)</button>
+            <button class="difficulty-btn active" data-difficulty="8">中等 (8)</button>
+            <button class="difficulty-btn" data-difficulty="12">困难 (12)</button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <label class="action-btn upload-btn">
+            <span class="btn-icon">📤</span>
+            <span class="btn-text">上传图片</span>
+            <input type="file" id="fileInput" accept="image/*" hidden />
+          </label>
+          <button class="action-btn reset-btn" id="resetBtn">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-text">重新开始</span>
+          </button>
+        </div>
+
+        <button class="spin-btn" id="spinBtn">
+          <span class="spin-icon" id="spinIcon">▶️</span>
+          <span class="spin-text" id="spinText">点击旋转</span>
+        </button>
+
+        <div class="utility-buttons">
+          <button class="utility-btn" id="hintBtn" title="提示">
+            <span class="utility-icon">💡</span>
+            <span class="utility-text">提示</span>
+          </button>
+          <button class="utility-btn" id="autoPlayBtn" title="自动演示">
+            <span class="utility-icon">⚡</span>
+            <span class="utility-text">自动演示</span>
+          </button>
+          <button class="utility-btn" id="settingsBtn" title="设置">
+            <span class="utility-icon">⚙️</span>
+            <span class="utility-text">设置</span>
+          </button>
+        </div>
+
+        <div class="tips">
+          <p>💡 提示：你可以直接拖动转盘来旋转，或者点击旋转按钮随机旋转</p>
+          <p>🎯 目标：将编号为 1 的扇形对准顶部指针，所有扇形将自动对齐</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="thumbnail-container" id="thumbnailContainer">
+    <button class="thumbnail-toggle" id="thumbnailToggle">🖼️</button>
+    <div class="thumbnail-preview hidden" id="thumbnailPreview">
+      <img id="thumbnailImage" alt="参考图" />
+      <div class="thumbnail-label">点击放大</div>
+      <button class="thumbnail-close" id="thumbnailClose">✕</button>
+    </div>
+  </div>
+
+  <div class="settings-modal hidden" id="settingsModal">
+    <div class="settings-content">
+      <div class="settings-header">
+        <span class="settings-title">⚙️ 游戏设置</span>
+        <button class="settings-close" id="settingsClose">✕</button>
+      </div>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-icon">🔊</span>
+          <div>
+            <div class="setting-name">音效</div>
+            <div class="setting-desc">旋转和完成时播放音效</div>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="soundToggle" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-icon">🖼️</span>
+          <div>
+            <div class="setting-name">显示缩略图</div>
+            <div class="setting-desc">显示完整图片作为参考</div>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="thumbnailToggleSetting" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-icon">🎨</span>
+          <div>
+            <div class="setting-name">背景颜色</div>
+            <div class="setting-desc">选择你喜欢的背景色调</div>
+          </div>
+        </div>
+        <div class="color-picker">
+          <button class="color-option active" data-color="#1a1a2e" style="background-color: #1a1a2e"></button>
+          <button class="color-option" data-color="#0f172a" style="background-color: #0f172a"></button>
+          <button class="color-option" data-color="#1e1b4b" style="background-color: #1e1b4b"></button>
+          <button class="color-option" data-color="#134e4a" style="background-color: #134e4a"></button>
+          <button class="color-option" data-color="#4c1d95" style="background-color: #4c1d95"></button>
+          <button class="color-option" data-color="#7c2d12" style="background-color: #7c2d12"></button>
+          <button class="color-option" data-color="#14532d" style="background-color: #14532d"></button>
+          <button class="color-option" data-color="#1e3a5f" style="background-color: #1e3a5f"></button>
+        </div>
+      </div>
+
+      <button class="settings-save" id="settingsSave">完成</button>
+    </div>
+  </div>
+
+  <div class="image-modal hidden" id="imageModal">
+    <div class="image-modal-content">
+      <img id="modalImage" alt="完整图片" />
+      <button class="image-modal-close" id="imageModalClose">✕</button>
+    </div>
+  </div>
+
+  <canvas class="confetti-canvas hidden" id="confettiCanvas"></canvas>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

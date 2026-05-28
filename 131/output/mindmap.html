@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思维导图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .mindmap-container {
+            max-width: 100%;
+            overflow: auto;
+            padding: 40px;
+        }
+
+        .mindmap {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .mindmap.down-layout {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mindmap.radial-layout {
+            display: block;
+            text-align: center;
+        }
+
+        .tree {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .tree.root-right {
+            flex-direction: row;
+        }
+
+        .tree.root-left {
+            flex-direction: row-reverse;
+        }
+
+        .tree.root-down {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            max-width: 300px;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .node-content:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .node-content.has-note {
+            position: relative;
+        }
+
+        .node-content.has-note::after {
+            content: '📝';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 14px;
+        }
+
+        .node-icon {
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        .node-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .node-toggle {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4a90d9;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .node-toggle:hover {
+            transform: scale(1.2);
+        }
+
+        .tree.root-right .node-toggle {
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree.root-left .node-toggle {
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree.root-down .node-toggle,
+        .mindmap.down-layout .node-toggle {
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .children {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-top: 0;
+            position: relative;
+        }
+
+        .tree.root-down .children,
+        .mindmap.down-layout .children {
+            flex-direction: row;
+            padding-top: 20px;
+        }
+
+        .node.collapsed > .children {
+            display: none;
+        }
+
+        .children::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #999;
+        }
+
+        .tree.root-right .children::before {
+            left: -11px;
+        }
+
+        .tree.root-left .children::before {
+            right: -11px;
+        }
+
+        .tree.root-down .children::before,
+        .mindmap.down-layout .children::before {
+            display: none;
+        }
+
+        .child-node {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .tree.root-right .child-node {
+            flex-direction: row;
+        }
+
+        .tree.root-left .child-node {
+            flex-direction: row-reverse;
+        }
+
+        .tree.root-down .child-node,
+        .mindmap.down-layout .child-node {
+            flex-direction: column;
+        }
+
+        .child-node::before {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: #999;
+        }
+
+        .tree.root-right .child-node::before {
+            left: -10px;
+            width: 10px;
+            top: 50%;
+        }
+
+        .tree.root-left .child-node::before {
+            right: -10px;
+            width: 10px;
+            top: 50%;
+        }
+
+        .tree.root-down .child-node::before,
+        .mindmap.down-layout .child-node::before {
+            top: -20px;
+            height: 20px;
+            width: 2px;
+            left: 50%;
+        }
+
+        .note-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            max-width: 280px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .note-tooltip.visible {
+            opacity: 1;
+        }
+
+        .note-tooltip::before {
+            content: '';
+            position: absolute;
+            border: 6px solid transparent;
+        }
+
+        .tree.root-right .note-tooltip::before {
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .tree.root-left .note-tooltip::before {
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .forest-container {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        .radial-node {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        .radial-center {
+            position: relative;
+            display: inline-block;
+        }
+
+        .radial-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+            border-color: #bbb;
+        }
+
+        .zoom-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .zoom-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 250px;
+            font-size: 13px;
+        }
+
+        .highlight {
+            background: #fff3cd !important;
+            border-color: #ffc107 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 193, 7, 0); }
+        }
+
+        .node[data-level="0"] > .node-content {
+  font-size: 20px !important;
+  background-color: #1abc9c !important;
+  color: #ffffff !important;
+  border-color: #16a085 !important;
+  border-width: 2px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="0"] > .children::before {
+  background: #999999 !important;
+  width: 2px !important;
+}
+.node[data-level="0"] .child-node::before {
+  background: #999999 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="0"] {
+  background: #1abc9c !important;
+}
+.node[data-level="1"] > .node-content {
+  font-size: 13px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #e74c3c !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="1"] > .children::before {
+  background: #e74c3c !important;
+  width: 2px !important;
+}
+.node[data-level="1"] .child-node::before {
+  background: #e74c3c !important;
+  height: 2px !important;
+}
+#toggle-[data-level="1"] {
+  background: #ffffff !important;
+}
+.node[data-level="2"] > .node-content {
+  font-size: 12px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #e67e22 !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="2"] > .children::before {
+  background: #e67e22 !important;
+  width: 2px !important;
+}
+.node[data-level="2"] .child-node::before {
+  background: #e67e22 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="2"] {
+  background: #ffffff !important;
+}
+.node[data-level="3"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #f1c40f !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="3"] > .children::before {
+  background: #f1c40f !important;
+  width: 2px !important;
+}
+.node[data-level="3"] .child-node::before {
+  background: #f1c40f !important;
+  height: 2px !important;
+}
+#toggle-[data-level="3"] {
+  background: #ffffff !important;
+}
+.node[data-level="4"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #27ae60 !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="4"] > .children::before {
+  background: #27ae60 !important;
+  width: 2px !important;
+}
+.node[data-level="4"] .child-node::before {
+  background: #27ae60 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="4"] {
+  background: #ffffff !important;
+}
+.node[data-level="5"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #1abc9c !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="5"] > .children::before {
+  background: #1abc9c !important;
+  width: 2px !important;
+}
+.node[data-level="5"] .child-node::before {
+  background: #1abc9c !important;
+  height: 2px !important;
+}
+#toggle-[data-level="5"] {
+  background: #ffffff !important;
+}
+.node[data-level="6"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #3498db !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="6"] > .children::before {
+  background: #3498db !important;
+  width: 2px !important;
+}
+.node[data-level="6"] .child-node::before {
+  background: #3498db !important;
+  height: 2px !important;
+}
+#toggle-[data-level="6"] {
+  background: #ffffff !important;
+}
+.node[data-level="7"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #9b59b6 !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="7"] > .children::before {
+  background: #9b59b6 !important;
+  width: 2px !important;
+}
+.node[data-level="7"] .child-node::before {
+  background: #9b59b6 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="7"] {
+  background: #ffffff !important;
+}
+.node[data-level="8"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #34495e !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="8"] > .children::before {
+  background: #34495e !important;
+  width: 2px !important;
+}
+.node[data-level="8"] .child-node::before {
+  background: #34495e !important;
+  height: 2px !important;
+}
+#toggle-[data-level="8"] {
+  background: #ffffff !important;
+}
+.node[data-level="9"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #7f8c8d !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="9"] > .children::before {
+  background: #7f8c8d !important;
+  width: 2px !important;
+}
+.node[data-level="9"] .child-node::before {
+  background: #7f8c8d !important;
+  height: 2px !important;
+}
+#toggle-[data-level="9"] {
+  background: #ffffff !important;
+}
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button class="control-btn" onclick="expandAll()">展开全部</button>
+        <button class="control-btn" onclick="collapseAll()">折叠全部</button>
+        <button class="control-btn" onclick="changeLayout('right')">向右布局</button>
+        <button class="control-btn" onclick="changeLayout('left')">向左布局</button>
+        <button class="control-btn" onclick="changeLayout('down')">向下布局</button>
+    </div>
+
+    <div class="search-box">
+        <input type="text" class="search-input" placeholder="搜索节点..." oninput="searchNodes(this.value)">
+    </div>
+
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()">+</button>
+        <button class="zoom-btn" onclick="zoomOut()">-</button>
+        <button class="zoom-btn" onclick="resetZoom()">↺</button>
+    </div>
+
+    <div class="mindmap-container" id="mindmapContainer">
+        {% if title %}
+        <h1 class="title">思维导图</h1>
+        {% endif %}
+        <div class="forest-container"><div class="tree root-right"><div class="node" id="node-ded53f0f" data-level="0"><div class="node-content has-note" style="color: #ffffff; background-color: #1abc9c; border-color: #16a085; border-width: 2px; border-radius: 5px; font-size: 20px; font-family: Arial, sans-serif; font-weight: bold; padding: 8px; margin: 10px" onmouseover="showNote(this, '这是一个关于项目管理的思维导图示例')" onmouseout="hideNote()" onclick="toggleNode('ded53f0f')"><span class="node-toggle" id="toggle-ded53f0f" onclick="event.stopPropagation(); toggleNode('ded53f0f')">-</span><span class="node-icon">🎯</span><span class="node-text">项目管理</span></div><div class="children"><div class="child-node"><div class="node" id="node-73be370b" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('73be370b')"><span class="node-toggle" id="toggle-73be370b" onclick="event.stopPropagation(); toggleNode('73be370b')">-</span><span class="node-icon">📋</span><span class="node-text">需求分析</span></div><div class="children"><div class="child-node"><div class="node" id="node-ce0d0299" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '必须实现的核心功能')" onmouseout="hideNote()" onclick="toggleNode('ce0d0299')"><span class="node-toggle" id="toggle-ce0d0299" onclick="event.stopPropagation(); toggleNode('ce0d0299')">-</span><span class="node-text">⭐ 功能需求</span></div><div class="children"><div class="child-node"><div class="node" id="node-826238ee" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('826238ee')"><span class="node-text">用户登录注册</span></div></div></div><div class="child-node"><div class="node" id="node-ef5cdba0" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('ef5cdba0')"><span class="node-text">数据增删改查</span></div></div></div><div class="child-node"><div class="node" id="node-44a59b4f" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('44a59b4f')"><span class="node-text">报表生成导出</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-15b87d6a" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('15b87d6a')"><span class="node-toggle" id="toggle-15b87d6a" onclick="event.stopPropagation(); toggleNode('15b87d6a')">-</span><span class="node-icon">🔧</span><span class="node-text">非功能需求</span></div><div class="children"><div class="child-node"><div class="node" id="node-71371f90" data-level="3"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '响应时间 &lt; 2秒')" onmouseout="hideNote()" onclick="toggleNode('71371f90')"><span class="node-text">性能优化</span></div></div></div><div class="child-node"><div class="node" id="node-a900375a" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('a900375a')"><span class="node-text">安全防护</span></div></div></div><div class="child-node"><div class="node" id="node-d3207814" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('d3207814')"><span class="node-text">可扩展性</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-3e6599d7" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('3e6599d7')"><span class="node-toggle" id="toggle-3e6599d7" onclick="event.stopPropagation(); toggleNode('3e6599d7')">-</span><span class="node-icon">👥</span><span class="node-text">用户需求</span></div><div class="children"><div class="child-node"><div class="node" id="node-48e8fae9" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('48e8fae9')"><span class="node-text">界面友好</span></div></div></div><div class="child-node"><div class="node" id="node-7a80058e" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('7a80058e')"><span class="node-text">操作便捷</span></div></div></div><div class="child-node"><div class="node" id="node-febcb265" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('febcb265')"><span class="node-text">帮助文档</span></div></div></div></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-57c91fd3" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('57c91fd3')"><span class="node-toggle" id="toggle-57c91fd3" onclick="event.stopPropagation(); toggleNode('57c91fd3')">-</span><span class="node-icon">📅</span><span class="node-text">项目计划</span></div><div class="children"><div class="child-node"><div class="node" id="node-e3e8a99d" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '2周')" onmouseout="hideNote()" onclick="toggleNode('e3e8a99d')"><span class="node-text">第一阶段: 需求分析与设计</span></div></div></div><div class="child-node"><div class="node" id="node-d7f1ddf7" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '4周')" onmouseout="hideNote()" onclick="toggleNode('d7f1ddf7')"><span class="node-text">第二阶段: 开发实现</span></div></div></div><div class="child-node"><div class="node" id="node-15d5df8f" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '2周')" onmouseout="hideNote()" onclick="toggleNode('15d5df8f')"><span class="node-text">第三阶段: 测试与部署</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-39fcca17" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('39fcca17')"><span class="node-toggle" id="toggle-39fcca17" onclick="event.stopPropagation(); toggleNode('39fcca17')">-</span><span class="node-icon">👥</span><span class="node-text">团队成员</span></div><div class="children"><div class="child-node"><div class="node" id="node-b09afcb3" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('b09afcb3')"><span class="node-icon">🚀</span><span class="node-text">项目经理: 张三</span></div></div></div><div class="child-node"><div class="node" id="node-4872e105" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('4872e105')"><span class="node-icon">💻</span><span class="node-text">前端开发: 李四</span></div></div></div><div class="child-node"><div class="node" id="node-b0977ee7" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('b0977ee7')"><span class="node-icon">🔙</span><span class="node-text">后端开发: 王五</span></div></div></div><div class="child-node"><div class="node" id="node-25095a43" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('25095a43')"><span class="node-icon">🧪</span><span class="node-text">测试工程师: 赵六</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-357d78ce" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('357d78ce')"><span class="node-toggle" id="toggle-357d78ce" onclick="event.stopPropagation(); toggleNode('357d78ce')">-</span><span class="node-icon">📊</span><span class="node-text">风险管理</span></div><div class="children"><div class="child-node"><div class="node" id="node-c62f48f3" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('c62f48f3')"><span class="node-toggle" id="toggle-c62f48f3" onclick="event.stopPropagation(); toggleNode('c62f48f3')">-</span><span class="node-icon">🔴</span><span class="node-text">高风险</span></div><div class="children"><div class="child-node"><div class="node" id="node-fa611d83" data-level="3"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '建立需求变更流程')" onmouseout="hideNote()" onclick="toggleNode('fa611d83')"><span class="node-text">需求变更频繁</span></div></div></div><div class="child-node"><div class="node" id="node-ad53e398" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('ad53e398')"><span class="node-text">技术难点攻克</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-cdad6181" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('cdad6181')"><span class="node-toggle" id="toggle-cdad6181" onclick="event.stopPropagation(); toggleNode('cdad6181')">-</span><span class="node-icon">🟡</span><span class="node-text">中风险</span></div><div class="children"><div class="child-node"><div class="node" id="node-77782bd8" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('77782bd8')"><span class="node-text">人员流动</span></div></div></div><div class="child-node"><div class="node" id="node-6a4b3137" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('6a4b3137')"><span class="node-text">进度延期</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-ce465cf5" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('ce465cf5')"><span class="node-toggle" id="toggle-ce465cf5" onclick="event.stopPropagation(); toggleNode('ce465cf5')">-</span><span class="node-icon">🟢</span><span class="node-text">低风险</span></div><div class="children"><div class="child-node"><div class="node" id="node-2ff2bef6" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('2ff2bef6')"><span class="node-text">设备故障</span></div></div></div><div class="child-node"><div class="node" id="node-4e943d5e" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('4e943d5e')"><span class="node-text">网络问题</span></div></div></div></div></div></div></div></div></div></div></div></div><div class="tree root-right"><div class="node" id="node-6b1e3940" data-level="0"><div class="node-content" style="color: #ffffff; background-color: #1abc9c; border-color: #16a085; border-width: 2px; border-radius: 5px; font-size: 20px; font-family: Arial, sans-serif; font-weight: bold; padding: 8px; margin: 10px" onclick="toggleNode('6b1e3940')"><span class="node-toggle" id="toggle-6b1e3940" onclick="event.stopPropagation(); toggleNode('6b1e3940')">-</span><span class="node-icon">📚</span><span class="node-text">学习计划</span></div><div class="children"><div class="child-node"><div class="node" id="node-e90e7b54" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('e90e7b54')"><span class="node-toggle" id="toggle-e90e7b54" onclick="event.stopPropagation(); toggleNode('e90e7b54')">-</span><span class="node-icon">🐍</span><span class="node-text">Python学习</span></div><div class="children"><div class="child-node"><div class="node" id="node-918eb4cc" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('918eb4cc')"><span class="node-text">基础语法</span></div></div></div><div class="child-node"><div class="node" id="node-1ca67d4a" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('1ca67d4a')"><span class="node-text">面向对象编程</span></div></div></div><div class="child-node"><div class="node" id="node-d6a7b5d1" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('d6a7b5d1')"><span class="node-text">常用库使用</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-1a6943b0" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('1a6943b0')"><span class="node-toggle" id="toggle-1a6943b0" onclick="event.stopPropagation(); toggleNode('1a6943b0')">-</span><span class="node-icon">🌐</span><span class="node-text">Web开发</span></div><div class="children"><div class="child-node"><div class="node" id="node-3b7a12e7" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('3b7a12e7')"><span class="node-text">HTML/CSS</span></div></div></div><div class="child-node"><div class="node" id="node-0cf7f4f3" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('0cf7f4f3')"><span class="node-text">JavaScript</span></div></div></div><div class="child-node"><div class="node" id="node-8330af86" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('8330af86')"><span class="node-text">框架学习</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-40a3f70e" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('40a3f70e')"><span class="node-toggle" id="toggle-40a3f70e" onclick="event.stopPropagation(); toggleNode('40a3f70e')">-</span><span class="node-icon">📊</span><span class="node-text">数据分析</span></div><div class="children"><div class="child-node"><div class="node" id="node-683e0869" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('683e0869')"><span class="node-text">NumPy</span></div></div></div><div class="child-node"><div class="node" id="node-ce7dadfe" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('ce7dadfe')"><span class="node-text">Pandas</span></div></div></div><div class="child-node"><div class="node" id="node-157c5b3e" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('157c5b3e')"><span class="node-text">数据可视化</span></div></div></div></div></div></div></div></div></div></div>
+    </div>
+
+    <script>
+        const data = {"metadata": {}, "roots": [{"id": "ded53f0f", "content": "项目管理", "note": "这是一个关于项目管理的思维导图示例", "icon": "🎯", "collapsed": false, "style": null, "level": 0, "children": [{"id": "73be370b", "content": "需求分析", "note": null, "icon": "📋", "collapsed": false, "style": null, "level": 1, "children": [{"id": "ce0d0299", "content": "⭐ 功能需求", "note": "必须实现的核心功能", "icon": null, "collapsed": false, "style": null, "level": 2, "children": [{"id": "826238ee", "content": "用户登录注册", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "ef5cdba0", "content": "数据增删改查", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "44a59b4f", "content": "报表生成导出", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}, {"id": "15b87d6a", "content": "非功能需求", "note": null, "icon": "🔧", "collapsed": false, "style": null, "level": 2, "children": [{"id": "71371f90", "content": "性能优化", "note": "响应时间 < 2秒", "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "a900375a", "content": "安全防护", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "d3207814", "content": "可扩展性", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}, {"id": "3e6599d7", "content": "用户需求", "note": null, "icon": "👥", "collapsed": false, "style": null, "level": 2, "children": [{"id": "48e8fae9", "content": "界面友好", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "7a80058e", "content": "操作便捷", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "febcb265", "content": "帮助文档", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}]}, {"id": "57c91fd3", "content": "项目计划", "note": null, "icon": "📅", "collapsed": false, "style": null, "level": 1, "children": [{"id": "e3e8a99d", "content": "第一阶段: 需求分析与设计", "note": "2周", "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "d7f1ddf7", "content": "第二阶段: 开发实现", "note": "4周", "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "15d5df8f", "content": "第三阶段: 测试与部署", "note": "2周", "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}]}, {"id": "39fcca17", "content": "团队成员", "note": null, "icon": "👥", "collapsed": false, "style": null, "level": 1, "children": [{"id": "b09afcb3", "content": "项目经理: 张三", "note": null, "icon": "🚀", "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "4872e105", "content": "前端开发: 李四", "note": null, "icon": "💻", "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "b0977ee7", "content": "后端开发: 王五", "note": null, "icon": "🔙", "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "25095a43", "content": "测试工程师: 赵六", "note": null, "icon": "🧪", "collapsed": false, "style": null, "level": 2, "children": []}]}, {"id": "357d78ce", "content": "风险管理", "note": null, "icon": "📊", "collapsed": false, "style": null, "level": 1, "children": [{"id": "c62f48f3", "content": "高风险", "note": null, "icon": "🔴", "collapsed": false, "style": null, "level": 2, "children": [{"id": "fa611d83", "content": "需求变更频繁", "note": "建立需求变更流程", "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "ad53e398", "content": "技术难点攻克", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}, {"id": "cdad6181", "content": "中风险", "note": null, "icon": "🟡", "collapsed": false, "style": null, "level": 2, "children": [{"id": "77782bd8", "content": "人员流动", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "6a4b3137", "content": "进度延期", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}, {"id": "ce465cf5", "content": "低风险", "note": null, "icon": "🟢", "collapsed": false, "style": null, "level": 2, "children": [{"id": "2ff2bef6", "content": "设备故障", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "4e943d5e", "content": "网络问题", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}]}]}, {"id": "6b1e3940", "content": "学习计划", "note": null, "icon": "📚", "collapsed": false, "style": null, "level": 0, "children": [{"id": "e90e7b54", "content": "Python学习", "note": null, "icon": "🐍", "collapsed": false, "style": null, "level": 1, "children": [{"id": "918eb4cc", "content": "基础语法", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "1ca67d4a", "content": "面向对象编程", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "d6a7b5d1", "content": "常用库使用", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}]}, {"id": "1a6943b0", "content": "Web开发", "note": null, "icon": "🌐", "collapsed": false, "style": null, "level": 1, "children": [{"id": "3b7a12e7", "content": "HTML/CSS", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "0cf7f4f3", "content": "JavaScript", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "8330af86", "content": "框架学习", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}]}, {"id": "40a3f70e", "content": "数据分析", "note": null, "icon": "📊", "collapsed": false, "style": null, "level": 1, "children": [{"id": "683e0869", "content": "NumPy", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "ce7dadfe", "content": "Pandas", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "157c5b3e", "content": "数据可视化", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}]}]}]};
+        const styleConfig = {"layout": "right", "defaultStyle": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#cccccc", "borderWidth": 1, "borderRadius": 5, "fontSize": 14, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#999999", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "rootStyle": {"color": "#ffffff", "backgroundColor": "#1abc9c", "borderColor": "#16a085", "borderWidth": 2, "borderRadius": 5, "fontSize": 20, "fontFamily": "Arial, sans-serif", "fontWeight": "bold", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#999999", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "levelStyles": {"1": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#e74c3c", "borderWidth": 1, "borderRadius": 5, "fontSize": 13, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#e74c3c", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "2": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#e67e22", "borderWidth": 1, "borderRadius": 5, "fontSize": 12, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#e67e22", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "3": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#f1c40f", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#f1c40f", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "4": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#27ae60", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#27ae60", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "5": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#1abc9c", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#1abc9c", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "6": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#3498db", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#3498db", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "7": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#9b59b6", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#9b59b6", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "8": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#34495e", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#34495e", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "9": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#7f8c8d", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#7f8c8d", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "10": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#95a5a6", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#95a5a6", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}}, "customStyles": {}};
+        let currentLayout = 'right';
+        let currentZoom = 1;
+
+        function toggleNode(nodeId) {
+            const node = document.getElementById('node-' + nodeId);
+            if (node) {
+                node.classList.toggle('collapsed');
+                const toggle = document.getElementById('toggle-' + nodeId);
+                if (toggle) {
+                    const isCollapsed = node.classList.contains('collapsed');
+                    toggle.textContent = isCollapsed ? '+' : '-';
+                }
+            }
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.node').forEach(node => {
+                node.classList.remove('collapsed');
+                const toggleId = node.id.replace('node-', 'toggle-');
+                const toggle = document.getElementById(toggleId);
+                if (toggle) toggle.textContent = '-';
+            });
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.node').forEach(node => {
+                if (node.querySelector('.children')) {
+                    node.classList.add('collapsed');
+                    const toggleId = node.id.replace('node-', 'toggle-');
+                    const toggle = document.getElementById(toggleId);
+                    if (toggle) toggle.textContent = '+';
+                }
+            });
+        }
+
+        function changeLayout(layout) {
+            const mindmap = document.querySelector('.mindmap');
+            if (!mindmap) return;
+
+            mindmap.classList.remove('down-layout', 'radial-layout');
+            document.querySelectorAll('.tree').forEach(tree => {
+                tree.classList.remove('root-right', 'root-left', 'root-down');
+                tree.classList.add('root-' + layout);
+            });
+
+            if (layout === 'down') {
+                mindmap.classList.add('down-layout');
+            } else if (layout === 'radial') {
+                mindmap.classList.add('radial-layout');
+            }
+
+            currentLayout = layout;
+        }
+
+        function showNote(element, note) {
+            if (!note) return;
+            let tooltip = document.getElementById('note-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.id = 'note-tooltip';
+                tooltip.className = 'note-tooltip';
+                document.body.appendChild(tooltip);
+            }
+            tooltip.textContent = note;
+            tooltip.classList.add('visible');
+
+            const rect = element.getBoundingClientRect();
+            let x = rect.right + 15 + window.scrollX;
+            let y = rect.top + window.scrollY;
+
+            if (currentLayout === 'left') {
+                x = rect.left - tooltip.offsetWidth - 15 + window.scrollX;
+            }
+
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        function hideNote() {
+            const tooltip = document.getElementById('note-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('visible');
+            }
+        }
+
+        function searchNodes(query) {
+            document.querySelectorAll('.node-content').forEach(el => {
+                el.classList.remove('highlight');
+            });
+
+            if (!query.trim()) return;
+
+            const searchTerm = query.toLowerCase();
+            document.querySelectorAll('.node-content').forEach(el => {
+                const text = el.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    el.classList.add('highlight');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(3, currentZoom + 0.1);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.3, currentZoom - 0.1);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const container = document.getElementById('mindmapContainer');
+            if (container) {
+                container.style.transform = `scale(${currentZoom})`;
+                container.style.transformOrigin = 'top center';
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '+' || e.key === '=') zoomIn();
+            if (e.key === '-') zoomOut();
+            if (e.key === '0') resetZoom();
+            if (e.key === 'Escape') document.querySelector('.search-input').value = ''; searchNodes('');
+        });
+    </script>
+</body>
+</html>

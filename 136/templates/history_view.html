@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - 历史版本{% endblock %}
+
+{% block content %}
+<div class="history-view-page">
+    <div class="view-header">
+        <h1>📜 {{ title }}</h1>
+        <div class="view-actions">
+            <a href="{{ url_for('view_document', doc_path=doc_path) }}" class="btn">返回当前版本</a>
+            <form action="{{ url_for('restore_history', doc_path=doc_path, version=version) }}" method="post" class="inline-form" onsubmit="return confirm('确定要恢复到此版本吗？这将创建当前版本的备份。');">
+                <button type="submit" class="btn btn-primary">↩️ 恢复此版本</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="version-info">
+        <p><strong>版本时间:</strong> {{ version }}</p>
+    </div>
+
+    <div class="content-area">
+        <article class="markdown-body">
+            {{ html_content | safe }}
+        </article>
+    </div>
+</div>
+{% endblock %}

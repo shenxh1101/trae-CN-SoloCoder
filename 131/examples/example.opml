@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>思维导图示例 - OPML格式</title>
+    <dateCreated>2024-01-01</dateCreated>
+  </head>
+  <body>
+    <outline text="🎯 项目管理 [这是一个关于项目管理的思维导图示例]">
+      <outline text="📋 需求分析">
+        <outline text="⭐ 功能需求 [必须实现的核心功能]">
+          <outline text="用户登录注册"/>
+          <outline text="数据增删改查"/>
+          <outline text="报表生成导出"/>
+        </outline>
+        <outline text="🔧 非功能需求">
+          <outline text="性能优化 [响应时间 &lt; 2秒]"/>
+          <outline text="安全防护"/>
+          <outline text="可扩展性"/>
+        </outline>
+      </outline>
+      <outline text="📅 项目计划">
+        <outline text="第一阶段: 需求分析与设计 [2周]"/>
+        <outline text="第二阶段: 开发实现 [4周]"/>
+        <outline text="第三阶段: 测试与部署 [2周]"/>
+      </outline>
+    </outline>
+    <outline text="📚 学习计划">
+      <outline text="🐍 Python学习">
+        <outline text="基础语法"/>
+        <outline text="面向对象编程"/>
+        <outline text="常用库使用"/>
+      </outline>
+      <outline text="🌐 Web开发">
+        <outline text="HTML/CSS"/>
+        <outline text="JavaScript"/>
+        <outline text="框架学习"/>
+      </outline>
+    </outline>
+  </body>
+</opml>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .mindmap-container {
+            max-width: 100%;
+            overflow: auto;
+            padding: 40px;
+        }
+
+        .mindmap {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .mindmap.down-layout {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mindmap.radial-layout {
+            display: block;
+            text-align: center;
+        }
+
+        .tree {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .tree.root-right {
+            flex-direction: row;
+        }
+
+        .tree.root-left {
+            flex-direction: row-reverse;
+        }
+
+        .tree.root-down {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            max-width: 300px;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .node-content:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .node-content.has-note {
+            position: relative;
+        }
+
+        .node-content.has-note::after {
+            content: '📝';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 14px;
+        }
+
+        .node-icon {
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        .node-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .node-toggle {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4a90d9;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .node-toggle:hover {
+            transform: scale(1.2);
+        }
+
+        .tree.root-right .node-toggle {
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree.root-left .node-toggle {
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree.root-down .node-toggle,
+        .mindmap.down-layout .node-toggle {
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .children {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-top: 0;
+            position: relative;
+        }
+
+        .tree.root-down .children,
+        .mindmap.down-layout .children {
+            flex-direction: row;
+            padding-top: 20px;
+        }
+
+        .node.collapsed > .children {
+            display: none;
+        }
+
+        .children::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #999;
+        }
+
+        .tree.root-right .children::before {
+            left: -11px;
+        }
+
+        .tree.root-left .children::before {
+            right: -11px;
+        }
+
+        .tree.root-down .children::before,
+        .mindmap.down-layout .children::before {
+            display: none;
+        }
+
+        .child-node {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .tree.root-right .child-node {
+            flex-direction: row;
+        }
+
+        .tree.root-left .child-node {
+            flex-direction: row-reverse;
+        }
+
+        .tree.root-down .child-node,
+        .mindmap.down-layout .child-node {
+            flex-direction: column;
+        }
+
+        .child-node::before {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: #999;
+        }
+
+        .tree.root-right .child-node::before {
+            left: -10px;
+            width: 10px;
+            top: 50%;
+        }
+
+        .tree.root-left .child-node::before {
+            right: -10px;
+            width: 10px;
+            top: 50%;
+        }
+
+        .tree.root-down .child-node::before,
+        .mindmap.down-layout .child-node::before {
+            top: -20px;
+            height: 20px;
+            width: 2px;
+            left: 50%;
+        }
+
+        .note-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            max-width: 280px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .note-tooltip.visible {
+            opacity: 1;
+        }
+
+        .note-tooltip::before {
+            content: '';
+            position: absolute;
+            border: 6px solid transparent;
+        }
+
+        .tree.root-right .note-tooltip::before {
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .tree.root-left .note-tooltip::before {
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .forest-container {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        .radial-node {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        .radial-center {
+            position: relative;
+            display: inline-block;
+        }
+
+        .radial-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+            border-color: #bbb;
+        }
+
+        .zoom-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .zoom-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 250px;
+            font-size: 13px;
+        }
+
+        .highlight {
+            background: #fff3cd !important;
+            border-color: #ffc107 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 193, 7, 0); }
+        }
+
+        {{ custom_css }}
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button class="control-btn" onclick="expandAll()">展开全部</button>
+        <button class="control-btn" onclick="collapseAll()">折叠全部</button>
+        <button class="control-btn" onclick="changeLayout('right')">向右布局</button>
+        <button class="control-btn" onclick="changeLayout('left')">向左布局</button>
+        <button class="control-btn" onclick="changeLayout('down')">向下布局</button>
+    </div>
+
+    <div class="search-box">
+        <input type="text" class="search-input" placeholder="搜索节点..." oninput="searchNodes(this.value)">
+    </div>
+
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()">+</button>
+        <button class="zoom-btn" onclick="zoomOut()">-</button>
+        <button class="zoom-btn" onclick="resetZoom()">↺</button>
+    </div>
+
+    <div class="mindmap-container" id="mindmapContainer">
+        {% if title %}
+        <h1 class="title">{{ title }}</h1>
+        {% endif %}
+        {{ mindmap_html }}
+    </div>
+
+    <script>
+        const data = {{ data_json | safe }};
+        const styleConfig = {{ style_json | safe }};
+        let currentLayout = '{{ layout }}';
+        let currentZoom = 1;
+
+        function toggleNode(nodeId) {
+            const node = document.getElementById('node-' + nodeId);
+            if (node) {
+                node.classList.toggle('collapsed');
+                const toggle = document.getElementById('toggle-' + nodeId);
+                if (toggle) {
+                    const isCollapsed = node.classList.contains('collapsed');
+                    toggle.textContent = isCollapsed ? '+' : '-';
+                }
+            }
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.node').forEach(node => {
+                node.classList.remove('collapsed');
+                const toggleId = node.id.replace('node-', 'toggle-');
+                const toggle = document.getElementById(toggleId);
+                if (toggle) toggle.textContent = '-';
+            });
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.node').forEach(node => {
+                if (node.querySelector('.children')) {
+                    node.classList.add('collapsed');
+                    const toggleId = node.id.replace('node-', 'toggle-');
+                    const toggle = document.getElementById(toggleId);
+                    if (toggle) toggle.textContent = '+';
+                }
+            });
+        }
+
+        function changeLayout(layout) {
+            const mindmap = document.querySelector('.mindmap');
+            if (!mindmap) return;
+
+            mindmap.classList.remove('down-layout', 'radial-layout');
+            document.querySelectorAll('.tree').forEach(tree => {
+                tree.classList.remove('root-right', 'root-left', 'root-down');
+                tree.classList.add('root-' + layout);
+            });
+
+            if (layout === 'down') {
+                mindmap.classList.add('down-layout');
+            } else if (layout === 'radial') {
+                mindmap.classList.add('radial-layout');
+            }
+
+            currentLayout = layout;
+        }
+
+        function showNote(element, note) {
+            if (!note) return;
+            let tooltip = document.getElementById('note-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.id = 'note-tooltip';
+                tooltip.className = 'note-tooltip';
+                document.body.appendChild(tooltip);
+            }
+            tooltip.textContent = note;
+            tooltip.classList.add('visible');
+
+            const rect = element.getBoundingClientRect();
+            let x = rect.right + 15 + window.scrollX;
+            let y = rect.top + window.scrollY;
+
+            if (currentLayout === 'left') {
+                x = rect.left - tooltip.offsetWidth - 15 + window.scrollX;
+            }
+
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        function hideNote() {
+            const tooltip = document.getElementById('note-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('visible');
+            }
+        }
+
+        function searchNodes(query) {
+            document.querySelectorAll('.node-content').forEach(el => {
+                el.classList.remove('highlight');
+            });
+
+            if (!query.trim()) return;
+
+            const searchTerm = query.toLowerCase();
+            document.querySelectorAll('.node-content').forEach(el => {
+                const text = el.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    el.classList.add('highlight');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(3, currentZoom + 0.1);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.3, currentZoom - 0.1);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const container = document.getElementById('mindmapContainer');
+            if (container) {
+                container.style.transform = `scale(${currentZoom})`;
+                container.style.transformOrigin = 'top center';
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '+' || e.key === '=') zoomIn();
+            if (e.key === '-') zoomOut();
+            if (e.key === '0') resetZoom();
+            if (e.key === 'Escape') document.querySelector('.search-input').value = ''; searchNodes('');
+        });
+    </script>
+</body>
+</html>

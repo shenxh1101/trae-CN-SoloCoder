@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思维导图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .mindmap-container {
+            max-width: 100%;
+            overflow: auto;
+            padding: 40px;
+        }
+
+        .mindmap {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .mindmap.down-layout {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mindmap.radial-layout {
+            display: block;
+            text-align: center;
+        }
+
+        .tree {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .tree.root-right {
+            flex-direction: row;
+        }
+
+        .tree.root-left {
+            flex-direction: row-reverse;
+        }
+
+        .tree.root-down {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            max-width: 300px;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .node-content:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .node-content.has-note {
+            position: relative;
+        }
+
+        .node-content.has-note::after {
+            content: '📝';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 14px;
+        }
+
+        .node-icon {
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        .node-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .node-toggle {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4a90d9;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .node-toggle:hover {
+            transform: scale(1.2);
+        }
+
+        .tree.root-right .node-toggle {
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree.root-left .node-toggle {
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree.root-down .node-toggle,
+        .mindmap.down-layout .node-toggle {
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .children {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-top: 0;
+            position: relative;
+        }
+
+        .tree.root-down .children,
+        .mindmap.down-layout .children {
+            flex-direction: row;
+            padding-top: 20px;
+        }
+
+        .node.collapsed > .children {
+            display: none;
+        }
+
+        .children::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #999;
+        }
+
+        .tree.root-right .children::before {
+            left: -11px;
+        }
+
+        .tree.root-left .children::before {
+            right: -11px;
+        }
+
+        .tree.root-down .children::before,
+        .mindmap.down-layout .children::before {
+            display: none;
+        }
+
+        .child-node {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .tree.root-right .child-node {
+            flex-direction: row;
+        }
+
+        .tree.root-left .child-node {
+            flex-direction: row-reverse;
+        }
+
+        .tree.root-down .child-node,
+        .mindmap.down-layout .child-node {
+            flex-direction: column;
+        }
+
+        .child-node::before {
+            content: '';
+            position: absolute;
+            height: 2px;
+            background: #999;
+        }
+
+        .tree.root-right .child-node::before {
+            left: -10px;
+            width: 10px;
+            top: 50%;
+        }
+
+        .tree.root-left .child-node::before {
+            right: -10px;
+            width: 10px;
+            top: 50%;
+        }
+
+        .tree.root-down .child-node::before,
+        .mindmap.down-layout .child-node::before {
+            top: -20px;
+            height: 20px;
+            width: 2px;
+            left: 50%;
+        }
+
+        .note-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            max-width: 280px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .note-tooltip.visible {
+            opacity: 1;
+        }
+
+        .note-tooltip::before {
+            content: '';
+            position: absolute;
+            border: 6px solid transparent;
+        }
+
+        .tree.root-right .note-tooltip::before {
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .tree.root-left .note-tooltip::before {
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: rgba(0, 0, 0, 0.85);
+        }
+
+        .forest-container {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        .radial-node {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        .radial-center {
+            position: relative;
+            display: inline-block;
+        }
+
+        .radial-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+            border-color: #bbb;
+        }
+
+        .zoom-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .zoom-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 250px;
+            font-size: 13px;
+        }
+
+        .highlight {
+            background: #fff3cd !important;
+            border-color: #ffc107 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 193, 7, 0); }
+        }
+
+        .node[data-level="0"] > .node-content {
+  font-size: 20px !important;
+  background-color: #4a90d9 !important;
+  color: #ffffff !important;
+  border-color: #357abd !important;
+  border-width: 2px !important;
+  border-radius: 8px !important;
+  padding: 12px 24px !important;
+}
+.node[data-level="0"] > .children::before {
+  background: #999999 !important;
+  width: 2px !important;
+}
+.node[data-level="0"] .child-node::before {
+  background: #999999 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="0"] {
+  background: #4a90d9 !important;
+}
+.node[data-level="1"] > .node-content {
+  font-size: 13px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #e74c3c !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="1"] > .children::before {
+  background: #e74c3c !important;
+  width: 2px !important;
+}
+.node[data-level="1"] .child-node::before {
+  background: #e74c3c !important;
+  height: 2px !important;
+}
+#toggle-[data-level="1"] {
+  background: #ffffff !important;
+}
+.node[data-level="2"] > .node-content {
+  font-size: 12px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #e67e22 !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="2"] > .children::before {
+  background: #e67e22 !important;
+  width: 2px !important;
+}
+.node[data-level="2"] .child-node::before {
+  background: #e67e22 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="2"] {
+  background: #ffffff !important;
+}
+.node[data-level="3"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #f1c40f !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="3"] > .children::before {
+  background: #f1c40f !important;
+  width: 2px !important;
+}
+.node[data-level="3"] .child-node::before {
+  background: #f1c40f !important;
+  height: 2px !important;
+}
+#toggle-[data-level="3"] {
+  background: #ffffff !important;
+}
+.node[data-level="4"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #27ae60 !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="4"] > .children::before {
+  background: #27ae60 !important;
+  width: 2px !important;
+}
+.node[data-level="4"] .child-node::before {
+  background: #27ae60 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="4"] {
+  background: #ffffff !important;
+}
+.node[data-level="5"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #1abc9c !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="5"] > .children::before {
+  background: #1abc9c !important;
+  width: 2px !important;
+}
+.node[data-level="5"] .child-node::before {
+  background: #1abc9c !important;
+  height: 2px !important;
+}
+#toggle-[data-level="5"] {
+  background: #ffffff !important;
+}
+.node[data-level="6"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #3498db !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="6"] > .children::before {
+  background: #3498db !important;
+  width: 2px !important;
+}
+.node[data-level="6"] .child-node::before {
+  background: #3498db !important;
+  height: 2px !important;
+}
+#toggle-[data-level="6"] {
+  background: #ffffff !important;
+}
+.node[data-level="7"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #9b59b6 !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="7"] > .children::before {
+  background: #9b59b6 !important;
+  width: 2px !important;
+}
+.node[data-level="7"] .child-node::before {
+  background: #9b59b6 !important;
+  height: 2px !important;
+}
+#toggle-[data-level="7"] {
+  background: #ffffff !important;
+}
+.node[data-level="8"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #34495e !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="8"] > .children::before {
+  background: #34495e !important;
+  width: 2px !important;
+}
+.node[data-level="8"] .child-node::before {
+  background: #34495e !important;
+  height: 2px !important;
+}
+#toggle-[data-level="8"] {
+  background: #ffffff !important;
+}
+.node[data-level="9"] > .node-content {
+  font-size: 11px !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #7f8c8d !important;
+  border-width: 1px !important;
+  border-radius: 5px !important;
+  padding: 8px 16px !important;
+}
+.node[data-level="9"] > .children::before {
+  background: #7f8c8d !important;
+  width: 2px !important;
+}
+.node[data-level="9"] .child-node::before {
+  background: #7f8c8d !important;
+  height: 2px !important;
+}
+#toggle-[data-level="9"] {
+  background: #ffffff !important;
+}
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button class="control-btn" onclick="expandAll()">展开全部</button>
+        <button class="control-btn" onclick="collapseAll()">折叠全部</button>
+        <button class="control-btn" onclick="changeLayout('right')">向右布局</button>
+        <button class="control-btn" onclick="changeLayout('left')">向左布局</button>
+        <button class="control-btn" onclick="changeLayout('down')">向下布局</button>
+    </div>
+
+    <div class="search-box">
+        <input type="text" class="search-input" placeholder="搜索节点..." oninput="searchNodes(this.value)">
+    </div>
+
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()">+</button>
+        <button class="zoom-btn" onclick="zoomOut()">-</button>
+        <button class="zoom-btn" onclick="resetZoom()">↺</button>
+    </div>
+
+    <div class="mindmap-container" id="mindmapContainer">
+        {% if title %}
+        <h1 class="title">思维导图</h1>
+        {% endif %}
+        <div class="forest-container"><div class="tree root-down"><div class="node" id="node-61c79786" data-level="0"><div class="node-content has-note" style="color: #ffffff; background-color: #4a90d9; border-color: #357abd; border-width: 2px; border-radius: 8px; font-size: 20px; font-family: Arial, sans-serif; font-weight: bold; padding: 12px; margin: 10px" onmouseover="showNote(this, '这是一个关于项目管理的思维导图示例')" onmouseout="hideNote()" onclick="toggleNode('61c79786')"><span class="node-toggle" id="toggle-61c79786" onclick="event.stopPropagation(); toggleNode('61c79786')">-</span><span class="node-icon">🎯</span><span class="node-text">项目管理</span></div><div class="children"><div class="child-node"><div class="node" id="node-d00dbffb" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('d00dbffb')"><span class="node-toggle" id="toggle-d00dbffb" onclick="event.stopPropagation(); toggleNode('d00dbffb')">-</span><span class="node-icon">📋</span><span class="node-text">需求分析</span></div><div class="children"><div class="child-node"><div class="node" id="node-7cc1c95e" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '必须实现的核心功能')" onmouseout="hideNote()" onclick="toggleNode('7cc1c95e')"><span class="node-toggle" id="toggle-7cc1c95e" onclick="event.stopPropagation(); toggleNode('7cc1c95e')">-</span><span class="node-text">⭐ 功能需求</span></div><div class="children"><div class="child-node"><div class="node" id="node-21329061" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('21329061')"><span class="node-text">用户登录注册</span></div></div></div><div class="child-node"><div class="node" id="node-424b086d" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('424b086d')"><span class="node-text">数据增删改查</span></div></div></div><div class="child-node"><div class="node" id="node-d7ae54b6" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('d7ae54b6')"><span class="node-text">报表生成导出</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-fd4942cd" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('fd4942cd')"><span class="node-toggle" id="toggle-fd4942cd" onclick="event.stopPropagation(); toggleNode('fd4942cd')">-</span><span class="node-icon">🔧</span><span class="node-text">非功能需求</span></div><div class="children"><div class="child-node"><div class="node" id="node-feaa4254" data-level="3"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '响应时间 &lt; 2秒')" onmouseout="hideNote()" onclick="toggleNode('feaa4254')"><span class="node-text">性能优化</span></div></div></div><div class="child-node"><div class="node" id="node-06b3245a" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('06b3245a')"><span class="node-text">安全防护</span></div></div></div><div class="child-node"><div class="node" id="node-f4027545" data-level="3"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #f1c40f; border-width: 1px; border-radius: 5px; font-size: 11px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('f4027545')"><span class="node-text">可扩展性</span></div></div></div></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-0f40349d" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('0f40349d')"><span class="node-toggle" id="toggle-0f40349d" onclick="event.stopPropagation(); toggleNode('0f40349d')">-</span><span class="node-icon">📅</span><span class="node-text">项目计划</span></div><div class="children"><div class="child-node"><div class="node" id="node-fcf8db1e" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '2周')" onmouseout="hideNote()" onclick="toggleNode('fcf8db1e')"><span class="node-text">第一阶段: 需求分析与设计</span></div></div></div><div class="child-node"><div class="node" id="node-9cfec5f9" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '4周')" onmouseout="hideNote()" onclick="toggleNode('9cfec5f9')"><span class="node-text">第二阶段: 开发实现</span></div></div></div><div class="child-node"><div class="node" id="node-b16d49bd" data-level="2"><div class="node-content has-note" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onmouseover="showNote(this, '2周')" onmouseout="hideNote()" onclick="toggleNode('b16d49bd')"><span class="node-text">第三阶段: 测试与部署</span></div></div></div></div></div></div></div></div></div><div class="tree root-down"><div class="node" id="node-c3b8ce74" data-level="0"><div class="node-content" style="color: #ffffff; background-color: #4a90d9; border-color: #357abd; border-width: 2px; border-radius: 8px; font-size: 20px; font-family: Arial, sans-serif; font-weight: bold; padding: 12px; margin: 10px" onclick="toggleNode('c3b8ce74')"><span class="node-toggle" id="toggle-c3b8ce74" onclick="event.stopPropagation(); toggleNode('c3b8ce74')">-</span><span class="node-icon">📚</span><span class="node-text">学习计划</span></div><div class="children"><div class="child-node"><div class="node" id="node-2e1a62c0" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('2e1a62c0')"><span class="node-toggle" id="toggle-2e1a62c0" onclick="event.stopPropagation(); toggleNode('2e1a62c0')">-</span><span class="node-icon">🐍</span><span class="node-text">Python学习</span></div><div class="children"><div class="child-node"><div class="node" id="node-bdf96fc3" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('bdf96fc3')"><span class="node-text">基础语法</span></div></div></div><div class="child-node"><div class="node" id="node-aee77b49" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('aee77b49')"><span class="node-text">面向对象编程</span></div></div></div><div class="child-node"><div class="node" id="node-0ed68273" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('0ed68273')"><span class="node-text">常用库使用</span></div></div></div></div></div></div><div class="child-node"><div class="node" id="node-6b26e61d" data-level="1"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e74c3c; border-width: 1px; border-radius: 5px; font-size: 13px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('6b26e61d')"><span class="node-toggle" id="toggle-6b26e61d" onclick="event.stopPropagation(); toggleNode('6b26e61d')">-</span><span class="node-icon">🌐</span><span class="node-text">Web开发</span></div><div class="children"><div class="child-node"><div class="node" id="node-6ac6da8f" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('6ac6da8f')"><span class="node-text">HTML/CSS</span></div></div></div><div class="child-node"><div class="node" id="node-18dc6650" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('18dc6650')"><span class="node-text">JavaScript</span></div></div></div><div class="child-node"><div class="node" id="node-04e8133f" data-level="2"><div class="node-content" style="color: #333333; background-color: #ffffff; border-color: #e67e22; border-width: 1px; border-radius: 5px; font-size: 12px; font-family: Arial, sans-serif; font-weight: normal; padding: 8px; margin: 10px" onclick="toggleNode('04e8133f')"><span class="node-text">框架学习</span></div></div></div></div></div></div></div></div></div></div>
+    </div>
+
+    <script>
+        const data = {"metadata": {"title": "思维导图示例 - OPML格式"}, "roots": [{"id": "61c79786", "content": "项目管理", "note": "这是一个关于项目管理的思维导图示例", "icon": "🎯", "collapsed": false, "style": null, "level": 0, "children": [{"id": "d00dbffb", "content": "需求分析", "note": null, "icon": "📋", "collapsed": false, "style": null, "level": 1, "children": [{"id": "7cc1c95e", "content": "⭐ 功能需求", "note": "必须实现的核心功能", "icon": null, "collapsed": false, "style": null, "level": 2, "children": [{"id": "21329061", "content": "用户登录注册", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "424b086d", "content": "数据增删改查", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "d7ae54b6", "content": "报表生成导出", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}, {"id": "fd4942cd", "content": "非功能需求", "note": null, "icon": "🔧", "collapsed": false, "style": null, "level": 2, "children": [{"id": "feaa4254", "content": "性能优化", "note": "响应时间 < 2秒", "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "06b3245a", "content": "安全防护", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}, {"id": "f4027545", "content": "可扩展性", "note": null, "icon": null, "collapsed": false, "style": null, "level": 3, "children": []}]}]}, {"id": "0f40349d", "content": "项目计划", "note": null, "icon": "📅", "collapsed": false, "style": null, "level": 1, "children": [{"id": "fcf8db1e", "content": "第一阶段: 需求分析与设计", "note": "2周", "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "9cfec5f9", "content": "第二阶段: 开发实现", "note": "4周", "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "b16d49bd", "content": "第三阶段: 测试与部署", "note": "2周", "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}]}]}, {"id": "c3b8ce74", "content": "学习计划", "note": null, "icon": "📚", "collapsed": false, "style": null, "level": 0, "children": [{"id": "2e1a62c0", "content": "Python学习", "note": null, "icon": "🐍", "collapsed": false, "style": null, "level": 1, "children": [{"id": "bdf96fc3", "content": "基础语法", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "aee77b49", "content": "面向对象编程", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "0ed68273", "content": "常用库使用", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}]}, {"id": "6b26e61d", "content": "Web开发", "note": null, "icon": "🌐", "collapsed": false, "style": null, "level": 1, "children": [{"id": "6ac6da8f", "content": "HTML/CSS", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "18dc6650", "content": "JavaScript", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}, {"id": "04e8133f", "content": "框架学习", "note": null, "icon": null, "collapsed": false, "style": null, "level": 2, "children": []}]}]}]};
+        const styleConfig = {"layout": "down", "defaultStyle": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#cccccc", "borderWidth": 1, "borderRadius": 5, "fontSize": 14, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#999999", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "rootStyle": {"color": "#ffffff", "backgroundColor": "#4a90d9", "borderColor": "#357abd", "borderWidth": 2, "borderRadius": 8, "fontSize": 20, "fontFamily": "Arial, sans-serif", "fontWeight": "bold", "shape": "rectangle", "padding": 12, "margin": 10, "lineColor": "#999999", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "levelStyles": {"1": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#e74c3c", "borderWidth": 1, "borderRadius": 5, "fontSize": 13, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#e74c3c", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "2": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#e67e22", "borderWidth": 1, "borderRadius": 5, "fontSize": 12, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#e67e22", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "3": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#f1c40f", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#f1c40f", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "4": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#27ae60", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#27ae60", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "5": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#1abc9c", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#1abc9c", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "6": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#3498db", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#3498db", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "7": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#9b59b6", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#9b59b6", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "8": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#34495e", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#34495e", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "9": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#7f8c8d", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#7f8c8d", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}, "10": {"color": "#333333", "backgroundColor": "#ffffff", "borderColor": "#95a5a6", "borderWidth": 1, "borderRadius": 5, "fontSize": 11, "fontFamily": "Arial, sans-serif", "fontWeight": "normal", "shape": "rectangle", "padding": 8, "margin": 10, "lineColor": "#95a5a6", "lineWidth": 2, "lineStyle": "solid", "iconSize": 16}}, "customStyles": {}};
+        let currentLayout = 'down';
+        let currentZoom = 1;
+
+        function toggleNode(nodeId) {
+            const node = document.getElementById('node-' + nodeId);
+            if (node) {
+                node.classList.toggle('collapsed');
+                const toggle = document.getElementById('toggle-' + nodeId);
+                if (toggle) {
+                    const isCollapsed = node.classList.contains('collapsed');
+                    toggle.textContent = isCollapsed ? '+' : '-';
+                }
+            }
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.node').forEach(node => {
+                node.classList.remove('collapsed');
+                const toggleId = node.id.replace('node-', 'toggle-');
+                const toggle = document.getElementById(toggleId);
+                if (toggle) toggle.textContent = '-';
+            });
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.node').forEach(node => {
+                if (node.querySelector('.children')) {
+                    node.classList.add('collapsed');
+                    const toggleId = node.id.replace('node-', 'toggle-');
+                    const toggle = document.getElementById(toggleId);
+                    if (toggle) toggle.textContent = '+';
+                }
+            });
+        }
+
+        function changeLayout(layout) {
+            const mindmap = document.querySelector('.mindmap');
+            if (!mindmap) return;
+
+            mindmap.classList.remove('down-layout', 'radial-layout');
+            document.querySelectorAll('.tree').forEach(tree => {
+                tree.classList.remove('root-right', 'root-left', 'root-down');
+                tree.classList.add('root-' + layout);
+            });
+
+            if (layout === 'down') {
+                mindmap.classList.add('down-layout');
+            } else if (layout === 'radial') {
+                mindmap.classList.add('radial-layout');
+            }
+
+            currentLayout = layout;
+        }
+
+        function showNote(element, note) {
+            if (!note) return;
+            let tooltip = document.getElementById('note-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.id = 'note-tooltip';
+                tooltip.className = 'note-tooltip';
+                document.body.appendChild(tooltip);
+            }
+            tooltip.textContent = note;
+            tooltip.classList.add('visible');
+
+            const rect = element.getBoundingClientRect();
+            let x = rect.right + 15 + window.scrollX;
+            let y = rect.top + window.scrollY;
+
+            if (currentLayout === 'left') {
+                x = rect.left - tooltip.offsetWidth - 15 + window.scrollX;
+            }
+
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        function hideNote() {
+            const tooltip = document.getElementById('note-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('visible');
+            }
+        }
+
+        function searchNodes(query) {
+            document.querySelectorAll('.node-content').forEach(el => {
+                el.classList.remove('highlight');
+            });
+
+            if (!query.trim()) return;
+
+            const searchTerm = query.toLowerCase();
+            document.querySelectorAll('.node-content').forEach(el => {
+                const text = el.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    el.classList.add('highlight');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(3, currentZoom + 0.1);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.3, currentZoom - 0.1);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const container = document.getElementById('mindmapContainer');
+            if (container) {
+                container.style.transform = `scale(${currentZoom})`;
+                container.style.transformOrigin = 'top center';
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '+' || e.key === '=') zoomIn();
+            if (e.key === '-') zoomOut();
+            if (e.key === '0') resetZoom();
+            if (e.key === 'Escape') document.querySelector('.search-input').value = ''; searchNodes('');
+        });
+    </script>
+</body>
+</html>

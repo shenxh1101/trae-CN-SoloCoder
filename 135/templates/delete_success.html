@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}文件已删除{% endblock %}
+{% block content %}
+<div class="delete-success">
+    <div class="success-card">
+        <div class="success-icon">✅</div>
+        <h2>文件已成功删除</h2>
+        <p>该文件及其所有数据已被永久删除</p>
+        <div class="success-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">返回首页</a>
+            <a href="{{ url_for('manage_files') }}" class="btn btn-secondary">管理文件</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

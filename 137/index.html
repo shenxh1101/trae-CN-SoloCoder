@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>弹球接住游戏</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="info-panel">
+            <div class="info-item">
+                <span class="label">得分</span>
+                <span class="value" id="score">0</span>
+            </div>
+            <div class="info-item">
+                <span class="label">生命</span>
+                <span class="value lives" id="lives">❤️❤️❤️</span>
+            </div>
+            <div class="info-item">
+                <span class="label">最高分</span>
+                <span class="value" id="highScore">0</span>
+            </div>
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas"></canvas>
+            <div class="flash-effect" id="flashEffect"></div>
+            <div class="milestone-text" id="milestoneText">+100!</div>
+        </div>
+
+        <div class="control-panel">
+            <div class="left-controls">
+                <button class="control-btn" id="startBtn" title="开始/暂停">
+                    <span class="icon">▶️</span>
+                </button>
+                <button class="control-btn" id="resetBtn" title="重置">
+                    <span class="icon">🔄</span>
+                </button>
+            </div>
+            <div class="right-controls">
+                <button class="control-btn" id="soundBtn" title="音效开关">
+                    <span class="icon" id="soundIcon">🔊</span>
+                </button>
+                <select class="skin-select" id="skinSelect" title="托盘皮肤">
+                    <option value="wood">🪵 木质</option>
+                    <option value="metal">⚙️ 金属</option>
+                    <option value="colorful">🌈 彩色</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="game-over-modal" id="gameOverModal">
+            <div class="modal-content">
+                <h2 class="modal-title">游戏结束</h2>
+                <p class="final-score">最终得分: <span id="finalScore">0</span></p>
+                <p class="high-score-text" id="newHighScore">🎉 新纪录!</p>
+                <button class="restart-btn" id="restartBtn">再来一局</button>
+            </div>
+        </div>
+
+        <div class="start-overlay" id="startOverlay">
+            <div class="overlay-content">
+                <h1 class="game-title">弹球接球</h1>
+                <p class="game-instruction">使用方向键或鼠标控制托盘</p>
+                <p class="game-instruction">接住小球获得分数</p>
+                <button class="start-btn" id="startGameBtn">开始游戏</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>

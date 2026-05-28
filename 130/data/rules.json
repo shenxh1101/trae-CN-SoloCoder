@@ -1,0 +1,77 @@
+[
+  {
+    "name": "基础测试",
+    "source_path": "/httpbin",
+    "target_url": "https://httpbin.org",
+    "enabled": true,
+    "id": "1",
+    "lb_index": 0
+  },
+  {
+    "name": "IP测试",
+    "source_path": "/ip-test",
+    "target_url": "https://httpbin.org/ip",
+    "enabled": true,
+    "ip_whitelist": [
+      "1.2.3.4"
+    ],
+    "id": "2",
+    "lb_index": 0
+  },
+  {
+    "name": "API密钥测试",
+    "source_path": "/key-test",
+    "target_url": "https://httpbin.org/headers",
+    "enabled": true,
+    "api_key": "secret123",
+    "id": "3",
+    "lb_index": 0
+  },
+  {
+    "name": "响应修改测试",
+    "source_path": "/modify-test",
+    "target_url": "https://httpbin.org/headers",
+    "enabled": true,
+    "response_replacements": [
+      {
+        "old": "httpbin.org",
+        "new": "myproxy.local"
+      }
+    ],
+    "id": "4",
+    "lb_index": 0
+  },
+  {
+    "name": "负载均衡测试",
+    "source_path": "/lb-test",
+    "target_url": "https://httpbin.org/anything/s1",
+    "target_urls": [
+      "https://httpbin.org/anything/s1",
+      "https://httpbin.org/anything/s2",
+      "https://httpbin.org/anything/s3"
+    ],
+    "enabled": true,
+    "id": "5",
+    "lb_index": 1
+  },
+  {
+    "name": "缓存测试",
+    "source_path": "/cache-test",
+    "target_url": "https://httpbin.org/delay/1",
+    "enabled": true,
+    "cache_enabled": true,
+    "cache_ttl": 15,
+    "id": "6",
+    "lb_index": 0
+  },
+  {
+    "name": "缓存测试",
+    "source_path": "/cache-test",
+    "target_url": "https://httpbin.org/get",
+    "enabled": true,
+    "cache_enabled": true,
+    "cache_ttl": 30,
+    "id": "7",
+    "lb_index": 0
+  }
+]

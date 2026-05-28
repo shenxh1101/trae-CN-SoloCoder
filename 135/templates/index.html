@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}文件分享 - 上传文件{% endblock %}
+{% block content %}
+<div class="upload-section">
+    <div class="upload-header">
+        <h2>上传文件</h2>
+        <p class="subtitle">单文件最大 {{ max_file_size }}，支持批量上传、断点续传</p>
+    </div>
+    <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">☁️</div>
+        <p class="upload-text">拖拽文件到此处，或 <span class="browse-link">点击选择文件</span></p>
+        <p class="upload-hint">支持批量选择多个文件</p>
+        <input type="file" id="fileInput" multiple hidden>
+    </div>
+    <div class="upload-settings">
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label>过期时间</label>
+                <select id="expirySelect">
+                    <option value="1h">1 小时</option>
+                    <option value="1d" selected>1 天</option>
+                    <option value="7d">7 天</option>
+                    <option value="never">永不过期</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label>下载次数限制</label>
+                <input type="number" id="maxDownloads" placeholder="不限制" min="1" max="1000">
+            </div>
+            <div class="setting-item">
+                <label>访问密码</label>
+                <input type="password" id="password" placeholder="可选，留空则无需密码">
+            </div>
+            <div class="setting-item">
+                <label>发送到邮箱</label>
+                <input type="email" id="email" placeholder="可选，自动发送下载链接">
+            </div>
+        </div>
+    </div>
+    <div class="file-list" id="fileList"></div>
+    <div class="batch-actions" id="batchActions" style="display: none;">
+        <button class="btn btn-primary" id="createBatchBtn">创建批量分享</button>
+        <button class="btn btn-secondary" id="clearFilesBtn">清空列表</button>
+    </div>
+    <div class="result-area" id="resultArea" style="display: none;"></div>
+</div>
+<div class="features-section">
+    <h3>功能特性</h3>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h4>安全分享</h4>
+            <p>支持密码保护，设置访问密码确保文件安全</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⏰</div>
+            <h4>自动过期</h4>
+            <p>可设置过期时间，到期自动删除文件</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h4>下载统计</h4>
+            <p>查看下载次数，支持下载次数限制</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h4>二维码分享</h4>
+            <p>生成二维码，手机扫码直接下载</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👀</div>
+            <h4>在线预览</h4>
+            <p>图片、PDF、文本文件可直接在线预览</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h4>断点续传</h4>
+            <p>大文件分片上传，网络中断可恢复</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

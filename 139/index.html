@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>推箱子 - Sokoban</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="game-header">
+            <h1 class="game-title">🎮 推箱子</h1>
+            <div class="game-stats">
+                <div class="stat-badge">
+                    <span class="stat-label">关卡</span>
+                    <span class="stat-value" id="currentLevel">1</span>
+                </div>
+                <div class="stat-badge">
+                    <span class="stat-label">步数</span>
+                    <span class="stat-value" id="stepCount">0</span>
+                </div>
+                <div class="stat-badge">
+                    <span class="stat-label">最少步数</span>
+                    <span class="stat-value" id="bestSteps">-</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="game-wrapper">
+                <div class="game-board-container">
+                    <div id="gameBoard" class="game-board"></div>
+                    <div id="hintArrow" class="hint-arrow hidden"></div>
+                </div>
+
+                <div class="controls-section">
+                    <div class="d-pad">
+                        <button class="dir-btn dir-up" data-dir="up" aria-label="向上">
+                            <span class="arrow">▲</span>
+                        </button>
+                        <button class="dir-btn dir-left" data-dir="left" aria-label="向左">
+                            <span class="arrow">◀</span>
+                        </button>
+                        <button class="dir-btn dir-right" data-dir="right" aria-label="向右">
+                            <span class="arrow">▶</span>
+                        </button>
+                        <button class="dir-btn dir-down" data-dir="down" aria-label="向下">
+                            <span class="arrow">▼</span>
+                        </button>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn" id="undoBtn" title="撤销 (Z)">
+                            <span class="btn-icon">↩</span>
+                            <span class="btn-text">撤销</span>
+                        </button>
+                        <button class="action-btn" id="resetBtn" title="重置 (R)">
+                            <span class="btn-icon">🔄</span>
+                            <span class="btn-text">重置</span>
+                        </button>
+                        <button class="action-btn" id="hintBtn" title="提示 (H)">
+                            <span class="btn-icon">💡</span>
+                            <span class="btn-text">提示</span>
+                        </button>
+                        <button class="action-btn" id="skipBtn" title="跳过关卡">
+                            <span class="btn-icon">⏭</span>
+                            <span class="btn-text">跳过</span>
+                        </button>
+                    </div>
+
+                    <div class="toggle-buttons">
+                        <button class="toggle-btn" id="soundBtn" title="音效开关">
+                            <span class="btn-icon" id="soundIcon">🔊</span>
+                            <span class="btn-text">音效</span>
+                        </button>
+                        <button class="toggle-btn" id="skinBtn" title="切换皮肤">
+                            <span class="btn-icon">👤</span>
+                            <span class="btn-text">皮肤</span>
+                        </button>
+                        <button class="toggle-btn" id="editorBtn" title="关卡编辑">
+                            <span class="btn-icon">✏️</span>
+                            <span class="btn-text">编辑</span>
+                        </button>
+                        <button class="toggle-btn" id="importBtn" title="导入关卡">
+                            <span class="btn-icon">📥</span>
+                            <span class="btn-text">导入</span>
+                        </button>
+                        <button class="toggle-btn" id="exportBtn" title="导出关卡">
+                            <span class="btn-icon">📤</span>
+                            <span class="btn-text">导出</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 皮肤选择弹窗 -->
+        <div class="modal hidden" id="skinModal">
+            <div class="modal-content">
+                <h2 class="modal-title">选择角色皮肤</h2>
+                <div class="skin-grid" id="skinGrid"></div>
+                <button class="modal-close" id="skinModalClose">关闭</button>
+            </div>
+        </div>
+
+        <!-- 过关弹窗 -->
+        <div class="modal hidden" id="winModal">
+            <div class="modal-content win-modal">
+                <div class="confetti-container" id="confettiContainer"></div>
+                <h2 class="modal-title win-title">🎉 恭喜过关！</h2>
+                <div class="win-stats">
+                    <p>当前步数: <span id="winSteps">0</span></p>
+                    <p>最少步数: <span id="winBest">0</span></p>
+                </div>
+                <button class="modal-btn primary" id="nextLevelBtn">下一关 →</button>
+                <button class="modal-btn" id="replayBtn">再玩一次</button>
+            </div>
+        </div>
+
+        <!-- 编辑器弹窗 -->
+        <div class="modal hidden" id="editorModal">
+            <div class="modal-content editor-modal">
+                <h2 class="modal-title">✏️ 关卡编辑器</h2>
+                <div class="editor-toolbar">
+                    <div class="editor-tools" id="editorTools">
+                        <button class="tool-btn active" data-tool="0" title="空地">⬜</button>
+                        <button class="tool-btn" data-tool="1" title="墙壁">🧱</button>
+                        <button class="tool-btn" data-tool="2" title="目标点">🎯</button>
+                        <button class="tool-btn" data-tool="3" title="箱子">📦</button>
+                        <button class="tool-btn" data-tool="4" title="玩家">🚶</button>
+                    </div>
+                    <div class="editor-size">
+                        <label>宽度: <input type="number" id="mapWidth" value="10" min="5" max="20"></label>
+                        <label>高度: <input type="number" id="mapHeight" value="8" min="5" max="20"></label>
+                        <button class="modal-btn small" id="resizeMap">应用尺寸</button>
+                    </div>
+                </div>
+                <div class="editor-canvas" id="editorCanvas"></div>
+                <div class="editor-actions">
+                    <button class="modal-btn" id="clearEditor">清空</button>
+                    <button class="modal-btn" id="testLevel">测试关卡</button>
+                    <button class="modal-btn primary" id="saveLevel">保存关卡</button>
+                    <button class="modal-close" id="editorModalClose">关闭</button>
+                </div>
+                <p class="editor-hint">点击格子放置/移除元素，确保有1个玩家、箱子数等于目标点数</p>
+            </div>
+        </div>
+
+        <!-- 隐藏的文件输入 -->
+        <input type="file" id="fileInput" accept=".json" style="display: none;">
+    </div>
+
+    <script src="js/levels.js?v=3"></script>
+    <script src="js/utils.js?v=3"></script>
+    <script src="js/storage.js?v=3"></script>
+    <script src="js/sound.js?v=3"></script>
+    <script src="js/editor.js?v=3"></script>
+    <script src="js/game.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+{
+  "city": "beijing",
+  "stats": {
+    "city": "北京",
+    "start_date": "2026-05-21",
+    "end_date": "2026-05-27",
+    "days": 7,
+    "avg_temperature": 21.1,
+    "max_temperature": 28.1,
+    "max_temp_date": "2026-05-24",
+    "min_temperature": 16.1,
+    "min_temp_date": "2026-05-23",
+    "precipitation_days": 3,
+    "total_precipitation": 40.5,
+    "avg_precipitation_per_day": 5.8,
+    "avg_humidity": 79.9
+  },
+  "daily_data": [
+    {
+      "date": "2026-05-21",
+      "temp_max": 24.8,
+      "temp_min": 16.5,
+      "temp_mean": 20.8,
+      "precipitation": 0.1,
+      "humidity": 75
+    },
+    {
+      "date": "2026-05-22",
+      "temp_max": 20.1,
+      "temp_min": 17.2,
+      "temp_mean": 18.5,
+      "precipitation": 31.7,
+      "humidity": 89
+    },
+    {
+      "date": "2026-05-23",
+      "temp_max": 25.5,
+      "temp_min": 16.1,
+      "temp_mean": 20.8,
+      "precipitation": 0.0,
+      "humidity": 81
+    },
+    {
+      "date": "2026-05-24",
+      "temp_max": 28.1,
+      "temp_min": 18.9,
+      "temp_mean": 23.6,
+      "precipitation": 0.0,
+      "humidity": 78
+    },
+    {
+      "date": "2026-05-25",
+      "temp_max": 21.5,
+      "temp_min": 19.0,
+      "temp_mean": 20.0,
+      "precipitation": 8.7,
+      "humidity": 88
+    },
+    {
+      "date": "2026-05-26",
+      "temp_max": 24.5,
+      "temp_min": 17.3,
+      "temp_mean": 21.0,
+      "precipitation": 0.0,
+      "humidity": 76
+    },
+    {
+      "date": "2026-05-27",
+      "temp_max": 27.0,
+      "temp_min": 18.0,
+      "temp_mean": 22.8,
+      "precipitation": 0.0,
+      "humidity": 72
+    }
+  ],
+  "comfort": {
+    "avg_temperature": 21.1,
+    "avg_humidity": 79.9,
+    "comfort_index": 232.5,
+    "comfort_level": "舒适",
+    "suggestion": "非常适宜出行，天气温暖舒适"
+  },
+  "wind_frequency": {
+    "西南": {
+      "count": 3,
+      "percentage": 42.9
+    },
+    "南": {
+      "count": 2,
+      "percentage": 28.6
+    },
+    "东南": {
+      "count": 1,
+      "percentage": 14.3
+    },
+    "东北": {
+      "count": 1,
+      "percentage": 14.3
+    }
+  },
+  "precipitation_distribution": {
+    "无雨": 4,
+    "小雨": 1,
+    "中雨": 1,
+    "大雨": 0,
+    "暴雨": 1
+  },
+  "start_date": "2026-05-21",
+  "end_date": "2026-05-27"
+}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}文件详情{% endblock %}
+{% block content %}
+<div class="file-detail">
+    <div class="detail-card">
+        <div class="detail-header">
+            <div class="file-icon">
+                {% set ext = metadata.original_filename.rsplit('.', 1)[1].lower() if '.' in metadata.original_filename else '' %}
+                {% if ext in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg'] %}
+                🖼️
+                {% elif ext == 'pdf' %}
+                📄
+                {% elif ext in ['zip', 'rar', '7z', 'tar', 'gz'] %}
+                📦
+                {% elif ext in ['mp3', 'wav', 'ogg', 'flac'] %}
+                🎵
+                {% elif ext in ['mp4', 'avi', 'mkv', 'mov', 'webm'] %}
+                🎬
+                {% elif ext in ['doc', 'docx'] %}
+                📝
+                {% elif ext in ['xls', 'xlsx'] %}
+                📊
+                {% elif ext in ['ppt', 'pptx'] %}
+                📽️
+                {% else %}
+                📁
+                {% endif %}
+            </div>
+            <div class="file-info">
+                <h2>{{ metadata.original_filename }}</h2>
+                <p class="file-meta">
+                    {{ formatted_size }} · 
+                    下载 {{ metadata.download_count }} 次 · 
+                    {% if is_expired %}<span class="expired">已过期</span>{% else %}剩余 {{ remaining_time }}{% endif %}
+                </p>
+            </div>
+        </div>
+        {% if qr_code %}
+        <div class="qr-section">
+            <img src="{{ qr_code }}" alt="下载二维码" class="qr-code">
+            <p class="qr-hint">手机扫码下载</p>
+        </div>
+        {% endif %}
+        <div class="detail-actions">
+            <a href="{{ download_url }}" class="btn btn-primary btn-large">⬇️ 下载文件</a>
+            {% if preview_url %}
+            <a href="{{ preview_url }}" class="btn btn-secondary btn-large" target="_blank">👁️ 在线预览</a>
+            {% endif %}
+        </div>
+        <div class="link-section">
+            <div class="link-item">
+                <label>下载链接</label>
+                <div class="link-input-group">
+                    <input type="text" value="{{ download_url }}" readonly id="downloadLink">
+                    <button class="btn btn-small" onclick="copyToClipboard('downloadLink')">复制</button>
+                </div>
+            </div>
+        </div>
+        {% if metadata.password_hash %}
+        <div class="info-badge">
+            🔒 此文件已设置访问密码
+        </div>
+        {% endif %}
+        {% if metadata.max_downloads %}
+        <div class="info-badge">
+            📊 最大下载次数：{{ metadata.max_downloads }} 次（已下载 {{ metadata.download_count }} 次）
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

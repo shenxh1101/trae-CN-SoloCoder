@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Markdown文档管理系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/html.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
+    <link id="custom-theme" rel="stylesheet" href="">
+</head>
+<body class="light-theme">
+    <header class="header">
+        <div class="header-left">
+            <a href="{{ url_for('index') }}" class="logo">📝 Markdown Docs</a>
+        </div>
+        <div class="header-center">
+            <form action="{{ url_for('search') }}" method="get" class="search-form">
+                <input type="text" name="q" placeholder="搜索文档..." value="{{ request.args.get('q', '') }}">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+        <div class="header-right">
+            <button id="theme-toggle" class="btn btn-icon" title="切换主题">🌙</button>
+            <a href="{{ url_for('import_documents') }}" class="btn" title="导入文档">📥 导入</a>
+            <a href="{{ url_for('export_all') }}" class="btn" title="导出全部">📦 导出全部</a>
+            <a href="{{ url_for('new_document') }}" class="btn btn-primary" title="新建文档">✏️ 新建</a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <h3>📁 文档目录</h3>
+                    <form action="{{ url_for('new_folder') }}" method="post" class="new-folder-form">
+                        <input type="text" name="folder_name" placeholder="新建文件夹" required>
+                        <button type="submit">+</button>
+                    </form>
+                </div>
+                <div id="file-tree" class="file-tree">
+                    {% include 'tree.html' %}
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <h3>🏷️ 标签</h3>
+                </div>
+                <div class="tag-list">
+                    {% for tag in all_tags %}
+                    <a href="{{ url_for('filter_by_tag', tag_name=tag) }}"
+                       class="tag {% if current_tag == tag %}active{% endif %}">
+                        {{ tag }}
+                    </a>
+                    {% else %}
+                    <span class="text-muted">暂无标签</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <h3>🎨 主题</h3>
+                </div>
+                <div class="theme-section">
+                    <form action="{{ url_for('upload_theme') }}" method="post" enctype="multipart/form-data" class="theme-upload">
+                        <input type="file" name="theme" accept=".css" required>
+                        <button type="submit">上传</button>
+                    </form>
+                    <div id="theme-list" class="theme-list"></div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>
