@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 测试工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        .tab-active {
+            border-bottom: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .method-get { background: #10b981; }
+        .method-post { background: #3b82f6; }
+        .method-put { background: #f59e0b; }
+        .method-delete { background: #ef4444; }
+        .status-2xx { color: #10b981; }
+        .status-4xx { color: #f59e0b; }
+        .status-5xx { color: #ef4444; }
+        .sidebar-item:hover { background: #1f2937; }
+        .sidebar-item.active { background: #374151; }
+        pre code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+        }
+        .json-key { color: #7c3aed; }
+        .json-string { color: #059669; }
+        .json-number { color: #d97706; }
+        .json-boolean { color: #2563eb; }
+        .json-null { color: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="flex h-screen">
+        <!-- 左侧边栏 -->
+        <div class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
+            <div class="p-4 border-b border-gray-700">
+                <h1 class="text-xl font-bold text-blue-400">API 测试工具</h1>
+            </div>
+            
+            <div class="flex border-b border-gray-700">
+                <button class="flex-1 py-2 px-4 text-sm tab-active" data-tab="cases">测试用例</button>
+                <button class="flex-1 py-2 px-4 text-sm text-gray-400" data-tab="history">历史记录</button>
+                <button class="flex-1 py-2 px-4 text-sm text-gray-400" data-tab="env">环境变量</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto" id="sidebar-content">
+                <div id="cases-panel" class="p-2">
+                    <div class="flex gap-2 mb-3">
+                        <button id="new-case-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm">
+                            + 新建用例
+                        </button>
+                        <button id="batch-run-btn" class="flex-1 bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm">
+                            批量运行
+                        </button>
+                    </div>
+                    <div class="flex gap-2 mb-3">
+                        <button id="export-postman-btn" class="flex-1 bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm">
+                            导出
+                        </button>
+                        <label class="flex-1 bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded text-sm text-center cursor-pointer">
+                            导入
+                            <input type="file" id="import-postman-input" accept=".json" class="hidden">
+                        </label>
+                    </div>
+                    <div id="test-cases-list" class="space-y-1"></div>
+                </div>
+                
+                <div id="history-panel" class="p-2 hidden">
+                    <button id="clear-history-btn" class="w-full bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm mb-3">
+                        清空历史
+                    </button>
+                    <div id="history-list" class="space-y-1"></div>
+                </div>
+                
+                <div id="env-panel" class="p-4 hidden">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-medium">环境变量</span>
+                            <button id="add-env-btn" class="text-blue-400 hover:text-blue-300 text-sm">+ 添加</button>
+                        </div>
+                        <div id="env-list" class="space-y-2"></div>
+                        <button id="save-env-btn" class="w-full bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm mt-4">
+                            保存变量
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 请求配置区 -->
+            <div class="p-4 border-b border-gray-700">
+                <div class="flex gap-2 mb-3">
+                    <select id="method-select" class="bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    <input type="text" id="url-input" placeholder="输入请求URL，例如: https://api.example.com/users" 
+                        class="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                    <button id="send-btn" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded font-medium">
+                        发送
+                    </button>
+                    <button id="save-case-btn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                        保存
+                    </button>
+                </div>
+                
+                <div class="flex gap-2 mb-3 text-sm">
+                    <label class="flex items-center gap-1">
+                        <span>超时(秒):</span>
+                        <input type="number" id="timeout-input" value="30" min="1" max="300" 
+                            class="w-16 bg-gray-700 border border-gray-600 rounded px-2 py-1">
+                    </label>
+                    <label class="flex items-center gap-1">
+                        <span>重试:</span>
+                        <input type="number" id="retry-input" value="0" min="0" max="10" 
+                            class="w-14 bg-gray-700 border border-gray-600 rounded px-2 py-1">
+                    </label>
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" id="proxy-checkbox" class="rounded">
+                        <span>CORS代理</span>
+                    </label>
+                </div>
+                
+                <div class="flex border-b border-gray-700 mb-3">
+                    <button class="px-4 py-2 text-sm tab-active req-tab" data-req-tab="headers">请求头</button>
+                    <button class="px-4 py-2 text-sm text-gray-400 req-tab" data-req-tab="body">请求体</button>
+                    <button class="px-4 py-2 text-sm text-gray-400 req-tab" data-req-tab="assertions">断言</button>
+                    <button class="px-4 py-2 text-sm text-gray-400 req-tab" data-req-tab="raw-req">原始请求</button>
+                </div>
+                
+                <div id="headers-panel" class="req-panel">
+                    <div id="headers-list" class="space-y-2 mb-2"></div>
+                    <button id="add-header-btn" class="text-blue-400 hover:text-blue-300 text-sm">+ 添加请求头</button>
+                </div>
+                
+                <div id="body-panel" class="req-panel hidden">
+                    <textarea id="body-input" rows="6" placeholder='{"key": "value"}'
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 font-mono text-sm focus:outline-none focus:border-blue-500"></textarea>
+                    <button id="format-json-btn" class="text-blue-400 hover:text-blue-300 text-sm mt-2">格式化 JSON</button>
+                </div>
+                
+                <div id="assertions-panel" class="req-panel hidden">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">期望状态码</label>
+                            <input type="text" id="assert-status" placeholder="200" 
+                                class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">响应包含关键字</label>
+                            <input type="text" id="assert-keyword" placeholder="success" 
+                                class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="raw-req-panel" class="req-panel hidden">
+                    <pre id="raw-request-content" class="bg-gray-800 p-3 rounded text-sm font-mono text-gray-300 overflow-x-auto">发送请求后显示原始请求报文</pre>
+                </div>
+            </div>
+            
+            <!-- 响应显示区 -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <div class="flex border-b border-gray-700 px-4 bg-gray-800">
+                    <button class="px-4 py-2 text-sm tab-active res-tab" data-res-tab="body">响应体</button>
+                    <button class="px-4 py-2 text-sm text-gray-400 res-tab" data-res-tab="headers">响应头</button>
+                    <button class="px-4 py-2 text-sm text-gray-400 res-tab" data-res-tab="raw-res">原始响应</button>
+                    <div class="flex-1"></div>
+                    <div id="response-status" class="flex items-center gap-4 text-sm">
+                        <span>状态: <span id="status-code" class="font-mono">-</span></span>
+                        <span>时间: <span id="response-time" class="font-mono">-</span></span>
+                    </div>
+                </div>
+                
+                <div class="flex-1 overflow-auto p-4">
+                    <div id="res-body-panel" class="res-panel h-full">
+                        <pre><code id="response-body" class="language-json">发送请求后显示响应内容</code></pre>
+                    </div>
+                    <div id="res-headers-panel" class="res-panel hidden">
+                        <pre id="response-headers" class="text-sm">发送请求后显示响应头</pre>
+                    </div>
+                    <div id="raw-res-panel" class="res-panel hidden">
+                        <pre id="raw-response-content" class="text-sm font-mono text-gray-300">发送请求后显示原始响应报文</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 批量运行弹窗 -->
+    <div id="batch-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-lg p-6 w-2/3 max-h-4/5 overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">批量运行测试用例</h2>
+                <button id="close-batch-modal" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="flex gap-2 mb-4">
+                <button id="select-all-cases" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">全选</button>
+                <button id="deselect-all-cases" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">取消全选</button>
+                <button id="start-batch-run" class="text-sm bg-green-600 hover:bg-green-700 px-4 py-1 rounded ml-auto">开始运行</button>
+            </div>
+            <div id="batch-cases-list" class="flex-1 overflow-y-auto space-y-2 mb-4"></div>
+            <div id="batch-results" class="border-t border-gray-700 pt-4 hidden">
+                <h3 class="font-medium mb-2">运行结果</h3>
+                <div id="batch-results-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 保存用例弹窗 -->
+    <div id="save-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-lg p-6 w-96">
+            <h2 class="text-lg font-bold mb-4">保存测试用例</h2>
+            <input type="text" id="case-name-input" placeholder="用例名称" 
+                class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-500">
+            <div class="flex gap-2 justify-end">
+                <button id="cancel-save" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">取消</button>
+                <button id="confirm-save" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            currentCaseId: null,
+            headers: [],
+            envVars: {},
+            testCases: [],
+            history: []
+        };
+
+        const api = async (endpoint, options = {}) => {
+            const res = await fetch(`/api${endpoint}`, {
+                headers: { 'Content-Type': 'application/json' },
+                ...options
+            });
+            return res.json();
+        };
+
+        function init() {
+            loadTestCases();
+            loadHistory();
+            loadEnvVars();
+            addHeader();
+            bindEvents();
+        }
+
+        function bindEvents() {
+            document.querySelectorAll('[data-tab]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-tab]').forEach(b => {
+                        b.classList.remove('tab-active');
+                        b.classList.add('text-gray-400');
+                    });
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('text-gray-400');
+                    const tab = btn.dataset.tab;
+                    document.getElementById('cases-panel').classList.toggle('hidden', tab !== 'cases');
+                    document.getElementById('history-panel').classList.toggle('hidden', tab !== 'history');
+                    document.getElementById('env-panel').classList.toggle('hidden', tab !== 'env');
+                });
+            });
+
+            document.querySelectorAll('.req-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.req-tab').forEach(b => {
+                        b.classList.remove('tab-active');
+                        b.classList.add('text-gray-400');
+                    });
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('text-gray-400');
+                    const tab = btn.dataset.reqTab;
+                    document.querySelectorAll('.req-panel').forEach(p => p.classList.add('hidden'));
+                    document.getElementById(`${tab}-panel`).classList.remove('hidden');
+                });
+            });
+
+            document.querySelectorAll('.res-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.res-tab').forEach(b => {
+                        b.classList.remove('tab-active');
+                        b.classList.add('text-gray-400');
+                    });
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('text-gray-400');
+                    const tab = btn.dataset.resTab;
+                    document.querySelectorAll('.res-panel').forEach(p => p.classList.add('hidden'));
+                    document.getElementById(`res-${tab}-panel`).classList.remove('hidden');
+                });
+            });
+
+            document.getElementById('send-btn').addEventListener('click', sendRequest);
+            document.getElementById('save-case-btn').addEventListener('click', () => {
+                document.getElementById('save-modal').classList.remove('hidden');
+                document.getElementById('save-modal').classList.add('flex');
+            });
+            document.getElementById('cancel-save').addEventListener('click', closeSaveModal);
+            document.getElementById('confirm-save').addEventListener('click', saveTestCase);
+            document.getElementById('new-case-btn').addEventListener('click', newCase);
+            document.getElementById('add-header-btn').addEventListener('click', addHeader);
+            document.getElementById('format-json-btn').addEventListener('click', formatJson);
+            document.getElementById('add-env-btn').addEventListener('click', addEnvVar);
+            document.getElementById('save-env-btn').addEventListener('click', saveEnvVars);
+            document.getElementById('clear-history-btn').addEventListener('click', clearHistory);
+            document.getElementById('batch-run-btn').addEventListener('click', openBatchModal);
+            document.getElementById('close-batch-modal').addEventListener('click', closeBatchModal);
+            document.getElementById('select-all-cases').addEventListener('click', () => toggleSelectAll(true));
+            document.getElementById('deselect-all-cases').addEventListener('click', () => toggleSelectAll(false));
+            document.getElementById('start-batch-run').addEventListener('click', startBatchRun);
+            document.getElementById('export-postman-btn').addEventListener('click', exportPostman);
+            document.getElementById('import-postman-input').addEventListener('change', importPostman);
+        }
+
+        function addHeader(key = '', value = '') {
+            const container = document.getElementById('headers-list');
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+                <input type="text" placeholder="Key" value="${key}" class="header-key flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500">
+                <input type="text" placeholder="Value" value="${value}" class="header-value flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500">
+                <button class="remove-header text-red-400 hover:text-red-300 px-2">×</button>
+            `;
+            div.querySelector('.remove-header').addEventListener('click', () => div.remove());
+            container.appendChild(div);
+        }
+
+        function getHeaders() {
+            const headers = {};
+            document.querySelectorAll('#headers-list > div').forEach(div => {
+                const key = div.querySelector('.header-key').value.trim();
+                const value = div.querySelector('.header-value').value.trim();
+                if (key) headers[key] = value;
+            });
+            return headers;
+        }
+
+        async function sendRequest() {
+            const method = document.getElementById('method-select').value;
+            const url = document.getElementById('url-input').value;
+            const headers = getHeaders();
+            const body = document.getElementById('body-input').value;
+            const timeout = parseInt(document.getElementById('timeout-input').value);
+            const retryCount = parseInt(document.getElementById('retry-input').value);
+            const useProxy = document.getElementById('proxy-checkbox').checked;
+            const assertions = {
+                status_code: document.getElementById('assert-status').value,
+                keyword: document.getElementById('assert-keyword').value
+            };
+
+            if (!url) {
+                alert('请输入URL');
+                return;
+            }
+
+            document.getElementById('send-btn').disabled = true;
+            document.getElementById('send-btn').textContent = '发送中...';
+
+            try {
+                const result = await api('/send-request', {
+                    method: 'POST',
+                    body: JSON.stringify({ method, url, headers, body, timeout, retryCount, useProxy, assertions })
+                });
+
+                if (result.success) {
+                    displayResponse(result);
+                    loadHistory();
+                } else {
+                    document.getElementById('response-body').textContent = '错误: ' + result.error;
+                    document.getElementById('status-code').textContent = 'Error';
+                    document.getElementById('status-code').className = 'font-mono text-red-500';
+                }
+            } catch (e) {
+                document.getElementById('response-body').textContent = '请求失败: ' + e.message;
+            }
+
+            document.getElementById('send-btn').disabled = false;
+            document.getElementById('send-btn').textContent = '发送';
+        }
+
+        function displayResponse(result) {
+            document.getElementById('status-code').textContent = result.status_code + ' ' + result.status_text;
+            const statusClass = result.status_code >= 500 ? 'text-red-500' : 
+                              result.status_code >= 400 ? 'text-yellow-500' : 'text-green-500';
+            document.getElementById('status-code').className = `font-mono ${statusClass}`;
+            document.getElementById('response-time').textContent = result.response_time + 'ms';
+
+            document.getElementById('response-body').textContent = result.body;
+            hljs.highlightElement(document.getElementById('response-body'));
+
+            document.getElementById('response-headers').textContent = 
+                Object.entries(result.headers).map(([k, v]) => `${k}: ${v}`).join('\n');
+
+            document.getElementById('raw-request-content').textContent = result.raw_request;
+            document.getElementById('raw-response-content').textContent = result.raw_response;
+
+            if (result.assertion_passed !== undefined) {
+                const assertMsg = result.assertion_passed ? '断言通过 ✓' : '断言失败 ✗: ' + result.assertion_msg;
+                document.getElementById('response-body').textContent = assertMsg + '\n\n' + result.body;
+                hljs.highlightElement(document.getElementById('response-body'));
+            }
+        }
+
+        function closeSaveModal() {
+            document.getElementById('save-modal').classList.add('hidden');
+            document.getElementById('save-modal').classList.remove('flex');
+            document.getElementById('case-name-input').value = '';
+        }
+
+        async function saveTestCase() {
+            const name = document.getElementById('case-name-input').value.trim();
+            if (!name) {
+                alert('请输入用例名称');
+                return;
+            }
+
+            const caseData = {
+                id: state.currentCaseId,
+                name,
+                method: document.getElementById('method-select').value,
+                url: document.getElementById('url-input').value,
+                headers: getHeaders(),
+                body: document.getElementById('body-input').value,
+                assertions: {
+                    status_code: document.getElementById('assert-status').value,
+                    keyword: document.getElementById('assert-keyword').value
+                }
+            };
+
+            await api('/test-cases', {
+                method: 'POST',
+                body: JSON.stringify(caseData)
+            });
+
+            closeSaveModal();
+            loadTestCases();
+        }
+
+        async function loadTestCases() {
+            state.testCases = await api('/test-cases');
+            renderTestCases();
+        }
+
+        function renderTestCases() {
+            const container = document.getElementById('test-cases-list');
+            container.innerHTML = '';
+            
+            state.testCases.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'sidebar-item p-2 rounded cursor-pointer flex items-center gap-2';
+                div.innerHTML = `
+                    <span class="method-${c.method.toLowerCase()} text-xs px-2 py-0.5 rounded font-bold">${c.method}</span>
+                    <span class="flex-1 truncate text-sm">${c.name}</span>
+                    <button class="delete-case text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100">×</button>
+                `;
+                div.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('delete-case')) {
+                        deleteTestCase(c.id);
+                    } else {
+                        loadTestCase(c);
+                    }
+                });
+                div.addEventListener('mouseenter', () => div.querySelector('.delete-case').style.opacity = '1');
+                div.addEventListener('mouseleave', () => div.querySelector('.delete-case').style.opacity = '0');
+                container.appendChild(div);
+            });
+        }
+
+        function loadTestCase(c) {
+            state.currentCaseId = c.id;
+            document.getElementById('method-select').value = c.method;
+            document.getElementById('url-input').value = c.url;
+            document.getElementById('body-input').value = c.body || '';
+            
+            document.getElementById('headers-list').innerHTML = '';
+            if (c.headers) {
+                Object.entries(c.headers).forEach(([k, v]) => addHeader(k, v));
+            }
+            if (!document.getElementById('headers-list').children.length) {
+                addHeader();
+            }
+
+            if (c.assertions) {
+                document.getElementById('assert-status').value = c.assertions.status_code || '';
+                document.getElementById('assert-keyword').value = c.assertions.keyword || '';
+            }
+        }
+
+        async function deleteTestCase(id) {
+            if (confirm('确定删除此测试用例?')) {
+                await api(`/test-cases/${id}`, { method: 'DELETE' });
+                loadTestCases();
+            }
+        }
+
+        function newCase() {
+            state.currentCaseId = null;
+            document.getElementById('method-select').value = 'GET';
+            document.getElementById('url-input').value = '';
+            document.getElementById('body-input').value = '';
+            document.getElementById('assert-status').value = '';
+            document.getElementById('assert-keyword').value = '';
+            document.getElementById('headers-list').innerHTML = '';
+            addHeader();
+        }
+
+        function formatJson() {
+            try {
+                const body = document.getElementById('body-input').value;
+                document.getElementById('body-input').value = JSON.stringify(JSON.parse(body), null, 2);
+            } catch (e) {
+                alert('JSON格式错误');
+            }
+        }
+
+        async function loadHistory() {
+            state.history = await api('/history');
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            container.innerHTML = '';
+            
+            state.history.forEach(h => {
+                const div = document.createElement('div');
+                div.className = 'sidebar-item p-2 rounded cursor-pointer';
+                const time = new Date(h.timestamp).toLocaleString();
+                const statusClass = h.status_code >= 500 ? 'text-red-400' : 
+                                   h.status_code >= 400 ? 'text-yellow-400' : 'text-green-400';
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="method-${h.method.toLowerCase()} text-xs px-2 py-0.5 rounded font-bold">${h.method}</span>
+                        <span class="${statusClass} text-xs">${h.status_code}</span>
+                    </div>
+                    <div class="text-xs text-gray-400 truncate">${h.url}</div>
+                    <div class="text-xs text-gray-500">${time}</div>
+                `;
+                div.addEventListener('click', () => {
+                    document.getElementById('method-select').value = h.method;
+                    document.getElementById('url-input').value = h.url;
+                    document.getElementById('body-input').value = h.body || '';
+                    document.getElementById('headers-list').innerHTML = '';
+                    if (h.headers) {
+                        Object.entries(h.headers).forEach(([k, v]) => addHeader(k, v));
+                    }
+                    if (!document.getElementById('headers-list').children.length) {
+                        addHeader();
+                    }
+                });
+                container.appendChild(div);
+            });
+        }
+
+        async function clearHistory() {
+            if (confirm('确定清空历史记录?')) {
+                await api('/history', { method: 'DELETE' });
+                loadHistory();
+            }
+        }
+
+        async function loadEnvVars() {
+            state.envVars = await api('/env-vars');
+            renderEnvVars();
+        }
+
+        function renderEnvVars() {
+            const container = document.getElementById('env-list');
+            container.innerHTML = '';
+            
+            Object.entries(state.envVars).forEach(([k, v]) => {
+                const div = document.createElement('div');
+                div.className = 'flex gap-2';
+                div.innerHTML = `
+                    <input type="text" value="${k}" placeholder="变量名" class="env-key flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm">
+                    <input type="text" value="${v}" placeholder="值" class="env-value flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm">
+                    <button class="remove-env text-red-400 hover:text-red-300">×</button>
+                `;
+                div.querySelector('.remove-env').addEventListener('click', () => div.remove());
+                container.appendChild(div);
+            });
+        }
+
+        function addEnvVar() {
+            const container = document.getElementById('env-list');
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+                <input type="text" placeholder="变量名" class="env-key flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm">
+                <input type="text" placeholder="值" class="env-value flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm">
+                <button class="remove-env text-red-400 hover:text-red-300">×</button>
+            `;
+            div.querySelector('.remove-env').addEventListener('click', () => div.remove());
+            container.appendChild(div);
+        }
+
+        async function saveEnvVars() {
+            const vars = {};
+            document.querySelectorAll('#env-list > div').forEach(div => {
+                const key = div.querySelector('.env-key').value.trim();
+                const value = div.querySelector('.env-value').value.trim();
+                if (key) vars[key] = value;
+            });
+            await api('/env-vars', {
+                method: 'POST',
+                body: JSON.stringify(vars)
+            });
+            alert('环境变量已保存');
+        }
+
+        function openBatchModal() {
+            document.getElementById('batch-modal').classList.remove('hidden');
+            document.getElementById('batch-modal').classList.add('flex');
+            document.getElementById('batch-results').classList.add('hidden');
+            renderBatchCases();
+        }
+
+        function closeBatchModal() {
+            document.getElementById('batch-modal').classList.add('hidden');
+            document.getElementById('batch-modal').classList.remove('flex');
+        }
+
+        function renderBatchCases() {
+            const container = document.getElementById('batch-cases-list');
+            container.innerHTML = '';
+            
+            state.testCases.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-3 p-2 bg-gray-700 rounded';
+                div.innerHTML = `
+                    <input type="checkbox" class="batch-case-check rounded" data-id="${c.id}" checked>
+                    <span class="method-${c.method.toLowerCase()} text-xs px-2 py-0.5 rounded font-bold">${c.method}</span>
+                    <span class="flex-1">${c.name}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleSelectAll(select) {
+            document.querySelectorAll('.batch-case-check').forEach(cb => cb.checked = select);
+        }
+
+        async function startBatchRun() {
+            const caseIds = Array.from(document.querySelectorAll('.batch-case-check:checked'))
+                .map(cb => cb.dataset.id);
+            
+            if (!caseIds.length) {
+                alert('请选择要运行的用例');
+                return;
+            }
+
+            document.getElementById('batch-results').classList.remove('hidden');
+            document.getElementById('batch-results-list').innerHTML = '<div class="text-gray-400">运行中...</div>';
+
+            const result = await api('/batch-run', {
+                method: 'POST',
+                body: JSON.stringify({ case_ids: caseIds })
+            });
+
+            const container = document.getElementById('batch-results-list');
+            container.innerHTML = '';
+            
+            result.results.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'p-2 bg-gray-700 rounded';
+                const statusClass = r.success ? 
+                    (r.assertion_passed ? 'text-green-400' : 'text-yellow-400') : 'text-red-400';
+                const statusText = r.success ? 
+                    (r.assertion_passed ? '✓ 通过' : '⚠ 断言失败') : '✗ 失败';
+                
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="${statusClass}">${statusText}</span>
+                        <span class="method-${r.method.toLowerCase()} text-xs px-2 py-0.5 rounded">${r.method}</span>
+                        <span class="font-medium">${r.name}</span>
+                        <span class="text-sm">${r.status_code || 'Error'}</span>
+                        <span class="text-sm text-gray-400">${r.response_time || '-'}ms</span>
+                    </div>
+                    <div class="text-xs text-gray-400 break-all">${r.url}</div>
+                    ${r.assertion_msg ? `<div class="text-sm text-yellow-400 mt-1">${r.assertion_msg}</div>` : ''}
+                    ${r.error ? `<div class="text-sm text-red-400 mt-1">${r.error}</div>` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function exportPostman() {
+            const caseIds = state.testCases.map(c => c.id);
+            const res = await fetch('/api/export-postman', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ case_ids: caseIds })
+            });
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'postman_collection.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function importPostman(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const res = await fetch('/api/import-postman', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                alert(`成功导入 ${result.count} 个用例`);
+                loadTestCases();
+            } else {
+                alert('导入失败: ' + result.error);
+            }
+            
+            e.target.value = '';
+        }
+
+        init();
+    </script>
+</body>
+</html>

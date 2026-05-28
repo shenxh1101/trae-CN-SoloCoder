@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PONG DUEL - 乒乓球对战</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Source Sans 3", sans-serif;
+      background: #0a0a0a;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .title {
+      font-family: "Orbitron", monospace;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      letter-spacing: 0.1em;
+    }
+
+    .title .green { color: #00ff88; }
+    .title .sep { color: rgba(255, 255, 255, 0.3); margin: 0 8px; }
+    .title .orange { color: #ff6b35; }
+
+    .scoreboard {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 16px;
+    }
+
+    .score-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .score-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-family: "Source Sans 3", sans-serif;
+      margin-bottom: 4px;
+    }
+
+    .score-label.left { color: rgba(0, 255, 136, 0.7); }
+    .score-label.right { color: rgba(255, 107, 53, 0.7); }
+
+    .score-value {
+      font-family: "Orbitron", monospace;
+      font-size: 48px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      transition: all 0.3s ease;
+    }
+
+    .score-value.left { color: #00ff88; }
+    .score-value.right { color: #ff6b35; }
+
+    .score-value.winner-left {
+      text-shadow: 0 0 20px #00ff88;
+    }
+
+    .score-value.winner-right {
+      text-shadow: 0 0 20px #ff6b35;
+    }
+
+    .max-score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .max-score-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.3);
+      margin-bottom: 4px;
+    }
+
+    .max-score-value {
+      font-family: "Orbitron", monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .game-container {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      max-width: 1100px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .canvas-wrapper {
+      flex-shrink: 0;
+    }
+
+    canvas {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .sidebar {
+      width: 224px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .button-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: "Source Sans 3", sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+      border-color: rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: rgba(0, 255, 136, 0.3);
+    }
+
+    .btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 4px;
+      font-family: "Source Sans 3", sans-serif;
+    }
+
+    .form-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .form-label-row .value {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      font-family: "Orbitron", monospace;
+    }
+
+    .mode-group, .theme-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .option-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .option-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .option-btn.active-pvp {
+      background: rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+      border-color: rgba(0, 255, 136, 0.3);
+    }
+
+    .option-btn.active-pve {
+      background: rgba(255, 107, 53, 0.2);
+      color: #ff6b35;
+      border-color: rgba(255, 107, 53, 0.3);
+    }
+
+    .option-btn.active-theme {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .option-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    input[type="range"].speed::-webkit-slider-thumb {
+      accent-color: #00ff88;
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00ff88;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+    }
+
+    input[type="range"].paddle::-webkit-slider-thumb {
+      accent-color: #ff6b35;
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ff6b35;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(255, 107, 53, 0.3);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .toggle-btn.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .toggle-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .history-panel h3 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 12px;
+      font-family: "Source Sans 3", sans-serif;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .history-empty {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.2);
+      font-family: "Source Sans 3", sans-serif;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .history-index {
+      width: 16px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.2);
+      font-family: "Orbitron", monospace;
+    }
+
+    .history-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .history-dot.left { background: #00ff88; }
+    .history-dot.right { background: #ff6b35; }
+
+    .history-text {
+      flex: 1;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: "Source Sans 3", sans-serif;
+    }
+
+    .history-score-left {
+      font-family: "Orbitron", monospace;
+      color: rgba(0, 255, 136, 0.7);
+    }
+
+    .history-score-right {
+      font-family: "Orbitron", monospace;
+      color: rgba(255, 107, 53, 0.7);
+    }
+
+    .history-score-sep {
+      color: rgba(255, 255, 255, 0.2);
+      margin: 0 2px;
+    }
+
+    .streak-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .streak-section h4 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 6px;
+      font-family: "Source Sans 3", sans-serif;
+    }
+
+    .streak-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 2px 0;
+    }
+
+    .streak-label.left { color: rgba(0, 255, 136, 0.7); }
+    .streak-label.right { color: rgba(255, 107, 53, 0.7); }
+
+    .streak-value {
+      font-family: "Orbitron", monospace;
+    }
+
+    .streak-value.left { color: #00ff88; }
+    .streak-value.right { color: #ff6b35; }
+
+    @media (max-width: 900px) {
+      .game-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .sidebar {
+        width: 100%;
+        max-width: 800px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="title">
+    <span class="green">PONG</span>
+    <span class="sep">·</span>
+    <span class="orange">DUEL</span>
+  </h1>
+
+  <div class="scoreboard">
+    <div class="score-box">
+      <span class="score-label left">左方</span>
+      <span class="score-value left" id="leftScore">0</span>
+    </div>
+    <div class="max-score">
+      <span class="max-score-label">先到</span>
+      <span class="max-score-value" id="maxScore">7</span>
+    </div>
+    <div class="score-box">
+      <span class="score-label right">右方</span>
+      <span class="score-value right" id="rightScore">0</span>
+    </div>
+  </div>
+
+  <div class="game-container">
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas" width="800" height="500"></canvas>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel control-panel">
+        <div class="button-row">
+          <button class="btn btn-primary" id="startBtn" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            开始
+          </button>
+          <button class="btn" id="pauseBtn" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            暂停
+          </button>
+          <button class="btn" id="resetBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            重置
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">游戏模式</label>
+          <div class="mode-group">
+            <button class="option-btn active-pvp" id="modePvp" data-mode="pvp">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              双人
+            </button>
+            <button class="option-btn" id="modePve" data-mode="pve">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+              单人
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">场地主题</label>
+          <div class="theme-group">
+            <button class="option-btn active-theme" data-theme="indoor">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+              室内
+            </button>
+            <button class="option-btn" data-theme="grass">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-7l-2-2"></path><path d="M17 8v.8A6 6 0 0 1 13.8 20v0H10v0A6.5 6.5 0 0 1 7 8h0a5 5 0 0 1 10 0Z"></path><path d="m10 14 2 2"></path></svg>
+              草地
+            </button>
+            <button class="option-btn" data-theme="beach">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 20 0"></path><path d="M2 12c0 2.5 2 5 10 5s10-2.5 10-5"></path><path d="M12 2v10"></path><path d="m7 17.5 5 5 5-5"></path><path d="M2 17h20"></path></svg>
+              沙滩
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" style="margin-bottom: 0;">球速</label>
+            <span class="value" id="speedValue">5</span>
+          </div>
+          <input type="range" class="speed" id="speedSlider" min="1" max="10" value="5" />
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" style="margin-bottom: 0;">挡板高度</label>
+            <span class="value" id="paddleValue">100px</span>
+          </div>
+          <input type="range" class="paddle" id="paddleSlider" min="60" max="200" step="10" value="100" />
+        </div>
+
+        <div class="form-group">
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="soundToggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="soundIconOn"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="soundIconOff" style="display: none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="22" y1="9" x2="16" y2="15"></line><line x1="16" y1="9" x2="22" y2="15"></line></svg>
+              音效
+            </button>
+            <button class="toggle-btn" id="trailToggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h10"></path><path d="M2 6h10"></path><path d="M2 18h10"></path><path d="M16 6c2 0 4 2 4 4s-2 4-4 4-4 2-4 4 2 4 4 4"></path></svg>
+              轨迹线
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel history-panel">
+        <h3>回合历史</h3>
+        <div class="history-list" id="historyList">
+          <div class="history-empty">暂无得分记录</div>
+        </div>
+
+        <div class="streak-section">
+          <h4>最高连胜</h4>
+          <div class="streak-row">
+            <span class="streak-label left">左方</span>
+            <span class="streak-value left" id="streakLeft">0</span>
+          </div>
+          <div class="streak-row">
+            <span class="streak-label right">右方</span>
+            <span class="streak-value right" id="streakRight">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const CANVAS_WIDTH = 800;
+      const CANVAS_HEIGHT = 500;
+      const PADDLE_WIDTH = 12;
+      const PADDLE_SPEED = 6;
+      const BALL_RADIUS = 8;
+      const PADDLE_MARGIN = 20;
+      const BASE_BALL_SPEED = 4;
+      const MAX_SCORE = 7;
+      const STORAGE_KEYS = {
+        MAX_WIN_STREAK_LEFT: 'pong_max_win_streak_left',
+        MAX_WIN_STREAK_RIGHT: 'pong_max_win_streak_right',
+      };
+
+      const themeColors = {
+        indoor: {
+          bg1: '#1a0e0a',
+          bg2: '#2d1810',
+          line: '#ffffff22',
+          ball: '#ffffff',
+          leftPaddle: '#00ff88',
+          rightPaddle: '#ff6b35',
+          leftGlow: '#00ff8866',
+          rightGlow: '#ff6b3566',
+          textColor: '#ffffff',
+          courtLine: '#ffffff33',
+        },
+        grass: {
+          bg1: '#0a1a0e',
+          bg2: '#1a3d20',
+          line: '#88ff8822',
+          ball: '#ffffff',
+          leftPaddle: '#00ff88',
+          rightPaddle: '#ff6b35',
+          leftGlow: '#00ff8866',
+          rightGlow: '#ff6b3566',
+          textColor: '#ffffff',
+          courtLine: '#88ff8833',
+        },
+        beach: {
+          bg1: '#1a140a',
+          bg2: '#3d2e1a',
+          line: '#ffdd8822',
+          ball: '#ffffff',
+          leftPaddle: '#00ff88',
+          rightPaddle: '#ff6b35',
+          leftGlow: '#00ff8866',
+          rightGlow: '#ff6b3566',
+          textColor: '#ffffff',
+          courtLine: '#ffdd8833',
+        },
+      };
+
+      const state = {
+        leftScore: 0,
+        rightScore: 0,
+        mode: 'pvp',
+        paused: false,
+        gameStarted: false,
+        gameOver: false,
+        winner: null,
+        theme: 'indoor',
+        ballSpeed: 5,
+        paddleHeight: 100,
+        soundEnabled: true,
+        trailEnabled: false,
+        roundHistory: [],
+        currentWinStreakLeft: 0,
+        currentWinStreakRight: 0,
+        maxWinStreakLeft: 0,
+        maxWinStreakRight: 0,
+      };
+
+      const ball = { x: CANVAS_WIDTH / 2, y: CANVAS_HEIGHT / 2, vx: 0, vy: 0 };
+      const leftPaddle = { y: CANVAS_HEIGHT / 2 - 50, height: 100 };
+      const rightPaddle = { y: CANVAS_HEIGHT / 2 - 50, height: 100 };
+      const keys = { w: false, s: false, arrowUp: false, arrowDown: false };
+      let scored = false;
+      let flash = null;
+      let trailPoints = [];
+      let animationId = 0;
+
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const leftScoreEl = document.getElementById('leftScore');
+      const rightScoreEl = document.getElementById('rightScore');
+      const startBtn = document.getElementById('startBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const modePvpBtn = document.getElementById('modePvp');
+      const modePveBtn = document.getElementById('modePve');
+      const speedSlider = document.getElementById('speedSlider');
+      const speedValue = document.getElementById('speedValue');
+      const paddleSlider = document.getElementById('paddleSlider');
+      const paddleValue = document.getElementById('paddleValue');
+      const soundToggle = document.getElementById('soundToggle');
+      const soundIconOn = document.getElementById('soundIconOn');
+      const soundIconOff = document.getElementById('soundIconOff');
+      const trailToggle = document.getElementById('trailToggle');
+      const historyList = document.getElementById('historyList');
+      const streakLeftEl = document.getElementById('streakLeft');
+      const streakRightEl = document.getElementById('streakRight');
+
+      let audioCtx = null;
+
+      function initAudio() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+
+      function playHit() {
+        if (!state.soundEnabled) return;
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.1);
+      }
+
+      function playScore() {
+        if (!state.soundEnabled) return;
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.15);
+        osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.5);
+      }
+
+      function playVictory() {
+        if (!state.soundEnabled) return;
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const notes = [523, 659, 784, 1047, 784, 1047, 1319];
+        const durations = [0.1, 0.1, 0.1, 0.15, 0.1, 0.15, 0.3];
+        let time = audioCtx.currentTime;
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, time);
+          gain.gain.setValueAtTime(0.15, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + durations[i]);
+          osc.start(time);
+          osc.stop(time + durations[i]);
+          time += durations[i] + 0.02;
+        });
+      }
+
+      function resetBall(side) {
+        const direction = side === 'right' ? 1 : -1;
+        const angle = (Math.random() * Math.PI / 3) - Math.PI / 6;
+        ball.x = CANVAS_WIDTH / 2;
+        ball.y = CANVAS_HEIGHT / 2;
+        ball.vx = Math.cos(angle) * BASE_BALL_SPEED * direction;
+        ball.vy = Math.sin(angle) * BASE_BALL_SPEED;
+      }
+
+      function predictTrajectory() {
+        const points = [];
+        let x = ball.x;
+        let y = ball.y;
+        let vx = ball.vx;
+        let vy = ball.vy;
+        const step = 2;
+        const leftPaddleX = PADDLE_MARGIN;
+        const rightPaddleX = CANVAS_WIDTH - PADDLE_MARGIN - PADDLE_WIDTH;
+
+        for (let i = 0; i < 300; i++) {
+          x += vx * step;
+          y += vy * step;
+          if (y - BALL_RADIUS <= 0 || y + BALL_RADIUS >= CANVAS_HEIGHT) {
+            vy = -vy;
+          }
+          if (x - BALL_RADIUS <= leftPaddleX + PADDLE_WIDTH || x + BALL_RADIUS >= rightPaddleX) {
+            break;
+          }
+          if (i % 3 === 0) {
+            points.push({ x, y });
+          }
+        }
+        return points;
+      }
+
+      function score(scorer) {
+        const newLeftScore = scorer === 'left' ? state.leftScore + 1 : state.leftScore;
+        const newRightScore = scorer === 'right' ? state.rightScore + 1 : state.rightScore;
+        const gameOver = newLeftScore >= MAX_SCORE || newRightScore >= MAX_SCORE;
+        const winner = gameOver ? (newLeftScore >= MAX_SCORE ? 'left' : 'right') : null;
+
+        state.leftScore = newLeftScore;
+        state.rightScore = newRightScore;
+        state.gameOver = gameOver;
+        state.winner = winner;
+
+        leftScoreEl.textContent = newLeftScore;
+        rightScoreEl.textContent = newRightScore;
+
+        if (winner === 'left') {
+          leftScoreEl.classList.add('winner-left');
+        } else if (winner === 'right') {
+          rightScoreEl.classList.add('winner-right');
+        }
+
+        state.roundHistory.unshift({
+          leftScoreAfter: newLeftScore,
+          rightScoreAfter: newRightScore,
+          scorer: scorer,
+        });
+        state.roundHistory = state.roundHistory.slice(0, 5);
+        renderHistory();
+
+        if (scorer === 'left') {
+          state.currentWinStreakLeft = state.currentWinStreakLeft + 1;
+          state.currentWinStreakRight = 0;
+          if (state.currentWinStreakLeft > state.maxWinStreakLeft) {
+            state.maxWinStreakLeft = state.currentWinStreakLeft;
+            localStorage.setItem(STORAGE_KEYS.MAX_WIN_STREAK_LEFT, String(state.maxWinStreakLeft));
+            streakLeftEl.textContent = state.maxWinStreakLeft;
+          }
+        } else {
+          state.currentWinStreakRight = state.currentWinStreakRight + 1;
+          state.currentWinStreakLeft = 0;
+          if (state.currentWinStreakRight > state.maxWinStreakRight) {
+            state.maxWinStreakRight = state.currentWinStreakRight;
+            localStorage.setItem(STORAGE_KEYS.MAX_WIN_STREAK_RIGHT, String(state.maxWinStreakRight));
+            streakRightEl.textContent = state.maxWinStreakRight;
+          }
+        }
+
+        if (gameOver && winner) {
+          flash = { side: winner, frames: 0 };
+          playVictory();
+          updateButtons();
+        }
+      }
+
+      function renderHistory() {
+        if (state.roundHistory.length === 0) {
+          historyList.innerHTML = '<div class="history-empty">暂无得分记录</div>';
+          return;
+        }
+        historyList.innerHTML = state.roundHistory.map((entry, i) => `
+          <div class="history-item">
+            <span class="history-index">${i + 1}</span>
+            <span class="history-dot ${entry.scorer}"></span>
+            <span class="history-text">${entry.scorer === 'left' ? '左方' : '右方'}得分</span>
+            <span class="history-score-left">${entry.leftScoreAfter}</span>
+            <span class="history-score-sep">:</span>
+            <span class="history-score-right">${entry.rightScoreAfter}</span>
+          </div>
+        `).join('');
+      }
+
+      function loadStreaks() {
+        const left = localStorage.getItem(STORAGE_KEYS.MAX_WIN_STREAK_LEFT);
+        const right = localStorage.getItem(STORAGE_KEYS.MAX_WIN_STREAK_RIGHT);
+        state.maxWinStreakLeft = left ? parseInt(left, 10) : 0;
+        state.maxWinStreakRight = right ? parseInt(right, 10) : 0;
+        streakLeftEl.textContent = state.maxWinStreakLeft;
+        streakRightEl.textContent = state.maxWinStreakRight;
+      }
+
+      function updateButtons() {
+        if (state.gameOver) {
+          startBtn.style.display = 'none';
+          pauseBtn.style.display = 'none';
+          modePvpBtn.disabled = false;
+          modePveBtn.disabled = false;
+        } else if (state.gameStarted) {
+          startBtn.style.display = 'none';
+          pauseBtn.style.display = 'inline-flex';
+          pauseBtn.innerHTML = state.paused
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>继续'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>暂停';
+          modePvpBtn.disabled = true;
+          modePveBtn.disabled = true;
+        } else {
+          startBtn.style.display = 'inline-flex';
+          pauseBtn.style.display = 'none';
+          modePvpBtn.disabled = false;
+          modePveBtn.disabled = false;
+        }
+      }
+
+      function startGame() {
+        initAudio();
+        state.gameStarted = true;
+        state.paused = false;
+        resetBall(Math.random() > 0.5 ? 'left' : 'right');
+        updateButtons();
+      }
+
+      function togglePause() {
+        if (!state.gameStarted || state.gameOver) return;
+        state.paused = !state.paused;
+        updateButtons();
+      }
+
+      function reset() {
+        state.leftScore = 0;
+        state.rightScore = 0;
+        state.paused = false;
+        state.gameStarted = false;
+        state.gameOver = false;
+        state.winner = null;
+        state.roundHistory = [];
+        state.currentWinStreakLeft = 0;
+        state.currentWinStreakRight = 0;
+        leftScoreEl.textContent = '0';
+        rightScoreEl.textContent = '0';
+        leftScoreEl.classList.remove('winner-left');
+        rightScoreEl.classList.remove('winner-right');
+        renderHistory();
+        flash = null;
+        resetBall();
+        updateButtons();
+      }
+
+      function setMode(mode) {
+        if (state.gameStarted && !state.gameOver) return;
+        state.mode = mode;
+        modePvpBtn.classList.toggle('active-pvp', mode === 'pvp');
+        modePvpBtn.classList.toggle('active-theme', false);
+        modePveBtn.classList.toggle('active-pve', mode === 'pve');
+        modePveBtn.classList.toggle('active-theme', false);
+      }
+
+      function setTheme(theme) {
+        state.theme = theme;
+        document.querySelectorAll('[data-theme]').forEach(btn => {
+          btn.classList.toggle('active-theme', btn.dataset.theme === theme);
+        });
+      }
+
+      function roundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      function gameLoop() {
+        const leftPaddleX = PADDLE_MARGIN;
+        const rightPaddleX = CANVAS_WIDTH - PADDLE_MARGIN - PADDLE_WIDTH;
+
+        if (state.gameStarted && !state.paused && !state.gameOver) {
+          const speedMultiplier = state.ballSpeed / 5;
+
+          if (keys.w) {
+            leftPaddle.y = Math.max(0, leftPaddle.y - PADDLE_SPEED);
+          }
+          if (keys.s) {
+            leftPaddle.y = Math.min(CANVAS_HEIGHT - leftPaddle.height, leftPaddle.y + PADDLE_SPEED);
+          }
+
+          if (state.mode === 'pvp') {
+            if (keys.arrowUp) {
+              rightPaddle.y = Math.max(0, rightPaddle.y - PADDLE_SPEED);
+            }
+            if (keys.arrowDown) {
+              rightPaddle.y = Math.min(CANVAS_HEIGHT - rightPaddle.height, rightPaddle.y + PADDLE_SPEED);
+            }
+          } else {
+            const targetY = ball.y - rightPaddle.height / 2;
+            const diff = targetY - rightPaddle.y;
+            const aiSpeed = PADDLE_SPEED * 0.7;
+            if (Math.abs(diff) > aiSpeed) {
+              rightPaddle.y += diff > 0 ? aiSpeed : -aiSpeed;
+            } else {
+              rightPaddle.y = targetY;
+            }
+            rightPaddle.y = Math.max(0, Math.min(CANVAS_HEIGHT - rightPaddle.height, rightPaddle.y));
+          }
+
+          ball.x += ball.vx * speedMultiplier;
+          ball.y += ball.vy * speedMultiplier;
+
+          if (ball.y - BALL_RADIUS <= 0) {
+            ball.y = BALL_RADIUS;
+            ball.vy = Math.abs(ball.vy);
+            playHit();
+          }
+          if (ball.y + BALL_RADIUS >= CANVAS_HEIGHT) {
+            ball.y = CANVAS_HEIGHT - BALL_RADIUS;
+            ball.vy = -Math.abs(ball.vy);
+            playHit();
+          }
+
+          if (
+            ball.vx < 0 &&
+            ball.x - BALL_RADIUS <= leftPaddleX + PADDLE_WIDTH &&
+            ball.x - BALL_RADIUS >= leftPaddleX &&
+            ball.y >= leftPaddle.y &&
+            ball.y <= leftPaddle.y + leftPaddle.height
+          ) {
+            ball.x = leftPaddleX + PADDLE_WIDTH + BALL_RADIUS;
+            const hitPos = (ball.y - leftPaddle.y) / leftPaddle.height;
+            const angle = (hitPos - 0.5) * (Math.PI / 3);
+            const speed = Math.min(Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy) * 1.03, 12);
+            ball.vx = Math.cos(angle) * speed;
+            ball.vy = Math.sin(angle) * speed;
+            playHit();
+          }
+
+          if (
+            ball.vx > 0 &&
+            ball.x + BALL_RADIUS >= rightPaddleX &&
+            ball.x + BALL_RADIUS <= rightPaddleX + PADDLE_WIDTH &&
+            ball.y >= rightPaddle.y &&
+            ball.y <= rightPaddle.y + rightPaddle.height
+          ) {
+            ball.x = rightPaddleX - BALL_RADIUS;
+            const hitPos = (ball.y - rightPaddle.y) / rightPaddle.height;
+            const angle = Math.PI - (hitPos - 0.5) * (Math.PI / 3);
+            const speed = Math.min(Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy) * 1.03, 12);
+            ball.vx = Math.cos(angle) * speed;
+            ball.vy = Math.sin(angle) * speed;
+            playHit();
+          }
+
+          if (ball.x - BALL_RADIUS <= 0 && !scored) {
+            scored = true;
+            playScore();
+            score('right');
+            setTimeout(function() {
+              resetBall('right');
+              scored = false;
+            }, 500);
+          }
+
+          if (ball.x + BALL_RADIUS >= CANVAS_WIDTH && !scored) {
+            scored = true;
+            playScore();
+            score('left');
+            setTimeout(function() {
+              resetBall('left');
+              scored = false;
+            }, 500);
+          }
+        }
+
+        if (state.trailEnabled && state.gameStarted && !state.paused && !state.gameOver) {
+          trailPoints = predictTrajectory();
+        } else {
+          trailPoints = [];
+        }
+
+        const colors = themeColors[state.theme];
+
+        ctx.fillStyle = colors.bg1;
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        const grad = ctx.createRadialGradient(
+          CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50,
+          CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, CANVAS_WIDTH / 2
+        );
+        grad.addColorStop(0, colors.bg2);
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        if (state.theme === 'grass') {
+          ctx.strokeStyle = '#1a3d2044';
+          ctx.lineWidth = 1;
+          for (let i = 0; i < CANVAS_HEIGHT; i += 15) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(CANVAS_WIDTH, i);
+            ctx.stroke();
+          }
+        } else if (state.theme === 'beach') {
+          ctx.strokeStyle = '#3d2e1a33';
+          ctx.lineWidth = 1;
+          for (let i = 0; i < CANVAS_HEIGHT; i += 20) {
+            ctx.beginPath();
+            ctx.moveTo(0, i + Math.sin(i * 0.1) * 5);
+            ctx.lineTo(CANVAS_WIDTH, i + Math.sin(i * 0.1 + 2) * 5);
+            ctx.stroke();
+          }
+        } else {
+          ctx.strokeStyle = '#2d181033';
+          ctx.lineWidth = 1;
+          for (let i = 0; i < CANVAS_HEIGHT; i += 30) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(CANVAS_WIDTH, i);
+            ctx.stroke();
+          }
+        }
+
+        ctx.setLineDash([10, 10]);
+        ctx.strokeStyle = colors.courtLine;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(CANVAS_WIDTH / 2, 0);
+        ctx.lineTo(CANVAS_WIDTH / 2, CANVAS_HEIGHT);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.strokeStyle = colors.courtLine;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(5, 5, CANVAS_WIDTH - 10, CANVAS_HEIGHT - 10);
+
+        if (trailPoints.length > 1) {
+          ctx.beginPath();
+          ctx.moveTo(trailPoints[0].x, trailPoints[0].y);
+          for (let i = 1; i < trailPoints.length; i++) {
+            ctx.lineTo(trailPoints[i].x, trailPoints[i].y);
+          }
+          ctx.strokeStyle = '#ffffff22';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 6]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        function drawPaddle(x, paddle, color, glow) {
+          ctx.shadowColor = glow;
+          ctx.shadowBlur = 15;
+          ctx.fillStyle = color;
+          roundRect(x, paddle.y, PADDLE_WIDTH, paddle.height, 4);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        drawPaddle(leftPaddleX, leftPaddle, colors.leftPaddle, colors.leftGlow);
+        drawPaddle(rightPaddleX, rightPaddle, colors.rightPaddle, colors.rightGlow);
+
+        if (!scored || (state.gameStarted && !state.gameOver)) {
+          ctx.shadowColor = '#ffffff88';
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = colors.ball;
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        if (flash) {
+          flash.frames++;
+          if (flash.frames < 60) {
+            const alpha = Math.abs(Math.sin(flash.frames * 0.15)) * 0.3;
+            const flashColor = flash.side === 'left' ? colors.leftPaddle : colors.rightPaddle;
+            ctx.fillStyle = flashColor + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          } else {
+            flash = null;
+          }
+        }
+
+        if (!state.gameStarted && !state.gameOver) {
+          ctx.fillStyle = '#ffffff88';
+          ctx.font = '18px "Source Sans 3", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('按空格键开始游戏', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 40);
+          ctx.font = '14px "Source Sans 3", sans-serif';
+          ctx.fillStyle = '#ffffff55';
+          ctx.fillText('左方: W / S    右方: ↑ / ↓', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 65);
+        }
+
+        if (state.paused && !state.gameOver) {
+          ctx.fillStyle = '#00000088';
+          ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 32px "Orbitron", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('暂停', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+        }
+
+        if (state.gameOver && state.winner) {
+          const winnerColor = state.winner === 'left' ? colors.leftPaddle : colors.rightPaddle;
+          ctx.fillStyle = '#00000099';
+          ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          ctx.fillStyle = winnerColor;
+          ctx.font = 'bold 36px "Orbitron", monospace';
+          ctx.textAlign = 'center';
+          ctx.shadowColor = winnerColor;
+          ctx.shadowBlur = 20;
+          const winnerText = state.winner === 'left' ? '左方' : '右方';
+          ctx.fillText(winnerText + '获胜!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 10);
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = '#ffffffaa';
+          ctx.font = '16px "Source Sans 3", sans-serif';
+          ctx.fillText('按重置按钮重新开始', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 30);
+        }
+
+        animationId = requestAnimationFrame(gameLoop);
+      }
+
+      document.addEventListener('keydown', function(e) {
+        const key = e.key.toLowerCase();
+        if (key === 'w') keys.w = true;
+        if (key === 's') keys.s = true;
+        if (key === 'arrowup') { keys.arrowUp = true; e.preventDefault(); }
+        if (key === 'arrowdown') { keys.arrowDown = true; e.preventDefault(); }
+        if (key === ' ') {
+          e.preventDefault();
+          if (!state.gameStarted) {
+            startGame();
+          }
+        }
+      });
+
+      document.addEventListener('keyup', function(e) {
+        const key = e.key.toLowerCase();
+        if (key === 'w') keys.w = false;
+        if (key === 's') keys.s = false;
+        if (key === 'arrowup') keys.arrowUp = false;
+        if (key === 'arrowdown') keys.arrowDown = false;
+      });
+
+      startBtn.addEventListener('click', startGame);
+      pauseBtn.addEventListener('click', togglePause);
+      resetBtn.addEventListener('click', reset);
+
+      modePvpBtn.addEventListener('click', function() { setMode('pvp'); });
+      modePveBtn.addEventListener('click', function() { setMode('pve'); });
+
+      document.querySelectorAll('[data-theme]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          setTheme(btn.dataset.theme);
+        });
+      });
+
+      speedSlider.addEventListener('input', function(e) {
+        state.ballSpeed = Number(e.target.value);
+        speedValue.textContent = e.target.value;
+      });
+
+      paddleSlider.addEventListener('input', function(e) {
+        const h = Number(e.target.value);
+        state.paddleHeight = h;
+        leftPaddle.height = h;
+        rightPaddle.height = h;
+        paddleValue.textContent = h + 'px';
+      });
+
+      soundToggle.addEventListener('click', function() {
+        state.soundEnabled = !state.soundEnabled;
+        soundToggle.classList.toggle('active', state.soundEnabled);
+        soundIconOn.style.display = state.soundEnabled ? 'block' : 'none';
+        soundIconOff.style.display = state.soundEnabled ? 'none' : 'block';
+      });
+
+      trailToggle.addEventListener('click', function() {
+        state.trailEnabled = !state.trailEnabled;
+        trailToggle.classList.toggle('active', state.trailEnabled);
+      });
+
+      leftPaddle.height = state.paddleHeight;
+      rightPaddle.height = state.paddleHeight;
+      loadStreaks();
+      renderHistory();
+      updateButtons();
+      resetBall();
+      animationId = requestAnimationFrame(gameLoop);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}问卷验证 - 问卷调查系统{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 0 auto;">
+    <h2>🔒 问卷访问验证</h2>
+    <p style="color: #666; margin-bottom: 20px;">此问卷需要密码才能访问</p>
+    
+    {% if error %}
+    <div class="error">密码错误，请重试</div>
+    {% endif %}
+    
+    <form method="POST">
+        <div class="form-group">
+            <label>访问密码</label>
+            <input type="password" name="password" required placeholder="请输入问卷密码">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">验证并进入问卷</button>
+    </form>
+    
+    <a href="{{ url_for('index') }}" style="display: block; text-align: center; margin-top: 15px; color: #667eea; text-decoration: none;">返回首页</a>
+</div>
+{% endblock %}

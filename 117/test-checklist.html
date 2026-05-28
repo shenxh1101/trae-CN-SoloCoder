@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能测试验证清单</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1f35;
+            color: #e0e6f0;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #00ff88;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0,255,136,0.5);
+        }
+        .section {
+            background: #2a3050;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #3a3f5c;
+        }
+        h2 {
+            color: #ff3366;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .test-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #5a6480;
+            border-radius: 4px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .test-item.passed .checkbox {
+            background: #00ff88;
+            border-color: #00ff88;
+        }
+        .test-item.passed .checkbox::after {
+            content: '✓';
+            color: #0a0e1a;
+            font-weight: bold;
+        }
+        .test-text { flex: 1; }
+        .test-hint {
+            font-size: 12px;
+            color: #8892a8;
+            margin-top: 4px;
+        }
+        .summary {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(255,51,102,0.1));
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .summary-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .game-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: rgba(0,255,136,0.2);
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .game-link:hover {
+            background: rgba(0,255,136,0.3);
+            box-shadow: 0 0 20px rgba(0,255,136,0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>🐍 贪吃蛇游戏功能测试清单</h1>
+
+    <div class="section">
+        <h2>1️⃣ 单人模式基础功能</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>基本移动控制</div>
+                <div class="test-hint">WASD 或方向键控制蛇移动</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>吃到食物得分</div>
+                <div class="test-hint">吃到红色食物后分数增加1分</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>蛇身增长</div>
+                <div class="test-hint">吃食物后蛇身增加一节</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>撞墙死亡</div>
+                <div class="test-hint">蛇头碰到墙壁或边界后游戏结束</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>撞自身死亡</div>
+                <div class="test-hint">蛇头碰到自己身体后游戏结束</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2️⃣ 双人模式功能</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>模式切换</div>
+                <div class="test-hint">点击双人按钮切换到双人模式</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>玩家1控制</div>
+                <div class="test-hint">WASD 控制绿色蛇移动</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>玩家2控制</div>
+                <div class="test-hint">方向键控制蓝色蛇移动</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>独立计分</div>
+                <div class="test-hint">两条蛇分数分别显示</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>碰撞对方蛇身死亡</div>
+                <div class="test-hint">撞到对方蛇身的蛇会死亡，对方获胜</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>存活判定</div>
+                <div class="test-hint">最后存活者获胜，同时死亡则平局</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3️⃣ 地图编辑器功能</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>打开编辑器</div>
+                <div class="test-hint">点击"地图编辑"按钮打开编辑器</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>点击放置墙壁</div>
+                <div class="test-hint">点击网格放置或移除墙壁</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>拖拽绘制墙壁</div>
+                <div class="test-hint">按住鼠标拖拽可连续绘制</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>保存地图到localStorage</div>
+                <div class="test-hint">输入名称后点击保存，刷新页面仍存在</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>加载自定义地图</div>
+                <div class="test-hint">在左侧地图列表点击自定义地图名称</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>右键编辑已有地图</div>
+                <div class="test-hint">右键点击自定义地图按钮可重新编辑</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4️⃣ 预设地图功能</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>经典模式</div>
+                <div class="test-hint">无障碍物的空白地图</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>十字迷宫</div>
+                <div class="test-hint">中心十字形墙壁</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>框中框</div>
+                <div class="test-hint">双层框形墙壁</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>散落障碍</div>
+                <div class="test-hint">随机散布的墙壁块</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5️⃣ 音效功能</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>吃食物音效</div>
+                <div class="test-hint">吃到食物时播放轻快音调</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>死亡音效</div>
+                <div class="test-hint">游戏结束时播放低沉下降音调</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>双人胜利音效</div>
+                <div class="test-hint">双人模式一方获胜时播放上升音阶</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>音效开关</div>
+                <div class="test-hint">点击右上角喇叭图标开关音效</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6️⃣ 暂停和恢复</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>空格键暂停</div>
+                <div class="test-hint">游戏中按空格键暂停</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>暂停按钮</div>
+                <div class="test-hint">点击暂停按钮暂停游戏</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>恢复游戏</div>
+                <div class="test-hint">暂停后按空格或点击恢复继续游戏</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>7️⃣ 视觉效果</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>下个食物位置提示</div>
+                <div class="test-hint">半透明虚线圆圈标记下一个食物位置</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>蛇身颜色渐变</div>
+                <div class="test-hint">从头部深色逐渐过渡到尾部浅色</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>蛇头方向眼睛</div>
+                <div class="test-hint">蛇头眼睛朝向移动方向</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>食物脉冲动画</div>
+                <div class="test-hint">食物有呼吸般的脉动效果</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8️⃣ 数据持久化</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>单人最高分存储</div>
+                <div class="test-hint">刷新页面后最高分保持</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>双人最高分存储</div>
+                <div class="test-hint">双人模式最高分独立存储</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>自定义地图持久化</div>
+                <div class="test-hint">刷新页面后自定义地图仍在列表中</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>9️⃣ 速度和移动端</h2>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>速度随得分加快</div>
+                <div class="test-hint">得分越高蛇移动越快</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>速度显示</div>
+                <div class="test-hint">左侧显示当前速度倍数</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>移动端方向按钮</div>
+                <div class="test-hint">屏幕变窄时显示虚拟方向键</div>
+            </div>
+        </div>
+        <div class="test-item" onclick="this.classList.toggle('passed')">
+            <div class="checkbox"></div>
+            <div class="test-text">
+                <div>触屏滑动控制</div>
+                <div class="test-hint">在画布上滑动控制方向</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary">
+        <div class="summary-text" id="result">请在浏览器中逐项测试！</div>
+        <br>
+        <a href="index.html" class="game-link" target="_blank">🎮 打开游戏进行测试</a>
+    </div>
+
+    <script>
+        const items = document.querySelectorAll('.test-item');
+        function updateSummary() {
+            const passed = document.querySelectorAll('.test-item.passed').length;
+            const total = items.length;
+            const percent = Math.round(passed / total * 100);
+            document.getElementById('result').textContent = 
+                `通过: ${passed}/${total} (${percent}%)`;
+        }
+        items.forEach(item => {
+            item.addEventListener('click', updateSummary);
+        });
+    </script>
+</body>
+</html>

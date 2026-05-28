@@ -1,0 +1,196 @@
+[
+  {
+    "id": "63c27bf4-cf4b-4644-a00e-90e85b28511c",
+    "timestamp": "2026-05-28T15:24:37.328835",
+    "method": "GET",
+    "url": "https://httpbin.org/json",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "41d30e13-d6c6-40f0-a2ce-5ef4d8a4bf26",
+    "timestamp": "2026-05-28T15:24:30.476981",
+    "method": "GET",
+    "url": "https://httpbin.org/status/202",
+    "headers": {},
+    "body": "",
+    "status_code": 202
+  },
+  {
+    "id": "000ca387-9ba9-489c-b2a8-2b93de318e84",
+    "timestamp": "2026-05-28T15:24:28.811808",
+    "method": "GET",
+    "url": "https://httpbin.org/status/202",
+    "headers": {},
+    "body": "",
+    "status_code": 502
+  },
+  {
+    "id": "d885b8e4-24cb-448f-8f33-cc7dff2c612f",
+    "timestamp": "2026-05-28T15:24:27.169279",
+    "method": "GET",
+    "url": "https://httpbin.org/status/201",
+    "headers": {},
+    "body": "",
+    "status_code": 201
+  },
+  {
+    "id": "f279109d-d4e1-4bf8-aad9-e65b3d312b90",
+    "timestamp": "2026-05-28T15:24:25.202833",
+    "method": "GET",
+    "url": "https://httpbin.org/status/201",
+    "headers": {},
+    "body": "",
+    "status_code": 201
+  },
+  {
+    "id": "e3bb38dd-9911-4e0e-b412-10b69b13da5d",
+    "timestamp": "2026-05-28T15:24:21.828563",
+    "method": "GET",
+    "url": "https://httpbin.org/status/200",
+    "headers": {},
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "0b24d6f1-0aa5-4b4b-809d-32bae1dc2b95",
+    "timestamp": "2026-05-28T15:24:09.247507",
+    "method": "GET",
+    "url": "{{base_url}}/get",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "17f48329-0dda-4cce-9228-4418f1229304",
+    "timestamp": "2026-05-28T15:24:08.577541",
+    "method": "GET",
+    "url": "https://httpbin.org/status/200",
+    "headers": {},
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "62d0edb9-c1c0-4b89-959d-dbf95d29b71c",
+    "timestamp": "2026-05-28T15:22:41.854541",
+    "method": "GET",
+    "url": "https://httpbin.org/json",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "b6ac8fc1-2f8f-49c1-bf8f-343c83418261",
+    "timestamp": "2026-05-28T15:22:37.201890",
+    "method": "GET",
+    "url": "https://httpbin.org/status/202",
+    "headers": {},
+    "body": "",
+    "status_code": 202
+  },
+  {
+    "id": "d22c9d5f-1d33-4e10-98da-22f837e6fcc4",
+    "timestamp": "2026-05-28T15:22:31.822385",
+    "method": "GET",
+    "url": "https://httpbin.org/status/201",
+    "headers": {},
+    "body": "",
+    "status_code": 201
+  },
+  {
+    "id": "cf3b4ec4-f0bd-484a-aa23-a7d6e20520e2",
+    "timestamp": "2026-05-28T15:22:29.218030",
+    "method": "GET",
+    "url": "https://httpbin.org/status/200",
+    "headers": {},
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "bd0a80da-55ae-4407-a90f-4ed86dbda1bf",
+    "timestamp": "2026-05-28T15:22:26.698750",
+    "method": "GET",
+    "url": "https://httpbin.org/headers",
+    "headers": {
+      "X-Custom-Header": "test-value"
+    },
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "9fe316bc-14c1-4e52-92e3-1c14e61601c1",
+    "timestamp": "2026-05-28T15:22:22.700709",
+    "method": "GET",
+    "url": "{{base_url}}/get",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "3fb61c01-4a0b-42b5-b5da-861bb1035661",
+    "timestamp": "2026-05-28T15:22:16.338297",
+    "method": "GET",
+    "url": "https://httpbin.org/json",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "c32af8a4-a583-48f0-9f4b-38a67a94317e",
+    "timestamp": "2026-05-28T15:22:11.205865",
+    "method": "GET",
+    "url": "https://httpbin.org/status/202",
+    "headers": {},
+    "body": "",
+    "status_code": 202
+  },
+  {
+    "id": "db98bcd5-92ad-4473-bf26-58bf8945ca42",
+    "timestamp": "2026-05-28T15:22:08.774589",
+    "method": "GET",
+    "url": "https://httpbin.org/status/201",
+    "headers": {},
+    "body": "",
+    "status_code": 201
+  },
+  {
+    "id": "c953760e-ec8a-4b2d-95c9-a20fb77a27e5",
+    "timestamp": "2026-05-28T15:22:05.596944",
+    "method": "GET",
+    "url": "https://httpbin.org/status/200",
+    "headers": {},
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "b354d153-c983-49bd-b1a8-57e24ebbed4a",
+    "timestamp": "2026-05-28T15:21:59.641521",
+    "method": "GET",
+    "url": "https://httpbin.org/headers",
+    "headers": {
+      "X-Custom-Header": "test-value"
+    },
+    "body": "",
+    "status_code": 200
+  },
+  {
+    "id": "53ee5ceb-7551-4e52-ba4c-d0b2f4db2772",
+    "timestamp": "2026-05-28T15:17:53.083509",
+    "method": "GET",
+    "url": "https://httpbin.org/status/202",
+    "headers": {},
+    "body": "",
+    "status_code": 202
+  }
+]

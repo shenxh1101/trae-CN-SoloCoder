@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}问卷列表 - 问卷调查系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📂 我的问卷</h2>
+    
+    {% if surveys %}
+        {% for survey in surveys %}
+        <div class="question" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin-bottom: 5px;">{{ survey.title }}</h3>
+                <p style="color: #777; font-size: 14px; margin-bottom: 10px;">
+                    创建于: {{ survey.created_at[:10] }} | 
+                    <span class="badge badge-primary">{{ survey.response_count }} 份回答</span>
+                    {% if survey.password %}
+                    <span class="badge badge-warning">🔒 密码保护</span>
+                    {% endif %}
+                    {% if survey.expiry_date %}
+                    <span class="badge badge-secondary">📅 {{ survey.expiry_date }}</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a href="{{ url_for('view_survey', survey_id=survey.id) }}" class="btn btn-secondary" target="_blank">填写</a>
+                <a href="{{ url_for('view_results', survey_id=survey.id) }}" class="btn btn-primary">查看结果</a>
+                <a href="{{ url_for('copy_survey', survey_id=survey.id) }}" class="btn btn-secondary">复制</a>
+                <button onclick="confirmDelete('{{ survey.id }}', '{{ survey.title }}')" class="btn btn-danger">删除</button>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #777; text-align: center; padding: 40px;">还没有问卷，点击上方按钮创建第一个问卷吧！</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>📋 快速模板</h2>
+    <div class="template-grid">
+        {% for key, template in templates.items() %}
+        <a href="{{ url_for('use_template', template_id=key) }}" style="text-decoration: none; color: inherit;">
+            <div class="template-card">
+                <h4>{{ template.name }}</h4>
+                <p style="font-size: 13px; color: #666; margin-top: 8px;">{{ template.description[:50] }}...</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3>确认删除</h3>
+        <p>确定要删除问卷 "<span id="surveyTitle"></span>" 吗？</p>
+        <p style="color: #e74c3c; margin-top: 10px;">删除后数据将备份到 backups 目录。</p>
+        <div class="modal-buttons">
+            <button onclick="closeModal()" class="btn btn-secondary">取消</button>
+            <button onclick="doDelete()" class="btn btn-danger">确认删除</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let deleteId = null;
+
+function confirmDelete(id, title) {
+    deleteId = id;
+    document.getElementById('surveyTitle').textContent = title;
+    document.getElementById('deleteModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('deleteModal').classList.remove('show');
+    deleteId = null;
+}
+
+function doDelete() {
+    if (!deleteId) return;
+    
+    fetch(`/survey/${deleteId}/delete`, {
+        method: 'POST'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
+{% endblock %}

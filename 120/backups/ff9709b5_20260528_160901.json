@@ -1,0 +1,40 @@
+{
+  "id": "ff9709b5",
+  "title": "功能测试问卷",
+  "description": "这是一个自动化测试问卷",
+  "questions": [
+    {
+      "type": "radio",
+      "title": "您喜欢的编程语言？",
+      "required": true,
+      "options": [
+        "Python",
+        "JavaScript",
+        "Java",
+        "Go"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "title": "您用过哪些框架？（可多选）",
+      "required": false,
+      "options": [
+        "Flask",
+        "Django",
+        "React",
+        "Vue",
+        "Spring"
+      ]
+    },
+    {
+      "type": "text",
+      "title": "您的建议",
+      "required": false
+    }
+  ],
+  "created_at": "2026-05-28T16:09:01.549588",
+  "password": "",
+  "expiry_date": "",
+  "one_per_ip": false,
+  "per_page": 0
+}

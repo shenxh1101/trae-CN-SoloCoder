@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}{{ survey.title }} - 问卷调查系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ survey.title }}</h2>
+    {% if survey.description %}
+    <p style="color: #666; margin-bottom: 20px;">{{ survey.description }}</p>
+    {% endif %}
+    
+    {% if total_pages > 1 %}
+    <p style="color: #777; font-size: 14px; margin-bottom: 20px;">第 {{ current_page }} / {{ total_pages }} 页</p>
+    {% endif %}
+    
+    <div id="surveyForm">
+        {% for question in questions %}
+        <div class="question" data-index="{{ (current_page - 1) * per_page + loop.index0 if per_page else loop.index0 }}" data-required="{{ 'true' if question.required else 'false' }}" data-type="{{ question.type }}">
+            <div class="question-title">
+                {{ (current_page - 1) * per_page + loop.index if per_page else loop.index }}. {{ question.title }}
+                {% if question.required %}
+                <span class="required">*</span>
+                {% endif %}
+            </div>
+            
+            {% if question.type == 'radio' %}
+            <div class="radio-group">
+                {% for option in question.options %}
+                <label>
+                    <input type="radio" name="q{{ (current_page - 1) * per_page + loop.index0 if per_page else loop.index0 }}" value="{{ option }}">
+                    {{ option }}
+                </label>
+                {% endfor %}
+            </div>
+            {% elif question.type == 'checkbox' %}
+            <div class="checkbox-group">
+                {% for option in question.options %}
+                <label>
+                    <input type="checkbox" name="q{{ (current_page - 1) * per_page + loop.index0 if per_page else loop.index0 }}" value="{{ option }}">
+                    {{ option }}
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            <textarea name="q{{ (current_page - 1) * per_page + loop.index0 if per_page else loop.index0 }}" placeholder="请输入您的回答..." style="width: 100%;"></textarea>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div id="errorContainer" class="error" style="display: none;"></div>
+    
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if current_page > 1 %}
+        <a href="?page={{ current_page - 1 }}">上一页</a>
+        {% endif %}
+        {% for page in range(1, total_pages + 1) %}
+        <a href="?page={{ page }}" {% if page == current_page %}class="active"{% endif %}>{{ page }}</a>
+        {% endfor %}
+        {% if current_page < total_pages %}
+        <a href="?page={{ current_page + 1 }}">下一页</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if current_page == total_pages or total_pages == 1 %}
+    <button onclick="submitSurvey()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">提交问卷</button>
+    {% endif %}
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content" style="text-align: center;">
+        <h3>🎉 提交成功！</h3>
+        <p style="margin: 20px 0;">感谢您的参与！</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">返回首页</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function collectAnswers() {
+    const answers = {};
+    document.querySelectorAll('.question').forEach(q => {
+        const index = q.dataset.index;
+        const type = q.dataset.type;
+        
+        if (type === 'radio') {
+            const checked = q.querySelector('input[type="radio"]:checked');
+            if (checked) {
+                answers[index] = checked.value;
+            }
+        } else if (type === 'checkbox') {
+            const checked = q.querySelectorAll('input[type="checkbox"]:checked');
+            answers[index] = Array.from(checked).map(c => c.value);
+        } else {
+            const textarea = q.querySelector('textarea');
+            if (textarea && textarea.value.trim()) {
+                answers[index] = textarea.value.trim();
+            }
+        }
+    });
+    return answers;
+}
+
+function submitSurvey() {
+    const answers = collectAnswers();
+    const errorContainer = document.getElementById('errorContainer');
+    errorContainer.style.display = 'none';
+    
+    fetch('/survey/{{ survey.id }}/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({answers: answers})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('successModal').classList.add('show');
+        } else {
+            errorContainer.textContent = data.errors ? data.errors.join('\n') : (data.error || '提交失败');
+            errorContainer.style.display = 'block';
+        }
+    });
+}
+
+document.getElementById('successModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        window.location.href = '/';
+    }
+});
+</script>
+{% endblock %}

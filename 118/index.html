@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>霓虹狂飙 - 赛车躲避游戏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="menu-screen" class="overlay">
+            <div class="menu-content">
+                <h1 class="game-title">霓虹狂飙</h1>
+                <p class="game-subtitle">NEON RUSH</p>
+
+                <div class="menu-section">
+                    <p class="section-label">选择赛车</p>
+                    <div class="skin-selector">
+                        <div class="skin-option selected" data-color="red">
+                            <div class="car-preview" style="background: linear-gradient(135deg, #ff1744, #d50000);"></div>
+                            <span>烈焰红</span>
+                        </div>
+                        <div class="skin-option" data-color="blue">
+                            <div class="car-preview" style="background: linear-gradient(135deg, #2979ff, #0d47a1);"></div>
+                            <span>深海蓝</span>
+                        </div>
+                        <div class="skin-option" data-color="green">
+                            <div class="car-preview" style="background: linear-gradient(135deg, #00e676, #1b5e20);"></div>
+                            <span>翡翠绿</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <p class="section-label">车道模式</p>
+                    <div class="lane-selector">
+                        <button class="lane-btn active" data-lanes="2">双车道</button>
+                        <button class="lane-btn" data-lanes="3">三车道</button>
+                    </div>
+                </div>
+
+                <div class="high-score-display">
+                    <span class="trophy">&#9733;</span>
+                    最高分: <span id="menu-high-score">0</span>
+                </div>
+
+                <button id="start-btn" class="neon-btn pulse">
+                    <span>开始游戏</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="hud" class="hidden">
+            <div class="hud-left">
+                <div class="score-display">
+                    <span class="score-label">得分</span>
+                    <span id="current-score" class="score-value">0</span>
+                </div>
+            </div>
+            <div class="hud-right">
+                <div id="shield-indicator" class="power-indicator hidden">
+                    <span class="indicator-icon shield-icon">&#9733;</span>
+                    <span class="indicator-label">护盾</span>
+                </div>
+                <div id="boost-indicator" class="power-indicator hidden">
+                    <span class="indicator-icon boost-icon">&#9889;</span>
+                    <span class="indicator-label">加速</span>
+                </div>
+                <button id="sound-toggle" class="icon-btn" title="音效开关">
+                    <span id="sound-icon">&#9835;</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="gameover-screen" class="overlay hidden">
+            <div class="gameover-content">
+                <h2 class="gameover-title">游戏结束</h2>
+                <div class="final-score-section">
+                    <p class="final-score-label">最终得分</p>
+                    <p id="final-score" class="final-score-value">0</p>
+                </div>
+                <div id="new-record" class="new-record hidden">
+                    <span>&#9733; 新纪录! &#9733;</span>
+                </div>
+                <div class="high-score-section">
+                    最高分: <span id="gameover-high-score">0</span>
+                </div>
+                <div class="gameover-buttons">
+                    <button id="retry-btn" class="neon-btn cyan">
+                        <span>再来一局</span>
+                    </button>
+                    <button id="share-btn" class="neon-btn magenta">
+                        <span>分享得分</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-controls" class="hidden">
+            <div class="touch-zone left-zone" data-direction="left"></div>
+            <div class="touch-zone right-zone" data-direction="right"></div>
+        </div>
+    </div>
+
+    <script src="js/audio.js"></script>
+    <script src="js/score.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/obstacle.js"></script>
+    <script src="js/powerup.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

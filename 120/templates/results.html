@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ survey.title }} - 调查结果{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h2>📊 {{ survey.title }}</h2>
+            <p style="color: #777;">共收到 <strong>{{ responses|length }}</strong> 份回答</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="{{ url_for('export_csv', survey_id=survey.id) }}" class="btn btn-secondary">导出 CSV</a>
+            <a href="{{ url_for('export_excel', survey_id=survey.id) }}" class="btn btn-secondary">导出 Excel</a>
+            <a href="{{ url_for('view_survey', survey_id=survey.id) }}" class="btn btn-primary" target="_blank">填写问卷</a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">返回</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📈 统计图表</h3>
+    {% for stat in stats %}
+        {% if stat.type in ['radio', 'checkbox'] %}
+        <div class="question">
+            <h4>{{ loop.index }}. {{ stat.title }}</h4>
+            <div class="chart-container">
+                <canvas id="chart_{{ stat.index }}"></canvas>
+            </div>
+            <div style="margin-top: 15px;">
+                {% for option, count in stat.counts.items() %}
+                <div style="margin: 8px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>{{ option }}</span>
+                        <span>{{ count }} ({{ stat.percentages[option] }}%)</span>
+                    </div>
+                    <div class="stats-bar">
+                        <div class="stats-bar-fill" style="width: {{ stat.percentages[option] }}%;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h3>📋 详细回答</h3>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>提交时间</th>
+                    <th>IP地址</th>
+                    {% for question in survey.questions %}
+                    <th>{{ question.title[:15] }}{% if question.title|length > 15 %}...{% endif %}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for response in responses %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ response.timestamp[:19] }}</td>
+                    <td>{{ response.ip }}</td>
+                    {% for i in range(survey.questions|length) %}
+                    <td>
+                        {% set answer = response.answers.get(i|string) %}
+                        {% if answer is iterable and answer is not string %}
+                            {{ answer|join(', ') }}
+                        {% else %}
+                            {{ answer or '-' }}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📝 文本题回答详情</h3>
+    {% for stat in stats %}
+        {% if stat.type == 'text' %}
+        <div class="question">
+            <h4>{{ stat.index + 1 }}. {{ stat.title }}</h4>
+            <ul style="list-style: none; padding: 0;">
+                {% for response in responses %}
+                    {% set answer = response.answers.get(stat.index|string) %}
+                    {% if answer %}
+                    <li style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                        <small style="color: #777;">#{{ loop.index }} - {{ response.timestamp[:16] }}</small>
+                        <p style="margin: 5px 0 0 0;">{{ answer }}</p>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const colors = [
+    '#667eea', '#764ba2', '#f093fb', '#f5576c', 
+    '#4facfe', '#43e97b', '#fa709a', '#fee140',
+    '#30cfd0', '#330867', '#a8edea', '#fed6e3'
+];
+
+{% for stat in stats %}
+    {% if stat.type in ['radio', 'checkbox'] %}
+    (function() {
+        const ctx = document.getElementById('chart_{{ stat.index }}').getContext('2d');
+        const labels = {{ stat.counts.keys()|list|tojson }};
+        const data = {{ stat.counts.values()|list|tojson }};
+        
+        new Chart(ctx, {
+            type: '{{ "pie" if stat.type == "radio" else "bar" }}',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                {% if stat.type == 'bar' %}
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+                {% endif %}
+            }
+        });
+    })();
+    {% endif %}
+{% endfor %}
+</script>
+{% endblock %}

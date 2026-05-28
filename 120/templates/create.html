@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}创建问卷 - 问卷调查系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>✏️ {% if template %}编辑{% else %}创建{% endif %}问卷</h2>
+    
+    <div class="form-group">
+        <label>问卷标题 *</label>
+        <input type="text" id="surveyTitle" placeholder="请输入问卷标题" {% if template %}value="{{ template.title }}"{% endif %}>
+    </div>
+    
+    <div class="form-group">
+        <label>问卷描述</label>
+        <textarea id="surveyDescription" placeholder="请输入问卷描述（可选）">{% if template %}{{ template.description }}{% endif %}</textarea>
+    </div>
+    
+    <div class="form-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div>
+            <label>访问密码（可选）</label>
+            <input type="password" id="surveyPassword" placeholder="留空则不设密码">
+        </div>
+        <div>
+            <label>截止日期（可选）</label>
+            <input type="date" id="surveyExpiry">
+        </div>
+        <div>
+            <label>每页显示问题数</label>
+            <input type="number" id="perPage" min="0" value="0" placeholder="0表示不分页">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="onePerIp" style="width: auto;">
+            限制同一IP只能提交一次
+        </label>
+    </div>
+    
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
+    
+    <div id="questionsContainer">
+        <h3>问题列表</h3>
+        <div id="questionsList">
+            {% if template and template.questions %}
+                {% for q in template.questions %}
+                <div class="question" data-index="{{ loop.index0 }}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div class="form-group">
+                                <label>问题 {{ loop.index }} *</label>
+                                <input type="text" class="question-title" value="{{ q.title }}" placeholder="请输入问题">
+                            </div>
+                            <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                                <div>
+                                    <label>类型</label>
+                                    <select class="question-type" style="width: auto;" onchange="toggleOptions(this)">
+                                        <option value="radio" {% if q.type == 'radio' %}selected{% endif %}>单选题</option>
+                                        <option value="checkbox" {% if q.type == 'checkbox' %}selected{% endif %}>多选题</option>
+                                        <option value="text" {% if q.type == 'text' %}selected{% endif %}>文本题</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" class="question-required" {% if q.required %}checked{% endif %}>
+                                        必填
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="options-container" style="display: {% if q.type == 'text' %}none{% else %}block{% endif %};">
+                                <label>选项（每行一个）</label>
+                                <textarea class="question-options" placeholder="每行一个选项">{% if q.options %}{{ q.options | join('
+') }}{% endif %}</textarea>
+                            </div>
+                        </div>
+                        <button onclick="removeQuestion(this)" class="btn btn-danger" style="margin-left: 15px;">×</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <button onclick="addQuestion()" class="btn btn-secondary" style="width: 100%; margin: 20px 0;">+ 添加问题</button>
+    
+    <div style="display: flex; gap: 15px;">
+        <button onclick="saveSurvey()" class="btn btn-primary" style="flex: 1;">保存并生成问卷</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">取消</a>
+    </div>
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content" style="max-width: 500px; text-align: center;">
+        <h3>🎉 问卷创建成功！</h3>
+        <p style="margin: 20px 0;">分享此链接或二维码给用户填写：</p>
+        <div class="qr-code" id="qrCodeContainer">
+        </div>
+        <div style="margin: 15px 0; word-break: break-all;">
+            <a id="surveyLink" href="#" target="_blank" style="color: #667eea;"></a>
+        </div>
+        <div class="modal-buttons" style="justify-content: center;">
+            <button onclick="copyLink()" class="btn btn-secondary">复制链接</button>
+            <a id="viewResultsBtn" href="#" class="btn btn-primary">查看结果</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let questionCount = {{ template.questions | length if template and template.questions else 0 }};
+
+function addQuestion() {
+    questionCount++;
+    const container = document.getElementById('questionsList');
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.dataset.index = index;
+    div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <div class="form-group">
+                    <label>问题 ${index + 1} *</label>
+                    <input type="text" class="question-title" placeholder="请输入问题">
+                </div>
+                <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <div>
+                        <label>类型</label>
+                        <select class="question-type" style="width: auto;" onchange="toggleOptions(this)">
+                            <option value="radio">单选题</option>
+                            <option value="checkbox">多选题</option>
+                            <option value="text">文本题</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" class="question-required" checked>
+                            必填
+                        </label>
+                    </div>
+                </div>
+                <div class="options-container">
+                    <label>选项（每行一个）</label>
+                    <textarea class="question-options" placeholder="每行一个选项">选项1
+选项2
+选项3</textarea>
+                </div>
+            </div>
+            <button onclick="removeQuestion(this)" class="btn btn-danger" style="margin-left: 15px;">×</button>
+        </div>
+    `;
+    container.appendChild(div);
+    renumberQuestions();
+}
+
+function removeQuestion(btn) {
+    const question = btn.closest('.question');
+    question.remove();
+    renumberQuestions();
+}
+
+function renumberQuestions() {
+    document.querySelectorAll('#questionsList .question').forEach((q, i) => {
+        q.dataset.index = i;
+        q.querySelector('.form-group label').textContent = `问题 ${i + 1} *`;
+    });
+}
+
+function toggleOptions(select) {
+    const container = select.closest('.question').querySelector('.options-container');
+    container.style.display = select.value === 'text' ? 'none' : 'block';
+}
+
+function collectQuestions() {
+    const questions = [];
+    document.querySelectorAll('#questionsList .question').forEach((q, i) => {
+        const type = q.querySelector('.question-type').value;
+        const title = q.querySelector('.question-title').value.trim();
+        const required = q.querySelector('.question-required').checked;
+        
+        if (!title) return;
+        
+        const question = {
+            type: type,
+            title: title,
+            required: required
+        };
+        
+        if (type !== 'text') {
+            const optionsText = q.querySelector('.question-options').value;
+            question.options = optionsText.split('\n').map(o => o.trim()).filter(o => o);
+        }
+        
+        questions.push(question);
+    });
+    return questions;
+}
+
+function saveSurvey() {
+    const title = document.getElementById('surveyTitle').value.trim();
+    const description = document.getElementById('surveyDescription').value.trim();
+    const password = document.getElementById('surveyPassword').value.trim();
+    const expiryDate = document.getElementById('surveyExpiry').value;
+    const perPage = parseInt(document.getElementById('perPage').value) || 0;
+    const onePerIp = document.getElementById('onePerIp').checked;
+    const questions = collectQuestions();
+    
+    if (!title) {
+        alert('请输入问卷标题');
+        return;
+    }
+    
+    if (questions.length === 0) {
+        alert('请至少添加一个问题');
+        return;
+    }
+    
+    const invalidQuestions = questions.filter(q => (q.type === 'radio' || q.type === 'checkbox') && (!q.options || q.options.length === 0));
+    if (invalidQuestions.length > 0) {
+        alert('请为所有选择题添加至少一个选项');
+        return;
+    }
+    
+    const data = {
+        title: title,
+        description: description,
+        questions: questions,
+        password: password || null,
+        expiry_date: expiryDate || null,
+        per_page: perPage,
+        one_per_ip: onePerIp
+    };
+    
+    fetch('/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showSuccessModal(data.survey_id);
+        }
+    });
+}
+
+function showSuccessModal(surveyId) {
+    const link = `${window.location.origin}/survey/${surveyId}`;
+    document.getElementById('surveyLink').href = link;
+    document.getElementById('surveyLink').textContent = link;
+    document.getElementById('viewResultsBtn').href = `/survey/${surveyId}/results`;
+    
+    const qrContainer = document.getElementById('qrCodeContainer');
+    qrContainer.innerHTML = `<img src="/survey/${surveyId}/qrcode" alt="QR Code" style="max-width: 150px;">`;
+    
+    document.getElementById('successModal').classList.add('show');
+}
+
+function copyLink() {
+    const link = document.getElementById('surveyLink').textContent;
+    navigator.clipboard.writeText(link).then(() => {
+        alert('链接已复制到剪贴板！');
+    });
+}
+
+document.getElementById('successModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        window.location.href = '/';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>霓虹迷宫蛇</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header id="header">
+            <h1 class="game-title">NEON SNAKE</h1>
+            <div class="header-controls">
+                <button id="btn-sound" class="ctrl-btn" title="音效开关">
+                    <span class="icon-sound-on">🔊</span>
+                    <span class="icon-sound-off" style="display:none">🔇</span>
+                </button>
+            </div>
+        </header>
+
+        <main id="main">
+            <aside id="panel-left" class="side-panel">
+                <div class="score-card">
+                    <div class="score-label">SCORE</div>
+                    <div id="score-display" class="score-value">0</div>
+                </div>
+                <div class="score-card high-score-card">
+                    <div class="score-label">BEST</div>
+                    <div id="highscore-display" class="score-value">0</div>
+                </div>
+                <div id="player2-scores" class="player2-scores" style="display:none">
+                    <div class="score-card p2">
+                        <div class="score-label">P2 SCORE</div>
+                        <div id="score-display-p2" class="score-value">0</div>
+                    </div>
+                    <div class="score-card p2 high-score-card">
+                        <div class="score-label">P2 BEST</div>
+                        <div id="highscore-display-p2" class="score-value">0</div>
+                    </div>
+                </div>
+                <div class="speed-indicator">
+                    <div class="score-label">SPEED</div>
+                    <div id="speed-display" class="speed-value">1x</div>
+                </div>
+                <div class="map-selector">
+                    <div class="score-label">MAP</div>
+                    <div id="map-buttons" class="map-buttons"></div>
+                </div>
+                <div id="custom-maps-section" class="custom-maps-section">
+                    <div class="score-label">CUSTOM</div>
+                    <div id="custom-map-buttons" class="map-buttons"></div>
+                </div>
+            </aside>
+
+            <div id="game-container">
+                <canvas id="game-canvas"></canvas>
+                <div id="game-overlay" class="game-overlay">
+                    <div id="overlay-content" class="overlay-content">
+                        <div class="overlay-title">NEON SNAKE</div>
+                        <div class="overlay-subtitle">按 开始 或 空格 开始游戏</div>
+                    </div>
+                </div>
+            </div>
+
+            <aside id="panel-right" class="side-panel">
+                <div class="control-group">
+                    <button id="btn-start" class="action-btn btn-start">开始</button>
+                    <button id="btn-pause" class="action-btn btn-pause" style="display:none">暂停</button>
+                    <button id="btn-resume" class="action-btn btn-resume" style="display:none">恢复</button>
+                </div>
+                <div class="mode-group">
+                    <button id="btn-single" class="mode-btn active">单人</button>
+                    <button id="btn-dual" class="mode-btn">双人</button>
+                </div>
+                <button id="btn-editor" class="action-btn btn-editor">地图编辑</button>
+                <div id="controls-info" class="controls-info">
+                    <div class="score-label">CONTROLS</div>
+                    <div class="control-hint">
+                        <span class="key-badge">W</span><span class="key-badge">A</span><span class="key-badge">S</span><span class="key-badge">D</span>
+                        <span class="control-desc">移动</span>
+                    </div>
+                    <div class="control-hint">
+                        <span class="key-badge">Space</span>
+                        <span class="control-desc">暂停</span>
+                    </div>
+                </div>
+                <div id="controls-info-p2" class="controls-info" style="display:none">
+                    <div class="score-label">P2 CONTROLS</div>
+                    <div class="control-hint">
+                        <span class="key-badge">↑</span><span class="key-badge">←</span><span class="key-badge">↓</span><span class="key-badge">→</span>
+                        <span class="control-desc">移动</span>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <div id="touch-controls" class="touch-controls">
+            <button class="touch-btn touch-up" data-dir="up">▲</button>
+            <button class="touch-btn touch-left" data-dir="left">◀</button>
+            <button class="touch-btn touch-right" data-dir="right">▶</button>
+            <button class="touch-btn touch-down" data-dir="down">▼</button>
+        </div>
+
+        <div id="editor-modal" class="editor-modal" style="display:none">
+            <div class="editor-container">
+                <div class="editor-header">
+                    <h2>地图编辑器</h2>
+                    <button id="btn-editor-close" class="ctrl-btn">✕</button>
+                </div>
+                <div class="editor-body">
+                    <canvas id="editor-canvas"></canvas>
+                </div>
+                <div class="editor-footer">
+                    <input id="map-name-input" type="text" placeholder="地图名称" maxlength="20" class="map-name-input">
+                    <button id="btn-editor-save" class="action-btn btn-save">保存</button>
+                    <button id="btn-editor-clear" class="action-btn btn-clear">清空</button>
+                    <button id="btn-editor-delete" class="action-btn btn-delete" style="display:none">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="audio.js"></script>
+    <script src="renderer.js"></script>
+    <script src="editor.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
