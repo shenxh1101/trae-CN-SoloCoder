@@ -28,7 +28,7 @@ def is_encrypted_or_compressed(entropy, data_len):
         return True, "High entropy (>7.5) - likely encrypted or compressed"
     elif entropy > 6.5:
         return True, "Moderate-high entropy (>6.5) - possibly encrypted or compressed"
-    elif entropy < 3.0:
+    elif entropy < 3.0 and data_len > 1000:
         return False, "Low entropy (<3.0) - likely uncompressed data or text"
     else:
         return False, f"Entropy {entropy:.2f} - normal for mixed content"

@@ -65,6 +65,11 @@ def analyze_pe(file_path):
         pe.close()
 
     except Exception as e:
-        result['error'] = f'Error analyzing PE file: {str(e)}'
+        error_msg = str(e)
+        if 'magic' in error_msg.lower() or 'DOS Header' in error_msg:
+            result['is_pe'] = False
+            result['error'] = None
+        else:
+            result['error'] = f'Error analyzing PE file: {error_msg}'
 
     return result

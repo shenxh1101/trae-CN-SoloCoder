@@ -76,6 +76,11 @@ def analyze_elf(file_path):
                     result['dynamic_segment'].append(dyn_dict)
 
     except Exception as e:
-        result['error'] = f'Error analyzing ELF file: {str(e)}'
+        error_msg = str(e)
+        if 'magic' in error_msg.lower():
+            result['is_elf'] = False
+            result['error'] = None
+        else:
+            result['error'] = f'Error analyzing ELF file: {error_msg}'
 
     return result

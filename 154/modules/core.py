@@ -1,7 +1,4 @@
 import os
-import struct
-import math
-from collections import Counter
 
 FILE_SIGNATURES = {
     b'PK\x03\x04': 'ZIP Archive',
@@ -31,7 +28,6 @@ FILE_SIGNATURES = {
     b'\x78\x9c': 'ZLIB Compressed',
     b'\x78\xda': 'ZLIB Compressed (max)',
     b'\x78\x01': 'ZLIB Compressed (no)',
-    b'504B0304': 'ZIP (hex string)',
 }
 
 
@@ -67,54 +63,3 @@ def detect_signatures(header_bytes):
         if sig in header_bytes:
             found.append((ftype, sig.hex(), header_bytes.index(sig)))
     return found
-
-
-def calculate_entropy(data):
-    if not data:
-        return 0.0
-    byte_counts = Counter(data)
-    data_len = len(data)
-    entropy = 0.0
-    for count in byte_counts.values():
-        p = count / data_len
-        if p > 0:
-            entropy -= p * math.log2(p)
-    return entropy
-
-
-def get_byte_distribution(data):
-    counts = Counter(data)
-    distribution = [0] * 256
-    for byte_val, count in counts.items():
-        distribution[byte_val] = count
-    return distribution
-
-
-def is_encrypted_or_compressed(entropy, data_len):
-    if entropy > 7.5:
-        return True, "High entropy (>7.5) - likely encrypted or compressed"
-    elif entropy > 6.5:
-        return True, "Moderate-high entropy (>6.5) - possibly encrypted or compressed"
-    elif entropy < 3.0 and data_len > 1000:
-        return False, "Low entropy (<3.0) - likely uncompressed data or text"
-    else:
-        return False, f"Entropy {entropy:.2f} - normal for mixed content"
-
-
-def extract_strings(data, min_length=4):
-    strings = []
-    current = []
-    current_offset = None
-    for offset, byte in enumerate(data):
-        if 32 <= byte < 127:
-            if current_offset is None:
-                current_offset = offset
-            current.append(chr(byte))
-        else:
-            if len(current) >= min_length:
-                strings.append((current_offset, ''.join(current)))
-            current = []
-            current_offset = None
-    if len(current) >= min_length:
-        strings.append((current_offset, ''.join(current)))
-    return strings

@@ -1,4 +1,0 @@
-# Batch test URLs - 3 URLs
-https://example.com
-https://example.org
-https://example.net
