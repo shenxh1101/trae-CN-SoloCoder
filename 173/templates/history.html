@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}执行历史 - 远程命令执行系统{% endblock %}
+
+{% block content %}
+<h2 class="page-title">📜 执行历史</h2>
+
+{% if histories %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户</th>
+                <th>命令组</th>
+                <th>命令</th>
+                <th>状态</th>
+                <th>审批</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in histories %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.command_group_name }}</td>
+                <td>{{ item.command_name }}</td>
+                <td>
+                    {% if item.status == 'success' %}
+                    <span class="status-badge status-success">✅ 成功</span>
+                    {% elif item.status == 'failed' %}
+                    <span class="status-badge status-failed">❌ 失败</span>
+                    {% elif item.status == 'running' %}
+                    <span class="status-badge status-running">⏳ 运行中</span>
+                    {% elif item.status == 'rejected' %}
+                    <span class="status-badge status-error">🚫 已拒绝</span>
+                    {% else %}
+                    <span class="status-badge">{{ item.status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.require_approval %}
+                        {% if item.approved %}
+                        <span class="badge badge-success">已批准</span>
+                        {% else %}
+                        <span class="badge badge-warning">待审批</span>
+                        {% endif %}
+                        {% if item.approved_by %}
+                        <small>by {{ item.approved_by }}</small>
+                        {% endif %}
+                    {% else %}
+                    <span class="badge badge-info">无需审批</span>
+                    {% endif %}
+                </td>
+                <td>{{ item.start_time.strftime('%Y-%m-%d %H:%M:%S') if item.start_time else '-' }}</td>
+                <td>{{ item.end_time.strftime('%Y-%m-%d %H:%M:%S') if item.end_time else '-' }}</td>
+                <td>
+                    <button class="btn btn-info btn-sm" onclick="viewOutput({{ item.id }})">
+                        👁 查看
+                    </button>
+                    <a href="{{ url_for('download_log', history_id=item.id) }}"
+                       class="btn btn-secondary btn-sm">
+                        📥 下载
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>暂无执行记录</h3>
+    <p>去<a href="{{ url_for('index') }}">命令列表</a>执行一些命令吧</p>
+</div>
+{% endif %}
+
+<div id="output-modal" class="modal hidden">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 id="modal-title">执行输出</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="terminal-output" class="terminal"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentHistoryId = null;
+
+function viewOutput(historyId) {
+    currentHistoryId = historyId;
+    document.getElementById('modal-title').textContent = `执行输出 #${historyId}`;
+    document.getElementById('output-modal').classList.remove('hidden');
+
+    fetch(`/output/${historyId}`)
+    .then(response => response.json())
+    .then(data => {
+        const terminal = document.getElementById('terminal-output');
+        terminal.innerHTML = escapeHtml(data.output || '(无输出)');
+    });
+}
+
+function closeModal() {
+    document.getElementById('output-modal').classList.add('hidden');
+    currentHistoryId = null;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/\n/g, '<br>');
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{
+  "smtp_server": "smtp.gmail.com",
+  "smtp_port": 587,
+  "smtp_username": "",
+  "smtp_password": "",
+  "smtp_from_email": "",
+  "targets": [
+    {
+      "id": 1,
+      "name": "Google DNS",
+      "host": "8.8.8.8",
+      "group": "default",
+      "paused": false,
+      "threshold_latency": 200,
+      "threshold_packet_loss": 3,
+      "email_enabled": false,
+      "email_recipient": ""
+    },
+    {
+      "id": 2,
+      "name": "Cloudflare DNS",
+      "host": "1.1.1.1",
+      "group": "default",
+      "paused": false,
+      "threshold_latency": 200,
+      "threshold_packet_loss": 3,
+      "email_enabled": false,
+      "email_recipient": ""
+    },
+    {
+      "id": 3,
+      "name": "Localhost",
+      "host": "127.0.0.1",
+      "group": "default",
+      "paused": false,
+      "threshold_latency": 200,
+      "threshold_packet_loss": 3,
+      "email_enabled": false,
+      "email_recipient": ""
+    }
+  ]
+}

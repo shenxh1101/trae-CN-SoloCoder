@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}待审批 - 远程命令执行系统{% endblock %}
+
+{% block content %}
+<h2 class="page-title">⏳ 待审批命令</h2>
+
+{% if pending %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>申请人</th>
+                <th>命令组</th>
+                <th>命令</th>
+                <th>申请时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in pending %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.command_group_name }}</td>
+                <td>{{ item.command_name }}</td>
+                <td>{{ item.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>
+                    <button class="btn btn-success btn-sm"
+                            onclick="handleApproval({{ item.id }}, 'approve', this)">
+                        ✅ 批准
+                    </button>
+                    <button class="btn btn-danger btn-sm"
+                            onclick="handleApproval({{ item.id }}, 'reject', this)">
+                        ❌ 拒绝
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">✅</div>
+    <h3>暂无待审批命令</h3>
+    <p>所有命令都已处理完毕</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function handleApproval(historyId, action, btn) {
+    const row = btn.closest('tr');
+
+    fetch(`/approval/${historyId}/${action}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            row.style.transition = 'opacity 0.3s';
+            row.style.opacity = '0';
+            setTimeout(() => {
+                row.remove();
+                if (document.querySelectorAll('tbody tr').length === 0) {
+                    location.reload();
+                }
+            }, 300);
+        } else {
+            alert(data.message || '操作失败');
+        }
+    });
+}
+</script>
+{% endblock %}

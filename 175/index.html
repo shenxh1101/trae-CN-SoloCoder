@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>因果配对 - 知识益智游戏</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="mainMenu">
+    <h1 class="game-title">🔗 因果配对</h1>
+    <p class="game-subtitle">找出原因与结果的关系，配对消除所有卡牌！</p>
+
+    <div class="menu-section">
+      <h2 class="section-title">📚 选择主题</h2>
+      <div class="theme-selector">
+        <div class="theme-card selected" data-theme="life">
+          <div class="theme-icon">🌱</div>
+          <div class="theme-name">生活常识</div>
+        </div>
+        <div class="theme-card" data-theme="science">
+          <div class="theme-icon">🔬</div>
+          <div class="theme-name">科学原理</div>
+        </div>
+        <div class="theme-card" data-theme="history">
+          <div class="theme-icon">🏛️</div>
+          <div class="theme-name">历史事件</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-section">
+      <h2 class="section-title">⚡ 选择难度</h2>
+      <div class="difficulty-selector">
+        <button class="difficulty-btn selected" data-difficulty="easy">
+          简单 (4×4)
+        </button>
+        <button class="difficulty-btn" data-difficulty="medium">
+          中等 (6×6)
+        </button>
+        <button class="difficulty-btn" data-difficulty="hard">
+          困难 (8×8)
+        </button>
+      </div>
+    </div>
+
+    <div class="menu-buttons">
+      <button id="startGameBtn" class="menu-btn">🎮 开始游戏</button>
+      <button id="showLeaderboardBtn" class="menu-btn">🏆 排行榜</button>
+    </div>
+  </div>
+
+  <div id="gameScreen" class="hidden">
+    <div class="game-header">
+      <div class="theme-info">
+        <span id="currentTheme">生活常识</span>
+        <button id="backToMenuBtn" class="control-btn">← 返回</button>
+      </div>
+      <div class="game-stats">
+        <div class="stat-item">
+          <div class="stat-label">⏱️ 时间</div>
+          <div class="stat-value" id="timerDisplay">00:00</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">✅ 配对</div>
+          <div class="stat-value" id="matchedCount">0/8</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">🎯 尝试</div>
+          <div class="stat-value" id="attemptsCount">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-container">
+      <div id="cardGrid"></div>
+      
+      <div class="control-panel">
+        <button id="shuffleBtn" class="control-btn">🔀 洗牌</button>
+        <button id="hintBtn" class="control-btn">💡 提示</button>
+        <button id="soundBtn" class="control-btn">🔊</button>
+        <button id="exitGameBtn" class="control-btn">🚪 退出</button>
+      </div>
+    </div>
+
+    <div class="explanation-box">
+      <p id="explanationText"></p>
+    </div>
+  </div>
+
+  <div id="victoryModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2 class="victory-title">🎉 恭喜通关！</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-value" id="finalTime">0分0秒</div>
+          <div class="stat-label">用时</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="finalScore">0</div>
+          <div class="stat-label">得分</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="finalAttempts">0</div>
+          <div class="stat-label">尝试次数</div>
+        </div>
+      </div>
+
+      <div class="fun-fact">
+        <h4>💡 趣味知识</h4>
+        <p id="funFactText"></p>
+      </div>
+
+      <input type="text" id="playerName" class="name-input" placeholder="输入你的名字（可选）" maxlength="10">
+      
+      <div class="modal-buttons">
+        <button id="saveScoreBtn" class="modal-btn primary">💾 保存成绩</button>
+        <button id="playAgainBtn" class="modal-btn secondary">🔄 再玩一次</button>
+        <button id="backToMenuFromVictory" class="modal-btn secondary">🏠 返回菜单</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="leaderboardModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2 class="leaderboard-title">🏆 排行榜</h2>
+      
+      <div class="leaderboard-filters">
+        <select id="leaderboardThemeSelect">
+          <option value="life">🌱 生活常识</option>
+          <option value="science">🔬 科学原理</option>
+          <option value="history">🏛️ 历史事件</option>
+        </select>
+        <select id="leaderboardDifficultySelect">
+          <option value="easy">简单 (4×4)</option>
+          <option value="medium">中等 (6×6)</option>
+          <option value="hard">困难 (8×8)</option>
+        </select>
+      </div>
+
+      <div id="leaderboardList">
+        <div class="no-records">暂无记录</div>
+      </div>
+
+      <button id="backFromLeaderboardBtn" class="modal-btn secondary">← 返回</button>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

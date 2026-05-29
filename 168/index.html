@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数字华容道 - 障碍挑战版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>数字华容道</h1>
+            <p class="subtitle">障碍挑战版</p>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">时间</span>
+                <span class="stat-value" id="timer">00:00</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">步数</span>
+                <span class="stat-value" id="moves">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">曼哈顿距离</span>
+                <span class="stat-value" id="manhattan">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">最快记录</span>
+                <span class="stat-value" id="best-time">--:--</span>
+            </div>
+        </div>
+
+        <div class="game-wrapper">
+            <div id="board" class="board"></div>
+        </div>
+
+        <div class="controls">
+            <button id="new-game" class="btn btn-primary">新游戏</button>
+            <button id="hint" class="btn btn-secondary">提示 (<span id="hint-count">5</span>)</button>
+            <button id="undo" class="btn btn-secondary">悔棋 (<span id="undo-count">10</span>)</button>
+            <button id="sound-toggle" class="btn btn-icon" title="音效开关">🔊</button>
+        </div>
+
+        <div class="settings">
+            <div class="setting-group">
+                <label>棋盘尺寸</label>
+                <div class="btn-group">
+                    <button class="btn btn-size active" data-size="4">4×4</button>
+                    <button class="btn btn-size" data-size="5">5×5</button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label>游戏模式</label>
+                <div class="btn-group">
+                    <button class="btn btn-mode active" data-mode="normal">普通模式</button>
+                    <button class="btn btn-mode" data-mode="daily">每日挑战</button>
+                    <button class="btn btn-mode" data-mode="custom">自定义</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="custom-panel" class="custom-panel hidden">
+            <h3>自定义障碍设置</h3>
+            <p class="tip">点击格子切换障碍状态（灰色=障碍），完成后点击"开始游戏"</p>
+            <div class="custom-controls">
+                <button id="custom-apply" class="btn btn-primary">开始游戏</button>
+                <button id="custom-export" class="btn btn-secondary">导出布局</button>
+                <button id="custom-import" class="btn btn-secondary">导入布局</button>
+                <button id="custom-clear" class="btn btn-secondary">清空障碍</button>
+            </div>
+            <textarea id="import-json" class="import-json hidden" placeholder="粘贴JSON布局..."></textarea>
+        </div>
+    </div>
+
+    <div id="win-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🎉 恭喜通关！</h2>
+            <div class="modal-stats">
+                <p>用时: <span id="final-time">00:00</span></p>
+                <p>步数: <span id="final-moves">0</span></p>
+                <p id="new-record" class="new-record hidden">🏆 新纪录！</p>
+            </div>
+            <button id="play-again" class="btn btn-primary">再玩一次</button>
+        </div>
+    </div>
+
+    <div id="hint-highlight" class="hint-highlight hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

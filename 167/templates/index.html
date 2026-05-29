@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络监控仪表盘</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 24px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: #f0f0f0;
+        }
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #38a169;
+        }
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+        .container {
+            padding: 30px;
+        }
+        .group-selector {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .group-selector select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .card.paused {
+            opacity: 0.6;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .card-host {
+            color: #888;
+            font-size: 12px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-good {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .status-warning {
+            background: #feebc8;
+            color: #9c4221;
+        }
+        .status-bad {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .status-paused {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .metric {
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #888;
+        }
+        .metric-value.good { color: #48bb78; }
+        .metric-value.warning { color: #ed8936; }
+        .metric-value.bad { color: #f56565; }
+        .trend-chart {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        .availability {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        .availability-item {
+            text-align: center;
+        }
+        .availability-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #48bb78;
+        }
+        .availability-label {
+            font-size: 11px;
+            color: #888;
+        }
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .card-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 {
+            font-size: 20px;
+        }
+        .close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+        .period-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .period-btn {
+            padding: 6px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .period-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .alert-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f56565;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .alert-toast.show {
+            display: block;
+        }
+        .export-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-label input {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>🌐 网络监控仪表盘</h1>
+            <p style="opacity: 0.9; font-size: 14px;">实时监控网络延迟与丢包率</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="showAlerts()">🔔 告警 (<span id="alertCount">0</span>)</button>
+            <button class="btn btn-primary" onclick="showConfigModal()">⚙️ 配置</button>
+            <button class="btn btn-primary" onclick="showAddModal()">➕ 添加目标</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="group-selector">
+            <label>监控组:</label>
+            <select id="groupSelect" onchange="changeGroup()">
+                <option value="default">default</option>
+            </select>
+            <input type="text" id="newGroupInput" placeholder="新建组名" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; width: 150px;">
+        </div>
+        <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加监控目标</h2>
+                <span class="close" onclick="closeModal('addModal')">&times;</span>
+            </div>
+            <form onsubmit="addTarget(event)">
+                <div class="form-group">
+                    <label>名称</label>
+                    <input type="text" id="targetName" required placeholder="例如: 公司服务器">
+                </div>
+                <div class="form-group">
+                    <label>IP/域名</label>
+                    <input type="text" id="targetHost" required placeholder="例如: 8.8.8.8 或 example.com">
+                </div>
+                <div class="form-group">
+                    <label>监控组</label>
+                    <input type="text" id="targetGroup" value="default">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>延迟阈值 (ms)</label>
+                        <input type="number" id="thresholdLatency" value="200">
+                    </div>
+                    <div class="form-group">
+                        <label>连续丢包阈值 (次)</label>
+                        <input type="number" id="thresholdPacketLoss" value="3">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="emailEnabled"> 启用邮件告警
+                    </label>
+                </div>
+                <div class="form-group" id="emailRecipientGroup" style="display: none;">
+                    <label>收件邮箱</label>
+                    <input type="email" id="emailRecipient" placeholder="alert@example.com">
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">添加</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>编辑监控目标</h2>
+                <span class="close" onclick="closeModal('editModal')">&times;</span>
+            </div>
+            <form onsubmit="updateTarget(event)">
+                <input type="hidden" id="editTargetId">
+                <div class="form-group">
+                    <label>名称</label>
+                    <input type="text" id="editTargetName" required>
+                </div>
+                <div class="form-group">
+                    <label>IP/域名</label>
+                    <input type="text" id="editTargetHost" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>延迟阈值 (ms)</label>
+                        <input type="number" id="editThresholdLatency">
+                    </div>
+                    <div class="form-group">
+                        <label>连续丢包阈值 (次)</label>
+                        <input type="number" id="editThresholdPacketLoss">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editEmailEnabled"> 启用邮件告警
+                    </label>
+                </div>
+                <div class="form-group" id="editEmailRecipientGroup" style="display: none;">
+                    <label>收件邮箱</label>
+                    <input type="email" id="editEmailRecipient">
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="chartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="chartModalTitle">历史数据</h2>
+                <span class="close" onclick="closeModal('chartModal')">&times;</span>
+            </div>
+            <div class="period-selector">
+                <button class="period-btn active" onclick="changePeriod('1h', this)">1小时</button>
+                <button class="period-btn" onclick="changePeriod('24h', this)">24小时</button>
+                <button class="period-btn" onclick="changePeriod('7d', this)">7天</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="historyChart"></canvas>
+            </div>
+            <div class="export-form">
+                <label>导出时间范围:</label>
+                <input type="datetime-local" id="exportStart">
+                <span>至</span>
+                <input type="datetime-local" id="exportEnd">
+                <button class="btn btn-primary" onclick="exportData()">导出CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="alertsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>告警列表</h2>
+                <span class="close" onclick="closeModal('alertsModal')">&times;</span>
+            </div>
+            <div id="alertsList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="configModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>邮件配置</h2>
+                <span class="close" onclick="closeModal('configModal')">&times;</span>
+            </div>
+            <form onsubmit="saveConfig(event)">
+                <div class="form-group">
+                    <label>SMTP服务器</label>
+                    <input type="text" id="smtpServer" value="smtp.gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>SMTP端口</label>
+                    <input type="number" id="smtpPort" value="587">
+                </div>
+                <div class="form-group">
+                    <label>发件邮箱</label>
+                    <input type="email" id="smtpFromEmail">
+                </div>
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="smtpUsername">
+                </div>
+                <div class="form-group">
+                    <label>密码/授权码</label>
+                    <input type="password" id="smtpPassword">
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">保存配置</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert-toast" id="alertToast">
+        <div style="font-weight: 600;">🚨 新告警</div>
+        <div id="alertToastMessage"></div>
+    </div>
+
+    <script>
+        let currentGroup = '{{ group }}';
+        let currentTargetId = null;
+        let currentPeriod = '1h';
+        let historyChart = null;
+        let miniCharts = {};
+        let lastAlertCount = 0;
+
+        document.getElementById('emailEnabled').addEventListener('change', function() {
+            document.getElementById('emailRecipientGroup').style.display = this.checked ? 'block' : 'none';
+        });
+
+        document.getElementById('editEmailEnabled').addEventListener('change', function() {
+            document.getElementById('editEmailRecipientGroup').style.display = this.checked ? 'block' : 'none';
+        });
+
+        function changeGroup() {
+            const select = document.getElementById('groupSelect');
+            const newGroup = select.value;
+            if (newGroup) {
+                window.location.href = `?group=${newGroup}`;
+            }
+        }
+
+        function loadGroups() {
+            fetch('/api/groups')
+                .then(r => r.json())
+                .then(groups => {
+                    const select = document.getElementById('groupSelect');
+                    select.innerHTML = '';
+                    groups.forEach(g => {
+                        const opt = document.createElement('option');
+                        opt.value = g;
+                        opt.textContent = g;
+                        if (g === currentGroup) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                });
+        }
+
+        function loadTargets() {
+            fetch(`/api/targets?group=${currentGroup}`)
+                .then(r => r.json())
+                .then(targets => {
+                    const grid = document.getElementById('cardsGrid');
+                    grid.innerHTML = '';
+                    targets.forEach(target => {
+                        grid.appendChild(createCard(target));
+                    });
+                });
+        }
+
+        function createCard(target) {
+            const card = document.createElement('div');
+            card.className = `card ${target.paused ? 'paused' : ''}`;
+            card.id = `card-${target.id}`;
+
+            let statusClass = 'status-good';
+            let statusText = '正常';
+            if (target.paused) {
+                statusClass = 'status-paused';
+                statusText = '已暂停';
+            } else if (target.last_loss) {
+                statusClass = 'status-bad';
+                statusText = '丢包';
+            } else if (target.avg_latency > target.threshold_latency) {
+                statusClass = 'status-warning';
+                statusText = '延迟高';
+            }
+
+            let latencyClass = 'good';
+            if (target.avg_latency > target.threshold_latency) latencyClass = 'warning';
+            if (target.avg_latency > target.threshold_latency * 2) latencyClass = 'bad';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">${target.name} ${target.alerts > 0 ? '🔴' : ''}</div>
+                        <div class="card-host">${target.host}</div>
+                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value ${latencyClass}">${target.avg_latency}</div>
+                        <div class="metric-label">平均延迟 (ms)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value ${target.last_loss ? 'bad' : 'good'}">${target.last_loss ? '丢包' : '正常'}</div>
+                        <div class="metric-label">最后状态</div>
+                    </div>
+                </div>
+                <div class="trend-chart">
+                    <canvas id="trend-${target.id}"></canvas>
+                </div>
+                <div class="availability">
+                    <div class="availability-item">
+                        <div class="availability-value">${target.availability.daily}%</div>
+                        <div class="availability-label">日可用率</div>
+                    </div>
+                    <div class="availability-item">
+                        <div class="availability-value">${target.availability.weekly}%</div>
+                        <div class="availability-label">周可用率</div>
+                    </div>
+                    <div class="availability-item">
+                        <div class="availability-value">${target.availability.monthly}%</div>
+                        <div class="availability-label">月可用率</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary" onclick="showChart(${target.id}, '${target.name}')">📊 详情</button>
+                    <button class="btn btn-warning" onclick="toggleTarget(${target.id})">${target.paused ? '▶️ 恢复' : '⏸️ 暂停'}</button>
+                    <button class="btn btn-primary" onclick="showEditModal(${target.id})">✏️ 编辑</button>
+                    <button class="btn btn-danger" onclick="deleteTarget(${target.id})">🗑️ 删除</button>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const ctx = document.getElementById(`trend-${target.id}`).getContext('2d');
+                if (miniCharts[target.id]) {
+                    miniCharts[target.id].destroy();
+                }
+                miniCharts[target.id] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: target.trend_data.map((_, i) => i),
+                        datasets: [{
+                            data: target.trend_data.map(d => d.latency),
+                            borderColor: target.last_loss ? '#f56565' : '#48bb78',
+                            backgroundColor: target.last_loss ? 'rgba(245, 101, 101, 0.1)' : 'rgba(72, 187, 120, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { display: false },
+                            y: { display: false }
+                        }
+                    }
+                });
+            }, 100);
+
+            return card;
+        }
+
+        function showAddModal() {
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('targetGroup').value = currentGroup;
+        }
+
+        function showEditModal(targetId) {
+            fetch(`/api/targets?group=${currentGroup}`)
+                .then(r => r.json())
+                .then(targets => {
+                    const target = targets.find(t => t.id === targetId);
+                    if (target) {
+                        document.getElementById('editTargetId').value = target.id;
+                        document.getElementById('editTargetName').value = target.name;
+                        document.getElementById('editTargetHost').value = target.host;
+                        document.getElementById('editThresholdLatency').value = target.threshold_latency;
+                        document.getElementById('editThresholdPacketLoss').value = target.threshold_packet_loss;
+                        document.getElementById('editEmailEnabled').checked = target.email_enabled;
+                        document.getElementById('editEmailRecipient').value = target.email_recipient || '';
+                        document.getElementById('editEmailRecipientGroup').style.display = target.email_enabled ? 'block' : 'none';
+                        document.getElementById('editModal').classList.add('active');
+                    }
+                });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function addTarget(e) {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('targetName').value,
+                host: document.getElementById('targetHost').value,
+                group: document.getElementById('targetGroup').value || 'default',
+                threshold_latency: parseInt(document.getElementById('thresholdLatency').value),
+                threshold_packet_loss: parseInt(document.getElementById('thresholdPacketLoss').value),
+                email_enabled: document.getElementById('emailEnabled').checked,
+                email_recipient: document.getElementById('emailRecipient').value
+            };
+            fetch('/api/targets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(() => {
+                closeModal('addModal');
+                loadTargets();
+                loadGroups();
+            });
+        }
+
+        function updateTarget(e) {
+            e.preventDefault();
+            const id = document.getElementById('editTargetId').value;
+            const data = {
+                name: document.getElementById('editTargetName').value,
+                host: document.getElementById('editTargetHost').value,
+                threshold_latency: parseInt(document.getElementById('editThresholdLatency').value),
+                threshold_packet_loss: parseInt(document.getElementById('editThresholdPacketLoss').value),
+                email_enabled: document.getElementById('editEmailEnabled').checked,
+                email_recipient: document.getElementById('editEmailRecipient').value
+            };
+            fetch(`/api/targets/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(() => {
+                closeModal('editModal');
+                loadTargets();
+            });
+        }
+
+        function deleteTarget(id) {
+            if (confirm('确定删除此监控目标？')) {
+                fetch(`/api/targets/${id}`, { method: 'DELETE' }).then(() => {
+                    loadTargets();
+                });
+            }
+        }
+
+        function toggleTarget(id) {
+            fetch(`/api/targets/${id}/toggle`, { method: 'POST' }).then(() => {
+                loadTargets();
+            });
+        }
+
+        function showChart(targetId, targetName) {
+            currentTargetId = targetId;
+            document.getElementById('chartModalTitle').textContent = targetName + ' - 历史数据';
+            document.getElementById('chartModal').classList.add('active');
+            loadHistoryData();
+        }
+
+        function changePeriod(period, btn) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadHistoryData();
+        }
+
+        function loadHistoryData() {
+            fetch(`/api/data/${currentTargetId}?period=${currentPeriod}`)
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('historyChart').getContext('2d');
+                    if (historyChart) historyChart.destroy();
+                    
+                    const labels = data.map(d => new Date(d.timestamp).toLocaleString('zh-CN', { 
+                        month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                    }));
+                    
+                    historyChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: '延迟 (ms)',
+                                    data: data.map(d => d.latency),
+                                    borderColor: '#667eea',
+                                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    yAxisID: 'y'
+                                },
+                                {
+                                    label: '丢包',
+                                    data: data.map(d => d.packet_loss ? 100 : null),
+                                    type: 'bar',
+                                    backgroundColor: 'rgba(245, 101, 101, 0.6)',
+                                    yAxisID: 'y1',
+                                    barPercentage: 0.5
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            scales: {
+                                y: { type: 'linear', position: 'left', title: { display: true, text: '延迟 (ms)' } },
+                                y1: { type: 'linear', position: 'right', max: 100, display: false }
+                            }
+                        }
+                    });
+                });
+        }
+
+        function exportData() {
+            const start = document.getElementById('exportStart').value;
+            const end = document.getElementById('exportEnd').value;
+            let url = `/api/export/${currentTargetId}`;
+            if (start || end) {
+                const params = [];
+                if (start) params.push(`start=${start}`);
+                if (end) params.push(`end=${end}`);
+                url += '?' + params.join('&');
+            }
+            window.location.href = url;
+        }
+
+        function showAlerts() {
+            document.getElementById('alertsModal').classList.add('active');
+            loadAlerts();
+        }
+
+        function loadAlerts() {
+            fetch('/api/alerts')
+                .then(r => r.json())
+                .then(alerts => {
+                    const list = document.getElementById('alertsList');
+                    if (alerts.length === 0) {
+                        list.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">暂无告警</p>';
+                    } else {
+                        list.innerHTML = alerts.map(alert => `
+                            <div style="padding: 15px; background: #fff5f5; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: #c53030;">${alert.target_name} - ${alert.alert_type === 'latency' ? '延迟过高' : '连续丢包'}</div>
+                                    <div style="font-size: 14px; color: #666;">${alert.message}</div>
+                                    <div style="font-size: 12px; color: #999;">${new Date(alert.timestamp).toLocaleString('zh-CN')}</div>
+                                </div>
+                                <button class="btn btn-success" onclick="acknowledgeAlert(${alert.id})">✓ 已读</button>
+                            </div>
+                        `).join('');
+                    }
+                });
+        }
+
+        function acknowledgeAlert(id) {
+            fetch(`/api/alerts/${id}/acknowledge`, { method: 'POST' }).then(() => {
+                loadAlerts();
+                loadTargets();
+                updateAlertCount();
+            });
+        }
+
+        function updateAlertCount() {
+            fetch('/api/alerts')
+                .then(r => r.json())
+                .then(alerts => {
+                    document.getElementById('alertCount').textContent = alerts.length;
+                    if (alerts.length > lastAlertCount) {
+                        const newAlerts = alerts.slice(0, alerts.length - lastAlertCount);
+                        if (newAlerts.length > 0) {
+                            showAlertToast(newAlerts[0]);
+                        }
+                    }
+                    lastAlertCount = alerts.length;
+                });
+        }
+
+        function showAlertToast(alert) {
+            const toast = document.getElementById('alertToast');
+            document.getElementById('alertToastMessage').textContent = `${alert.target_name}: ${alert.message}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 5000);
+        }
+
+        function showConfigModal() {
+            fetch('/api/config')
+                .then(r => r.json())
+                .then(config => {
+                    document.getElementById('smtpServer').value = config.smtp_server || 'smtp.gmail.com';
+                    document.getElementById('smtpPort').value = config.smtp_port || 587;
+                    document.getElementById('smtpFromEmail').value = config.smtp_from_email || '';
+                    document.getElementById('smtpUsername').value = config.smtp_username || '';
+                    document.getElementById('smtpPassword').value = config.smtp_password || '';
+                    document.getElementById('configModal').classList.add('active');
+                });
+        }
+
+        function saveConfig(e) {
+            e.preventDefault();
+            const config = {
+                smtp_server: document.getElementById('smtpServer').value,
+                smtp_port: parseInt(document.getElementById('smtpPort').value),
+                smtp_from_email: document.getElementById('smtpFromEmail').value,
+                smtp_username: document.getElementById('smtpUsername').value,
+                smtp_password: document.getElementById('smtpPassword').value
+            };
+            fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            }).then(() => {
+                closeModal('configModal');
+                alert('配置已保存');
+            });
+        }
+
+        loadGroups();
+        loadTargets();
+        updateAlertCount();
+
+        setInterval(() => {
+            loadTargets();
+            updateAlertCount();
+        }, 10000);
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', e => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

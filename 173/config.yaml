@@ -1,0 +1,96 @@
+server:
+  host: 0.0.0.0
+  port: 5000
+  debug: false
+
+command_timeout: 60
+
+users:
+  - username: admin
+    password: admin123
+    role: admin
+    api_token: admin-token-12345
+    email: admin@example.com
+    command_groups:
+      - system_info
+      - cleanup
+      - backup
+      - advanced
+  - username: user
+    password: user123
+    role: user
+    api_token: user-token-67890
+    email: user@example.com
+    command_groups:
+      - system_info
+      - cleanup
+
+smtp:
+  enabled: false
+  host: smtp.example.com
+  port: 587
+  use_tls: true
+  username: your-email@example.com
+  password: your-password
+  from_addr: your-email@example.com
+
+command_groups:
+  system_info:
+    name: 查看系统信息
+    description: 查看服务器运行状态和资源使用情况
+    require_approval: false
+    notify_email: false
+    email_recipients: []
+    commands:
+      - name: 磁盘使用情况
+        command: df -h
+      - name: 内存使用情况
+        command: free -m
+      - name: 系统负载
+        command: uptime
+      - name: 系统信息
+        command: uname -a
+      - name: 进程列表
+        command: ps aux --sort=-%cpu | head -20
+
+  cleanup:
+    name: 清理临时文件
+    description: 清理系统临时文件和缓存
+    require_approval: false
+    notify_email: false
+    email_recipients: []
+    commands:
+      - name: 清理apt缓存
+        command: sudo apt-get clean
+      - name: 清理旧日志
+        command: sudo find /var/log -type f -name "*.log" -exec truncate -s 0 {} \;
+      - name: 清理临时目录
+        command: sudo rm -rf /tmp/*
+
+  backup:
+    name: 备份配置
+    description: 备份重要配置文件和数据
+    require_approval: true
+    notify_email: true
+    email_recipients:
+      - admin@example.com
+    commands:
+      - name: 备份/etc目录
+        command: sudo tar -czf /tmp/etc-backup-$(date +%Y%m%d%H%M%S).tar.gz /etc
+      - name: 备份/home目录
+        command: sudo tar -czf /tmp/home-backup-$(date +%Y%m%d%H%M%S).tar.gz /home
+
+  advanced:
+    name: 高级命令
+    description: 需要管理员审批的高级操作
+    require_approval: true
+    notify_email: true
+    email_recipients:
+      - admin@example.com
+    commands:
+      - name: 系统更新
+        command: sudo apt-get update && sudo apt-get upgrade -y
+      - name: 重启服务
+        command: sudo systemctl restart nginx
+      - name: 查看系统日志
+        command: sudo journalctl -n 50

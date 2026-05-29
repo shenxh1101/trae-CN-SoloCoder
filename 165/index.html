@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>躲避滚石</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a2e; font-family: 'Press Start 2P', monospace; }
+canvas { display: block; }
+
+#gameContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+  z-index: 10;
+}
+.hud-left, .hud-right { display: flex; flex-direction: column; gap: 6px; }
+.hud-item {
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 10px;
+  line-height: 1.6;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.hud-item .label { color: #D4A843; }
+.hud-item .value { color: #fff; }
+
+#terrainIndicator {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 9px;
+  color: #fff;
+  pointer-events: none;
+  z-index: 10;
+  transition: background 0.5s, border-color 0.5s;
+}
+.terrain-sand { background: rgba(212,168,67,0.6); border: 1px solid #D4A843; }
+.terrain-ice { background: rgba(129,212,250,0.6); border: 1px solid #81D4FA; }
+
+#shieldIndicator {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 9px;
+  color: #4FC3F7;
+  background: rgba(79,195,247,0.2);
+  border: 1px solid #4FC3F7;
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+}
+#magnetIndicator {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 9px;
+  color: #EF5350;
+  background: rgba(239,83,80,0.2);
+  border: 1px solid #EF5350;
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+}
+
+#startScreen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: linear-gradient(180deg, #1a1a2e 0%, #3E2723 50%, #D4A843 100%);
+}
+#startScreen h1 {
+  font-size: clamp(20px, 5vw, 40px);
+  color: #D4A843;
+  text-shadow: 3px 3px 0 #3E2723, 0 0 20px rgba(212,168,67,0.4);
+  margin-bottom: 8px;
+}
+#startScreen .subtitle {
+  font-size: clamp(8px, 2vw, 12px);
+  color: #bcaaa4;
+  margin-bottom: 40px;
+}
+
+.char-select {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.char-card {
+  width: 130px;
+  padding: 16px 10px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+}
+.char-card:hover { border-color: #D4A843; background: rgba(212,168,67,0.1); }
+.char-card.selected { border-color: #D4A843; background: rgba(212,168,67,0.2); box-shadow: 0 0 20px rgba(212,168,67,0.3); }
+.char-card canvas { display: block; margin: 0 auto 10px; }
+.char-card .char-name { font-size: 9px; color: #D4A843; margin-bottom: 6px; }
+.char-card .char-desc { font-size: 7px; color: #bcaaa4; line-height: 1.6; }
+
+#startBtn {
+  padding: 14px 48px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #3E2723;
+  background: linear-gradient(180deg, #D4A843, #b8860b);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow: 0 4px 0 #8b6914, 0 6px 20px rgba(0,0,0,0.4);
+  transition: all 0.15s;
+}
+#startBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #8b6914, 0 8px 24px rgba(0,0,0,0.5); }
+#startBtn:active { transform: translateY(2px); box-shadow: 0 2px 0 #8b6914, 0 3px 12px rgba(0,0,0,0.4); }
+
+#gameOverScreen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+}
+#gameOverScreen.show { display: flex; }
+.go-card {
+  background: linear-gradient(180deg, #2d2d44, #1a1a2e);
+  border: 2px solid #D4A843;
+  border-radius: 16px;
+  padding: 32px 40px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(212,168,67,0.2);
+  max-width: 340px;
+  width: 90%;
+}
+.go-card h2 { font-size: 18px; color: #EF5350; margin-bottom: 20px; }
+.go-stat { font-size: 9px; color: #bcaaa4; margin-bottom: 10px; line-height: 2; }
+.go-stat .val { color: #D4A843; }
+.go-card .new-record { font-size: 10px; color: #4FC3F7; margin: 10px 0; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+#retryBtn {
+  margin-top: 20px;
+  padding: 12px 36px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: #3E2723;
+  background: linear-gradient(180deg, #D4A843, #b8860b);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #8b6914;
+  transition: all 0.15s;
+}
+#retryBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #8b6914; }
+#retryBtn:active { transform: translateY(2px); box-shadow: 0 2px 0 #8b6914; }
+
+#backBtn {
+  margin-top: 12px;
+  padding: 8px 24px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #bcaaa4;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+#backBtn:hover { border-color: #D4A843; color: #D4A843; }
+
+#touchControls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  display: none;
+  pointer-events: none;
+  z-index: 20;
+}
+.touch-zone {
+  position: absolute;
+  bottom: 20px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.touch-zone:active { background: rgba(255,255,255,0.25); }
+.touch-zone svg { width: 28px; height: 28px; fill: rgba(255,255,255,0.5); }
+#touchJump { left: 20px; bottom: 30px; }
+#touchLeft { right: 100px; bottom: 30px; }
+#touchRight { right: 20px; bottom: 30px; }
+
+/* 新增地形切换提示动画 */
+#terrainBanner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  padding: 16px 40px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#terrainBanner.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.banner-sand {
+  background: linear-gradient(135deg, #D4A843, #8D6E63);
+  border: 2px solid #FFD54F;
+  box-shadow: 0 0 30px rgba(212,168,67,0.6);
+}
+.banner-ice {
+  background: linear-gradient(135deg, #81D4FA, #42A5F5);
+  border: 2px solid #B3E5FC;
+  box-shadow: 0 0 30px rgba(129,212,250,0.6);
+}
+
+/* 整屏触摸控制区 */
+#touchZones {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 15;
+}
+.touch-zone-full {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#touchZoneLeft {
+  left: 0;
+  width: 40%;
+}
+#touchZoneRight {
+  right: 0;
+  width: 60%;
+}
+.touch-indicator {
+  position: absolute;
+  bottom: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  pointer-events: none;
+  transition: all 0.15s;
+}
+.touch-indicator.active {
+  background: rgba(255,255,255,0.25);
+  transform: scale(0.95);
+  opacity: 0.9;
+}
+.touch-indicator svg { width: 24px; height: 24px; fill: rgba(255,255,255,0.6); }
+#indJump { left: 50%; transform: translateX(-50%); }
+#indJump.active { transform: translateX(-50%) scale(0.95); }
+#indLeft { left: 25%; transform: translateX(-50%); }
+#indLeft.active { transform: translateX(-50%) scale(0.95); }
+#indRight { left: 75%; transform: translateX(-50%); }
+#indRight.active { transform: translateX(-50%) scale(0.95); }
+
+@media (pointer: coarse) {
+  #touchControls { display: none; }
+  #touchZones { display: block; }
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <canvas id="gameCanvas"></canvas>
+
+  <div id="hud" style="display:none;">
+    <div class="hud-left">
+      <div class="hud-item"><span class="label">得分 </span><span class="value" id="scoreVal">0</span></div>
+      <div class="hud-item"><span class="label">最高 </span><span class="value" id="highVal">0</span></div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-item"><span class="label">距离 </span><span class="value" id="distVal">0m</span></div>
+    </div>
+  </div>
+
+  <div id="terrainIndicator" class="terrain-sand">沙地</div>
+  <div id="terrainBanner" class="banner-sand">沙地地形</div>
+  <div id="shieldIndicator">🛡 护盾</div>
+  <div id="magnetIndicator">🧲 磁铁</div>
+
+  <div id="startScreen">
+    <h1>躲避滚石</h1>
+    <div class="subtitle">选择你的角色，开始冒险</div>
+    <div class="char-select" id="charSelect"></div>
+    <button id="startBtn">开始游戏</button>
+  </div>
+
+  <div id="gameOverScreen">
+    <div class="go-card">
+      <h2>游戏结束</h2>
+      <div class="go-stat">得分：<span class="val" id="goScore">0</span></div>
+      <div class="go-stat">距离：<span class="val" id="goDist">0m</span></div>
+      <div class="go-stat">最高分：<span class="val" id="goHigh">0</span></div>
+      <div class="new-record" id="newRecord" style="display:none;">★ 新纪录！★</div>
+      <button id="retryBtn">再来一次</button><br>
+      <button id="backBtn">返回选择角色</button>
+    </div>
+  </div>
+
+  <div id="touchControls">
+    <div class="touch-zone" id="touchJump"><svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg></div>
+    <div class="touch-zone" id="touchLeft"><svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg></div>
+    <div class="touch-zone" id="touchRight"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+  </div>
+
+  <div id="touchZones">
+    <div class="touch-zone-full" id="touchZoneLeft">
+      <div class="touch-indicator" id="indJump"><svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg></div>
+    </div>
+    <div class="touch-zone-full" id="touchZoneRight">
+      <div class="touch-indicator" id="indLeft"><svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg></div>
+      <div class="touch-indicator" id="indRight"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const CHARACTERS = [
+    { id: 'worker', name: '工人', desc: '跳跃中等\n约100px', jumpPower: -11.4, width: 30, height: 44, color: '#FF8F00' },
+    { id: 'miner', name: '矿工', desc: '跳跃较低约70px\n体型小不易被击中', jumpPower: -9.5, width: 26, height: 38, color: '#78909C' },
+    { id: 'adventurer', name: '冒险家', desc: '跳跃最高约130px\n轻松越过高滚石', jumpPower: -13, width: 30, height: 44, color: '#43A047' }
+  ];
+
+  const LS_KEY = 'dodgeBoulderHighScore';
+
+  let W, H, groundY;
+  let gameState = 'menu';
+  let selectedChar = 0;
+  let score = 0;
+  let highScore = parseInt(localStorage.getItem(LS_KEY)) || 0;
+  let distance = 0;
+  let terrain = 'sand';
+  let terrainTimer = 0;
+  let terrainDuration = 900;
+  let frameCount = 0;
+  let animFrame = null;
+
+  let player = null;
+  let boulders = [];
+  let coins = [];
+  let powerUps = [];
+  let particles = [];
+  let bgElements = [];
+
+  let hasShield = false;
+  let hasMagnet = false;
+  let magnetTimer = 0;
+  let screenShake = 0;
+  let shieldBreakAnim = 0;
+  let terrainBannerTimer = 0;
+  let iceTrails = [];
+
+  const keys = {};
+  const touchState = { jump: false, left: false, right: false };
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    groundY = H - 80;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const g = audioCtx.createGain();
+    g.connect(audioCtx.destination);
+    const o = audioCtx.createOscillator();
+    o.connect(g);
+    switch (type) {
+      case 'jump':
+        o.type = 'sine';
+        o.frequency.setValueAtTime(440, now);
+        o.frequency.linearRampToValueAtTime(880, now + 0.1);
+        g.gain.setValueAtTime(0.15, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.15);
+        o.start(now); o.stop(now + 0.15);
+        break;
+      case 'coin':
+        o.type = 'sine';
+        o.frequency.setValueAtTime(1047, now);
+        o.frequency.setValueAtTime(1319, now + 0.06);
+        g.gain.setValueAtTime(0.12, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.15);
+        o.start(now); o.stop(now + 0.15);
+        break;
+      case 'shield':
+        o.type = 'square';
+        o.frequency.setValueAtTime(220, now);
+        o.frequency.linearRampToValueAtTime(440, now + 0.15);
+        g.gain.setValueAtTime(0.1, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.25);
+        o.start(now); o.stop(now + 0.25);
+        break;
+      case 'magnet':
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(330, now);
+        o.frequency.linearRampToValueAtTime(220, now + 0.2);
+        g.gain.setValueAtTime(0.08, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.3);
+        o.start(now); o.stop(now + 0.3);
+        break;
+      case 'hit':
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(440, now);
+        o.frequency.linearRampToValueAtTime(110, now + 0.4);
+        g.gain.setValueAtTime(0.2, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.5);
+        o.start(now); o.stop(now + 0.5);
+        break;
+      case 'shieldBreak':
+        o.type = 'square';
+        o.frequency.setValueAtTime(660, now);
+        o.frequency.linearRampToValueAtTime(220, now + 0.3);
+        g.gain.setValueAtTime(0.12, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.35);
+        o.start(now); o.stop(now + 0.35);
+        break;
+      case 'terrainSand':
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(300, now);
+        o.frequency.exponentialRampToValueAtTime(150, now + 0.2);
+        g.gain.setValueAtTime(0.1, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.3);
+        o.start(now); o.stop(now + 0.3);
+        break;
+      case 'terrainIce':
+        o.type = 'sine';
+        o.frequency.setValueAtTime(500, now);
+        o.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+        o.frequency.exponentialRampToValueAtTime(600, now + 0.3);
+        g.gain.setValueAtTime(0.1, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.35);
+        o.start(now); o.stop(now + 0.35);
+        break;
+      case 'slide':
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(80, now);
+        o.frequency.linearRampToValueAtTime(120, now + 0.1);
+        g.gain.setValueAtTime(0.03, now);
+        g.gain.linearRampToValueAtTime(0, now + 0.12);
+        o.start(now); o.stop(now + 0.12);
+        break;
+    }
+  }
+
+  class Player {
+    constructor(charDef) {
+      this.charDef = charDef;
+      this.x = 120;
+      this.y = groundY - charDef.height;
+      this.w = charDef.width;
+      this.h = charDef.height;
+      this.vx = 0;
+      this.vy = 0;
+      this.onGround = true;
+      this.jumpPower = charDef.jumpPower;
+      this.facing = 1;
+      this.runFrame = 0;
+      this.runTimer = 0;
+    }
+    update() {
+      const isIce = terrain === 'ice';
+      const friction = isIce ? 0.992 : 0.82;
+      let accel = isIce ? 0.35 : 1.4;
+      let moving = false;
+      if (keys['ArrowLeft'] || keys['KeyA'] || touchState.left) { this.vx -= accel; this.facing = -1; moving = true; }
+      if (keys['ArrowRight'] || keys['KeyD'] || touchState.right) { this.vx += accel; this.facing = 1; moving = true; }
+      this.vx *= friction;
+      const maxSpeed = isIce ? 8 : 6;
+      this.vx = Math.max(-maxSpeed, Math.min(maxSpeed, this.vx));
+      if (Math.abs(this.vx) < 0.05) this.vx = 0;
+
+      if (isIce && this.onGround && Math.abs(this.vx) > 2 && frameCount % 8 === 0) {
+        iceTrails.push({
+          x: this.x + this.w / 2,
+          y: groundY - 2,
+          life: 40,
+          maxLife: 40,
+          width: 8 + Math.abs(this.vx)
+        });
+        if (Math.random() < 0.3) playSound('slide');
+      }
+
+      if ((keys['ArrowUp'] || keys['KeyW'] || keys['Space'] || touchState.jump) && this.onGround) {
+        this.vy = this.jumpPower;
+        this.onGround = false;
+        playSound('jump');
+        if (isIce) this.vx *= 0.9;
+      }
+
+      this.vy += 0.65;
+      this.x += this.vx;
+      this.y += this.vy;
+
+      if (this.y + this.h >= groundY) {
+        this.y = groundY - this.h;
+        this.vy = 0;
+        this.onGround = true;
+      }
+      if (this.x < 0) { this.x = 0; this.vx = 0; }
+      if (this.x + this.w > W) { this.x = W - this.w; this.vx = 0; }
+
+      if (moving && this.onGround) {
+        this.runTimer++;
+        const runSpeed = isIce ? 10 : 6;
+        if (this.runTimer > runSpeed) { this.runFrame = (this.runFrame + 1) % 4; this.runTimer = 0; }
+      } else if (this.onGround) {
+        this.runFrame = 0;
+      }
+    }
+    draw() {
+      const cx = this.x + this.w / 2;
+      const cy = this.y;
+      ctx.save();
+      ctx.translate(cx, cy);
+      if (this.facing === -1) ctx.scale(-1, 1);
+
+      const c = this.charDef.color;
+      ctx.fillStyle = c;
+      ctx.fillRect(-this.w/2, 4, this.w, this.h - 14);
+
+      ctx.fillStyle = '#FFE0B2';
+      ctx.beginPath();
+      ctx.arc(0, 0, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#3E2723';
+      ctx.fillRect(-8, -4, 16, 4);
+
+      ctx.fillStyle = '#212121';
+      ctx.fillRect(-4, 1, 3, 3);
+      ctx.fillRect(2, 1, 3, 3);
+
+      ctx.fillStyle = c;
+      const legOffset = this.onGround ? (this.runFrame % 2 === 0 ? 2 : -2) : 2;
+      ctx.fillRect(-this.w/2 + 4, this.h - 14, 8, 14 + legOffset);
+      ctx.fillRect(this.w/2 - 12, this.h - 14, 8, 14 - legOffset);
+
+      ctx.fillStyle = '#5D4037';
+      ctx.fillRect(-this.w/2 + 2, this.h - 2, 12, 4);
+      ctx.fillRect(this.w/2 - 14, this.h - 2, 12, 4);
+
+      if (this.charDef.id === 'worker') {
+        ctx.fillStyle = '#FFD54F';
+        ctx.fillRect(-8, -10, 16, 4);
+      } else if (this.charDef.id === 'miner') {
+        ctx.fillStyle = '#FFD54F';
+        ctx.beginPath();
+        ctx.arc(4, -6, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#212121';
+        ctx.fillRect(-8, -10, 16, 4);
+      } else if (this.charDef.id === 'adventurer') {
+        ctx.fillStyle = '#795548';
+        ctx.beginPath();
+        ctx.moveTo(-10, -6);
+        ctx.lineTo(0, -18);
+        ctx.lineTo(10, -6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#D4A843';
+        ctx.beginPath();
+        ctx.moveTo(-6, -6);
+        ctx.lineTo(0, -14);
+        ctx.lineTo(6, -6);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      if (hasShield || shieldBreakAnim > 0) {
+        if (shieldBreakAnim > 0) {
+          const p = 1 - shieldBreakAnim / 30;
+          ctx.strokeStyle = `rgba(79,195,247,${1 - p})`;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          const r = this.w + 8 + p * 40;
+          ctx.arc(0, this.h / 2, r, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = `rgba(79,195,247,${0.15 * (1 - p)})`;
+          ctx.fill();
+          for (let i = 0; i < 8; i++) {
+            const a = (i / 8) * Math.PI * 2;
+            const px = Math.cos(a) * r;
+            const py = Math.sin(a) * r;
+            ctx.fillStyle = `rgba(79,195,247,${0.8 * (1 - p)})`;
+            ctx.fillRect(px - 2, py - 2, 4, 4);
+          }
+          shieldBreakAnim--;
+        } else {
+          const pulse = Math.sin(frameCount * 0.08) * 2;
+          ctx.strokeStyle = 'rgba(79,195,247,0.7)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(0, this.h / 2, this.w + 8 + pulse, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(79,195,247,0.1)';
+          ctx.fill();
+        }
+      }
+
+      if (hasMagnet) {
+        ctx.fillStyle = 'rgba(239,83,80,0.3)';
+        ctx.beginPath();
+        ctx.arc(0, this.h / 2, 200, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+    getBounds() {
+      const shrink = this.charDef.id === 'miner' ? 4 : 2;
+      return { x: this.x + shrink, y: this.y + shrink, w: this.w - shrink * 2, h: this.h - shrink * 2 };
+    }
+  }
+
+  class Boulder {
+    constructor() {
+      this.r = 20 + Math.random() * 40;
+      this.x = W + this.r;
+      this.y = groundY - this.r;
+      const speed = 3 + Math.min(score * 0.015, 6) + Math.random() * 2;
+      this.vx = -speed;
+      this.rotation = 0;
+      this.rotSpeed = (Math.random() - 0.5) * 0.1;
+      this.shade = 0.3 + Math.random() * 0.3;
+      this.cracks = [];
+      const crackCount = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < crackCount; i++) {
+        this.cracks.push({
+          a1: Math.random() * Math.PI * 2,
+          a2: Math.random() * Math.PI * 2,
+          l: 0.3 + Math.random() * 0.5
+        });
+      }
+    }
+    update() {
+      this.x += this.vx;
+      this.rotation += this.rotSpeed;
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+
+      const gradient = ctx.createRadialGradient(-this.r * 0.2, -this.r * 0.2, this.r * 0.1, 0, 0, this.r);
+      gradient.addColorStop(0, `rgba(180,180,180,${this.shade + 0.3})`);
+      gradient.addColorStop(0.7, `rgba(120,120,120,${this.shade + 0.1})`);
+      gradient.addColorStop(1, `rgba(80,80,80,${this.shade})`);
+
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = `rgba(60,60,60,${this.shade + 0.2})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(50,50,50,0.5)`;
+      ctx.lineWidth = 1;
+      for (const c of this.cracks) {
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(c.a1) * this.r * 0.2, Math.sin(c.a1) * this.r * 0.2);
+        ctx.lineTo(Math.cos(c.a2) * this.r * c.l, Math.sin(c.a2) * this.r * c.l);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+    isOffScreen() { return this.x < -this.r * 2; }
+    getCircle() { return { cx: this.x, cy: this.y, r: this.r - 3 }; }
+  }
+
+  class Coin {
+    constructor() {
+      this.x = W + 20 + Math.random() * 200;
+      this.y = groundY - 60 - Math.random() * 150;
+      this.r = 10;
+      this.baseY = this.y;
+      this.bobTimer = Math.random() * Math.PI * 2;
+      this.sparkTimer = 0;
+      this.attracted = false;
+    }
+    update() {
+      this.bobTimer += 0.06;
+      this.y = this.baseY + Math.sin(this.bobTimer) * 5;
+      this.sparkTimer++;
+
+      if (hasMagnet && player) {
+        const dx = (player.x + player.w / 2) - this.x;
+        const dy = (player.y + player.h / 2) - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 200) {
+          this.attracted = true;
+          this.x += dx * 0.08;
+          this.y += dy * 0.08;
+        }
+      }
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+
+      const scaleX = Math.abs(Math.cos(this.bobTimer * 2));
+      ctx.scale(scaleX, 1);
+
+      ctx.fillStyle = '#FFD54F';
+      ctx.beginPath();
+      ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#FFA000';
+      ctx.beginPath();
+      ctx.arc(0, 0, this.r * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#FFD54F';
+      ctx.font = `bold ${this.r}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if (scaleX > 0.3) ctx.fillText('$', 0, 1);
+
+      if (this.sparkTimer % 30 < 5) {
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.beginPath();
+        ctx.arc(-3, -3, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+    isOffScreen() { return this.x < -20; }
+  }
+
+  class PowerUp {
+    constructor(type) {
+      this.type = type;
+      this.x = W + 20 + Math.random() * 200;
+      this.y = groundY - 80 - Math.random() * 80;
+      this.r = 14;
+      this.bobTimer = Math.random() * Math.PI * 2;
+      this.glowTimer = 0;
+    }
+    update() {
+      this.bobTimer += 0.04;
+      this.y += Math.sin(this.bobTimer) * 0.3;
+      this.glowTimer++;
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+
+      const glowAlpha = 0.2 + Math.sin(this.glowTimer * 0.1) * 0.15;
+      const glowColor = this.type === 'shield' ? `rgba(79,195,247,${glowAlpha})` : `rgba(239,83,80,${glowAlpha})`;
+      ctx.fillStyle = glowColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.r + 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = this.type === 'shield' ? '#4FC3F7' : '#EF5350';
+      ctx.beginPath();
+      ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = `${this.r}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(this.type === 'shield' ? '🛡' : '🧲', 0, 1);
+
+      ctx.restore();
+    }
+    isOffScreen() { return this.x < -20; }
+  }
+
+  class Particle {
+    constructor(x, y, color, vx, vy, life) {
+      this.x = x; this.y = y;
+      this.color = color;
+      this.vx = vx; this.vy = vy;
+      this.life = life;
+      this.maxLife = life;
+      this.size = 2 + Math.random() * 3;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += 0.1;
+      this.life--;
+    }
+    draw() {
+      const alpha = this.life / this.maxLife;
+      ctx.fillStyle = this.color.replace('1)', `${alpha})`);
+      ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+    }
+    isDead() { return this.life <= 0; }
+  }
+
+  function spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle(
+        x, y, color,
+        (Math.random() - 0.5) * 6,
+        (Math.random() - 0.5) * 6 - 2,
+        20 + Math.random() * 20
+      ));
+    }
+  }
+
+  function initBgElements() {
+    bgElements = [];
+    for (let i = 0; i < 12; i++) {
+      bgElements.push({
+        x: Math.random() * W * 2,
+        type: Math.random() < 0.5 ? 'cactus' : 'rock',
+        scale: 0.5 + Math.random() * 1,
+        layer: Math.random() < 0.5 ? 0 : 1
+      });
+    }
+  }
+
+  function drawBackground() {
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, groundY);
+    if (terrain === 'sand') {
+      skyGrad.addColorStop(0, '#1a1a2e');
+      skyGrad.addColorStop(0.5, '#2d1b3d');
+      skyGrad.addColorStop(1, '#4a2c2a');
+    } else {
+      skyGrad.addColorStop(0, '#0d1b2a');
+      skyGrad.addColorStop(0.5, '#1b2838');
+      skyGrad.addColorStop(1, '#2a3f54');
+    }
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, W, groundY);
+
+    ctx.fillStyle = terrain === 'sand' ? '#3E2723' : '#263238';
+    ctx.fillRect(0, groundY - 20, W, 20);
+
+    for (const bg of bgElements) {
+      const scrollSpeed = bg.layer === 0 ? 0.5 : 1;
+      bg.x -= scrollSpeed;
+      if (bg.x < -60) bg.x = W + 60 + Math.random() * 200;
+
+      ctx.save();
+      ctx.translate(bg.x, groundY - 20);
+      ctx.scale(bg.scale, bg.scale);
+      ctx.globalAlpha = bg.layer === 0 ? 0.3 : 0.5;
+
+      if (bg.type === 'cactus') {
+        ctx.fillStyle = terrain === 'sand' ? '#2E7D32' : '#546E7A';
+        ctx.fillRect(-4, -40, 8, 40);
+        ctx.fillRect(-14, -30, 10, 6);
+        ctx.fillRect(-14, -30, 6, 16);
+        ctx.fillRect(4, -24, 10, 6);
+        ctx.fillRect(8, -24, 6, 14);
+      } else {
+        ctx.fillStyle = terrain === 'sand' ? '#5D4037' : '#455A64';
+        ctx.beginPath();
+        ctx.ellipse(0, -8, 18, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    ctx.globalAlpha = 1;
+    const groundGrad = ctx.createLinearGradient(0, groundY, 0, H);
+    if (terrain === 'sand') {
+      groundGrad.addColorStop(0, '#8D6E63');
+      groundGrad.addColorStop(0.3, '#A1887F');
+      groundGrad.addColorStop(1, '#6D4C41');
+    } else {
+      groundGrad.addColorStop(0, '#90CAF9');
+      groundGrad.addColorStop(0.3, '#BBDEFB');
+      groundGrad.addColorStop(1, '#64B5F6');
+    }
+    ctx.fillStyle = groundGrad;
+    ctx.fillRect(0, groundY, W, H - groundY);
+
+    if (terrain === 'sand') {
+      ctx.fillStyle = 'rgba(210,180,140,0.3)';
+      for (let i = 0; i < W; i += 20) {
+        const dotY = groundY + 4 + Math.sin(i * 0.1 + frameCount * 0.02) * 2;
+        ctx.fillRect(i, dotY, 2, 2);
+      }
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      for (let i = 0; i < W; i += 40) {
+        const refY = groundY + 2 + Math.sin(i * 0.05 + frameCount * 0.03) * 1;
+        ctx.fillRect(i, refY, 30, 1);
+      }
+    }
+
+    const lineY = groundY;
+    ctx.strokeStyle = terrain === 'sand' ? '#6D4C41' : '#42A5F5';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, lineY);
+    ctx.lineTo(W, lineY);
+    ctx.stroke();
+  }
+
+  function circleRectCollision(cx, cy, cr, rx, ry, rw, rh) {
+    const closestX = Math.max(rx, Math.min(cx, rx + rw));
+    const closestY = Math.max(ry, Math.min(cy, ry + rh));
+    const dx = cx - closestX;
+    const dy = cy - closestY;
+    return (dx * dx + dy * dy) < (cr * cr);
+  }
+
+  function rectCollision(a, b) {
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+
+  let boulderSpawnTimer = 0;
+  let coinSpawnTimer = 0;
+  let powerUpSpawnTimer = 0;
+
+  function getBoulderInterval() {
+    return Math.max(30, 90 - score * 0.3);
+  }
+
+  function resetGame() {
+    score = 0;
+    distance = 0;
+    frameCount = 0;
+    boulders = [];
+    coins = [];
+    powerUps = [];
+    particles = [];
+    iceTrails = [];
+    hasShield = false;
+    hasMagnet = false;
+    magnetTimer = 0;
+    screenShake = 0;
+    shieldBreakAnim = 0;
+    terrainBannerTimer = 0;
+    terrain = 'sand';
+    terrainTimer = 0;
+    terrainDuration = 900;
+    boulderSpawnTimer = 0;
+    coinSpawnTimer = 0;
+    powerUpSpawnTimer = 0;
+    player = new Player(CHARACTERS[selectedChar]);
+    initBgElements();
+    document.getElementById('terrainBanner').classList.remove('show');
+    document.getElementById('shieldIndicator').style.display = 'none';
+    document.getElementById('magnetIndicator').style.display = 'none';
+  }
+
+  function startGame() {
+    resetGame();
+    gameState = 'playing';
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('gameOverScreen').classList.remove('show');
+    document.getElementById('hud').style.display = 'flex';
+    updateHUD();
+    updateTerrainIndicator();
+    if (animFrame) cancelAnimationFrame(animFrame);
+    gameLoop();
+  }
+
+  function endGame() {
+    gameState = 'over';
+    playSound('hit');
+
+    let isNewRecord = false;
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem(LS_KEY, highScore);
+      isNewRecord = true;
+    }
+
+    document.getElementById('goScore').textContent = score;
+    document.getElementById('goDist').textContent = Math.floor(distance) + 'm';
+    document.getElementById('goHigh').textContent = highScore;
+    document.getElementById('newRecord').style.display = isNewRecord ? 'block' : 'none';
+    document.getElementById('gameOverScreen').classList.add('show');
+  }
+
+  function updateHUD() {
+    document.getElementById('scoreVal').textContent = score;
+    document.getElementById('highVal').textContent = highScore;
+    document.getElementById('distVal').textContent = Math.floor(distance) + 'm';
+  }
+
+  function updateTerrainIndicator() {
+    const el = document.getElementById('terrainIndicator');
+    if (terrain === 'sand') {
+      el.textContent = '沙地';
+      el.className = 'terrain-sand';
+    } else {
+      el.textContent = '冰面';
+      el.className = 'terrain-ice';
+    }
+  }
+
+  function showTerrainBanner() {
+    const banner = document.getElementById('terrainBanner');
+    if (terrain === 'sand') {
+      banner.textContent = '进入沙地';
+      banner.className = 'banner-sand';
+    } else {
+      banner.textContent = '进入冰面';
+      banner.className = 'banner-ice';
+    }
+    banner.classList.add('show');
+    terrainBannerTimer = 90;
+  }
+
+  function update() {
+    if (gameState !== 'playing') return;
+    frameCount++;
+    distance += 0.15 + score * 0.002;
+
+    terrainTimer++;
+    if (terrainTimer >= terrainDuration) {
+      terrain = terrain === 'sand' ? 'ice' : 'sand';
+      terrainTimer = 0;
+      terrainDuration = 900 + Math.random() * 600;
+      updateTerrainIndicator();
+      showTerrainBanner();
+      playSound(terrain === 'sand' ? 'terrainSand' : 'terrainIce');
+    }
+
+    if (screenShake > 0) screenShake -= 0.5;
+    if (terrainBannerTimer > 0) terrainBannerTimer--;
+    if (terrainBannerTimer === 0) {
+      document.getElementById('terrainBanner').classList.remove('show');
+    }
+
+    for (let i = iceTrails.length - 1; i >= 0; i--) {
+      iceTrails[i].life--;
+      if (iceTrails[i].life <= 0) iceTrails.splice(i, 1);
+    }
+
+    player.update();
+
+    boulderSpawnTimer++;
+    if (boulderSpawnTimer >= getBoulderInterval()) {
+      boulders.push(new Boulder());
+      boulderSpawnTimer = 0;
+    }
+
+    coinSpawnTimer++;
+    if (coinSpawnTimer >= 70) {
+      coins.push(new Coin());
+      coinSpawnTimer = 0;
+    }
+
+    powerUpSpawnTimer++;
+    if (powerUpSpawnTimer >= 500) {
+      if (Math.random() < 0.05) {
+        powerUps.push(new PowerUp('shield'));
+      } else if (Math.random() < 0.03) {
+        powerUps.push(new PowerUp('magnet'));
+      }
+      powerUpSpawnTimer = 0;
+    }
+
+    if (hasMagnet) {
+      magnetTimer--;
+      if (magnetTimer <= 0) {
+        hasMagnet = false;
+        document.getElementById('magnetIndicator').style.display = 'none';
+      }
+    }
+
+    for (const b of boulders) b.update();
+    for (const c of coins) c.update();
+    for (const p of powerUps) p.update();
+    for (const p of particles) p.update();
+
+    boulders = boulders.filter(b => !b.isOffScreen());
+    coins = coins.filter(c => !c.isOffScreen());
+    powerUps = powerUps.filter(p => !p.isOffScreen());
+    particles = particles.filter(p => !p.isDead());
+
+    const pb = player.getBounds();
+    for (let i = boulders.length - 1; i >= 0; i--) {
+      const b = boulders[i];
+      const bc = b.getCircle();
+      if (circleRectCollision(bc.cx, bc.cy, bc.r, pb.x, pb.y, pb.w, pb.h)) {
+        if (hasShield) {
+          hasShield = false;
+          shieldBreakAnim = 30;
+          screenShake = 8;
+          document.getElementById('shieldIndicator').style.display = 'none';
+          playSound('shieldBreak');
+          spawnParticles(b.x, b.y, 'rgba(79,195,247,1)', 25);
+          spawnParticles(player.x + player.w/2, player.y + player.h/2, 'rgba(255,255,255,1)', 15);
+          boulders.splice(i, 1);
+        } else {
+          screenShake = 12;
+          spawnParticles(player.x + player.w/2, player.y + player.h/2, 'rgba(255,100,100,1)', 25);
+          endGame();
+          return;
+        }
+      }
+    }
+
+    for (let i = coins.length - 1; i >= 0; i--) {
+      const c = coins[i];
+      const coinBounds = { x: c.x - c.r, y: c.y - c.r, w: c.r * 2, h: c.r * 2 };
+      if (rectCollision(pb, coinBounds)) {
+        score += 10;
+        playSound('coin');
+        spawnParticles(c.x, c.y, 'rgba(255,213,79,1)', 8);
+        coins.splice(i, 1);
+      }
+    }
+
+    for (let i = powerUps.length - 1; i >= 0; i--) {
+      const p = powerUps[i];
+      const puBounds = { x: p.x - p.r, y: p.y - p.r, w: p.r * 2, h: p.r * 2 };
+      if (rectCollision(pb, puBounds)) {
+        if (p.type === 'shield') {
+          hasShield = true;
+          document.getElementById('shieldIndicator').style.display = 'block';
+          playSound('shield');
+        } else {
+          hasMagnet = true;
+          magnetTimer = 300;
+          document.getElementById('magnetIndicator').style.display = 'block';
+          playSound('magnet');
+        }
+        spawnParticles(p.x, p.y, p.type === 'shield' ? 'rgba(79,195,247,1)' : 'rgba(239,83,80,1)', 10);
+        powerUps.splice(i, 1);
+      }
+    }
+
+    if (frameCount % 60 === 0) {
+      score += 1;
+    }
+
+    updateHUD();
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.save();
+    if (screenShake > 0) {
+      ctx.translate(
+        (Math.random() - 0.5) * screenShake,
+        (Math.random() - 0.5) * screenShake
+      );
+    }
+
+    drawBackground();
+
+    for (const t of iceTrails) {
+      const alpha = t.life / t.maxLife;
+      ctx.fillStyle = `rgba(255,255,255,${alpha * 0.5})`;
+      ctx.fillRect(t.x - t.width / 2, t.y - 2, t.width, 2);
+    }
+
+    for (const c of coins) c.draw();
+    for (const p of powerUps) p.draw();
+    for (const b of boulders) b.draw();
+    if (player) player.draw();
+    for (const p of particles) p.draw();
+
+    ctx.restore();
+  }
+
+  function gameLoop() {
+    update();
+    render();
+    if (gameState === 'playing') {
+      animFrame = requestAnimationFrame(gameLoop);
+    }
+  }
+
+  function drawCharPreview(canvasEl, charDef) {
+    const pCtx = canvasEl.getContext('2d');
+    canvasEl.width = 50;
+    canvasEl.height = 70;
+    pCtx.clearRect(0, 0, 50, 70);
+    pCtx.save();
+    pCtx.translate(25, 15);
+
+    pCtx.fillStyle = charDef.color;
+    pCtx.fillRect(-12, 4, 24, 28);
+
+    pCtx.fillStyle = '#FFE0B2';
+    pCtx.beginPath();
+    pCtx.arc(0, 0, 8, 0, Math.PI * 2);
+    pCtx.fill();
+
+    pCtx.fillStyle = '#3E2723';
+    pCtx.fillRect(-6, -4, 12, 3);
+
+    pCtx.fillStyle = '#212121';
+    pCtx.fillRect(-3, 1, 2, 2);
+    pCtx.fillRect(1, 1, 2, 2);
+
+    pCtx.fillStyle = charDef.color;
+    pCtx.fillRect(-10, 32, 7, 12);
+    pCtx.fillRect(3, 32, 7, 12);
+
+    if (charDef.id === 'worker') {
+      pCtx.fillStyle = '#FFD54F';
+      pCtx.fillRect(-6, -8, 12, 3);
+    } else if (charDef.id === 'miner') {
+      pCtx.fillStyle = '#FFD54F';
+      pCtx.beginPath();
+      pCtx.arc(3, -5, 4, 0, Math.PI * 2);
+      pCtx.fill();
+      pCtx.fillStyle = '#212121';
+      pCtx.fillRect(-6, -8, 12, 3);
+    } else if (charDef.id === 'adventurer') {
+      pCtx.fillStyle = '#795548';
+      pCtx.beginPath();
+      pCtx.moveTo(-8, -5);
+      pCtx.lineTo(0, -15);
+      pCtx.lineTo(8, -5);
+      pCtx.closePath();
+      pCtx.fill();
+      pCtx.fillStyle = '#D4A843';
+      pCtx.beginPath();
+      pCtx.moveTo(-5, -5);
+      pCtx.lineTo(0, -12);
+      pCtx.lineTo(5, -5);
+      pCtx.closePath();
+      pCtx.fill();
+    }
+
+    pCtx.restore();
+  }
+
+  function initCharSelect() {
+    const container = document.getElementById('charSelect');
+    container.innerHTML = '';
+    CHARACTERS.forEach((ch, i) => {
+      const card = document.createElement('div');
+      card.className = 'char-card' + (i === selectedChar ? ' selected' : '');
+      const cvs = document.createElement('canvas');
+      drawCharPreview(cvs, ch);
+      const nameEl = document.createElement('div');
+      nameEl.className = 'char-name';
+      nameEl.textContent = ch.name;
+      const descEl = document.createElement('div');
+      descEl.className = 'char-desc';
+      descEl.textContent = ch.desc;
+      card.appendChild(cvs);
+      card.appendChild(nameEl);
+      card.appendChild(descEl);
+      card.addEventListener('click', () => {
+        selectedChar = i;
+        container.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+      });
+      container.appendChild(card);
+    });
+  }
+
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('retryBtn').addEventListener('click', startGame);
+  document.getElementById('backBtn').addEventListener('click', () => {
+    gameState = 'menu';
+    document.getElementById('gameOverScreen').classList.remove('show');
+    document.getElementById('startScreen').style.display = 'flex';
+    document.getElementById('hud').style.display = 'none';
+  });
+
+  document.addEventListener('keydown', (e) => {
+    keys[e.code] = true;
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+      e.preventDefault();
+    }
+    if (e.code === 'Space' && gameState === 'menu') {
+      startGame();
+    }
+  });
+  document.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+  function addTouchControl(id, stateKey) {
+    const el = document.getElementById(id);
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); touchState[stateKey] = true; }, { passive: false });
+    el.addEventListener('touchend', (e) => { e.preventDefault(); touchState[stateKey] = false; }, { passive: false });
+    el.addEventListener('touchcancel', (e) => { touchState[stateKey] = false; });
+  }
+  addTouchControl('touchJump', 'jump');
+  addTouchControl('touchLeft', 'left');
+  addTouchControl('touchRight', 'right');
+
+  const touchZoneLeft = document.getElementById('touchZoneLeft');
+  const touchZoneRight = document.getElementById('touchZoneRight');
+  const indJump = document.getElementById('indJump');
+  const indLeft = document.getElementById('indLeft');
+  const indRight = document.getElementById('indRight');
+
+  touchZoneLeft.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    touchState.jump = true;
+    indJump.classList.add('active');
+  }, { passive: false });
+  touchZoneLeft.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    touchState.jump = false;
+    indJump.classList.remove('active');
+  }, { passive: false });
+  touchZoneLeft.addEventListener('touchcancel', (e) => {
+    touchState.jump = false;
+    indJump.classList.remove('active');
+  });
+
+  touchZoneRight.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    updateTouchRight(e);
+  }, { passive: false });
+  touchZoneRight.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    updateTouchRight(e);
+  }, { passive: false });
+  touchZoneRight.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    touchState.left = false;
+    touchState.right = false;
+    indLeft.classList.remove('active');
+    indRight.classList.remove('active');
+  }, { passive: false });
+  touchZoneRight.addEventListener('touchcancel', (e) => {
+    touchState.left = false;
+    touchState.right = false;
+    indLeft.classList.remove('active');
+    indRight.classList.remove('active');
+  });
+
+  function updateTouchRight(e) {
+    if (!e.touches || e.touches.length === 0) return;
+    const touch = e.touches[0];
+    const rect = touchZoneRight.getBoundingClientRect();
+    const relX = touch.clientX - rect.left;
+    const zoneWidth = rect.width / 2;
+    if (relX < zoneWidth) {
+      touchState.left = true;
+      touchState.right = false;
+      indLeft.classList.add('active');
+      indRight.classList.remove('active');
+    } else {
+      touchState.left = false;
+      touchState.right = true;
+      indLeft.classList.remove('active');
+      indRight.classList.add('active');
+    }
+  }
+
+  document.getElementById('highVal').textContent = highScore;
+  initCharSelect();
+
+  function menuRender() {
+    if (gameState !== 'menu') return;
+    ctx.clearRect(0, 0, W, H);
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#1a1a2e');
+    grad.addColorStop(0.5, '#2d1b3d');
+    grad.addColorStop(1, '#4a2c2a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = 'rgba(212,168,67,0.1)';
+    for (let i = 0; i < 8; i++) {
+      const bx = (W * 0.1 + i * W * 0.12 + frameCount * 0.3) % (W + 100) - 50;
+      const by = H * 0.6 + Math.sin(i + frameCount * 0.01) * 30;
+      const br = 20 + i * 5;
+      ctx.beginPath();
+      ctx.arc(bx, by, br, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    frameCount++;
+    requestAnimationFrame(menuRender);
+  }
+  frameCount = 0;
+  menuRender();
+
+})();
+</script>
+</body>
+</html>

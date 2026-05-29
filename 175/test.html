@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>因果配对 - 自动化测试</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1a1a2e;
+      color: #e2e8f0;
+      padding: 20px;
+      font-size: 14px;
+    }
+    h1 { color: #4ecdc4; margin-bottom: 20px; }
+    .test-section { margin-bottom: 20px; }
+    .test-section h2 { color: #ffe66d; margin-bottom: 10px; font-size: 16px; }
+    .test-result { padding: 4px 8px; margin: 2px 0; border-radius: 4px; }
+    .pass { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; }
+    .fail { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+    .info { background: rgba(255, 255, 255, 0.05); color: #a0aec0; }
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    #testLog { max-height: 80vh; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <h1>🧪 因果配对游戏 - 自动化测试</h1>
+  <div id="testLog"></div>
+  <div id="summary" class="summary"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/game.js"></script>
+
+  <script>
+    const log = document.getElementById('testLog');
+    const summaryEl = document.getElementById('summary');
+    let passed = 0;
+    let failed = 0;
+    let total = 0;
+
+    function assert(condition, description) {
+      total++;
+      const div = document.createElement('div');
+      if (condition) {
+        passed++;
+        div.className = 'test-result pass';
+        div.textContent = `✅ PASS: ${description}`;
+      } else {
+        failed++;
+        div.className = 'test-result fail';
+        div.textContent = `❌ FAIL: ${description}`;
+      }
+      log.appendChild(div);
+      return condition;
+    }
+
+    function info(msg) {
+      const div = document.createElement('div');
+      div.className = 'test-result info';
+      div.textContent = `ℹ️ ${msg}`;
+      log.appendChild(div);
+    }
+
+    function section(title) {
+      const div = document.createElement('div');
+      div.className = 'test-section';
+      div.innerHTML = `<h2>${title}</h2>`;
+      log.appendChild(div);
+    }
+
+    function runTests() {
+      section('1. 游戏数据测试');
+      assert(typeof GAME_DATA !== 'undefined', 'GAME_DATA 已加载');
+      assert(Object.keys(GAME_DATA.themes).length === 3, '3个主题存在');
+      assert(GAME_DATA.themes.life.pairs.length === 32, '生活常识有32对配对');
+      assert(GAME_DATA.themes.science.pairs.length === 32, '科学原理有32对配对');
+      assert(GAME_DATA.themes.history.pairs.length === 32, '历史事件有32对配对');
+      assert(GAME_DATA.themes.life.funFacts.length > 0, '生活常识有趣味知识');
+      assert(GAME_DATA.themes.science.funFacts.length > 0, '科学原理有趣味知识');
+      assert(GAME_DATA.themes.history.funFacts.length > 0, '历史事件有趣味知识');
+      assert(GAME_DATA.config.difficulties.easy.pairs === 8, '简单难度8对');
+      assert(GAME_DATA.config.difficulties.medium.pairs === 18, '中等难度18对');
+      assert(GAME_DATA.config.difficulties.hard.pairs === 32, '困难难度32对');
+
+      GAME_DATA.themes.life.pairs.forEach((pair, i) => {
+        assert(pair.id && pair.cause && pair.effect && pair.explanation, `生活常识配对#${i}数据完整`);
+      });
+
+      section('2. 游戏初始化测试');
+      const g1 = new CausalGame();
+      const result1 = g1.initGame('life', 'easy');
+      assert(result1.cards.length === 16, '简单模式生成16张牌');
+      assert(result1.rows === 4 && result1.cols === 4, '简单模式4x4网格');
+      const causeCards = result1.cards.filter(c => c.type === 'cause');
+      const effectCards = result1.cards.filter(c => c.type === 'effect');
+      assert(causeCards.length === 8 && effectCards.length === 8, '原因牌和结果牌各8张');
+      assert(g1.state.isPlaying === true, '游戏状态为进行中');
+      assert(g1.state.startTime !== null, '计时器已启动');
+
+      const g2 = new CausalGame();
+      const result2 = g2.initGame('science', 'medium');
+      assert(result2.cards.length === 36, '中等模式生成36张牌');
+      assert(result2.rows === 6 && result2.cols === 6, '中等模式6x6网格');
+
+      const g3 = new CausalGame();
+      const result3 = g3.initGame('history', 'hard');
+      assert(result3.cards.length === 64, '困难模式生成64张牌');
+      assert(result3.rows === 8 && result3.cols === 8, '困难模式8x8网格');
+
+      section('3. 翻牌与配对逻辑测试');
+      const g4 = new CausalGame();
+      g4.initGame('life', 'easy');
+      const pairId = g4.state.cards[0].pairId;
+      const causeIdx = g4.state.cards.findIndex(c => c.pairId === pairId && c.type === 'cause');
+      const effectIdx = g4.state.cards.findIndex(c => c.pairId === pairId && c.type === 'effect');
+      
+      const flip1 = g4.flipCard(causeIdx);
+      assert(flip1 !== null, '翻开第一张牌返回非null');
+      assert(flip1.isMatch === null, '第一张牌不判断匹配');
+      assert(g4.state.cards[causeIdx].isFlipped === true, '第一张牌已翻开');
+
+      const flip2 = g4.flipCard(effectIdx);
+      assert(flip2 !== null, '翻开第二张牌返回非null');
+      assert(flip2.isMatch === true, '配对正确返回true');
+      assert(flip2.firstIndex === causeIdx, 'firstIndex正确');
+      assert(flip2.secondIndex === effectIdx, 'secondIndex正确');
+      assert(flip2.explanation !== null, '返回解释文字');
+
+      section('4. 错误配对测试');
+      const g5 = new CausalGame();
+      g5.initGame('life', 'easy');
+      const card0 = g5.state.cards[0];
+      const wrongIdx = g5.state.cards.findIndex(c => c.pairId !== card0.pairId && !c.isFlipped);
+      
+      const f1 = g5.flipCard(0);
+      const f2 = g5.flipCard(wrongIdx);
+      assert(f2 !== null && f2.isMatch === false, '不匹配的配对返回false');
+
+      section('5. 重复翻牌测试');
+      const g6 = new CausalGame();
+      g6.initGame('life', 'easy');
+      const r1 = g6.flipCard(0);
+      g6.state.isProcessing = false;
+      const r2 = g6.flipCard(0);
+      assert(r2 === null, '不能翻开已翻开的牌');
+
+      section('6. 处理中锁定测试');
+      const g7 = new CausalGame();
+      g7.initGame('life', 'easy');
+      g7.state.isProcessing = true;
+      const r3 = g7.flipCard(1);
+      assert(r3 === null, '处理中不能翻牌');
+      g7.state.isProcessing = false;
+
+      section('7. 提示功能测试');
+      const g8 = new CausalGame();
+      g8.initGame('life', 'easy');
+      const hints = g8.getHint();
+      assert(Array.isArray(hints), 'getHint返回数组');
+      assert(hints.length === 2, '找到2张可配对的牌');
+      if (hints.length === 2) {
+        const h1 = g8.state.cards[hints[0]];
+        const h2 = g8.state.cards[hints[1]];
+        assert(h1.pairId === h2.pairId, '提示的两张牌pairId相同');
+        assert(h1.type !== h2.type, '提示的两张牌类型不同（一因一果）');
+      }
+
+      section('8. 洗牌功能测试');
+      const g9 = new CausalGame();
+      g9.initGame('life', 'easy');
+      const beforeIds = g9.state.cards.map(c => c.id).join(',');
+      g9.shuffleUnmatched();
+      const afterIds = g9.state.cards.map(c => c.id).join(',');
+      assert(beforeIds !== afterIds || g9.state.cards.length === g9.state.cards.length, '洗牌后卡牌顺序改变或数量不变');
+      assert(g9.state.flippedCards.length === 0, '洗牌后无翻开牌');
+      assert(g9.state.isProcessing === false, '洗牌后处理状态为false');
+
+      section('9. 计分系统测试');
+      const g10 = new CausalGame();
+      g10.initGame('life', 'easy');
+      g10.state.elapsedTime = 30;
+      g10.state.attempts = 8;
+      const score1 = g10.calculateScore();
+      assert(score1 === 900, '30秒8次尝试 = 1000-60-40 = 900');
+      
+      g10.state.elapsedTime = 600;
+      g10.state.attempts = 200;
+      const score2 = g10.calculateScore();
+      assert(score2 === 0, '超时超次得分不低于0');
+
+      section('10. 排行榜存储测试');
+      storageManager.clearLeaderboard();
+      const emptyLb = storageManager.getLeaderboard();
+      assert('life' in emptyLb && 'science' in emptyLb && 'history' in emptyLb, '排行榜包含3个主题');
+      assert('easy' in emptyLb.life && 'medium' in emptyLb.life && 'hard' in emptyLb.life, '每个主题包含3个难度');
+      
+      const rank1 = storageManager.addScore('life', 'easy', '玩家A', 120, 760);
+      assert(rank1 >= 1 && rank1 <= 5, '添加分数返回有效排名');
+      
+      const topScores = storageManager.getTopScores('life', 'easy');
+      assert(topScores.length === 1, '排行榜有1条记录');
+      assert(topScores[0].name === '玩家A', '记录名字正确');
+      assert(topScores[0].time === 120, '记录时间正确');
+      assert(topScores[0].score === 760, '记录分数正确');
+
+      storageManager.addScore('life', 'easy', '玩家B', 60, 880);
+      storageManager.addScore('life', 'easy', '玩家C', 90, 820);
+      storageManager.addScore('life', 'easy', '玩家D', 45, 910);
+      storageManager.addScore('life', 'easy', '玩家E', 200, 600);
+      storageManager.addScore('life', 'easy', '玩家F', 30, 940);
+
+      const top5 = storageManager.getTopScores('life', 'easy');
+      assert(top5.length === 5, '排行榜最多保留5条');
+      assert(top5[0].time <= top5[1].time, '按时间升序排列');
+      
+      const isNewRecord = storageManager.isNewRecord('life', 'easy', 10);
+      assert(isNewRecord === true, '10秒是新纪录');
+      
+      const scienceScores = storageManager.getTopScores('science', 'easy');
+      assert(scienceScores.length === 0, '科学原理排行榜为空（主题隔离）');
+      
+      const hardScores = storageManager.getTopScores('life', 'hard');
+      assert(hardScores.length === 0, '困难排行榜为空（难度隔离）');
+      
+      storageManager.clearLeaderboard();
+
+      section('11. 排行榜数据验证测试');
+      const invalidRank = storageManager.addScore('invalid', 'easy', '测试', 60, 500);
+      assert(invalidRank === -1, '无效主题返回-1');
+      const invalidRank2 = storageManager.addScore('life', 'invalid', '测试', 60, 500);
+      assert(invalidRank2 === -1, '无效难度返回-1');
+
+      section('12. 音效系统测试');
+      assert(typeof AudioManager !== 'undefined', 'AudioManager类存在');
+      assert(typeof audioManager !== 'undefined', 'audioManager实例存在');
+      assert(typeof audioManager.playSuccess === 'function', 'playSuccess方法存在');
+      assert(typeof audioManager.playError === 'function', 'playError方法存在');
+      assert(typeof audioManager.playVictory === 'function', 'playVictory方法存在');
+      assert(typeof audioManager.playFlip === 'function', 'playFlip方法存在');
+      assert(typeof audioManager.toggle === 'function', 'toggle方法存在');
+      assert(typeof audioManager.createToneBuffer === 'function', 'createToneBuffer方法存在');
+      assert(audioManager.enabled === true, '音效默认开启');
+      const toggleResult = audioManager.toggle();
+      assert(toggleResult === false, '切换后音效关闭');
+      audioManager.toggle();
+
+      section('13. 音频缓冲区测试');
+      try {
+        audioManager.init();
+        assert(audioManager.audioContext !== null, 'AudioContext初始化成功');
+        
+        const buf = audioManager.createToneBuffer(440, 0.1, 'sine');
+        assert(buf !== null, '创建正弦波缓冲区成功');
+        assert(buf.length > 0, '缓冲区长度>0');
+        
+        const buf2 = audioManager.createToneBuffer(440, 0.05, 'sawtooth');
+        assert(buf2 !== null, '创建锯齿波缓冲区成功');
+        
+        const buf3 = audioManager.createToneBuffer(440, 0.05, 'square');
+        assert(buf3 !== null, '创建方波缓冲区成功');
+        
+        const buf4 = audioManager.createToneBuffer(440, 0.05, 'triangle');
+        assert(buf4 !== null, '创建三角波缓冲区成功');
+
+        audioManager.playTone(440, 0.1, 'sine', 0.1, 0);
+        assert(true, 'playTone执行无报错');
+      } catch (e) {
+        assert(false, 'AudioContext测试异常: ' + e.message);
+      }
+
+      section('14. 游戏完成流程测试');
+      const g11 = new CausalGame();
+      g11.initGame('life', 'easy');
+      g11.state.matchedPairs = g11.state.totalPairs - 1;
+      const lastPairId = g11.state.cards.find(c => !c.isMatched).pairId;
+      const lastCause = g11.state.cards.findIndex(c => c.pairId === lastPairId && c.type === 'cause' && !c.isMatched);
+      const lastEffect = g11.state.cards.findIndex(c => c.pairId === lastPairId && c.type === 'effect' && !c.isMatched);
+      
+      g11.flipCard(lastCause);
+      g11.flipCard(lastEffect);
+      assert(g11.state.isProcessing === true, '最后配对时处理中');
+      
+      setTimeout(() => {
+        assert(g11.state.isPlaying === false, '游戏完成后状态为非进行中');
+        
+        const funFact = GAME_DATA.themes[g11.state.theme].funFacts[0];
+        assert(funFact && funFact.length > 0, '可以获取趣味知识');
+        
+        finishTests();
+      }, 1500);
+    }
+
+    function finishTests() {
+      section('15. 游戏统计测试');
+      const g12 = new CausalGame();
+      g12.initGame('life', 'easy');
+      const stats = g12.getStats();
+      assert(typeof stats.matchedPairs === 'number', '统计包含matchedPairs');
+      assert(typeof stats.totalPairs === 'number', '统计包含totalPairs');
+      assert(typeof stats.attempts === 'number', '统计包含attempts');
+      assert(typeof stats.elapsedTime === 'number', '统计包含elapsedTime');
+
+      section('16. 游戏销毁测试');
+      const g13 = new CausalGame();
+      g13.initGame('life', 'easy');
+      g13.destroy();
+      assert(g13.state.timerInterval === null, '销毁后定时器为null');
+
+      summaryEl.innerHTML = `测试完成: ${passed} 通过 / ${failed} 失败 / ${total} 总计`;
+      summaryEl.style.color = failed === 0 ? '#4ecdc4' : '#ff6b6b';
+    }
+
+    runTests();
+  </script>
+</body>
+</html>

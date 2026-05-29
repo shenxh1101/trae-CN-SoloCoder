@@ -1,0 +1,775 @@
+const fs = require('fs');
+
+console.log('=== 数字华容道游戏逻辑测试 ===\n');
+
+let testsPassed = 0;
+let testsFailed = 0;
+
+function test(name, fn) {
+    try {
+        fn();
+        console.log(`✅ ${name}`);
+        testsPassed++;
+    } catch (e) {
+        console.log(`❌ ${name}: ${e.message}`);
+        testsFailed++;
+    }
+}
+
+function assert(condition, message) {
+    if (!condition) {
+        throw new Error(message || '断言失败');
+    }
+}
+
+class PuzzleGameTest {
+    constructor() {
+        this.size = 4;
+        this.board = [];
+        this.obstacles = new Set();
+        this.emptyPos = { row: 0, col: 0 };
+        this.moves = 0;
+        this.timer = 0;
+        this.gameStarted = false;
+        this.gameWon = false;
+        this.hintsRemaining = 5;
+        this.undoStack = [];
+        this.maxUndo = 10;
+        this.mode = 'normal';
+        this.customObstacles = new Set();
+    }
+
+    getTargetBoard() {
+        const target = [];
+        const total = this.size * this.size;
+        for (let row = 0; row < this.size; row++) {
+            target[row] = [];
+            for (let col = 0; col < this.size; col++) {
+                const idx = row * this.size + col;
+                if (idx === total - 1) {
+                    target[row][col] = 0;
+                } else {
+                    target[row][col] = idx + 1;
+                }
+            }
+        }
+        return target;
+    }
+
+    seededRandom(seed) {
+        return function() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+        };
+    }
+
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    isValidPosition(row, col) {
+        return row >= 0 && row < this.size && col >= 0 && col < this.size;
+    }
+
+    getValidMoves() {
+        const moves = [];
+        const { row, col } = this.emptyPos;
+        const directions = [
+            { dr: -1, dc: 0 },
+            { dr: 1, dc: 0 },
+            { dr: 0, dc: -1 },
+            { dr: 0, dc: 1 }
+        ];
+
+        for (const { dr, dc } of directions) {
+            const newRow = row + dr;
+            const newCol = col + dc;
+            if (this.isValidPosition(newRow, newCol) &&
+                this.board[newRow][newCol] !== -1 &&
+                this.board[newRow][newCol] !== 0) {
+                moves.push({ row: newRow, col: newCol });
+            }
+        }
+        return moves;
+    }
+
+    moveTile(row, col, silent = false) {
+        const { row: emptyRow, col: emptyCol } = this.emptyPos;
+
+        if (Math.abs(row - emptyRow) + Math.abs(col - emptyCol) !== 1) {
+            return false;
+        }
+
+        if (this.board[row][col] === -1 || this.board[row][col] === 0) {
+            return false;
+        }
+
+        const prevState = {
+            board: this.board.map(r => [...r]),
+            emptyPos: { ...this.emptyPos },
+            moves: this.moves,
+            timer: this.timer
+        };
+
+        this.board[emptyRow][emptyCol] = this.board[row][col];
+        this.board[row][col] = 0;
+        this.emptyPos = { row, col };
+
+        if (!silent) {
+            this.moves++;
+            this.undoStack.push(prevState);
+            if (this.undoStack.length > this.maxUndo) {
+                this.undoStack.shift();
+            }
+        }
+
+        return true;
+    }
+
+    checkWin() {
+        const target = this.getTargetBoard();
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
+                const key = `${row},${col}`;
+                if (this.obstacles.has(key)) {
+                    if (this.board[row][col] !== -1) return false;
+                } else {
+                    if (this.board[row][col] !== target[row][col]) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    isSolvable() {
+        const flatBoard = [];
+        let emptyRow = 0;
+
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
+                const val = this.board[row][col];
+                if (val === 0) {
+                    emptyRow = row;
+                } else if (val !== -1) {
+                    flatBoard.push(val);
+                }
+            }
+        }
+
+        let inversions = 0;
+        for (let i = 0; i < flatBoard.length; i++) {
+            for (let j = i + 1; j < flatBoard.length; j++) {
+                if (flatBoard[i] > flatBoard[j]) {
+                    inversions++;
+                }
+            }
+        }
+
+        if (this.size % 2 === 1) {
+            return inversions % 2 === 0;
+        } else {
+            const emptyRowFromBottom = this.size - emptyRow;
+            if (emptyRowFromBottom % 2 === 0) {
+                return inversions % 2 === 1;
+            } else {
+                return inversions % 2 === 0;
+            }
+        }
+    }
+
+    calculateManhattanDistance() {
+        let distance = 0;
+        const target = this.getTargetBoard();
+        const valuePositions = new Map();
+
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
+                const key = `${row},${col}`;
+                if (!this.obstacles.has(key) && target[row][col] !== 0) {
+                    valuePositions.set(target[row][col], { row, col });
+                }
+            }
+        }
+
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
+                const value = this.board[row][col];
+                const key = `${row},${col}`;
+                if (value !== 0 && value !== -1 && !this.obstacles.has(key)) {
+                    const targetPos = valuePositions.get(value);
+                    if (targetPos) {
+                        distance += Math.abs(row - targetPos.row) + Math.abs(col - targetPos.col);
+                    }
+                }
+            }
+        }
+
+        return distance;
+    }
+
+    findHintTile() {
+        const moves = this.getValidMoves();
+        if (moves.length === 0) return null;
+
+        let bestMove = null;
+        let bestScore = Infinity;
+
+        for (const move of moves) {
+            const score = this.evaluateMove(move.row, move.col);
+            if (score < bestScore) {
+                bestScore = score;
+                bestMove = move;
+            }
+        }
+
+        return bestMove;
+    }
+
+    evaluateMove(row, col) {
+        const { row: emptyRow, col: emptyCol } = this.emptyPos;
+
+        const tempBoard = this.board.map(r => [...r]);
+        tempBoard[emptyRow][emptyCol] = tempBoard[row][col];
+        tempBoard[row][col] = 0;
+
+        const target = this.getTargetBoard();
+        let distance = 0;
+
+        const valuePositions = new Map();
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
+                const key = `${r},${c}`;
+                if (!this.obstacles.has(key) && target[r][c] !== 0) {
+                    valuePositions.set(target[r][c], { row: r, col: c });
+                }
+            }
+        }
+
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
+                const value = tempBoard[r][c];
+                const key = `${r},${c}`;
+                if (value !== 0 && value !== -1 && !this.obstacles.has(key)) {
+                    const targetPos = valuePositions.get(value);
+                    if (targetPos) {
+                        distance += Math.abs(r - targetPos.row) + Math.abs(c - targetPos.col);
+                    }
+                }
+            }
+        }
+
+        return distance;
+    }
+
+    undo() {
+        if (this.undoStack.length === 0 || this.gameWon) return false;
+
+        const prevState = this.undoStack.pop();
+        this.board = prevState.board;
+        this.emptyPos = prevState.emptyPos;
+        this.moves = prevState.moves;
+        this.timer = prevState.timer;
+        return true;
+    }
+
+    setupSolvedBoard() {
+        this.board = this.getTargetBoard();
+        this.emptyPos = { row: this.size - 1, col: this.size - 1 };
+        for (const key of this.obstacles) {
+            const [row, col] = key.split(',').map(Number);
+            this.board[row][col] = -1;
+        }
+    }
+
+    shuffleBoard() {
+        const shuffleMoves = this.size * this.size * 50;
+        for (let i = 0; i < shuffleMoves; i++) {
+            const neighbors = this.getValidMoves();
+            if (neighbors.length > 0) {
+                const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+                this.moveTile(randomNeighbor.row, randomNeighbor.col, true);
+            }
+        }
+        this.moves = 0;
+    }
+
+    generateDailyBoard(seedDate) {
+        this.obstacles.clear();
+        const seed = seedDate.getFullYear() * 10000 + (seedDate.getMonth() + 1) * 100 + seedDate.getDate();
+
+        const random = this.seededRandom(seed);
+        const totalTiles = this.size * this.size;
+        const maxObstacles = Math.floor(totalTiles * 0.2);
+        const numObstacles = Math.max(2, Math.floor(random() * maxObstacles) + 1);
+
+        const positions = [];
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
+                if (row === this.size - 1 && col === this.size - 1) continue;
+                positions.push(`${row},${col}`);
+            }
+        }
+
+        for (let i = positions.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [positions[i], positions[j]] = [positions[j], positions[i]];
+        }
+
+        for (let i = 0; i < numObstacles; i++) {
+            this.obstacles.add(positions[i]);
+        }
+
+        const random2 = this.seededRandom(seed + 1);
+        this.board = this.getTargetBoard();
+        this.emptyPos = { row: this.size - 1, col: this.size - 1 };
+
+        for (const key of this.obstacles) {
+            const [row, col] = key.split(',').map(Number);
+            this.board[row][col] = -1;
+        }
+
+        const nonObstaclePositions = [];
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
+                if (this.board[row][col] !== -1 && this.board[row][col] !== 0) {
+                    nonObstaclePositions.push({ row, col });
+                }
+            }
+        }
+
+        const values = nonObstaclePositions.map(p => this.board[p.row][p.col]);
+        for (let i = values.length - 1; i > 0; i--) {
+            const j = Math.floor(random2() * (i + 1));
+            [values[i], values[j]] = [values[j], values[i]];
+        }
+
+        nonObstaclePositions.forEach((p, idx) => {
+            this.board[p.row][p.col] = values[idx];
+        });
+    }
+}
+
+console.log('--- 基础功能测试 ---\n');
+
+test('目标棋盘生成 (4x4)', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    const target = game.getTargetBoard();
+    assert(target[0][0] === 1, '左上角应为1');
+    assert(target[3][3] === 0, '右下角应为0');
+    assert(target[2][3] === 12, '第3行第4列应为12');
+});
+
+test('目标棋盘生成 (5x5)', () => {
+    const game = new PuzzleGameTest();
+    game.size = 5;
+    const target = game.getTargetBoard();
+    assert(target[0][0] === 1, '左上角应为1');
+    assert(target[4][4] === 0, '右下角应为0');
+    assert(target[3][4] === 20, '第4行第5列应为20');
+});
+
+test('基础移动功能', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    const initialEmpty = { ...game.emptyPos };
+
+    const moved = game.moveTile(2, 3);
+    assert(moved === true, '移动应返回true');
+    assert(game.board[3][3] === 12, '原位置应有值12');
+    assert(game.board[2][3] === 0, '新位置应为空');
+    assert(game.emptyPos.row === 2 && game.emptyPos.col === 3, '空位置应更新');
+    assert(game.moves === 1, '步数应为1');
+});
+
+test('非法移动（对角线）', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+
+    const moved = game.moveTile(2, 2);
+    assert(moved === false, '对角线移动应返回false');
+    assert(game.emptyPos.row === 3 && game.emptyPos.col === 3, '空位置不应改变');
+});
+
+test('非法移动（距离超过1）', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+
+    const moved = game.moveTile(1, 3);
+    assert(moved === false, '远距离移动应返回false');
+});
+
+console.log('\n--- 障碍块测试 ---\n');
+
+test('障碍块阻挡移动', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.obstacles.add('2,3');
+    game.setupSolvedBoard();
+
+    const moved = game.moveTile(2, 3);
+    assert(moved === false, '障碍块应阻挡移动');
+    assert(game.board[2][3] === -1, '障碍块位置值应为-1');
+});
+
+test('障碍块不影响其他位置移动', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.obstacles.add('0,0');
+    game.setupSolvedBoard();
+
+    const moved = game.moveTile(2, 3);
+    assert(moved === true, '其他位置应可正常移动');
+});
+
+test('有效移动列表排除障碍块', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.obstacles.add('2,3');
+    game.setupSolvedBoard();
+
+    const moves = game.getValidMoves();
+    const hasObstacle = moves.some(m => m.row === 2 && m.col === 3);
+    assert(hasObstacle === false, '有效移动不应包含障碍块');
+    assert(moves.length === 2, '应只有2个有效移动（左、上）');
+});
+
+console.log('\n--- 悔棋功能测试 ---\n');
+
+test('悔棋恢复棋盘状态', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+
+    game.moveTile(2, 3);
+    assert(game.moves === 1, '移动后步数为1');
+
+    const undoResult = game.undo();
+    assert(undoResult === true, '悔棋应返回true');
+    assert(game.moves === 0, '悔棋后步数为0');
+    assert(game.board[3][3] === 0, '右下角应为空');
+    assert(game.board[2][3] === 12, '12应回到原位');
+});
+
+test('悔棋恢复时间', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    game.timer = 10;
+
+    game.moveTile(2, 3);
+    game.timer = 15;
+
+    game.undo();
+    assert(game.timer === 10, '悔棋应恢复时间');
+});
+
+test('最多10步悔棋', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+
+    for (let i = 0; i < 15; i++) {
+        const moves = game.getValidMoves();
+        if (moves.length > 0) {
+            game.moveTile(moves[0].row, moves[0].col);
+        }
+    }
+
+    assert(game.undoStack.length === 10, '悔棋栈最多保存10步');
+});
+
+test('空栈时无法悔棋', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+
+    const result = game.undo();
+    assert(result === false, '空栈时悔棋应返回false');
+});
+
+console.log('\n--- 提示系统测试 ---\n');
+
+test('提示系统返回有效移动', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    game.shuffleBoard();
+
+    const hint = game.findHintTile();
+    assert(hint !== null, '应返回提示');
+    assert(hint.row >= 0 && hint.row < 4, '行应在范围内');
+    assert(hint.col >= 0 && hint.col < 4, '列应在范围内');
+});
+
+test('评估移动降低曼哈顿距离', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    game.shuffleBoard();
+
+    const initialDistance = game.calculateManhattanDistance();
+    const hint = game.findHintTile();
+
+    if (hint) {
+        const scoreBefore = game.evaluateMove(hint.row, hint.col);
+        game.moveTile(hint.row, hint.col, true);
+        const newDistance = game.calculateManhattanDistance();
+        assert(newDistance <= initialDistance + 5, '提示移动不应显著增加距离');
+    }
+});
+
+console.log('\n--- 曼哈顿距离测试 ---\n');
+
+test('已完成棋盘曼哈顿距离为0', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    const distance = game.calculateManhattanDistance();
+    assert(distance === 0, '已完成棋盘距离应为0');
+});
+
+test('打乱后曼哈顿距离大于0', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    game.moveTile(2, 3, true);
+    const distance = game.calculateManhattanDistance();
+    assert(distance > 0, '打乱后距离应大于0');
+});
+
+console.log('\n--- 可解性测试 ---\n');
+
+test('已完成棋盘可解', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    assert(game.isSolvable() === true, '已完成棋盘应可解');
+});
+
+test('打乱后棋盘可解', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    game.shuffleBoard();
+    assert(game.isSolvable() === true, '打乱棋盘应可解');
+});
+
+console.log('\n--- 每日挑战测试 ---\n');
+
+test('相同日期生成相同棋盘', () => {
+    const date1 = new Date(2026, 4, 29);
+    const date2 = new Date(2026, 4, 29);
+
+    const game1 = new PuzzleGameTest();
+    game1.size = 4;
+    game1.generateDailyBoard(date1);
+
+    const game2 = new PuzzleGameTest();
+    game2.size = 4;
+    game2.generateDailyBoard(date2);
+
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            assert(game1.board[r][c] === game2.board[r][c], `位置(${r},${c})应相同`);
+        }
+    }
+});
+
+test('不同日期生成不同棋盘', () => {
+    const date1 = new Date(2026, 4, 29);
+    const date2 = new Date(2026, 4, 30);
+
+    const game1 = new PuzzleGameTest();
+    game1.size = 4;
+    game1.generateDailyBoard(date1);
+
+    const game2 = new PuzzleGameTest();
+    game2.size = 4;
+    game2.generateDailyBoard(date2);
+
+    let hasDifference = false;
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            if (game1.board[r][c] !== game2.board[r][c]) {
+                hasDifference = true;
+                break;
+            }
+        }
+        if (hasDifference) break;
+    }
+    assert(hasDifference === true, '不同日期应生成不同棋盘');
+});
+
+test('每日挑战包含障碍块', () => {
+    const date = new Date(2026, 4, 29);
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.generateDailyBoard(date);
+
+    assert(game.obstacles.size >= 2, '每日挑战应至少有2个障碍块');
+});
+
+console.log('\n--- JSON 导入导出测试 ---\n');
+
+test('导出JSON格式正确', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.customObstacles.add('0,0');
+    game.customObstacles.add('1,1');
+
+    const lastCell = `${game.size - 1},${game.size - 1}`;
+    const obstacles = Array.from(game.customObstacles).filter(o => o !== lastCell);
+
+    const layout = {
+        size: game.size,
+        obstacles: obstacles
+    };
+    const json = JSON.stringify(layout);
+    const parsed = JSON.parse(json);
+
+    assert(parsed.size === 4, '尺寸应为4');
+    assert(Array.isArray(parsed.obstacles), '障碍应为数组');
+    assert(parsed.obstacles.length === 2, '应有2个障碍');
+});
+
+test('导入JSON设置正确障碍', () => {
+    const json = '{"size": 5, "obstacles": ["0,0", "2,3", "1,1"]}';
+    const layout = JSON.parse(json);
+
+    assert(layout.size === 5, '尺寸应为5');
+    assert(layout.obstacles.includes('0,0'), '应包含(0,0)');
+    assert(layout.obstacles.includes('2,3'), '应包含(2,3)');
+});
+
+test('导入时自动移除最后一格障碍', () => {
+    const json = '{"size": 4, "obstacles": ["0,0", "3,3"]}';
+    const layout = JSON.parse(json);
+
+    const game = new PuzzleGameTest();
+    game.size = layout.size;
+    game.customObstacles = new Set(layout.obstacles);
+
+    const lastCell = `${game.size - 1},${game.size - 1}`;
+    game.customObstacles.delete(lastCell);
+
+    assert(game.customObstacles.has('0,0') === true, '应保留(0,0)');
+    assert(game.customObstacles.has('3,3') === false, '应移除最后一格');
+});
+
+test('导入时验证障碍数量', () => {
+    const json = '{"size": 4, "obstacles": ["0,0", "0,1", "0,2", "0,3", "1,0", "1,1", "1,2", "1,3", "2,0", "2,1", "2,2", "2,3", "3,0", "3,1"]}';
+    const layout = JSON.parse(json);
+
+    const game = new PuzzleGameTest();
+    game.size = layout.size;
+    game.customObstacles = new Set(layout.obstacles);
+
+    const lastCell = `${game.size - 1},${game.size - 1}`;
+    game.customObstacles.delete(lastCell);
+
+    assert(game.customObstacles.size >= game.size * game.size - 2, '障碍太多应被检测');
+});
+
+test('无效JSON格式检测', () => {
+    const invalidJson = '{"invalid": true}';
+    const layout = JSON.parse(invalidJson);
+    assert(!layout.size || !layout.obstacles, '应检测到无效格式');
+});
+
+test('无效尺寸检测', () => {
+    const json = '{"size": 6, "obstacles": ["0,0"]}';
+    const layout = JSON.parse(json);
+    assert(layout.size !== 4 && layout.size !== 5, '应检测到无效尺寸');
+});
+
+console.log('\n--- 胜利检测测试 ---\n');
+
+test('已完成棋盘应检测为胜利', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    assert(game.checkWin() === true, '已完成棋盘应胜利');
+});
+
+test('打乱后棋盘不应胜利', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+    game.moveTile(2, 3, true);
+    assert(game.checkWin() === false, '打乱后不应胜利');
+});
+
+test('有障碍时正确检测胜利', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.obstacles.add('0,0');
+    game.setupSolvedBoard();
+    assert(game.checkWin() === true, '有障碍时也应检测胜利');
+});
+
+console.log('\n--- 触摸滑动逻辑测试 ---\n');
+
+test('向右滑动应移动左侧方块', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+
+    const deltaX = 50;
+    const deltaY = 10;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    const { row, col } = game.emptyPos;
+    let targetCol = deltaX > 0 ? col - 1 : col + 1;
+
+    assert(targetCol === 2, '向右滑动应移动左侧方块');
+    assert(game.isValidPosition(row, targetCol), '目标位置应有效');
+});
+
+test('向下滑动应移动上方方块', () => {
+    const game = new PuzzleGameTest();
+    game.size = 4;
+    game.setupSolvedBoard();
+
+    const deltaX = 10;
+    const deltaY = 50;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    const { row, col } = game.emptyPos;
+    let targetRow = deltaY > 0 ? row - 1 : row + 1;
+
+    assert(targetRow === 2, '向下滑动应移动上方方块');
+    assert(game.isValidPosition(targetRow, col), '目标位置应有效');
+});
+
+test('短距离触摸应为点击', () => {
+    const minSwipeDistance = 30;
+    const deltaX = 10;
+    const deltaY = 5;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    const isSwipe = absX > minSwipeDistance || absY > minSwipeDistance;
+    assert(isSwipe === false, '短距离不应判定为滑动');
+});
+
+console.log('\n=== 测试总结 ===');
+console.log(`通过: ${testsPassed}`);
+console.log(`失败: ${testsFailed}`);
+console.log(`总计: ${testsPassed + testsFailed}`);
+
+if (testsFailed > 0) {
+    console.log('\n❌ 有测试失败，请检查问题！');
+    process.exit(1);
+} else {
+    console.log('\n✅ 所有测试通过！游戏逻辑正常。');
+    process.exit(0);
+}

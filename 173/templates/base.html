@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}远程命令执行系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <nav class="navbar">
+        <div class="container">
+            <span class="brand">🚀 远程命令执行系统</span>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">命令列表</a>
+                <a href="{{ url_for('history_page') }}" class="nav-link">执行历史</a>
+                {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('approval_list') }}" class="nav-link">待审批</a>
+                {% endif %}
+                <span class="user-info">👤 {{ current_user.username }} ({{ current_user.role }})</span>
+                <a href="{{ url_for('logout') }}" class="nav-link logout">退出</a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container main-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

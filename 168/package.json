@@ -1,0 +1,13 @@
+{
+  "name": "puzzle-game",
+  "version": "1.0.0",
+  "description": "数字华容道障碍挑战版",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["puzzle", "game"],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,19 @@
+🎄 开始生成功能验证截图...
+
+🌐 加载页面...
+✅ 3D场景已渲染
+
+📸 1. 3D场景白天模式:
+✅ 01-3d-scene-day.png (360.0 KB)
+
+📸 2. 打开控制面板:
+🔍 检查 night-toggle 是否存在: false
+🔍 检查 data-testid: [ 'data-testid="open-panel"' ]
+✅ 02-control-panel-open.png (396.1 KB)
+
+📸 3. 夜晚模式 (窗户灯光):
+找到 1 个开关按钮
+✅ 03-night-mode-with-lights.png (373.3 KB)
+
+📸 4. 自动环绕模式:
+❌ 错误: Cannot read properties of undefined (reading 'click')

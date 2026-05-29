@@ -1,0 +1,16 @@
+🎄 开始生成功能验证截图...
+
+🌐 加载页面...
+✅ 3D场景已渲染
+
+📸 1. 3D场景白天模式:
+✅ 01-3d-scene-day.png (409.5 KB)
+
+📸 2. 打开控制面板:
+✅ 02-control-panel-open.png (386.5 KB)
+
+📸 3. 夜晚模式 (窗户灯光):
+❌ 错误: page.waitForSelector: Timeout 5000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="night-toggle"]') to be visible[22m
+

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}命令列表 - 远程命令执行系统{% endblock %}
+
+{% block content %}
+<h2 class="page-title">📋 可用命令</h2>
+
+<div class="command-groups">
+    {% for group_id, group_config in commands.items() %}
+    <div class="command-group-card">
+        <div class="group-header">
+            <h3>{{ group_config.name }}</h3>
+            {% if group_config.require_approval %}
+            <span class="badge badge-warning">⚠️ 需审批</span>
+            {% endif %}
+            {% if group_config.notify_email %}
+            <span class="badge badge-info">📧 邮件通知</span>
+            {% endif %}
+        </div>
+        <p class="group-description">{{ group_config.description }}</p>
+
+        <div class="command-list">
+            {% for cmd in group_config.commands %}
+            <div class="command-item">
+                <div class="command-info">
+                    <span class="command-name">{{ cmd.name }}</span>
+                    <code class="command-preview">{{ cmd.command }}</code>
+                </div>
+                <button class="btn btn-primary btn-execute"
+                        data-group="{{ group_id }}"
+                        data-index="{{ loop.index0 }}"
+                        data-name="{{ cmd.name }}"
+                        data-approval="{{ group_config.require_approval }}">
+                    ▶ 执行
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="output-modal" class="modal hidden">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 id="modal-title">执行输出</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="terminal-output" class="terminal"></div>
+        </div>
+        <div class="modal-footer">
+            <div id="status-badge" class="status-badge status-running">运行中...</div>
+            <div class="modal-actions">
+                <button id="download-btn" class="btn btn-secondary hidden" onclick="downloadLog()">
+                    📥 下载日志
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="approval-modal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>⚠️ 需要管理员审批</h3>
+        </div>
+        <div class="modal-body">
+            <p id="approval-message">此命令需要管理员审批后才能执行，请联系管理员。</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeApprovalModal()">确定</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentHistoryId = null;
+let eventSource = null;
+
+function executeCommand(groupId, cmdIndex, cmdName, needsApproval) {
+    fetch(`/execute/${groupId}/${cmdIndex}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.require_approval) {
+                document.getElementById('approval-message').textContent =
+                    `"${cmdName}" 需要管理员审批后才能执行。\n\n请通知管理员在"待审批"页面处理此请求。`;
+                showApprovalModal();
+            } else {
+                openOutputModal(data.history_id, cmdName);
+            }
+        }
+    });
+}
+
+function openOutputModal(historyId, cmdName) {
+    currentHistoryId = historyId;
+    document.getElementById('modal-title').textContent = `执行输出 - ${cmdName}`;
+    document.getElementById('terminal-output').innerHTML = '';
+    document.getElementById('status-badge').textContent = '运行中...';
+    document.getElementById('status-badge').className = 'status-badge status-running';
+    document.getElementById('download-btn').classList.add('hidden');
+    document.getElementById('output-modal').classList.remove('hidden');
+
+    if (eventSource) {
+        eventSource.close();
+    }
+
+    eventSource = new EventSource(`/stream/${historyId}`);
+
+    eventSource.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.line) {
+            appendOutput(data.line);
+        }
+    };
+
+    eventSource.onerror = function() {
+        eventSource.close();
+        checkStatus();
+    };
+}
+
+function appendOutput(line) {
+    const terminal = document.getElementById('terminal-output');
+    const escapedLine = escapeHtml(line);
+    terminal.innerHTML += escapedLine;
+    terminal.scrollTop = terminal.scrollHeight;
+
+    if (line.includes('[DONE]')) {
+        setTimeout(checkStatus, 500);
+    }
+    if (line.includes('[ERROR]')) {
+        setTimeout(checkStatus, 500);
+    }
+}
+
+function checkStatus() {
+    if (!currentHistoryId) return;
+
+    fetch(`/output/${currentHistoryId}`)
+    .then(response => response.json())
+    .then(data => {
+        const badge = document.getElementById('status-badge');
+        const downloadBtn = document.getElementById('download-btn');
+
+        if (data.status === 'success') {
+            badge.textContent = '✅ 执行成功';
+            badge.className = 'status-badge status-success';
+        } else if (data.status === 'failed') {
+            badge.textContent = '❌ 执行失败';
+            badge.className = 'status-badge status-failed';
+        } else if (data.status === 'error') {
+            badge.textContent = '⚠️ 执行异常';
+            badge.className = 'status-badge status-error';
+        } else {
+            badge.textContent = '运行中...';
+            badge.className = 'status-badge status-running';
+        }
+
+        if (data.status !== 'running') {
+            downloadBtn.classList.remove('hidden');
+        }
+    });
+}
+
+function downloadLog() {
+    if (currentHistoryId) {
+        window.location.href = `/download/${currentHistoryId}`;
+    }
+}
+
+function closeModal() {
+    document.getElementById('output-modal').classList.add('hidden');
+    if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+    }
+    currentHistoryId = null;
+}
+
+function showApprovalModal() {
+    document.getElementById('approval-modal').classList.remove('hidden');
+}
+
+function closeApprovalModal() {
+    document.getElementById('approval-modal').classList.add('hidden');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/\n/g, '<br>');
+}
+
+document.querySelectorAll('.btn-execute').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const groupId = this.dataset.group;
+        const index = parseInt(this.dataset.index);
+        const name = this.dataset.name;
+        const needsApproval = this.dataset.approval === 'True';
+
+        this.disabled = true;
+        this.textContent = '⏳ 提交中...';
+
+        executeCommand(groupId, index, name, needsApproval);
+
+        setTimeout(() => {
+            this.disabled = false;
+            this.textContent = '▶ 执行';
+        }, 1000);
+    });
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+        closeApprovalModal();
+    }
+});
+</script>
+{% endblock %}

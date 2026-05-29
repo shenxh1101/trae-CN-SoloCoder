@@ -1,0 +1,7 @@
+filename,face_count,detected_faces,crop_region,cropped,original_size,final_size
+/Users/mac/code/solo coder/170/test_photos/dark_1face.jpg,1,"[(267, 167, 166, 166)]","(226, 126, 249, 249)",True,"(700, 500)","(800, 800)"
+/Users/mac/code/solo coder/170/test_photos/indoor_2faces_large.jpg,1,"[(250, 265, 165, 165)]","(209, 224, 247, 247)",True,"(1000, 700)","(800, 800)"
+/Users/mac/code/solo coder/170/test_photos/indoor_3faces.jpg,0,[],None,False,"(800, 600)","(800, 800)"
+/Users/mac/code/solo coder/170/test_photos/landscape_no_faces.jpg,0,[],None,False,"(800, 600)","(800, 800)"
+/Users/mac/code/solo coder/170/test_photos/outdoor_2faces.jpg,1,"[(226, 222, 149, 149)]","(189, 185, 223, 223)",True,"(900, 600)","(800, 800)"
+/Users/mac/code/solo coder/170/test_photos/subfolder/nested/nested_photo.jpg,0,[],None,False,"(600, 400)","(800, 800)"

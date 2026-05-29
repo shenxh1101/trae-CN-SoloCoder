@@ -1,0 +1,22 @@
+🎄 开始生成下雪村庄功能验证截图...
+
+============================================================
+🌐 正在访问 http://localhost:5173/ ...
+✅ 页面加载完成，3D场景已渲染
+
+============================================================
+
+📸 [1/7] 3D场景正常渲染（房子、圣诞树、雪人、雪花粒子）
+✅ 已保存: 01-3d-scene-day.png (426.6 KB)
+
+📸 [2/7] 打开控制面板展示所有控制选项
+✅ 已保存: 02-control-panel-open.png (402.6 KB)
+
+📸 [3/7] 切换到夜晚模式展示窗户灯光效果
+❌ 错误: page.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="night-toggle"]')[22m
+
+    at main (/Users/mac/code/solo coder/166/scripts/take-screenshots.mjs:64:14) {
+  name: 'TimeoutError'
+}

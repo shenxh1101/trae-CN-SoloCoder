@@ -1,0 +1,12 @@
+🎄 开始生成功能验证截图...
+
+🌐 加载页面...
+❌ 错误: page.goto: Timeout 20000ms exceeded.
+Call log:
+[2m  - navigating to "http://localhost:5173/", waiting until "domcontentloaded"[22m
+
+page.goto: Timeout 20000ms exceeded.
+Call log:
+[2m  - navigating to "http://localhost:5173/", waiting until "domcontentloaded"[22m
+
+    at main (/Users/mac/code/solo coder/166/scripts/take-screenshots-final.mjs:33:14)

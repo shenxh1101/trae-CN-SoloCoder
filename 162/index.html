@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D DNA 双螺旋结构</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            overflow: hidden;
+            background: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            color: #fff;
+            min-width: 280px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        #control-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        #control-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #control-panel::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 2px;
+        }
+        #control-panel h2 {
+            margin-bottom: 18px;
+            font-size: 16px;
+            text-align: center;
+            color: #00ffff;
+            letter-spacing: 2px;
+        }
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            margin: 12px 0;
+        }
+        .control-group {
+            margin-bottom: 14px;
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .slider-row input[type="range"] {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #222;
+            border-radius: 2px;
+            outline: none;
+        }
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #00ffff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 6px rgba(0, 255, 255, 0.5);
+        }
+        .slider-row .value-display {
+            min-width: 36px;
+            text-align: right;
+            font-size: 11px;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+        }
+        .button-group {
+            display: flex;
+            gap: 6px;
+        }
+        .btn {
+            flex: 1;
+            padding: 7px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+            min-width: 70px;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00cccc, #0066ff);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 12px rgba(0, 180, 255, 0.4);
+        }
+        .btn-secondary {
+            background: #222;
+            color: #aaa;
+            border: 1px solid #444;
+        }
+        .btn-secondary:hover {
+            background: #333;
+            color: #fff;
+        }
+        .btn-secondary.active {
+            background: linear-gradient(135deg, #00aaaa, #0066cc);
+            color: #fff;
+            border-color: #00cccc;
+            box-shadow: 0 0 8px rgba(0, 200, 255, 0.3);
+        }
+        .preset-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .preset-btn {
+            flex: 1;
+            padding: 6px 4px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .preset-btn.red-green {
+            background: linear-gradient(135deg, #ff3333, #33ff33);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .preset-btn.blue-orange {
+            background: linear-gradient(135deg, #3388ff, #ff8833);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .preset-btn.rainbow {
+            background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+        .preset-btn.active {
+            border-color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .toggle-switch.active {
+            background: #00cccc;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+        #info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: #555;
+            font-size: 11px;
+            z-index: 100;
+        }
+        #toast {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 200, 200, 0.9);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 200;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div id="control-panel">
+        <h2>🧬 DNA 控制面板</h2>
+        
+        <div class="control-group">
+            <label>螺旋半径</label>
+            <div class="slider-row">
+                <input type="range" id="radius" min="1" max="5" step="0.1" value="2">
+                <div class="value-display" id="radius-value">2.0</div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>螺距</label>
+            <div class="slider-row">
+                <input type="range" id="pitch" min="1" max="8" step="0.1" value="4">
+                <div class="value-display" id="pitch-value">4.0</div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>旋转速度</label>
+            <div class="slider-row">
+                <input type="range" id="speed" min="0" max="2" step="0.01" value="0.3">
+                <div class="value-display" id="speed-value">0.30</div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>粒子大小</label>
+            <div class="slider-row">
+                <input type="range" id="particleSize" min="0.05" max="0.5" step="0.01" value="0.15">
+                <div class="value-display" id="particleSize-value">0.15</div>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <div class="control-group">
+            <div class="toggle-row">
+                <label style="margin-bottom:0">粒子形状</label>
+                <div class="button-group">
+                    <button class="btn btn-secondary active" id="shapeCircle">● 圆形</button>
+                    <button class="btn btn-secondary" id="shapeSquare">■ 方形</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <div class="toggle-row">
+                <label style="margin-bottom:0">光晕效果</label>
+                <div class="toggle-switch active" id="bloomToggle"></div>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <div class="control-group">
+            <label>配色方案</label>
+            <div class="preset-buttons">
+                <button class="btn preset-btn red-green active" data-preset="red-green">红绿</button>
+                <button class="btn preset-btn blue-orange" data-preset="blue-orange">蓝橙</button>
+                <button class="btn preset-btn rainbow" data-preset="rainbow">彩虹</button>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <div class="control-group">
+            <label>导出</label>
+            <div class="button-group">
+                <button class="btn btn-primary" id="exportScreenshot">📷 截图</button>
+                <button class="btn btn-primary" id="exportCSV">📊 导出CSV</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info">点击粒子查看信息 · 拖拽旋转 · 滚轮缩放</div>
+    <div id="toast"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        var scene, camera, renderer, raycaster, mouse;
+        var dnaGroup, stars, glowLayer;
+        var particles1, particles2, basePairs, glowParticles1, glowParticles2;
+        var particlePositions1 = [], particlePositions2 = [], basePairPositions = [];
+        var mouseDownPos = { x: 0, y: 0 };
+        var mouseDownTime = 0;
+
+        var params = {
+            radius: 2,
+            pitch: 4,
+            speed: 0.3,
+            particleSize: 0.15,
+            particleShape: 'circle',
+            bloomEnabled: true,
+            colorScheme: 'red-green',
+            turns: 6,
+            particlesPerTurn: 30,
+            basePairSegments: 5
+        };
+
+        var colorSchemes = {
+            'red-green': {
+                chain1: function(i, total) { return new THREE.Color(0xff2222); },
+                chain2: function(i, total) { return new THREE.Color(0x22ff22); },
+                base: function(i, total) { return new THREE.Color(0x00ffff); }
+            },
+            'blue-orange': {
+                chain1: function(i, total) { return new THREE.Color(0x2288ff); },
+                chain2: function(i, total) { return new THREE.Color(0xff8822); },
+                base: function(i, total) { return new THREE.Color(0xffffff); }
+            },
+            'rainbow': {
+                chain1: function(i, total) {
+                    var c = new THREE.Color();
+                    c.setHSL((i / total) % 1, 1.0, 0.55);
+                    return c;
+                },
+                chain2: function(i, total) {
+                    var c = new THREE.Color();
+                    c.setHSL(((i / total) + 0.5) % 1, 1.0, 0.55);
+                    return c;
+                },
+                base: function(i, total) {
+                    var c = new THREE.Color();
+                    c.setHSL(((i / total) + 0.25) % 1, 0.8, 0.7);
+                    return c;
+                }
+            }
+        };
+
+        var circleTexture, squareTexture, glowTexture;
+
+        function createTextures() {
+            circleTexture = generateCircleTexture(128);
+            squareTexture = generateSquareTexture(128);
+            glowTexture = generateGlowTexture(128);
+        }
+
+        function generateCircleTexture(size) {
+            var canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            var ctx = canvas.getContext('2d');
+            var half = size / 2;
+
+            ctx.clearRect(0, 0, size, size);
+
+            var gradient = ctx.createRadialGradient(half, half, 0, half, half, half);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            gradient.addColorStop(0.15, 'rgba(255, 255, 255, 0.95)');
+            gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.6)');
+            gradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.15)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(half, half, half, 0, Math.PI * 2);
+            ctx.fill();
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function generateSquareTexture(size) {
+            var canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            var ctx = canvas.getContext('2d');
+            var margin = size * 0.1;
+
+            ctx.clearRect(0, 0, size, size);
+
+            var gradient = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size * 0.7);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.7)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(margin, margin, size - margin * 2, size - margin * 2);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function generateGlowTexture(size) {
+            var canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            var ctx = canvas.getContext('2d');
+            var half = size / 2;
+
+            ctx.clearRect(0, 0, size, size);
+
+            var gradient = ctx.createRadialGradient(half, half, 0, half, half, half);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+            gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.2)');
+            gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(half, half, half, 0, Math.PI * 2);
+            ctx.fill();
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function init() {
+            createTextures();
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 20);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x000008);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            raycaster = new THREE.Raycaster();
+            raycaster.params.Points.threshold = 0.3;
+            mouse = new THREE.Vector2();
+
+            dnaGroup = new THREE.Group();
+            scene.add(dnaGroup);
+
+            glowLayer = new THREE.Group();
+            scene.add(glowLayer);
+
+            createStars();
+            createDNA();
+            setupControls();
+            setupEventListeners();
+
+            animate();
+        }
+
+        function createStars() {
+            var starsGeometry = new THREE.BufferGeometry();
+            var starCount = 3000;
+            var positions = new Float32Array(starCount * 3);
+            var colors = new Float32Array(starCount * 3);
+            var sizes = new Float32Array(starCount);
+
+            for (var i = 0; i < starCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 300;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 300;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 300;
+
+                var temp = Math.random();
+                var brightness = Math.random() * 0.4 + 0.6;
+                if (temp < 0.3) {
+                    colors[i * 3] = brightness;
+                    colors[i * 3 + 1] = brightness * 0.8;
+                    colors[i * 3 + 2] = brightness * 0.6;
+                } else if (temp < 0.6) {
+                    colors[i * 3] = brightness * 0.7;
+                    colors[i * 3 + 1] = brightness * 0.8;
+                    colors[i * 3 + 2] = brightness;
+                } else {
+                    colors[i * 3] = brightness;
+                    colors[i * 3 + 1] = brightness;
+                    colors[i * 3 + 2] = brightness;
+                }
+
+                sizes[i] = Math.random() * 0.3 + 0.1;
+            }
+
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            var starsMaterial = new THREE.PointsMaterial({
+                size: 0.15,
+                map: circleTexture,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.9,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+        }
+
+        function createDNA() {
+            if (particles1) { dnaGroup.remove(particles1); particles1.geometry.dispose(); particles1.material.dispose(); }
+            if (particles2) { dnaGroup.remove(particles2); particles2.geometry.dispose(); particles2.material.dispose(); }
+            if (basePairs) { dnaGroup.remove(basePairs); basePairs.geometry.dispose(); basePairs.material.dispose(); }
+            if (glowParticles1) { glowLayer.remove(glowParticles1); glowParticles1.geometry.dispose(); glowParticles1.material.dispose(); }
+            if (glowParticles2) { glowLayer.remove(glowParticles2); glowParticles2.geometry.dispose(); glowParticles2.material.dispose(); }
+
+            particlePositions1 = [];
+            particlePositions2 = [];
+            basePairPositions = [];
+
+            var totalParticles = params.turns * params.particlesPerTurn;
+            var height = params.turns * params.pitch;
+            var scheme = colorSchemes[params.colorScheme];
+
+            var positions1 = new Float32Array(totalParticles * 3);
+            var positions2 = new Float32Array(totalParticles * 3);
+            var colors1 = new Float32Array(totalParticles * 3);
+            var colors2 = new Float32Array(totalParticles * 3);
+            var glowColors1 = new Float32Array(totalParticles * 3);
+            var glowColors2 = new Float32Array(totalParticles * 3);
+
+            var baseSegCount = totalParticles * params.basePairSegments;
+            var basePositions = new Float32Array(baseSegCount * 3);
+            var baseColors = new Float32Array(baseSegCount * 3);
+
+            for (var i = 0; i < totalParticles; i++) {
+                var angle = (i / params.particlesPerTurn) * Math.PI * 2;
+                var y = (i / totalParticles) * height - height / 2;
+
+                var x1 = Math.cos(angle) * params.radius;
+                var z1 = Math.sin(angle) * params.radius;
+                var x2 = Math.cos(angle + Math.PI) * params.radius;
+                var z2 = Math.sin(angle + Math.PI) * params.radius;
+
+                positions1[i * 3] = x1;
+                positions1[i * 3 + 1] = y;
+                positions1[i * 3 + 2] = z1;
+
+                positions2[i * 3] = x2;
+                positions2[i * 3 + 1] = y;
+                positions2[i * 3 + 2] = z2;
+
+                particlePositions1.push(new THREE.Vector3(x1, y, z1));
+                particlePositions2.push(new THREE.Vector3(x2, y, z2));
+
+                var c1 = scheme.chain1(i, totalParticles);
+                var c2 = scheme.chain2(i, totalParticles);
+
+                colors1[i * 3] = c1.r;
+                colors1[i * 3 + 1] = c1.g;
+                colors1[i * 3 + 2] = c1.b;
+
+                colors2[i * 3] = c2.r;
+                colors2[i * 3 + 1] = c2.g;
+                colors2[i * 3 + 2] = c2.b;
+
+                glowColors1[i * 3] = c1.r;
+                glowColors1[i * 3 + 1] = c1.g;
+                glowColors1[i * 3 + 2] = c1.b;
+
+                glowColors2[i * 3] = c2.r;
+                glowColors2[i * 3 + 1] = c2.g;
+                glowColors2[i * 3 + 2] = c2.b;
+
+                for (var s = 0; s < params.basePairSegments; s++) {
+                    var t = s / (params.basePairSegments - 1);
+                    var bx = x1 + (x2 - x1) * t;
+                    var bz = z1 + (z2 - z1) * t;
+                    var by = y;
+
+                    var segIdx = i * params.basePairSegments + s;
+                    basePositions[segIdx * 3] = bx;
+                    basePositions[segIdx * 3 + 1] = by;
+                    basePositions[segIdx * 3 + 2] = bz;
+
+                    var bc = scheme.base(i, totalParticles);
+                    baseColors[segIdx * 3] = bc.r;
+                    baseColors[segIdx * 3 + 1] = bc.g;
+                    baseColors[segIdx * 3 + 2] = bc.b;
+                }
+
+                basePairPositions.push({
+                    start: new THREE.Vector3(x1, y, z1),
+                    end: new THREE.Vector3(x2, y, z2),
+                    index: i
+                });
+            }
+
+            var geometry1 = new THREE.BufferGeometry();
+            geometry1.setAttribute('position', new THREE.BufferAttribute(positions1, 3));
+            geometry1.setAttribute('color', new THREE.BufferAttribute(colors1, 3));
+
+            var geometry2 = new THREE.BufferGeometry();
+            geometry2.setAttribute('position', new THREE.BufferAttribute(positions2, 3));
+            geometry2.setAttribute('color', new THREE.BufferAttribute(colors2, 3));
+
+            var baseGeometry = new THREE.BufferGeometry();
+            baseGeometry.setAttribute('position', new THREE.BufferAttribute(basePositions, 3));
+            baseGeometry.setAttribute('color', new THREE.BufferAttribute(baseColors, 3));
+
+            var mainTex = params.particleShape === 'circle' ? circleTexture : squareTexture;
+
+            var mainMaterial1 = new THREE.PointsMaterial({
+                size: params.particleSize,
+                map: mainTex,
+                vertexColors: true,
+                transparent: true,
+                opacity: 1.0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            var mainMaterial2 = mainMaterial1.clone();
+            var baseMaterial = new THREE.PointsMaterial({
+                size: params.particleSize * 0.5,
+                map: mainTex,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.7,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            particles1 = new THREE.Points(geometry1, mainMaterial1);
+            particles2 = new THREE.Points(geometry2, mainMaterial2);
+            basePairs = new THREE.Points(baseGeometry, baseMaterial);
+
+            dnaGroup.add(particles1);
+            dnaGroup.add(particles2);
+            dnaGroup.add(basePairs);
+
+            var glowGeometry1 = new THREE.BufferGeometry();
+            glowGeometry1.setAttribute('position', new THREE.BufferAttribute(positions1.slice(), 3));
+            glowGeometry1.setAttribute('color', new THREE.BufferAttribute(glowColors1, 3));
+
+            var glowGeometry2 = new THREE.BufferGeometry();
+            glowGeometry2.setAttribute('position', new THREE.BufferAttribute(positions2.slice(), 3));
+            glowGeometry2.setAttribute('color', new THREE.BufferAttribute(glowColors2, 3));
+
+            var glowMaterial1 = new THREE.PointsMaterial({
+                size: params.particleSize * 3,
+                map: glowTexture,
+                vertexColors: true,
+                transparent: true,
+                opacity: params.bloomEnabled ? 0.35 : 0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            var glowMaterial2 = glowMaterial1.clone();
+
+            glowParticles1 = new THREE.Points(glowGeometry1, glowMaterial1);
+            glowParticles2 = new THREE.Points(glowGeometry2, glowMaterial2);
+
+            glowLayer.add(glowParticles1);
+            glowLayer.add(glowParticles2);
+        }
+
+        function updateMaterials() {
+            if (!particles1) return;
+
+            var mainTex = params.particleShape === 'circle' ? circleTexture : squareTexture;
+
+            particles1.material.map = mainTex;
+            particles1.material.size = params.particleSize;
+            particles1.material.needsUpdate = true;
+
+            particles2.material.map = mainTex;
+            particles2.material.size = params.particleSize;
+            particles2.material.needsUpdate = true;
+
+            basePairs.material.map = mainTex;
+            basePairs.material.size = params.particleSize * 0.5;
+            basePairs.material.needsUpdate = true;
+
+            if (glowParticles1) {
+                glowParticles1.material.size = params.particleSize * 3;
+                glowParticles1.material.opacity = params.bloomEnabled ? 0.35 : 0;
+                glowParticles1.material.needsUpdate = true;
+            }
+            if (glowParticles2) {
+                glowParticles2.material.size = params.particleSize * 3;
+                glowParticles2.material.opacity = params.bloomEnabled ? 0.35 : 0;
+                glowParticles2.material.needsUpdate = true;
+            }
+        }
+
+        function setupControls() {
+            var isDragging = false;
+            var previousMousePosition = { x: 0, y: 0 };
+            var spherical = new THREE.Spherical().setFromVector3(camera.position);
+            var targetSpherical = spherical.clone();
+
+            renderer.domElement.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+                mouseDownPos = { x: e.clientX, y: e.clientY };
+                mouseDownTime = Date.now();
+            });
+
+            renderer.domElement.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+
+                var deltaX = e.clientX - previousMousePosition.x;
+                var deltaY = e.clientY - previousMousePosition.y;
+
+                targetSpherical.theta -= deltaX * 0.005;
+                targetSpherical.phi -= deltaY * 0.005;
+                targetSpherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, targetSpherical.phi));
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            renderer.domElement.addEventListener('mouseup', function(e) {
+                isDragging = false;
+
+                var dx = e.clientX - mouseDownPos.x;
+                var dy = e.clientY - mouseDownPos.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                var elapsed = Date.now() - mouseDownTime;
+
+                if (dist < 5 && elapsed < 300) {
+                    onParticleClick(e);
+                }
+            });
+
+            renderer.domElement.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                var zoomSpeed = 0.05;
+                var currentRadius = targetSpherical.radius;
+                targetSpherical.radius = Math.max(5, Math.min(50, currentRadius + e.deltaY * zoomSpeed));
+            }, { passive: false });
+
+            function updateCamera() {
+                spherical.theta += (targetSpherical.theta - spherical.theta) * 0.1;
+                spherical.phi += (targetSpherical.phi - spherical.phi) * 0.1;
+                spherical.radius += (targetSpherical.radius - spherical.radius) * 0.1;
+
+                camera.position.setFromSpherical(spherical);
+                camera.lookAt(0, 0, 0);
+            }
+
+            function animateControls() {
+                requestAnimationFrame(animateControls);
+                updateCamera();
+            }
+            animateControls();
+        }
+
+        function onParticleClick(event) {
+            var rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            var allDNA = [particles1, particles2, basePairs];
+            var intersects = raycaster.intersectObjects(allDNA);
+
+            if (intersects.length > 0) {
+                var hit = intersects[0];
+                var point = hit.point;
+                var obj = hit.object;
+
+                var chainName = '';
+                var positions = null;
+                if (obj === particles1) {
+                    chainName = '链1';
+                    positions = particlePositions1;
+                } else if (obj === particles2) {
+                    chainName = '链2';
+                    positions = particlePositions2;
+                } else {
+                    chainName = '碱基对';
+                    positions = particlePositions1;
+                }
+
+                var index = findClosestParticleIndex(point, positions);
+                var worldPos = positions[index].clone().applyMatrix4(dnaGroup.matrixWorld);
+
+                console.log(chainName + ' 粒子 #' + index + ' - 位置: (' +
+                    worldPos.x.toFixed(3) + ', ' + worldPos.y.toFixed(3) + ', ' + worldPos.z.toFixed(3) + ')');
+
+                showToast(chainName + ' 粒子 #' + index + ' (' +
+                    worldPos.x.toFixed(1) + ', ' + worldPos.y.toFixed(1) + ', ' + worldPos.z.toFixed(1) + ')');
+            }
+        }
+
+        function findClosestParticleIndex(point, positions) {
+            var minDist = Infinity;
+            var minIndex = 0;
+
+            for (var i = 0; i < positions.length; i++) {
+                var worldPos = positions[i].clone().applyMatrix4(dnaGroup.matrixWorld);
+                var dist = point.distanceTo(worldPos);
+                if (dist < minDist) {
+                    minDist = dist;
+                    minIndex = i;
+                }
+            }
+
+            return minIndex;
+        }
+
+        function showToast(msg) {
+            var toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('radius').addEventListener('input', function(e) {
+                params.radius = parseFloat(e.target.value);
+                document.getElementById('radius-value').textContent = params.radius.toFixed(1);
+                createDNA();
+            });
+
+            document.getElementById('pitch').addEventListener('input', function(e) {
+                params.pitch = parseFloat(e.target.value);
+                document.getElementById('pitch-value').textContent = params.pitch.toFixed(1);
+                createDNA();
+            });
+
+            document.getElementById('speed').addEventListener('input', function(e) {
+                params.speed = parseFloat(e.target.value);
+                document.getElementById('speed-value').textContent = params.speed.toFixed(2);
+            });
+
+            document.getElementById('particleSize').addEventListener('input', function(e) {
+                params.particleSize = parseFloat(e.target.value);
+                document.getElementById('particleSize-value').textContent = params.particleSize.toFixed(2);
+                updateMaterials();
+            });
+
+            document.getElementById('shapeCircle').addEventListener('click', function() {
+                params.particleShape = 'circle';
+                document.getElementById('shapeCircle').classList.add('active');
+                document.getElementById('shapeSquare').classList.remove('active');
+                updateMaterials();
+            });
+
+            document.getElementById('shapeSquare').addEventListener('click', function() {
+                params.particleShape = 'square';
+                document.getElementById('shapeSquare').classList.add('active');
+                document.getElementById('shapeCircle').classList.remove('active');
+                updateMaterials();
+            });
+
+            document.getElementById('bloomToggle').addEventListener('click', function(e) {
+                params.bloomEnabled = !params.bloomEnabled;
+                e.target.classList.toggle('active');
+                updateMaterials();
+            });
+
+            document.querySelectorAll('.preset-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    params.colorScheme = btn.dataset.preset;
+                    createDNA();
+                });
+            });
+
+            document.getElementById('exportScreenshot').addEventListener('click', exportScreenshot);
+            document.getElementById('exportCSV').addEventListener('click', exportCSV);
+
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function exportScreenshot() {
+            renderer.render(scene, camera);
+            var link = document.createElement('a');
+            link.download = 'dna-screenshot-' + Date.now() + '.png';
+            link.href = renderer.domElement.toDataURL('image/png');
+            link.click();
+            showToast('截图已导出');
+        }
+
+        function exportCSV() {
+            var csv = 'Chain,Index,X,Y,Z\n';
+
+            for (var i = 0; i < particlePositions1.length; i++) {
+                var pos = particlePositions1[i];
+                csv += '1,' + i + ',' + pos.x.toFixed(4) + ',' + pos.y.toFixed(4) + ',' + pos.z.toFixed(4) + '\n';
+            }
+
+            for (var i = 0; i < particlePositions2.length; i++) {
+                var pos = particlePositions2[i];
+                csv += '2,' + i + ',' + pos.x.toFixed(4) + ',' + pos.y.toFixed(4) + ',' + pos.z.toFixed(4) + '\n';
+            }
+
+            for (var i = 0; i < basePairPositions.length; i++) {
+                var bp = basePairPositions[i];
+                csv += 'base-start,' + i + ',' + bp.start.x.toFixed(4) + ',' + bp.start.y.toFixed(4) + ',' + bp.start.z.toFixed(4) + '\n';
+                csv += 'base-end,' + i + ',' + bp.end.x.toFixed(4) + ',' + bp.end.y.toFixed(4) + ',' + bp.end.z.toFixed(4) + '\n';
+            }
+
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'dna-vertices-' + Date.now() + '.csv';
+            link.click();
+            showToast('CSV 已导出 (' + (particlePositions1.length + particlePositions2.length + basePairPositions.length * 2) + ' 顶点)');
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            var time = Date.now() * 0.001;
+
+            dnaGroup.rotation.y += params.speed * 0.01;
+            glowLayer.rotation.y = dnaGroup.rotation.y;
+
+            if (particles1 && particles2) {
+                var pulse = 1 + Math.sin(time * 2.5) * 0.25;
+                particles1.material.size = params.particleSize * pulse;
+                particles2.material.size = params.particleSize * pulse;
+
+                var basePulse = 1 + Math.sin(time * 2.5 + Math.PI) * 0.2;
+                basePairs.material.size = params.particleSize * 0.5 * basePulse;
+
+                if (params.bloomEnabled && glowParticles1 && glowParticles2) {
+                    var glowPulse = 1 + Math.sin(time * 2.5) * 0.3;
+                    glowParticles1.material.size = params.particleSize * 3 * glowPulse;
+                    glowParticles2.material.size = params.particleSize * 3 * glowPulse;
+                    glowParticles1.material.opacity = 0.3 + Math.sin(time * 2.5) * 0.1;
+                    glowParticles2.material.opacity = 0.3 + Math.sin(time * 2.5) * 0.1;
+                }
+            }
+
+            stars.rotation.y += 0.00008;
+            stars.rotation.x += 0.00003;
+
+            renderer.render(scene, camera);
+        }
+
+        init();
+    </script>
+</body>
+</html>

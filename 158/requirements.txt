@@ -1,0 +1,35 @@
+# 视频音量批量调整工具 - 依赖说明
+# ============================================================
+#
+# Python 环境:
+#   - Python 3.7+ (使用了 dataclass)
+#   - 仅使用标准库，无需 pip install 任何包
+#
+# 系统依赖 (必需):
+#   - 完整版本 FFmpeg (推荐 4.0+，测试使用 7.1.1)
+#   - 必需滤镜支持: loudnorm, volume
+#
+# 安装完整版本 FFmpeg:
+#   macOS (推荐):
+#     brew install ffmpeg
+#
+#   Ubuntu/Debian:
+#     sudo apt-get update
+#     sudo apt-get install ffmpeg
+#
+#   CentOS/RHEL:
+#     sudo yum install epel-release
+#     sudo yum install ffmpeg
+#
+#   Windows:
+#     从 https://ffmpeg.org/download.html 下载完整版
+#     解压后将 bin 目录添加到 PATH
+#
+# 验证安装:
+#   ffmpeg -version
+#   ffmpeg -filters | grep -E "loudnorm|volume"
+#
+# 常见问题:
+#   - 如果系统有精简版 ffmpeg，确保 PATH 中完整版本在前
+#   - macOS: export PATH="/opt/homebrew/bin:$PATH"
+#   - 详细说明请查看 系统要求.md

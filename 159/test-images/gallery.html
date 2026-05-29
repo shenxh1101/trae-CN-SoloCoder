@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片下载库 - 共 2 张</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .header p {
+      opacity: 0.9;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .image-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .image-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .image-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    .image-info {
+      padding: 10px;
+      font-size: 12px;
+      color: #666;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+    }
+    .modal-content img {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 5px;
+    }
+    .close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      color: white;
+      font-size: 35px;
+      cursor: pointer;
+    }
+    .nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-size: 50px;
+      cursor: pointer;
+      padding: 20px;
+      user-select: none;
+    }
+    .nav.prev { left: -60px; }
+    .nav.next { right: -60px; }
+    .nav:hover { color: #667eea; }
+    .modal-info {
+      color: white;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📸 图片下载库</h1>
+    <p>共下载 2 张图片</p>
+  </div>
+  <div class="gallery">
+    
+      <div class="image-card" onclick="openModal(0)">
+        <img src="img_aHR0cHM6Ly9waWNzdW0u.jpg" alt="img_aHR0cHM6Ly9waWNzdW0u.jpg" loading="lazy">
+        <div class="image-info">img_aHR0cHM6Ly9waWNzdW0u.jpg</div>
+      </div>
+    
+      <div class="image-card" onclick="openModal(1)">
+        <img src="img_aHR0cHM6Ly9waWNzdW0u_1.jpg" alt="img_aHR0cHM6Ly9waWNzdW0u_1.jpg" loading="lazy">
+        <div class="image-info">img_aHR0cHM6Ly9waWNzdW0u_1.jpg</div>
+      </div>
+    
+  </div>
+  
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <span class="nav prev" onclick="prevImage()">&#10094;</span>
+      <span class="nav next" onclick="nextImage()">&#10095;</span>
+      <div id="modal-image-container"></div>
+      <div class="modal-info" id="modal-info"></div>
+    </div>
+  </div>
+
+  <script>
+    const images = [{"url":"https://picsum.photos/300/200","filename":"img_aHR0cHM6Ly9waWNzdW0u.jpg","filepath":"test-images/img_aHR0cHM6Ly9waWNzdW0u.jpg"},{"url":"https://picsum.photos/250/250","filename":"img_aHR0cHM6Ly9waWNzdW0u_1.jpg","filepath":"test-images/img_aHR0cHM6Ly9waWNzdW0u_1.jpg"}];
+    let currentIndex = 0;
+    const modal = document.getElementById('modal');
+    const container = document.getElementById('modal-image-container');
+    const info = document.getElementById('modal-info');
+
+    function openModal(index) {
+      currentIndex = index;
+      showImage();
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+    }
+
+    function showImage() {
+      const img = images[currentIndex];
+      container.innerHTML = '<img src="' + img.filename + '" alt="' + img.filename + '">';
+      info.textContent = (currentIndex + 1) + ' / ' + images.length + ' - ' + img.filename;
+    }
+
+    function prevImage() {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      showImage();
+    }
+
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % images.length;
+      showImage();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!modal.classList.contains('active')) return;
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  </script>
+</body>
+</html>
