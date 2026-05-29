@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}批量发送中 - MailSender{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 id="page-title">批量发送中</h1>
+    <p id="page-subtitle">正在逐条发送邮件...</p>
+</div>
+
+<div class="card">
+    <p id="progress-text" style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">已完成: 0 / 0</p>
+
+    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 16px;">
+        <div class="stat-card">
+            <div class="stat-value" id="success-count" style="color: var(--success);">0</div>
+            <div class="stat-label">成功</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="failed-count" style="color: var(--danger);">0</div>
+            <div class="stat-label">失败</div>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar" style="width: 0%;"></div>
+    </div>
+
+    <p id="status-text" style="font-size: 14px; color: var(--text-secondary); margin-top: 12px;">发送中...</p>
+
+    <div id="warnings-container" style="display: none; margin-top: 16px; padding: 16px; background-color: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 4px solid var(--warning);">
+        <h4 style="color: var(--warning); margin-bottom: 8px;">⚠️ 变量缺失警告</h4>
+        <ul id="warnings-list" style="color: var(--text); font-size: 13px; margin-left: 20px;"></ul>
+    </div>
+
+    <div id="summary-card" style="display: none; margin-top: 24px; padding: 20px; background-color: var(--input-bg); border-radius: 8px;">
+        <h3 style="margin-bottom: 16px; color: var(--text);">📊 发送统计</h3>
+        <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="stat-card" style="box-shadow: none;">
+                <div class="stat-value" id="summary-total" style="font-size: 24px;">0</div>
+                <div class="stat-label">总计</div>
+            </div>
+            <div class="stat-card" style="box-shadow: none;">
+                <div class="stat-value" id="summary-success" style="font-size: 24px; color: var(--success);">0</div>
+                <div class="stat-label">成功</div>
+            </div>
+            <div class="stat-card" style="box-shadow: none;">
+                <div class="stat-value" id="summary-failed" style="font-size: 24px; color: var(--danger);">0</div>
+                <div class="stat-label">失败</div>
+            </div>
+            <div class="stat-card" style="box-shadow: none;">
+                <div class="stat-value" id="summary-rate" style="font-size: 24px; color: var(--accent);">0%</div>
+                <div class="stat-label">成功率</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="action-buttons" style="display: none; margin-top: 24px;" class="btn-group">
+        <a href="/" class="btn btn-primary">返回发送页</a>
+        <a href="/logs" class="btn btn-secondary">查看发送日志</a>
+        <a href="/logs/export-failed" id="export-failed-btn" class="btn btn-danger" style="display: none;">导出失败列表</a>
+    </div>
+</div>
+
+<script>
+(function() {
+    var taskId = "{{ task_id }}";
+    var pageTitle = document.getElementById("page-title");
+    var pageSubtitle = document.getElementById("page-subtitle");
+    var progressText = document.getElementById("progress-text");
+    var successCount = document.getElementById("success-count");
+    var failedCount = document.getElementById("failed-count");
+    var progressBar = document.getElementById("progress-bar");
+    var statusText = document.getElementById("status-text");
+    var actionButtons = document.getElementById("action-buttons");
+    var exportFailedBtn = document.getElementById("export-failed-btn");
+    var summaryCard = document.getElementById("summary-card");
+    var warningsContainer = document.getElementById("warnings-container");
+    var warningsList = document.getElementById("warnings-list");
+    var summaryTotal = document.getElementById("summary-total");
+    var summarySuccess = document.getElementById("summary-success");
+    var summaryFailed = document.getElementById("summary-failed");
+    var summaryRate = document.getElementById("summary-rate");
+
+    var evtSource = new EventSource("/send/batch-progress?task_id=" + taskId);
+
+    evtSource.onmessage = function(event) {
+        var data = JSON.parse(event.data);
+
+        if (data.error) {
+            statusText.textContent = "任务未找到";
+            evtSource.close();
+            return;
+        }
+
+        progressText.textContent = "已完成: " + data.sent + " / " + data.total;
+        successCount.textContent = data.success;
+        failedCount.textContent = data.failed;
+
+        var percent = data.total > 0 ? (data.sent / data.total * 100) : 0;
+        progressBar.style.width = percent + "%";
+
+        if (!data.running) {
+            evtSource.close();
+            pageTitle.textContent = "发送完成";
+            pageSubtitle.textContent = "批量发送已完成";
+            statusText.textContent = "全部邮件已发送完毕";
+            actionButtons.style.display = "flex";
+
+            summaryTotal.textContent = data.total;
+            summarySuccess.textContent = data.success;
+            summaryFailed.textContent = data.failed;
+            var rate = data.total > 0 ? Math.round(data.success / data.total * 100) : 0;
+            summaryRate.textContent = rate + "%";
+            summaryCard.style.display = "block";
+
+            if (data.failed > 0) {
+                exportFailedBtn.style.display = "inline-flex";
+            }
+
+            if (data.missing_warnings && data.missing_warnings.length > 0) {
+                warningsContainer.style.display = "block";
+                data.missing_warnings.forEach(function(warning) {
+                    var li = document.createElement('li');
+                    li.textContent = warning;
+                    warningsList.appendChild(li);
+                });
+                showToast("部分邮件存在变量缺失，请查看警告", "warning");
+            }
+
+            var resultType = data.failed === 0 ? "success" : (data.success > 0 ? "warning" : "error");
+            var resultMsg = data.failed === 0
+                ? "全部 " + data.total + " 封邮件发送成功！"
+                : "发送完成，成功 " + data.success + " 封，失败 " + data.failed + " 封";
+            showToast(resultMsg, resultType);
+        }
+    };
+
+    evtSource.onerror = function() {
+        evtSource.close();
+        statusText.textContent = "连接中断";
+    };
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>龙与地下城 - 文字冒险</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Georgia&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+    <div class="game-container">
+        <div id="main-menu" class="screen active">
+            <div class="menu-container">
+                <h1 class="game-title">⚔️ 龙与地下城 ⚔️</h1>
+                <p class="game-subtitle">文字冒险游戏</p>
+                <div class="menu-buttons">
+                    <button class="menu-btn" onclick="GameEngine.showCharacterCreation()">
+                        <span class="btn-icon">🗡️</span> 开始新游戏
+                    </button>
+                    <button class="menu-btn" id="continue-btn" onclick="GameEngine.continueGame()" style="display: none;">
+                        <span class="btn-icon">📂</span> 继续游戏
+                    </button>
+                    <button class="menu-btn" onclick="GameEngine.showHelp()">
+                        <span class="btn-icon">❓</span> 游戏帮助
+                    </button>
+                    <button class="menu-btn" onclick="GameEngine.showSettings()">
+                        <span class="btn-icon">⚙️</span> 游戏设置
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="character-creation" class="screen">
+            <div class="creation-container">
+                <h2 class="screen-title">创建你的角色</h2>
+                <div class="class-selection">
+                    <div class="class-card" data-class="warrior" onclick="GameEngine.selectClass('warrior')">
+                        <div class="class-icon">⚔️</div>
+                        <h3>战士</h3>
+                        <p class="class-desc">勇猛无畏的近战大师，拥有强健的体魄和出色的防御能力。</p>
+                        <div class="class-stats">
+                            <span class="stat">❤️ 120</span>
+                            <span class="stat">⚔️ 15</span>
+                            <span class="stat">🛡️ 10</span>
+                        </div>
+                    </div>
+                    <div class="class-card" data-class="mage" onclick="GameEngine.selectClass('mage')">
+                        <div class="class-icon">🔮</div>
+                        <h3>法师</h3>
+                        <p class="class-desc">掌握奥术魔法的智者，能释放强大的法术造成毁灭性伤害。</p>
+                        <div class="class-stats">
+                            <span class="stat">❤️ 80</span>
+                            <span class="stat">⚔️ 20</span>
+                            <span class="stat">🛡️ 5</span>
+                        </div>
+                    </div>
+                    <div class="class-card" data-class="ranger" onclick="GameEngine.selectClass('ranger')">
+                        <div class="class-icon">🏹</div>
+                        <h3>游侠</h3>
+                        <p class="class-desc">敏捷的森林猎手，擅长远程攻击和灵活的战斗策略。</p>
+                        <div class="class-stats">
+                            <span class="stat">❤️ 100</span>
+                            <span class="stat">⚔️ 18</span>
+                            <span class="stat">🛡️ 7</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="name-input">
+                    <label for="player-name">角色名称：</label>
+                    <input type="text" id="player-name" placeholder="输入你的名字" maxlength="20">
+                </div>
+                <div class="creation-actions">
+                    <button class="action-btn secondary" onclick="GameEngine.showMainMenu()">返回</button>
+                    <button class="action-btn primary" id="confirm-class-btn" onclick="GameEngine.confirmCharacter()" disabled>确认创建</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="scenario-selection" class="screen">
+            <div class="scenario-container">
+                <h2 class="screen-title">选择冒险剧本</h2>
+                <div class="scenario-list">
+                    <div class="scenario-card" data-scenario="dungeon" onclick="GameEngine.selectScenario('dungeon')">
+                        <div class="scenario-icon">🏰</div>
+                        <h3>地牢逃生</h3>
+                        <p>你被困在一座黑暗的地牢中，必须找到出路逃离这个危险的地方...</p>
+                        <div class="scenario-meta">
+                            <span>难度：★★☆☆☆</span>
+                            <span>时长：中等</span>
+                        </div>
+                    </div>
+                    <div class="scenario-card" data-scenario="dragon" onclick="GameEngine.selectScenario('dragon')">
+                        <div class="scenario-icon">🐉</div>
+                        <h3>巨龙宝藏</h3>
+                        <p>传说中的火龙守护着无尽的财宝，你敢挑战这座被诅咒的山脉吗？</p>
+                        <div class="scenario-meta">
+                            <span>难度：★★★★☆</span>
+                            <span>时长：较长</span>
+                        </div>
+                    </div>
+                    <div class="scenario-card" data-scenario="forest" onclick="GameEngine.selectScenario('forest')">
+                        <div class="scenario-icon">🌲</div>
+                        <h3>森林谜团</h3>
+                        <p>古老的迷雾森林中隐藏着不为人知的秘密，探险者们相继失踪...</p>
+                        <div class="scenario-meta">
+                            <span>难度：★★★☆☆</span>
+                            <span>时长：中等</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="scenario-actions">
+                    <button class="action-btn secondary" onclick="GameEngine.showCharacterCreation()">返回</button>
+                    <button class="action-btn primary" id="start-game-btn" onclick="GameEngine.startGame()" disabled>开始冒险</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="game-layout">
+                <div class="left-panel">
+                    <div class="character-panel">
+                        <div class="character-avatar" id="character-avatar">⚔️</div>
+                        <h3 class="character-name" id="character-name">冒险者</h3>
+                        <p class="character-class" id="character-class">战士</p>
+                        <div class="stats-container">
+                            <div class="stat-bar">
+                                <span class="stat-label">❤️ 生命</span>
+                                <div class="bar-container">
+                                    <div class="bar-fill hp-bar" id="hp-bar"></div>
+                                </div>
+                                <span class="stat-value" id="hp-value">100/100</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">⚔️ 攻击</span>
+                                <span class="stat-value" id="attack-value">10</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">🛡️ 防御</span>
+                                <span class="stat-value" id="defense-value">5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inventory-panel">
+                        <h4>🎒 物品栏</h4>
+                        <div class="inventory-grid" id="inventory-grid"></div>
+                    </div>
+                    <div class="equipment-panel">
+                        <h4>⚔️ 装备</h4>
+                        <div class="equipment-slots">
+                            <div class="equip-slot" id="weapon-slot">
+                                <span class="slot-label">武器</span>
+                                <div class="slot-item" id="weapon-item">-</div>
+                            </div>
+                            <div class="equip-slot" id="armor-slot">
+                                <span class="slot-label">护甲</span>
+                                <div class="slot-item" id="armor-item">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-panel">
+                    <div class="game-header">
+                        <h2 class="scene-title" id="scene-title">地牢入口</h2>
+                        <div class="header-actions">
+                            <button class="header-btn" onclick="GameEngine.saveGame()" title="保存游戏">💾</button>
+                            <button class="header-btn" onclick="GameEngine.showSettings()" title="设置">⚙️</button>
+                            <button class="header-btn" onclick="GameEngine.confirmQuit()" title="退出">🚪</button>
+                        </div>
+                    </div>
+                    <div class="scene-description" id="scene-description"></div>
+                    <div class="choices-container" id="choices-container"></div>
+                    <div class="battle-container" id="battle-container" style="display: none;">
+                        <div class="enemy-panel">
+                            <div class="enemy-avatar" id="enemy-avatar">👹</div>
+                            <h4 class="enemy-name" id="enemy-name">敌人</h4>
+                            <div class="enemy-hp-bar">
+                                <div class="bar-fill enemy-hp" id="enemy-hp-bar"></div>
+                            </div>
+                            <span class="enemy-hp-value" id="enemy-hp-value">50/50</span>
+                        </div>
+                        <div class="dice-roll" id="dice-roll">🎲</div>
+                        <div class="battle-actions">
+                            <button class="battle-btn attack" onclick="GameEngine.playerAttack()">⚔️ 攻击</button>
+                            <button class="battle-btn defend" onclick="GameEngine.playerDefend()">🛡️ 防御</button>
+                            <button class="battle-btn item" onclick="GameEngine.useBattleItem()">🧪 物品</button>
+                            <button class="battle-btn flee" onclick="GameEngine.playerFlee()">🏃 逃跑</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="battle-log-panel">
+                        <h4>📜 战斗日志</h4>
+                        <div class="log-container" id="log-container">
+                            <div class="log-entry">欢迎来到龙与地下城的世界！</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-over" class="screen">
+            <div class="gameover-container">
+                <h2 class="gameover-title" id="gameover-title">游戏结束</h2>
+                <p class="gameover-message" id="gameover-message"></p>
+                <div class="gameover-stats" id="gameover-stats"></div>
+                <div class="gameover-actions">
+                    <button class="action-btn primary" onclick="GameEngine.showMainMenu()">返回主菜单</button>
+                    <button class="action-btn secondary" onclick="GameEngine.restartScenario()">重新开始</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="help-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="GameEngine.closeModal('help-modal')">&times;</span>
+                <h2>📖 游戏帮助</h2>
+                <div class="help-content">
+                    <h3>🎮 基本操作</h3>
+                    <ul>
+                        <li>点击选项按钮来做出选择，推进故事发展</li>
+                        <li>战斗中选择攻击、防御、使用物品或逃跑</li>
+                        <li>点击物品栏中的物品可以使用或装备</li>
+                    </ul>
+                    <h3>⚔️ 战斗系统</h3>
+                    <ul>
+                        <li>战斗使用掷骰子（D20）判定命中</li>
+                        <li>掷出20为暴击，造成双倍伤害</li>
+                        <li>掷出1为失误，自动miss</li>
+                        <li>防御可以减少受到的伤害</li>
+                    </ul>
+                    <h3>📦 物品系统</h3>
+                    <ul>
+                        <li>🧪 药水：恢复生命值</li>
+                        <li>⚔️ 武器：增加攻击力</li>
+                        <li>🛡️ 护甲：增加防御力</li>
+                    </ul>
+                    <h3>💾 存档功能</h3>
+                    <ul>
+                        <li>游戏自动保存进度到本地</li>
+                        <li>可以导出存档为JSON文件分享</li>
+                        <li>支持导入他人的存档文件</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="GameEngine.closeModal('settings-modal')">&times;</span>
+                <h2>⚙️ 游戏设置</h2>
+                <div class="settings-content">
+                    <div class="setting-item">
+                        <label>🔊 音效</label>
+                        <div class="toggle-switch" id="sound-toggle" onclick="Settings.toggleSound()">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>🔤 字体大小</label>
+                        <input type="range" id="font-size-slider" min="12" max="24" value="16" oninput="Settings.setFontSize(this.value)">
+                        <span id="font-size-display">16px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>🌙 深色模式</label>
+                        <div class="toggle-switch active" id="theme-toggle" onclick="Settings.toggleTheme()">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="setting-item">
+                        <label>💾 存档管理</label>
+                        <div class="save-buttons">
+                            <button class="action-btn small" onclick="Storage.exportSave()">导出存档</button>
+                            <button class="action-btn small" onclick="document.getElementById('import-file').click()">导入存档</button>
+                            <input type="file" id="import-file" accept=".json" style="display: none" onchange="Storage.importSave(this)">
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>🔄 重置游戏</label>
+                        <button class="action-btn danger small" onclick="GameEngine.resetGame()">清除所有数据</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="item-modal" class="modal">
+            <div class="modal-content small">
+                <span class="close-btn" onclick="GameEngine.closeModal('item-modal')">&times;</span>
+                <h2 id="item-modal-title">物品</h2>
+                <p id="item-modal-desc"></p>
+                <div class="item-modal-actions">
+                    <button class="action-btn secondary" onclick="GameEngine.closeModal('item-modal')">取消</button>
+                    <button class="action-btn primary" id="item-use-btn">使用</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirm-modal" class="modal">
+            <div class="modal-content small">
+                <h2 id="confirm-title">确认</h2>
+                <p id="confirm-message"></p>
+                <div class="confirm-actions">
+                    <button class="action-btn secondary" onclick="GameEngine.closeModal('confirm-modal')">取消</button>
+                    <button class="action-btn primary" id="confirm-btn">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/settings.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/scenarios.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

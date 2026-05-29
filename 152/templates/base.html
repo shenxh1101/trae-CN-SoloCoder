@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MailSender{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="mobile-header">
+        <button class="hamburger" id="hamburger">☰</button>
+        <span class="mobile-title">MailSender</span>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">✉️</span>
+            MailSender
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="/" class="nav-item {{ 'active' if request.path == '/' }}"><span class="nav-icon">📧</span>发送邮件</a></li>
+            <li><a href="/templates" class="nav-item {{ 'active' if request.path == '/templates' }}"><span class="nav-icon">📋</span>邮件模板</a></li>
+            <li><a href="/logs" class="nav-item {{ 'active' if request.path == '/logs' }}"><span class="nav-icon">📝</span>发送日志</a></li>
+            <li><a href="/settings" class="nav-item {{ 'active' if request.path == '/settings' }}"><span class="nav-icon">⚙️</span>系统设置</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="theme-toggle">
+                <span class="toggle-icon">🌙</span>
+                暗色模式
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        (function() {
+            var saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+
+            var toggle = document.getElementById('theme-toggle');
+            updateToggleText();
+
+            toggle.addEventListener('click', function() {
+                var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                if (isDark) {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+                updateToggleText();
+            });
+
+            function updateToggleText() {
+                var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                toggle.textContent = isDark ? '☀️ 亮色模式' : '🌙 暗色模式';
+            }
+        })();
+
+        (function() {
+            var hamburger = document.getElementById('hamburger');
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('overlay');
+
+            hamburger.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+        })();
+
+        function showToast(message, type) {
+            var container = document.getElementById('toast-container');
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(function() {
+                toast.classList.add('dismissing');
+                toast.addEventListener('animationend', function() {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

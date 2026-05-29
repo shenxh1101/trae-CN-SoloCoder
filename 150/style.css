@@ -1,0 +1,264 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.game-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    width: 100%;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.stats {
+    display: flex;
+    gap: 15px;
+    color: white;
+    font-size: 14px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+}
+
+.controls button,
+.editor-actions button,
+.modal-content button,
+.tool-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.controls button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.game-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#gameCanvas {
+    border-radius: 12px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    background: #2d3436;
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.mobile-controls {
+    display: none;
+    width: 100%;
+    margin-top: 20px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.joystick-area {
+    width: 120px;
+    height: 120px;
+}
+
+.joystick {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    position: relative;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.joystick-knob {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.bomb-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(240, 147, 251, 0.4);
+    transition: all 0.2s ease;
+}
+
+.bomb-btn:active {
+    transform: scale(0.95);
+}
+
+.editor-panel {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.editor-panel h3 {
+    color: white;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.editor-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.tool-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.tool-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.editor-actions button {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.modal-content p {
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+.modal-content button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 40px;
+    font-size: 18px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        padding: 10px;
+    }
+    
+    .mobile-controls {
+        display: flex;
+    }
+    
+    .stats {
+        font-size: 12px;
+        gap: 8px;
+    }
+    
+    .stat-item {
+        padding: 6px 8px;
+    }
+    
+    .controls button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}

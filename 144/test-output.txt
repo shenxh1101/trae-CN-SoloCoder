@@ -1,0 +1,122 @@
+
+🚀 启动猴子接香蕉游戏自动化测试
+
+============================================================
+📸 截图已保存: 00-initial.png
+
+📦 测试1: 碰撞检测（水果+炸弹）
+----------------------------------------
+✅ 游戏启动: isPlaying=true, score=0
+  接住🍌: score=10, combo=1, gained=10
+  接住🍎: score=20, combo=2, gained=10
+  接住🍊: score=35, combo=3, gained=15
+  接住🍉: score=50, combo=4, gained=15
+  接住🍌: score=65, combo=5, gained=15
+📸 截图已保存: 01-after-5-fruits.png
+✅ 接住5个水果: score=65 (预期65), combo=5 (预期5)
+📸 截图已保存: 02-after-2-bombs.png
+✅ 接住2个炸弹: score=25 (预期25), combo=0
+✅ 炸弹不使分数变负: score=0 (10-20=max(0,-10)=0)
+
+  AABB碰撞检测详细测试:
+    完全重叠: ✓碰撞
+    右侧边缘接触: ✓碰撞
+    左侧边缘接触: ✓碰撞
+    远离右侧(应不碰撞): ✗不碰撞
+    上方远离(应不碰撞): ✗不碰撞
+    底部边缘接触: ✓碰撞
+✅ AABB碰撞检测算法: 完全重叠=true, 右侧边缘接触=true, 左侧边缘接触=true, 远离右侧(应不碰撞)=false, 上方远离(应不碰撞)=false, 底部边缘接触=true
+
+📦 测试2: 三种道具触发和持续时间
+----------------------------------------
+📸 截图已保存: 03-double-score-active.png
+✅ 双倍得分激活: doubleScore=true, badge=true
+✅ 双倍得分下接水果: score=20 (预期20=10×2)
+  等待双倍得分过期(8秒)...
+✅ 双倍得分过期: doubleScore=false, badgeGone=true
+✅ 过期后接水果恢复正常: score=30 (预期30)
+📸 截图已保存: 04-slow-down-active.png
+✅ 减速道具激活: slowMode=true
+✅ 减速效果生效: 实际速度=1.5 (3×1.0×0.5=1.5)
+  等待减速道具过期(6秒)...
+✅ 减速道具过期: slowMode=false
+📸 截图已保存: 05-wide-catch-active.png
+✅ 扩大范围激活: monkeyWidth=140 (预期140)
+✅ 扩大范围碰撞检测: normalRange=false, wideRange=true, collision=true
+  等待扩大范围道具过期(7秒)...
+✅ 扩大范围过期: monkeyWidth=80
+✅ 道具重复激活无重复徽章: doubleScore=true, badgeCount=1
+
+📦 测试3: 连击加分系统
+----------------------------------------
+  第1个水果: combo=1, score=10, gained=10 (预期10)
+  第2个水果: combo=2, score=20, gained=10 (预期10)
+  第3个水果: combo=3, score=35, gained=15 (预期15)
+  第4个水果: combo=4, score=50, gained=15 (预期15)
+  第5个水果: combo=5, score=65, gained=15 (预期15)
+  第6个水果: combo=6, score=85, gained=20 (预期20)
+📸 截图已保存: 06-combo-test.png
+✅ 连击加分系统: score=85 (预期85), combo=6
+✅ 炸弹重置连击: combo=0
+
+📦 测试4: 难度递增（速度倍率变化）
+----------------------------------------
+  90分: speed=1
+📸 截图已保存: 07-speed-at-100.png
+✅ 100分速度变1.1x: speed=1.1, milestone=1
+  190分: speed=1.1
+📸 截图已保存: 08-speed-at-200.png
+✅ 200分速度变1.2x: speed=1.2, milestone=2
+✅ 400分速度变1.4x: speed=1.4, milestone=4
+
+📦 测试5: 100分里程碑闪烁特效
+----------------------------------------
+📸 截图已保存: 09-milestone-reached.png
+✅ 100分里程碑触发: score=105, milestone=1, speed=1.1
+📸 截图已保存: 10-flash-captured.png
+✅ 闪烁CSS动画触发: classActive=true, opacity=0.904189
+📸 截图已保存: 11-multi-milestone.png
+✅ 跨阶里程碑闪烁: milestones=4, score=460, lastMilestone=4
+
+📦 额外验证: UI与游戏状态同步
+----------------------------------------
+✅ 得分UI同步: UI=460, GS=460
+✅ 连击UI同步: UI=12, GS=12
+✅ 速度UI同步: UI=1.4x, GS=1.4x
+
+============================================================
+📊 测试结果汇总
+============================================================
+✅ 游戏启动: isPlaying=true, score=0
+✅ 接住5个水果: score=65 (预期65), combo=5 (预期5)
+✅ 接住2个炸弹: score=25 (预期25), combo=0
+✅ 炸弹不使分数变负: score=0 (10-20=max(0,-10)=0)
+✅ AABB碰撞检测算法: 完全重叠=true, 右侧边缘接触=true, 左侧边缘接触=true, 远离右侧(应不碰撞)=false, 上方远离(应不碰撞)=false, 底部边缘接触=true
+✅ 双倍得分激活: doubleScore=true, badge=true
+✅ 双倍得分下接水果: score=20 (预期20=10×2)
+✅ 双倍得分过期: doubleScore=false, badgeGone=true
+✅ 过期后接水果恢复正常: score=30 (预期30)
+✅ 减速道具激活: slowMode=true
+✅ 减速效果生效: 实际速度=1.5 (3×1.0×0.5=1.5)
+✅ 减速道具过期: slowMode=false
+✅ 扩大范围激活: monkeyWidth=140 (预期140)
+✅ 扩大范围碰撞检测: normalRange=false, wideRange=true, collision=true
+✅ 扩大范围过期: monkeyWidth=80
+✅ 道具重复激活无重复徽章: doubleScore=true, badgeCount=1
+✅ 连击加分系统: score=85 (预期85), combo=6
+✅ 炸弹重置连击: combo=0
+✅ 100分速度变1.1x: speed=1.1, milestone=1
+✅ 200分速度变1.2x: speed=1.2, milestone=2
+✅ 400分速度变1.4x: speed=1.4, milestone=4
+✅ 100分里程碑触发: score=105, milestone=1, speed=1.1
+✅ 闪烁CSS动画触发: classActive=true, opacity=0.904189
+✅ 跨阶里程碑闪烁: milestones=4, score=460, lastMilestone=4
+✅ 得分UI同步: UI=460, GS=460
+✅ 连击UI同步: UI=12, GS=12
+✅ 速度UI同步: UI=1.4x, GS=1.4x
+
+总计: 27/27 通过
+
+📸 截图保存在: /Users/mac/code/solo coder/144/test-screenshots
+
+🎉 所有测试通过！

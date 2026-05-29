@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>炸弹人游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="stats">
+                <span class="stat-item">关卡: <span id="level">1</span></span>
+                <span class="stat-item">生命: <span id="lives">❤️❤️❤️</span></span>
+                <span class="stat-item">炸弹: <span id="bombs">1</span></span>
+                <span class="stat-item">范围: <span id="range">1</span></span>
+                <span class="stat-item">速度: <span id="speed">1</span></span>
+            </div>
+            <div class="controls">
+                <button id="pauseBtn">暂停</button>
+                <button id="resetBtn">重置</button>
+                <button id="editorBtn">编辑器</button>
+                <button id="soundBtn">🔊</button>
+            </div>
+        </div>
+
+        <div class="game-wrapper">
+            <canvas id="gameCanvas" width="520" height="520"></canvas>
+            
+            <div id="mobileControls" class="mobile-controls">
+                <div class="joystick-area">
+                    <div class="joystick" id="joystick">
+                        <div class="joystick-knob" id="joystickKnob"></div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="bomb-btn" id="bombBtn">💣</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="editorPanel" class="editor-panel hidden">
+            <h3>关卡编辑器</h3>
+            <div class="editor-tools">
+                <button class="tool-btn active" data-tool="stone">🧱 石墙</button>
+                <button class="tool-btn" data-tool="brick">📦 砖墙</button>
+                <button class="tool-btn" data-tool="enemy">👾 敌人</button>
+                <button class="tool-btn" data-tool="powerup-bomb">💣 炸弹+</button>
+                <button class="tool-btn" data-tool="powerup-range">🔥 范围+</button>
+                <button class="tool-btn" data-tool="powerup-speed">⚡ 速度+</button>
+                <button class="tool-btn" data-tool="eraser">🗑️ 橡皮擦</button>
+            </div>
+            <div class="editor-actions">
+                <button id="saveLevelBtn">保存关卡</button>
+                <button id="loadLevelBtn">加载关卡</button>
+                <button id="clearLevelBtn">清空地图</button>
+                <button id="closeEditorBtn">返回游戏</button>
+            </div>
+        </div>
+
+        <div id="gameOverModal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="gameOverTitle">游戏结束</h2>
+                <p id="gameOverMessage">你被敌人抓住了！</p>
+                <button id="restartBtn">重新开始</button>
+            </div>
+        </div>
+
+        <div id="pauseModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>游戏暂停</h2>
+                <button id="resumeBtn">继续游戏</button>
+            </div>
+        </div>
+
+        <div id="levelCompleteModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>🎉 关卡完成！</h2>
+                <p id="levelCompleteMessage">准备进入下一关...</p>
+                <button id="nextLevelBtn">下一关</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="audio.js"></script>
+    <script src="levels.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+[
+  {
+    "test": "页面加载",
+    "passed": true
+  },
+  {
+    "test": "进入编辑器模式",
+    "passed": true
+  },
+  {
+    "test": "编辑器面板显示",
+    "passed": true
+  },
+  {
+    "test": "平台按钮激活",
+    "passed": false
+  },
+  {
+    "test": "EditorScene 点击日志",
+    "passed": true
+  },
+  {
+    "test": "App 元素添加日志",
+    "passed": true
+  },
+  {
+    "test": "LevelEditor 渲染日志",
+    "passed": true
+  },
+  {
+    "test": "平台列表显示坐标",
+    "passed": false
+  },
+  {
+    "test": "添加目标点",
+    "passed": true
+  },
+  {
+    "test": "添加星星",
+    "passed": true
+  },
+  {
+    "test": "保存关卡日志",
+    "passed": true
+  },
+  {
+    "test": "自定义关卡显示",
+    "passed": false,
+    "warning": true
+  }
+]

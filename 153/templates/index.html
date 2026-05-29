@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页截图服务 - Web Screenshot Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#e6f7ff',
+                            100: '#b3e7ff',
+                            200: '#80d7ff',
+                            300: '#4dc7ff',
+                            400: '#1ab7ff',
+                            500: '#00d4ff',
+                            600: '#00a8cc',
+                            700: '#007c99',
+                            800: '#005066',
+                            900: '#002433',
+                        },
+                        dark: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#102a43',
+                            950: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-950 text-dark-100 font-body min-h-screen">
+    <div class="bg-grid fixed inset-0 pointer-events-none opacity-20"></div>
+
+    <header class="relative z-10 py-6 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/30">
+                    <i class="fas fa-camera text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display text-2xl font-bold bg-gradient-to-r from-primary-300 to-primary-500 bg-clip-text text-transparent">
+                        WebShot
+                    </h1>
+                    <p class="text-sm text-dark-400">专业网页截图服务</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="w-10 h-10 rounded-lg bg-dark-800/50 backdrop-blur flex items-center justify-center hover:bg-dark-700/50 transition-all border border-dark-700">
+                    <i class="fas fa-moon text-dark-300"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 px-6 md:px-12 pb-20">
+        <div class="max-w-7xl mx-auto">
+            <section class="text-center py-12 mb-8 animate-fade-in">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-white via-primary-200 to-primary-400 bg-clip-text text-transparent">
+                        一键截取网页
+                    </span>
+                </h2>
+                <p class="text-dark-400 text-lg max-w-2xl mx-auto">
+                    支持全页长截图、设备模拟、自定义CSS、OCR识别、批量处理、定时任务等高级功能
+                </p>
+            </section>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.1s">
+                        <h3 class="font-display text-xl font-semibold mb-6 flex items-center gap-2">
+                            <i class="fas fa-crop text-primary-400"></i>
+                            截图设置
+                        </h3>
+
+                        <form id="screenshotForm" class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-dark-300 mb-2">目标URL</label>
+                                <div class="relative">
+                                    <i class="fas fa-link absolute left-4 top-1/2 -translate-y-1/2 text-dark-500"></i>
+                                    <input type="url" name="url" id="urlInput"
+                                           class="w-full pl-12 pr-4 py-3 bg-dark-800/60 border border-dark-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all"
+                                           placeholder="https://example.com" required>
+                                </div>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-dark-300 mb-2">设备类型</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <button type="button" class="device-btn active" data-device="desktop">
+                                            <i class="fas fa-desktop"></i>
+                                            <span>桌面</span>
+                                        </button>
+                                        <button type="button" class="device-btn" data-device="tablet">
+                                            <i class="fas fa-tablet-alt"></i>
+                                            <span>平板</span>
+                                        </button>
+                                        <button type="button" class="device-btn" data-device="mobile">
+                                            <i class="fas fa-mobile-alt"></i>
+                                            <span>手机</span>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" name="device" id="deviceInput" value="desktop">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-dark-300 mb-2">
+                                        尺寸 (宽 × 高)
+                                        <button type="button" id="aspectLock" class="ml-2 text-primary-400 hover:text-primary-300 transition-colors" title="锁定宽高比">
+                                            <i class="fas fa-unlock"></i>
+                                        </button>
+                                    </label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" name="width" id="widthInput" value="1920" min="320" max="3840"
+                                               class="flex-1 px-3 py-2 bg-dark-800/60 border border-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+                                        <span class="text-dark-500">×</span>
+                                        <input type="number" name="height" id="heightInput" value="1080" min="320" max="2160"
+                                               class="flex-1 px-3 py-2 bg-dark-800/60 border border-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+                                        <span class="text-dark-500 text-sm">px</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <button type="button" id="toggleAdvanced" class="flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors">
+                                    <i class="fas fa-chevron-down text-sm transition-transform" id="advancedIcon"></i>
+                                    <span class="font-medium">高级选项</span>
+                                </button>
+
+                                <div id="advancedOptions" class="hidden mt-4 space-y-4 pt-4 border-t border-dark-700/50">
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-dark-300 mb-2">
+                                                加载延迟: <span id="delayValue">0</span> 秒
+                                            </label>
+                                            <input type="range" name="delay" id="delayInput" min="0" max="10" step="0.5" value="0"
+                                                   class="w-full accent-primary-500">
+                                            <div class="flex justify-between text-xs text-dark-500 mt-1">
+                                                <span>0s</span>
+                                                <span>5s</span>
+                                                <span>10s</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-dark-300 mb-2">
+                                                图片质量: <span id="qualityValue">80</span>%
+                                            </label>
+                                            <input type="range" name="quality" id="qualityInput" min="1" max="100" value="80"
+                                                   class="w-full accent-primary-500">
+                                            <div class="flex justify-between text-xs text-dark-500 mt-1">
+                                                <span>低</span>
+                                                <span>中</span>
+                                                <span>高</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-dark-300 mb-2">输出格式</label>
+                                            <select name="format" class="w-full px-3 py-2 bg-dark-800/60 border border-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+                                                <option value="png">PNG (无损)</option>
+                                                <option value="jpg">JPG (有损压缩)</option>
+                                                <option value="webp">WebP (高效)</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex items-end gap-4">
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" name="full_page" class="w-5 h-5 rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500">
+                                                <span class="text-sm">全页长截图</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" name="dark_mode" class="w-5 h-5 rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500">
+                                                <span class="text-sm">暗色模式</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-dark-300 mb-2">自定义CSS</label>
+                                        <textarea name="custom_css" rows="3"
+                                                  class="w-full px-3 py-2 bg-dark-800/60 border border-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 font-mono text-sm"
+                                                  placeholder=".ad-banner { display: none !important; }"></textarea>
+                                    </div>
+
+                                    <div class="flex items-center gap-6">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" name="ocr" class="w-5 h-5 rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500">
+                                            <span class="text-sm">OCR文字识别</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" name="base64" class="w-5 h-5 rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500">
+                                            <span class="text-sm">返回Base64</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" name="keep_aspect_ratio" id="keepAspectRatio" class="w-5 h-5 rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500">
+                                            <span class="text-sm">锁定宽高比</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <button type="submit" id="screenshotBtn"
+                                        class="flex-1 py-3 px-6 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all flex items-center justify-center gap-2">
+                                    <i class="fas fa-camera"></i>
+                                    <span>开始截图</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.2s">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-display text-xl font-semibold flex items-center gap-2">
+                                <i class="fas fa-images text-primary-400"></i>
+                                批量截图
+                            </h3>
+                            <span class="text-xs text-dark-400">最多 20 个 URL</span>
+                        </div>
+
+                        <form id="batchForm" class="space-y-4">
+                            <div class="border-2 border-dashed border-dark-600 rounded-xl p-8 text-center hover:border-primary-500/50 transition-colors cursor-pointer" id="dropZone">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-dark-500 mb-3"></i>
+                                <p class="text-dark-300 mb-1">拖拽文本文件到这里，或点击上传</p>
+                                <p class="text-sm text-dark-500">每行一个URL，支持#注释</p>
+                                <input type="file" name="file" id="batchFile" accept=".txt" class="hidden">
+                            </div>
+
+                            <div id="batchPreview" class="hidden">
+                                <div class="flex items-center gap-3 p-3 bg-dark-800/60 rounded-lg">
+                                    <i class="fas fa-file-alt text-primary-400"></i>
+                                    <span id="batchFileName" class="flex-1 text-sm"></span>
+                                    <button type="button" id="clearBatchFile" class="text-dark-400 hover:text-red-400 transition-colors">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="batchBtn"
+                                    class="w-full py-3 px-6 bg-dark-800 hover:bg-dark-700 text-white font-semibold rounded-xl border border-dark-600 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-file-archive"></i>
+                                <span>批量截图并下载ZIP</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.3s">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-display text-xl font-semibold flex items-center gap-2">
+                                <i class="fas fa-clock text-primary-400"></i>
+                                定时任务
+                            </h3>
+                            <button type="button" id="refreshTasks" class="text-dark-400 hover:text-primary-400 transition-colors">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+
+                        <form id="scheduleForm" class="space-y-4 mb-6">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-dark-300 mb-2">Cron表达式</label>
+                                    <div class="relative">
+                                        <i class="fas fa-calendar-alt absolute left-4 top-1/2 -translate-y-1/2 text-dark-500"></i>
+                                        <input type="text" name="cron_expr" placeholder="0 9 * * * (每天9点)"
+                                               class="w-full pl-12 pr-4 py-2 bg-dark-800/60 border border-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+                                    </div>
+                                    <div class="flex gap-1 mt-2">
+                                        <button type="button" class="cron-preset text-xs px-2 py-1 bg-dark-700 hover:bg-dark-600 rounded" data-cron="0 9 * * *">每天9点</button>
+                                        <button type="button" class="cron-preset text-xs px-2 py-1 bg-dark-700 hover:bg-dark-600 rounded" data-cron="0 */6 * * *">每6小时</button>
+                                        <button type="button" class="cron-preset text-xs px-2 py-1 bg-dark-700 hover:bg-dark-600 rounded" data-cron="0 0 * * 1">每周一</button>
+                                        <button type="button" class="cron-preset text-xs px-2 py-1 bg-dark-700 hover:bg-dark-600 rounded" data-cron="0 0 1 * *">每月1号</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-dark-300 mb-2">通知邮箱</label>
+                                    <div class="relative">
+                                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-dark-500"></i>
+                                        <input type="email" name="email" placeholder="your@email.com"
+                                               class="w-full pl-12 pr-4 py-2 bg-dark-800/60 border border-dark-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                    class="w-full py-2 px-4 bg-dark-800 hover:bg-dark-700 text-white font-medium rounded-lg border border-dark-600 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                <span>添加定时任务</span>
+                            </button>
+                        </form>
+
+                        <div id="taskList" class="space-y-2">
+                            <p class="text-dark-500 text-sm text-center py-4">暂无定时任务</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.15s">
+                        <h3 class="font-display text-xl font-semibold mb-6 flex items-center gap-2">
+                            <i class="fas fa-history text-primary-400"></i>
+                            历史记录
+                            <span class="text-xs font-normal text-dark-400 ml-auto">最近10条</span>
+                        </h3>
+
+                        <div id="historyList" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                            <p class="text-dark-500 text-sm text-center py-8">暂无历史记录</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.25s">
+                        <h3 class="font-display text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-code text-primary-400"></i>
+                            API 接口
+                        </h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-3 bg-dark-800/60 rounded-lg">
+                                <code class="text-primary-400">POST /api/screenshot</code>
+                                <p class="text-dark-400 mt-1">返回JSON格式，包含Base64编码</p>
+                            </div>
+                            <details class="p-3 bg-dark-800/60 rounded-lg">
+                                <summary class="cursor-pointer text-primary-300 hover:text-primary-200">查看示例代码</summary>
+                                <pre class="mt-2 text-xs text-dark-300 overflow-x-auto"><code>fetch('/api/screenshot', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    url: 'https://example.com',
+    width: 1920,
+    height: 1080,
+    full_page: true
+  })
+})</code></pre>
+                            </details>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.35s">
+                        <h3 class="font-display text-xl font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-info-circle text-primary-400"></i>
+                            功能说明
+                        </h3>
+                        <ul class="space-y-2 text-sm text-dark-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>支持PNG/JPG/WebP三种格式</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>全页长截图自动滚动拼接</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>模拟手机/平板/桌面设备</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>自定义CSS注入隐藏元素</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>OCR识别中英文文字</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>Cron定时任务邮件通知</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="resultModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="modalOverlay"></div>
+        <div class="absolute inset-4 md:inset-12 bg-dark-900 rounded-2xl overflow-hidden border border-dark-700 shadow-2xl">
+            <div class="flex items-center justify-between p-4 border-b border-dark-700">
+                <h3 class="font-display text-lg font-semibold">截图结果</h3>
+                <div class="flex items-center gap-3">
+                    <a id="downloadLink" href="#" class="px-4 py-2 bg-primary-500 hover:bg-primary-400 text-white rounded-lg transition-colors flex items-center gap-2">
+                        <i class="fas fa-download"></i>
+                        <span>下载</span>
+                    </a>
+                    <button id="copyBase64" class="px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors flex items-center gap-2">
+                        <i class="fas fa-copy"></i>
+                        <span>复制Base64</span>
+                    </button>
+                    <button id="closeModal" class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 flex items-center justify-center transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex h-[calc(100%-65px)]">
+                <div class="flex-1 overflow-auto p-6 bg-dark-950">
+                    <div id="screenshotPreview" class="flex items-center justify-center min-h-full">
+                        <img id="resultImage" src="" alt="Screenshot" class="max-w-full h-auto rounded-lg shadow-2xl">
+                    </div>
+                </div>
+
+                <div class="w-80 border-l border-dark-700 p-6 space-y-6 overflow-y-auto">
+                    <div>
+                        <h4 class="font-medium text-dark-200 mb-3">截图信息</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-dark-400">尺寸</span>
+                                <span id="resultDimensions">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-dark-400">格式</span>
+                                <span id="resultFormat">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-dark-400">文件大小</span>
+                                <span id="resultSize">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ocrResultContainer" class="hidden">
+                        <h4 class="font-medium text-dark-200 mb-3">
+                            <i class="fas fa-font text-primary-400 mr-2"></i>
+                            OCR 识别结果
+                        </h4>
+                        <div class="p-3 bg-dark-800/60 rounded-lg max-h-60 overflow-y-auto">
+                            <p id="ocrResult" class="text-sm text-dark-300 whitespace-pre-wrap"></p>
+                        </div>
+                        <button id="copyOcr" class="mt-2 text-xs text-primary-400 hover:text-primary-300">
+                            <i class="fas fa-copy mr-1"></i>复制文字
+                        </button>
+                    </div>
+
+                    <div id="base64Container" class="hidden">
+                        <h4 class="font-medium text-dark-200 mb-3">
+                            <i class="fas fa-code text-primary-400 mr-2"></i>
+                            Base64 编码
+                        </h4>
+                        <div class="p-3 bg-dark-800/60 rounded-lg max-h-40 overflow-y-auto">
+                            <code id="base64Result" class="text-xs text-dark-300 break-all"></code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-dark-950/90 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center">
+                <div class="relative w-20 h-20 mx-auto mb-6">
+                    <div class="absolute inset-0 border-4 border-dark-700 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-3 border-4 border-primary-400 rounded-full border-b-transparent animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+                    <i class="fas fa-camera absolute inset-0 flex items-center justify-center text-primary-400 text-xl"></i>
+                </div>
+                <h3 class="font-display text-xl font-semibold mb-2">正在截图</h3>
+                <p id="loadingText" class="text-dark-400">正在加载页面...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden">
+        <div class="glass-card px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+            <i id="toastIcon" class="fas fa-check-circle text-green-400 text-xl"></i>
+            <span id="toastMessage" class="text-dark-100"></span>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

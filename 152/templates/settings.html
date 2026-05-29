@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}设置 - MailSender{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>设置</h1>
+    <p>配置SMTP账户和邮件签名</p>
+</div>
+
+{% if messages %}
+<div style="margin-bottom: 20px;">
+    {% for category, message in messages %}
+    <div class="toast {{ category }}" style="position: relative; animation: none; margin-bottom: 10px; opacity: 1; transform: none;">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">SMTP账户管理</span>
+        <button class="btn btn-primary btn-sm" onclick="toggleSmtpForm()">添加账户</button>
+    </div>
+    <div class="smtp-list">
+        {% for account in smtp_accounts %}
+        <div class="smtp-card">
+            <div class="smtp-header">
+                <span class="smtp-name">
+                    {{ account.name }}
+                    {% if account.is_default %}
+                    <span class="badge badge-warning">⭐ 默认</span>
+                    {% endif %}
+                </span>
+                <div class="smtp-actions">
+                    <form action="/settings/test-send" method="POST" class="test-send-form" style="display:inline">
+                        <input type="hidden" name="smtp_account" value="{{ account.id }}">
+                        <button type="submit" class="btn btn-success btn-sm test-send-btn">
+                            <span class="btn-text">测试发送</span>
+                            <span class="btn-loading" style="display: none; font-size: 12px;">⏳</span>
+                        </button>
+                    </form>
+                    <form action="/settings/smtp/delete/{{ account.id }}" method="POST" style="display:inline" onsubmit="return confirm('确定要删除这个SMTP账户吗？');">
+                        <button type="submit" class="btn btn-danger btn-sm">删除</button>
+                    </form>
+                </div>
+            </div>
+            <div class="smtp-detail">
+                服务器: {{ account.host }}:{{ account.port }}<br>
+                用户名: {{ account.username }}<br>
+                加密: {% if account.use_tls %}{% if account.port == 465 %}SSL{% else %}TLS{% endif %}{% else %}无{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% if not smtp_accounts %}
+        <div class="empty-state">
+            <span class="empty-icon">📧</span>
+            <p>暂无SMTP账户，请添加</p>
+        </div>
+        {% endif %}
+    </div>
+    <div id="smtpForm" style="display:none; margin-top: 20px;">
+        <form action="/settings/smtp" method="POST">
+            <input type="hidden" name="id" value="">
+            <div class="form-group">
+                <label>账户名称</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>SMTP服务器</label>
+                    <input type="text" name="host" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>端口</label>
+                    <input type="number" name="port" class="form-control" value="587" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="use_tls" checked> 启用TLS
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="is_default"> 设为默认
+                </label>
+            </div>
+            <button type="submit" id="smtp-save-btn" class="btn btn-primary">
+                <span class="btn-text">保存</span>
+                <span class="btn-loading" style="display: none;">⏳ 保存中...</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">邮件签名</span>
+    </div>
+    <form action="/settings/signature" method="POST" id="signature-form">
+        <div class="form-group">
+            <textarea name="signature" class="form-control" rows="6">{{ signature }}</textarea>
+        </div>
+        <small style="color: var(--text-secondary); display: block; margin-bottom: 16px;">签名将自动追加到每封邮件内容末尾</small>
+        <button type="submit" id="signature-save-btn" class="btn btn-primary">
+            <span class="btn-text">保存签名</span>
+            <span class="btn-loading" style="display: none;">⏳ 保存中...</span>
+        </button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">测试发送</span>
+    </div>
+    <form action="/settings/test-send" method="POST" id="test-form">
+        <div class="form-group">
+            <label>选择SMTP账户</label>
+            <select name="smtp_account" class="form-control" required>
+                {% for account in smtp_accounts %}
+                <option value="{{ account.id }}">{{ account.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <small style="color: var(--text-secondary); display: block; margin-bottom: 16px;">将发送一封测试邮件到该账户的发件人邮箱</small>
+        <button type="submit" id="test-send-btn" class="btn btn-success">
+            <span class="btn-text">发送测试邮件</span>
+            <span class="btn-loading" style="display: none;">⏳ 发送中...</span>
+        </button>
+    </form>
+</div>
+
+<script>
+function toggleSmtpForm() {
+    var form = document.getElementById('smtpForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+function setButtonLoading(btn, loading) {
+    var textSpan = btn.querySelector('.btn-text');
+    var loadingSpan = btn.querySelector('.btn-loading');
+    if (loading) {
+        btn.disabled = true;
+        textSpan.style.display = 'none';
+        loadingSpan.style.display = 'inline';
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+    } else {
+        btn.disabled = false;
+        textSpan.style.display = 'inline';
+        loadingSpan.style.display = 'none';
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var smtpForm = document.getElementById('smtpForm').querySelector('form');
+    var signatureForm = document.getElementById('signature-form');
+    var testForm = document.getElementById('test-form');
+    var testSendForms = document.querySelectorAll('.test-send-form');
+
+    smtpForm.addEventListener('submit', function() {
+        setButtonLoading(document.getElementById('smtp-save-btn'), true);
+    });
+
+    signatureForm.addEventListener('submit', function() {
+        setButtonLoading(document.getElementById('signature-save-btn'), true);
+    });
+
+    testForm.addEventListener('submit', function() {
+        setButtonLoading(document.getElementById('test-send-btn'), true);
+    });
+
+    testSendForms.forEach(function(form) {
+        form.addEventListener('submit', function() {
+            var btn = form.querySelector('.test-send-btn');
+            setButtonLoading(btn, true);
+        });
+    });
+
+    {% for category, message in messages %}
+    showToast('{{ message }}', '{{ category }}');
+    {% endfor %}
+});
+</script>
+{% endblock %}

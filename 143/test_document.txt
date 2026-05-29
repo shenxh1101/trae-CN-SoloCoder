@@ -1,0 +1,7 @@
+This is a test document for the spell checker tool.
+It contains some misspelled words like wrld and tset.
+The camelCase feature should detect myVariableName correctly.
+We also have some tech terms like ReactNode and GraphQL.
+Let's see how the tool handles these cases.
+Another line with spelling erors here.
+The quick brown fx jumps over the lazy dg.

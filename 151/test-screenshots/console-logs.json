@@ -1,0 +1,830 @@
+[
+  {
+    "type": "debug",
+    "text": "[vite] connecting...",
+    "location": {
+      "url": "http://127.0.0.1:3000/@vite/client",
+      "line": 494,
+      "column": 8,
+      "lineNumber": 494,
+      "columnNumber": 8
+    },
+    "timestamp": "2026-05-29T07:48:15.576Z"
+  },
+  {
+    "type": "debug",
+    "text": "[vite] connected.",
+    "location": {
+      "url": "http://127.0.0.1:3000/@vite/client",
+      "line": 617,
+      "column": 14,
+      "lineNumber": 617,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:15.589Z"
+  },
+  {
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold",
+    "location": {
+      "url": "http://127.0.0.1:3000/node_modules/.vite/deps/chunk-YCOEJRGR.js?v=f3a31a37",
+      "line": 21550,
+      "column": 24,
+      "lineNumber": 21550,
+      "columnNumber": 24
+    },
+    "timestamp": "2026-05-29T07:48:15.729Z"
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x114004db400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "http://127.0.0.1:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    },
+    "timestamp": "2026-05-29T07:48:16.162Z"
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x114004db400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "http://127.0.0.1:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    },
+    "timestamp": "2026-05-29T07:48:16.162Z"
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x114004db400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "http://127.0.0.1:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    },
+    "timestamp": "2026-05-29T07:48:16.162Z"
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x114004db400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "location": {
+      "url": "http://127.0.0.1:3000/",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    },
+    "timestamp": "2026-05-29T07:48:16.162Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 1, targets: 0, stars: 0, platformPositions: Array(1)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:20.700Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 1, targets: 0, stars: 0, platformPositions: Array(1)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:20.700Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] adding event listener to canvas: JSHandle@node",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 61,
+      "column": 12,
+      "lineNumber": 61,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:20.916Z"
+  },
+  {
+    "type": "log",
+    "text": "THREE.WebGLRenderer: Context Lost.",
+    "location": {
+      "url": "http://127.0.0.1:3000/node_modules/.vite/deps/chunk-PMNYMX5H.js?v=f3a31a37",
+      "line": 17343,
+      "column": 14,
+      "lineNumber": 17343,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:21.977Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 1, targets: 0, stars: 0, platformPositions: Array(1)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:23.620Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 1, targets: 0, stars: 0, platformPositions: Array(1)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:23.620Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] removing event listener",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 64,
+      "column": 14,
+      "lineNumber": 64,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:23.662Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] adding event listener to canvas: JSHandle@node",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 61,
+      "column": 12,
+      "lineNumber": 61,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:23.662Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] mousedown triggered, editorMode: platform",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 30,
+      "column": 14,
+      "lineNumber": 30,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:25.677Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] screen coords: {x: -0.40157480314960625, y: 0}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 44,
+      "column": 14,
+      "lineNumber": 44,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:25.677Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] intersect: _Vector3",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 51,
+      "column": 14,
+      "lineNumber": 51,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:25.677Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] calling onAddElement with type: platform pos: {x: -0.41159249512873153, y: 0, z: 6.803864165042823}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 54,
+      "column": 16,
+      "lineNumber": 54,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:25.677Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] handleEditorAddElement called: {type: platform, position: Object}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 32,
+      "column": 12,
+      "lineNumber": 32,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:25.678Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] prev state: {platforms: 1, targets: 0, stars: 0}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 34,
+      "column": 14,
+      "lineNumber": 34,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:25.678Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] adding platform: {position: Object, size: Object}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 44,
+      "column": 16,
+      "lineNumber": 44,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:25.678Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] new state platforms count: 2",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 46,
+      "column": 16,
+      "lineNumber": 46,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:25.679Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] prev state: {platforms: 1, targets: 0, stars: 0}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 34,
+      "column": 14,
+      "lineNumber": 34,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:25.679Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] adding platform: {position: Object, size: Object}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 44,
+      "column": 16,
+      "lineNumber": 44,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:25.679Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] new state platforms count: 2",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 46,
+      "column": 16,
+      "lineNumber": 46,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:25.679Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 0, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:25.679Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 0, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:25.679Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 0, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:32.234Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 0, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:32.235Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] removing event listener",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 64,
+      "column": 14,
+      "lineNumber": 64,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:32.300Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] adding event listener to canvas: JSHandle@node",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 61,
+      "column": 12,
+      "lineNumber": 61,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:32.300Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] mousedown triggered, editorMode: target",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 30,
+      "column": 14,
+      "lineNumber": 30,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:33.113Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] screen coords: {x: 0, y: -0.19999999999999996}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 44,
+      "column": 14,
+      "lineNumber": 44,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:33.113Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] intersect: _Vector3",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 51,
+      "column": 14,
+      "lineNumber": 51,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:33.113Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] calling onAddElement with type: target pos: {x: 6.030834051796773, y: 0, z: 8.092502155390319}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 54,
+      "column": 16,
+      "lineNumber": 54,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:33.113Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] handleEditorAddElement called: {type: target, position: Object}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 32,
+      "column": 12,
+      "lineNumber": 32,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:33.113Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] prev state: {platforms: 2, targets: 0, stars: 0}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 34,
+      "column": 14,
+      "lineNumber": 34,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:33.117Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] adding target: {id: 1780040913113, position: Object, reached: false}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 54,
+      "column": 16,
+      "lineNumber": 54,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:33.117Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] new state targets count: 1",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 56,
+      "column": 16,
+      "lineNumber": 56,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:33.117Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] prev state: {platforms: 2, targets: 0, stars: 0}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 34,
+      "column": 14,
+      "lineNumber": 34,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:33.119Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] adding target: {id: 1780040913113, position: Object, reached: false}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 54,
+      "column": 16,
+      "lineNumber": 54,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:33.119Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] new state targets count: 1",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 56,
+      "column": 16,
+      "lineNumber": 56,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:33.119Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 1, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:33.119Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 1, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:33.119Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 1, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:35.602Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 1, stars: 0, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:35.602Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] removing event listener",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 64,
+      "column": 14,
+      "lineNumber": 64,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:35.651Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] adding event listener to canvas: JSHandle@node",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 61,
+      "column": 12,
+      "lineNumber": 61,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:35.651Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] mousedown triggered, editorMode: star",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 30,
+      "column": 14,
+      "lineNumber": 30,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:36.441Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] screen coords: {x: -0.20078740157480313, y: 0.19999999999999996}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 44,
+      "column": 14,
+      "lineNumber": 44,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:36.441Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] intersect: _Vector3",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 51,
+      "column": 14,
+      "lineNumber": 51,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:36.441Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] calling onAddElement with type: star pos: {x: 0.6026752516219283, y: 0, z: 2.077280457755702}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 54,
+      "column": 16,
+      "lineNumber": 54,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:36.441Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] handleEditorAddElement called: {type: star, position: Object}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 32,
+      "column": 12,
+      "lineNumber": 32,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:36.441Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] prev state: {platforms: 2, targets: 1, stars: 0}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 34,
+      "column": 14,
+      "lineNumber": 34,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:36.442Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] adding star: {id: 1780040916427, position: Object, collected: false}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 64,
+      "column": 16,
+      "lineNumber": 64,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:36.442Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] new state stars count: 1",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 66,
+      "column": 16,
+      "lineNumber": 66,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:36.442Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] prev state: {platforms: 2, targets: 1, stars: 0}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 34,
+      "column": 14,
+      "lineNumber": 34,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:36.442Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] adding star: {id: 1780040916427, position: Object, collected: false}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 64,
+      "column": 16,
+      "lineNumber": 64,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:36.442Z"
+  },
+  {
+    "type": "log",
+    "text": "[App] new state stars count: 1",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/App.tsx",
+      "line": 66,
+      "column": 16,
+      "lineNumber": 66,
+      "columnNumber": 16
+    },
+    "timestamp": "2026-05-29T07:48:36.442Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 1, stars: 1, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:36.442Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] render, editingLevel: {platforms: 2, targets: 1, stars: 1, platformPositions: Array(2)}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 27,
+      "column": 10,
+      "lineNumber": 27,
+      "columnNumber": 10
+    },
+    "timestamp": "2026-05-29T07:48:36.443Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] handleSave called",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 145,
+      "column": 12,
+      "lineNumber": 145,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:40.827Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] levelToSave: {\n  \"id\": 1780040920825,\n  \"name\": \"自定义关卡\",\n  \"platforms\": [\n    {\n      \"position\": {\n        \"x\": 0,\n        \"y\": 0,\n        \"z\": 0\n      },\n      \"size\": {\n        \"x\": 4,\n        \"y\": 0.5,\n        \"z\": 4\n      }\n    },\n    {\n      \"position\": {\n        \"x\": -0.41159249512873153,\n        \"y\": 0,\n        \"z\": 6.803864165042823\n      },\n      \"size\": {\n        \"x\": 3,\n        \"y\": 0.5,\n        \"z\": 3\n      }\n    }\n  ],\n  \"targets\": [\n    {\n      \"id\": 1780040913113,\n      \"position\": {\n        \"x\": 6.030834051796773,\n        \"y\": 1.5,\n        \"z\": 8.092502155390319\n      },\n      \"reached\": false\n    }\n  ],\n  \"stars\": [\n    {\n      \"id\": 1780040916427,\n      \"position\": {\n        \"x\": 0.6026752516219283,\n        \"y\": 3,\n        \"z\": 2.077280457755702\n      },\n      \"collected\": false\n    }\n  ],\n  \"startPosition\": {\n    \"x\": 0,\n    \"y\": 2,\n    \"z\": 0\n  },\n  \"wind\": {\n    \"enabled\": false,\n    \"direction\": {\n      \"x\": 1,\n      \"y\": 0,\n      \"z\": 0\n    },\n    \"strength\": 0\n  },\n  \"isCustom\": true\n}",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 166,
+      "column": 12,
+      "lineNumber": 166,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:40.827Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] platforms count: 2",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 167,
+      "column": 12,
+      "lineNumber": 167,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:40.828Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] targets count: 1",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 168,
+      "column": 12,
+      "lineNumber": 168,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:40.828Z"
+  },
+  {
+    "type": "log",
+    "text": "[LevelEditor] stars count: 1",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/LevelEditor.tsx",
+      "line": 169,
+      "column": 12,
+      "lineNumber": 169,
+      "columnNumber": 12
+    },
+    "timestamp": "2026-05-29T07:48:40.828Z"
+  },
+  {
+    "type": "log",
+    "text": "[EditorScene] removing event listener",
+    "location": {
+      "url": "http://127.0.0.1:3000/src/components/EditorScene.tsx",
+      "line": 64,
+      "column": 14,
+      "lineNumber": 64,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:40.843Z"
+  },
+  {
+    "type": "log",
+    "text": "THREE.WebGLRenderer: Context Lost.",
+    "location": {
+      "url": "http://127.0.0.1:3000/node_modules/.vite/deps/chunk-PMNYMX5H.js?v=f3a31a37",
+      "line": 17343,
+      "column": 14,
+      "lineNumber": 17343,
+      "columnNumber": 14
+    },
+    "timestamp": "2026-05-29T07:48:42.974Z"
+  }
+]

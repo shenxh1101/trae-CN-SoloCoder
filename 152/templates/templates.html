@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}邮件模板 - MailSender{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>邮件模板</h1>
+    <p>管理常用邮件模板，一键填充到发送表单</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">保存模板</span>
+    </div>
+    <form action="/templates/save" method="POST">
+        <div class="form-group">
+            <label>模板名称</label>
+            <input type="text" name="name" class="form-control" placeholder="请输入模板名称" required>
+        </div>
+        <div class="form-group">
+            <label>邮件主题</label>
+            <input type="text" name="subject" class="form-control" placeholder="请输入邮件主题" required>
+        </div>
+        <div class="form-group">
+            <label>模板内容</label>
+            <textarea name="content" class="form-control" rows="5" placeholder="请输入模板内容" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">保存模板</button>
+    </form>
+</div>
+
+{% if templates %}
+<div class="template-grid">
+    {% for tpl in templates %}
+    <div class="template-card">
+        <div class="template-name">{{ tpl.name }}</div>
+        <div class="template-preview">{{ tpl.subject }}<br>{{ tpl.content }}</div>
+        <div class="template-meta">{{ tpl.created_at }}</div>
+        <div class="btn-group" style="margin-top: 12px;">
+            <a href="/?template_id={{ tpl.id }}" class="btn btn-primary btn-sm">使用</a>
+            <form action="/templates/delete/{{ tpl.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">删除</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <span class="empty-icon">📋</span>
+        <p>暂无模板</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

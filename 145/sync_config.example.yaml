@@ -1,0 +1,37 @@
+rules:
+  - name: "project-backup"
+    source: "~/projects/myapp"
+    target: "~/backups/myapp"
+    mode: "unidirectional"
+    excludes:
+      - "*.tmp"
+      - ".git"
+      - "__pycache__"
+      - ".DS_Store"
+      - "*.log"
+    extensions:
+      - ".py"
+      - ".yaml"
+      - ".json"
+      - ".md"
+    use_md5: true
+    conflict_strategy: "source"
+    post_sync_command: 'echo "Sync completed at $(date)"'
+    incremental: true
+    max_workers: 4
+
+  - name: "docs-sync"
+    source: "~/documents/work"
+    target: "~/cloud/work-docs"
+    mode: "bidirectional"
+    excludes:
+      - "*.tmp"
+      - "~$*"
+      - ".DS_Store"
+    use_md5: true
+    conflict_strategy: "ask"
+    incremental: false
+    max_workers: 2
+
+schedule: "0 */2 * * *"
+schedule_interval: 0

@@ -1,0 +1,86 @@
+{
+  "timestamp": "20260529_165714",
+  "url": "http://localhost:5173/",
+  "tests": [
+    {
+      "name": "页面标题检查",
+      "status": "PASS",
+      "title": "3D 光柱森林 - Light Forest"
+    },
+    {
+      "name": "Canvas 3D场景存在",
+      "status": "PASS",
+      "canvasExists": true
+    },
+    {
+      "name": "光柱数量徽章显示",
+      "status": "PASS",
+      "success": true,
+      "badgeExists": true,
+      "hasZapIcon": true,
+      "hasLabel": true,
+      "count": "400",
+      "hasMonoSpan": true
+    },
+    {
+      "name": "控制面板存在",
+      "status": "PASS",
+      "panelExists": true
+    },
+    {
+      "name": "所有滑块元素存在",
+      "status": "PASS",
+      "sliderCount": 5
+    },
+    {
+      "name": "光柱数量滑块交互",
+      "status": "PASS",
+      "success": true,
+      "initialValue": "400",
+      "newValue": "500"
+    },
+    {
+      "name": "颜色模式切换按钮存在",
+      "status": "PASS",
+      "colorModeButtons": 3
+    },
+    {
+      "name": "背景切换按钮存在",
+      "status": "PASS",
+      "backgroundButtons": 3
+    },
+    {
+      "name": "功能开关存在",
+      "status": "PASS",
+      "foundToggles": 4
+    },
+    {
+      "name": "操作按钮存在且可点击",
+      "status": "PASS",
+      "hasScreenshot": true,
+      "hasExport": true,
+      "hasRegenerate": true,
+      "allButtons": 14
+    },
+    {
+      "name": "切换颜色模式交互",
+      "status": "PASS",
+      "success": true
+    },
+    {
+      "name": "测试开关点击",
+      "status": "PASS",
+      "success": true,
+      "toggleCount": 4
+    },
+    {
+      "name": "检查Three.js是否已初始化",
+      "status": "PASS",
+      "hasThreeJS": true,
+      "detectedVia": "canvas rendering"
+    }
+  ],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "overallStatus": "PASS"
+}

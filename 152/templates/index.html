@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}发送邮件 - MailSender{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>发送邮件</h1>
+    <p>通过SMTP发送单封或批量邮件</p>
+</div>
+
+{% if messages %}
+<div style="margin-bottom: 20px;">
+    {% for category, message in messages %}
+    <div class="toast {{ category }}" style="position: relative; animation: none; margin-bottom: 10px; opacity: 1; transform: none;">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form id="email-form" action="/send" method="POST" enctype="multipart/form-data">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">基本信息</span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>SMTP账户</label>
+                <select name="smtp_account" class="form-control" required>
+                    <option value="">请选择SMTP账户</option>
+                    {% for acc in smtp_accounts %}
+                    <option value="{{ acc.id }}" {% if acc.is_default %}selected{% endif %}>
+                        {{ acc.name }} ({{ acc.username }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>邮件模板</label>
+                <select id="template-select" class="form-control">
+                    <option value="">选择模板...</option>
+                    {% for tpl in templates %}
+                    <option value="{{ tpl.id }}"
+                            data-subject="{{ tpl.subject }}"
+                            data-content="{{ tpl.content }}">
+                        {{ tpl.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>收件人邮箱</label>
+            <input type="email" name="recipient" class="form-control" placeholder="请输入收件人邮箱" value="{{ selected_template is defined and '' or '' }}">
+            <small class="text-muted">单封邮件时填写，批量发送请上传CSV文件</small>
+        </div>
+
+        <div class="form-group">
+            <label>邮件主题</label>
+            <input type="text" name="subject" id="subject-input" class="form-control" placeholder="请输入邮件主题" value="{{ selected_template.subject if selected_template else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>邮件内容</label>
+            <textarea name="content" id="content-input" class="form-control" rows="10" placeholder="请输入邮件内容" required>{{ selected_template.content if selected_template else '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="is_html">
+                <span>使用HTML格式发送</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">附件上传</span>
+        </div>
+
+        <div class="upload-zone" id="attachment-zone">
+            <span class="upload-icon">📎</span>
+            <div class="upload-text">
+                <strong>点击选择</strong> 或拖拽附件到此处
+            </div>
+            <input type="file" name="attachments" id="attachment-input" multiple style="display: none;">
+        </div>
+        <div id="attachment-list" style="margin-top: 12px;"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">批量发送</span>
+        </div>
+
+        <div class="upload-zone" id="csv-zone">
+            <span class="upload-icon">📊</span>
+            <div class="upload-text">
+                <strong>点击选择</strong> 或拖拽CSV文件到此处
+            </div>
+            <input type="file" name="csv_file" id="csv-input" accept=".csv" style="display: none;">
+        </div>
+        <div id="csv-filename" style="margin-top: 12px;"></div>
+        <p style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
+            CSV文件需包含 <code>email</code> 列，其他列名可作为 <code>{{变量}}</code> 在主题和内容中使用
+        </p>
+
+        <div class="form-group" style="margin-top: 20px;">
+            <label>发送延迟（秒）</label>
+            <input type="number" name="delay" class="form-control" min="0" max="3600" value="0" style="width: 150px;">
+            <small class="text-muted">批量发送时每封邮件的间隔时间，建议设置2-5秒避免被拦截</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">验证码</span>
+        </div>
+
+        <div class="captcha-area">
+            <img src="/captcha" id="captcha-img" class="captcha-img" alt="验证码" title="点击刷新">
+            <input type="text" name="captcha_answer" class="captcha-input" placeholder="结果" required>
+            <span class="text-muted" style="font-size: 12px;">点击图片刷新验证码</span>
+        </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+        <button type="submit" id="submit-btn" class="btn btn-primary" style="min-width: 160px;">
+            <span class="btn-text">📤 发送邮件</span>
+            <span class="btn-loading" style="display: none;">⏳ 发送中...</span>
+        </button>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var templateSelect = document.getElementById('template-select');
+    var subjectInput = document.getElementById('subject-input');
+    var contentInput = document.getElementById('content-input');
+    var submitBtn = document.getElementById('submit-btn');
+    var isSubmitting = false;
+
+    templateSelect.addEventListener('change', function() {
+        var option = templateSelect.options[templateSelect.selectedIndex];
+        if (option.value) {
+            subjectInput.value = option.getAttribute('data-subject') || '';
+            contentInput.value = option.getAttribute('data-content') || '';
+        } else {
+            subjectInput.value = '';
+            contentInput.value = '';
+        }
+    });
+
+    var captchaImg = document.getElementById('captcha-img');
+    captchaImg.addEventListener('click', function() {
+        captchaImg.src = '/captcha?t=' + Date.now();
+    });
+
+    var attachmentZone = document.getElementById('attachment-zone');
+    var attachmentInput = document.getElementById('attachment-input');
+    var attachmentList = document.getElementById('attachment-list');
+
+    attachmentZone.addEventListener('click', function() {
+        attachmentInput.click();
+    });
+
+    attachmentInput.addEventListener('change', function() {
+        updateAttachmentList();
+    });
+
+    attachmentZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        attachmentZone.classList.add('dragover');
+    });
+
+    attachmentZone.addEventListener('dragleave', function() {
+        attachmentZone.classList.remove('dragover');
+    });
+
+    attachmentZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        attachmentZone.classList.remove('dragover');
+        attachmentInput.files = e.dataTransfer.files;
+        updateAttachmentList();
+    });
+
+    function updateAttachmentList() {
+        attachmentList.innerHTML = '';
+        if (attachmentInput.files.length > 0) {
+            var ul = document.createElement('ul');
+            ul.style.listStyle = 'none';
+            ul.style.margin = '0';
+            ul.style.padding = '0';
+            for (var i = 0; i < attachmentInput.files.length; i++) {
+                var li = document.createElement('li');
+                li.style.padding = '8px 12px';
+                li.style.backgroundColor = 'var(--input-bg)';
+                li.style.borderRadius = '6px';
+                li.style.marginBottom = '6px';
+                li.style.fontSize = '13px';
+                li.textContent = '📎 ' + attachmentInput.files[i].name + ' (' + formatSize(attachmentInput.files[i].size) + ')';
+                ul.appendChild(li);
+            }
+            attachmentList.appendChild(ul);
+        }
+    }
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    var csvZone = document.getElementById('csv-zone');
+    var csvInput = document.getElementById('csv-input');
+    var csvFilename = document.getElementById('csv-filename');
+
+    csvZone.addEventListener('click', function() {
+        csvInput.click();
+    });
+
+    csvInput.addEventListener('change', function() {
+        updateCsvName();
+    });
+
+    csvZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        csvZone.classList.add('dragover');
+    });
+
+    csvZone.addEventListener('dragleave', function() {
+        csvZone.classList.remove('dragover');
+    });
+
+    csvZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        csvZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0 && e.dataTransfer.files[0].name.endsWith('.csv')) {
+            csvInput.files = e.dataTransfer.files;
+            updateCsvName();
+        } else {
+            showToast('请上传CSV文件', 'error');
+        }
+    });
+
+    function updateCsvName() {
+        csvFilename.innerHTML = '';
+        if (csvInput.files.length > 0) {
+            var div = document.createElement('div');
+            div.style.padding = '8px 12px';
+            div.style.backgroundColor = 'var(--input-bg)';
+            div.style.borderRadius = '6px';
+            div.style.fontSize = '13px';
+            div.textContent = '📊 ' + csvInput.files[0].name + ' (' + formatSize(csvInput.files[0].size) + ')';
+            csvFilename.appendChild(div);
+        }
+    }
+
+    var form = document.getElementById('email-form');
+    form.addEventListener('submit', function(e) {
+        var hasCsv = csvInput.files.length > 0;
+        var hasRecipient = form.recipient.value.trim();
+
+        if (!hasCsv && !hasRecipient) {
+            e.preventDefault();
+            showToast('请填写收件人邮箱或上传CSV文件', 'error');
+            return;
+        }
+
+        if (isSubmitting) {
+            e.preventDefault();
+            return;
+        }
+
+        if (hasCsv) {
+            e.preventDefault();
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var text = e.target.result;
+                var lines = text.split(/\r?\n/);
+                var rows = lines.filter(function(line) { return line.trim(); }).length - 1;
+                if (rows <= 0) {
+                    showToast('CSV文件为空或格式错误', 'error');
+                    return;
+                }
+                if (confirm('即将批量发送 ' + rows + ' 封邮件，确定继续？')) {
+                    setLoading(true);
+                    form.submit();
+                }
+            };
+            reader.readAsText(csvInput.files[0]);
+        } else {
+            setLoading(true);
+        }
+    });
+
+    function setLoading(loading) {
+        isSubmitting = loading;
+        if (loading) {
+            submitBtn.disabled = true;
+            submitBtn.querySelector('.btn-text').style.display = 'none';
+            submitBtn.querySelector('.btn-loading').style.display = 'inline';
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.cursor = 'not-allowed';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.querySelector('.btn-text').style.display = 'inline';
+            submitBtn.querySelector('.btn-loading').style.display = 'none';
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+        }
+    }
+});
+</script>
+{% endblock %}

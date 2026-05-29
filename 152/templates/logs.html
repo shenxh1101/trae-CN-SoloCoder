@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>发送日志</h1>
+    <p>查看邮件发送记录</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="btn-group">
+            <select class="form-control" style="width:auto;" onchange="window.location.href='/logs?status='+this.value">
+                <option value="" {% if status_filter == '' %}selected{% endif %}>全部</option>
+                <option value="success" {% if status_filter == 'success' %}selected{% endif %}>成功</option>
+                <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>失败</option>
+            </select>
+            <a href="/logs/export-failed" class="btn btn-secondary btn-sm">导出失败列表</a>
+        </div>
+    </div>
+
+    {% if logs %}
+    <table class="log-table">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>收件人</th>
+                <th>主题</th>
+                <th>SMTP账户</th>
+                <th>状态</th>
+                <th>错误信息</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.sent_at }}</td>
+                <td>{{ log.recipient }}</td>
+                <td>{{ log.subject[:30] }}</td>
+                <td>{{ log.smtp_account }}</td>
+                <td>
+                    {% if log.status == 'success' %}
+                    <span class="badge badge-success">成功</span>
+                    {% else %}
+                    <span class="badge badge-failed">失败</span>
+                    {% endif %}
+                </td>
+                <td>{{ log.error[:50] if log.error else '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p style="margin-top:16px;color:var(--text-secondary);font-size:13px;">共 {{ logs|length }} 条记录</p>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>暂无发送记录</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

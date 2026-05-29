@@ -1,0 +1,2 @@
+pycryptodome>=3.19.0
+paramiko>=3.3.0

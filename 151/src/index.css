@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: #0a0a1a;
+  color: white;
+}
+
+.game-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.glass-panel {
+  background: rgba(10, 10, 30, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+}
+
+.neon-text {
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+.neon-border {
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5), inset 0 0 10px rgba(0, 212, 255, 0.1);
+}
+
+.btn-game {
+  @apply px-4 py-2 rounded-lg font-bold transition-all duration-200;
+  @apply bg-game-primary/20 border border-game-primary text-game-primary;
+  @apply hover:bg-game-primary/30 hover:scale-105;
+  @apply active:scale-95;
+}
+
+.btn-game:disabled {
+  @apply opacity-50 cursor-not-allowed hover:scale-100;
+}
+
+.slider-game {
+  @apply w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer;
+}
+
+.slider-game::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-game-primary cursor-pointer;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
