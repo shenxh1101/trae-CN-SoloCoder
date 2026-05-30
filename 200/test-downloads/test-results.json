@@ -1,0 +1,212 @@
+[
+  {
+    "testName": "页面加载",
+    "passed": true,
+    "details": "HTTP 200 OK"
+  },
+  {
+    "testName": "加载遮罩初始显示",
+    "passed": true,
+    "details": "加载中..."
+  },
+  {
+    "testName": "加载遮罩消失",
+    "passed": true,
+    "details": "遮罩已移除"
+  },
+  {
+    "testName": "window.app 全局访问",
+    "passed": true,
+    "details": "app对象可用"
+  },
+  {
+    "testName": "文字对象创建",
+    "passed": true,
+    "details": "文字总数: 50"
+  },
+  {
+    "testName": "字体加载成功",
+    "passed": true,
+    "details": "3D文字可用"
+  },
+  {
+    "testName": "WebGL Canvas渲染",
+    "passed": true,
+    "details": ""
+  },
+  {
+    "testName": "页面无JS错误",
+    "passed": true,
+    "details": "无错误"
+  },
+  {
+    "testName": "GUI面板存在",
+    "passed": true,
+    "details": ""
+  },
+  {
+    "testName": "GUI文件夹",
+    "passed": true,
+    "details": "共 7 个"
+  },
+  {
+    "testName": "音频初始状态",
+    "passed": true,
+    "details": "mode: 停止"
+  },
+  {
+    "testName": "示例音乐-音频启用",
+    "passed": true,
+    "details": "mode: 示例音乐"
+  },
+  {
+    "testName": "示例音乐-Analyser",
+    "passed": true,
+    "details": ""
+  },
+  {
+    "testName": "示例音乐-频谱数据",
+    "passed": true,
+    "details": "长度: 128"
+  },
+  {
+    "testName": "频谱可视化面板",
+    "passed": true,
+    "details": ""
+  },
+  {
+    "testName": "音频响应开关",
+    "passed": true,
+    "details": "audioReactive: true"
+  },
+  {
+    "testName": "频谱数据采样",
+    "passed": true,
+    "details": "avg: 66.9, max: 254, 前10: [237,254,252,237,191,155,178,176,147,127]"
+  },
+  {
+    "testName": "停止音频",
+    "passed": true,
+    "details": ""
+  },
+  {
+    "testName": "麦克风权限查询",
+    "passed": true,
+    "details": "状态: granted"
+  },
+  {
+    "testName": "Playwright截图",
+    "passed": true,
+    "details": "76.1 KB"
+  },
+  {
+    "testName": "截图下载",
+    "passed": true,
+    "details": "文件: vortex-tunnel-1780137900341.png, 68.3 KB"
+  },
+  {
+    "testName": "JSON文件下载",
+    "passed": true,
+    "details": "文件: vortex-tunnel-params-1780137900361.json"
+  },
+  {
+    "testName": "JSON参数完整性",
+    "passed": true,
+    "details": "共 19 个字段"
+  },
+  {
+    "testName": "JSON-speed",
+    "passed": true,
+    "details": "1"
+  },
+  {
+    "testName": "JSON-radius",
+    "passed": true,
+    "details": "10"
+  },
+  {
+    "testName": "JSON-materialType",
+    "passed": true,
+    "details": "standard"
+  },
+  {
+    "testName": "JSON-cameraPosition",
+    "passed": true,
+    "details": "{\"x\":-24.9010266352688,\"y\":1.9999999999999667,\"z\":-12.222357421661014}"
+  },
+  {
+    "testName": "JSON-timestamp",
+    "passed": true,
+    "details": "2026-05-30T10:45:00.359Z"
+  },
+  {
+    "testName": "JSON-wordCount",
+    "passed": true,
+    "details": "50"
+  },
+  {
+    "testName": "鼠标拖拽旋转",
+    "passed": true,
+    "details": "位置: (-24.87,2.00) → (0.21,10.14)"
+  },
+  {
+    "testName": "鼠标滚轮缩放",
+    "passed": true,
+    "details": "距目标: 19.41"
+  },
+  {
+    "testName": "右键拖拽平移",
+    "passed": true,
+    "details": "target: (0.00, 0.00, -10.00)"
+  },
+  {
+    "testName": "自动旋转初始",
+    "passed": true,
+    "details": "param=true, controls=true"
+  },
+  {
+    "testName": "关闭自动旋转",
+    "passed": true,
+    "details": "param=false, controls=false"
+  },
+  {
+    "testName": "重新开启自动旋转",
+    "passed": true,
+    "details": "param=true, controls=true"
+  },
+  {
+    "testName": "FPS计数",
+    "passed": true,
+    "details": "49 FPS"
+  },
+  {
+    "testName": "文字计数",
+    "passed": true,
+    "details": "50"
+  },
+  {
+    "testName": "材质切换-线框",
+    "passed": true,
+    "details": "当前: wireframe"
+  },
+  {
+    "testName": "材质切换-发光",
+    "passed": true,
+    "details": "当前: emissive"
+  },
+  {
+    "testName": "材质切换-标准",
+    "passed": true,
+    "details": "当前: standard"
+  },
+  {
+    "testName": "背景切换-纯黑",
+    "passed": true,
+    "details": "当前: black"
+  },
+  {
+    "testName": "背景切换-深空",
+    "passed": true,
+    "details": "当前: space"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "speed": 1,
+  "radius": 10,
+  "density": 50,
+  "spiralTurns": 3,
+  "tunnelLength": 200,
+  "textSize": 0.8,
+  "autoRotate": true,
+  "rotateSpeed": 0.003,
+  "materialType": "standard",
+  "background": "space",
+  "audioEnabled": false,
+  "audioMode": "停止",
+  "audioReactive": false,
+  "customText": "",
+  "timestamp": "2026-05-30T10:45:00.359Z",
+  "wordCount": 50,
+  "customWords": [],
+  "cameraPosition": {
+    "x": -24.9010266352688,
+    "y": 1.9999999999999667,
+    "z": -12.222357421661014
+  },
+  "cameraTarget": {
+    "x": 0,
+    "y": 0,
+    "z": -10
+  }
+}

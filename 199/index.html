@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>彩色路径绘制游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🎨 彩色路径绘制游戏</h1>
+            <p class="subtitle">绘制闭合路径，围出最大面积！</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="label">当前面积</span>
+                <span class="value" id="currentArea">0</span>
+            </div>
+            <div class="status-item">
+                <span class="label">路径长度</span>
+                <span class="value" id="pathLength">0</span>
+            </div>
+            <div class="status-item">
+                <span class="label">最佳记录</span>
+                <span class="value" id="bestRecord">0</span>
+            </div>
+            <div class="status-item" id="timerContainer" style="display: none;">
+                <span class="label">剩余时间</span>
+                <span class="value" id="timer">02:00</span>
+            </div>
+            <div class="status-item" id="playerContainer" style="display: none;">
+                <span class="label">当前玩家</span>
+                <span class="value" id="currentPlayer">1</span>
+            </div>
+        </div>
+
+        <div class="game-main">
+            <div class="grid-container">
+                <div id="gameGrid" class="game-grid"></div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="control-group">
+                <label>网格尺寸</label>
+                <div class="btn-group">
+                    <button class="size-btn active" data-size="10">10×10</button>
+                    <button class="size-btn" data-size="15">15×15</button>
+                    <button class="size-btn" data-size="20">20×20</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>游戏模式</label>
+                <div class="btn-group">
+                    <button class="mode-btn active" data-mode="normal">普通模式</button>
+                    <button class="mode-btn" data-mode="timed">计时模式</button>
+                    <button class="mode-btn" data-mode="versus">双人对战</button>
+                </div>
+            </div>
+
+            <div class="control-group full-width">
+                <div class="btn-group action-btns">
+                    <button id="undoBtn" class="action-btn">↶ 撤销</button>
+                    <button id="closePathBtn" class="action-btn">○ 闭合路径</button>
+                    <button id="clearBtn" class="action-btn">✕ 清除</button>
+                </div>
+            </div>
+
+            <div class="control-group full-width">
+                <div class="btn-group action-btns">
+                    <button id="exportBtn" class="action-btn">⬇ 导出JSON</button>
+                    <button id="importBtn" class="action-btn">⬆ 导入JSON</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                </div>
+            </div>
+
+            <div class="control-group full-width" id="versusScores" style="display: none;">
+                <div class="player-score">
+                    <span class="player-label">玩家1</span>
+                    <span class="player-area" id="player1Area">0</span>
+                </div>
+                <div class="vs-label">VS</div>
+                <div class="player-score">
+                    <span class="player-label">玩家2</span>
+                    <span class="player-area" id="player2Area">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tips">
+            <p>💡 提示：点击并拖拽绘制连续路径，路径不能自交。闭合路径后计算包围面积。</p>
+        </div>
+
+        <div id="messageModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2 id="modalTitle">提示</h2>
+                <p id="modalMessage">消息内容</p>
+                <button id="modalCloseBtn" class="action-btn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

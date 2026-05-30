@@ -1,0 +1,445 @@
+{
+  "city": "Beijing",
+  "export_time": "2026-05-30 14:59:23",
+  "record_count": 73,
+  "records": [
+    {
+      "timestamp": "2026-05-27 14:58:28",
+      "temperature": 21.0,
+      "humidity": 64,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-27 15:58:28",
+      "temperature": 22.5,
+      "humidity": 51,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-27 16:58:28",
+      "temperature": 23.4,
+      "humidity": 59,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-27 17:58:28",
+      "temperature": 24.2,
+      "humidity": 31,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-27 18:58:28",
+      "temperature": 23.3,
+      "humidity": 66,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-27 19:58:28",
+      "temperature": 24.5,
+      "humidity": 53,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-27 20:58:28",
+      "temperature": 26.0,
+      "humidity": 40,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-27 21:58:28",
+      "temperature": 25.3,
+      "humidity": 63,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-27 22:58:28",
+      "temperature": 25.7,
+      "humidity": 43,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-27 23:58:28",
+      "temperature": 27.4,
+      "humidity": 38,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-28 00:58:28",
+      "temperature": 11.5,
+      "humidity": 51,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-28 01:58:28",
+      "temperature": 13.0,
+      "humidity": 49,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-28 02:58:28",
+      "temperature": 13.8,
+      "humidity": 64,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-28 03:58:28",
+      "temperature": 14.5,
+      "humidity": 49,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 04:58:28",
+      "temperature": 14.6,
+      "humidity": 53,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-28 05:58:28",
+      "temperature": 14.4,
+      "humidity": 51,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 06:58:28",
+      "temperature": 15.8,
+      "humidity": 47,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-28 07:58:28",
+      "temperature": 16.1,
+      "humidity": 41,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-28 08:58:28",
+      "temperature": 17.3,
+      "humidity": 59,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 09:58:28",
+      "temperature": 17.2,
+      "humidity": 48,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 10:58:28",
+      "temperature": 18.0,
+      "humidity": 67,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-28 11:58:28",
+      "temperature": 19.1,
+      "humidity": 36,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 12:58:28",
+      "temperature": 19.9,
+      "humidity": 33,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-28 13:58:28",
+      "temperature": 20.2,
+      "humidity": 50,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 14:58:28",
+      "temperature": 21.5,
+      "humidity": 31,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 15:58:28",
+      "temperature": 21.8,
+      "humidity": 54,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 16:58:28",
+      "temperature": 22.8,
+      "humidity": 35,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 17:58:28",
+      "temperature": 23.0,
+      "humidity": 48,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 18:58:28",
+      "temperature": 24.9,
+      "humidity": 47,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 19:58:28",
+      "temperature": 24.5,
+      "humidity": 67,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 20:58:28",
+      "temperature": 25.7,
+      "humidity": 54,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-28 21:58:28",
+      "temperature": 25.7,
+      "humidity": 42,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 22:58:28",
+      "temperature": 26.6,
+      "humidity": 33,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-28 23:58:28",
+      "temperature": 28.2,
+      "humidity": 56,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 00:58:28",
+      "temperature": 11.9,
+      "humidity": 51,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 01:58:28",
+      "temperature": 11.8,
+      "humidity": 34,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 02:58:28",
+      "temperature": 13.1,
+      "humidity": 43,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-29 03:58:28",
+      "temperature": 15.0,
+      "humidity": 34,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 04:58:28",
+      "temperature": 14.4,
+      "humidity": 60,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 05:58:28",
+      "temperature": 16.0,
+      "humidity": 46,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 06:58:28",
+      "temperature": 15.3,
+      "humidity": 65,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 07:58:28",
+      "temperature": 17.4,
+      "humidity": 64,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-29 08:58:28",
+      "temperature": 17.5,
+      "humidity": 45,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-29 09:58:28",
+      "temperature": 17.5,
+      "humidity": 61,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 10:58:28",
+      "temperature": 18.8,
+      "humidity": 47,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 11:58:28",
+      "temperature": 20.1,
+      "humidity": 35,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-29 12:58:28",
+      "temperature": 20.1,
+      "humidity": 45,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-29 13:58:28",
+      "temperature": 19.7,
+      "humidity": 35,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-29 14:58:28",
+      "temperature": 22.1,
+      "humidity": 34,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 15:58:28",
+      "temperature": 22.9,
+      "humidity": 33,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 16:58:28",
+      "temperature": 22.3,
+      "humidity": 66,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-29 17:58:28",
+      "temperature": 23.3,
+      "humidity": 44,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 18:58:28",
+      "temperature": 23.3,
+      "humidity": 62,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-29 19:58:28",
+      "temperature": 24.7,
+      "humidity": 37,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 20:58:28",
+      "temperature": 26.3,
+      "humidity": 39,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 21:58:28",
+      "temperature": 25.9,
+      "humidity": 51,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-29 22:58:28",
+      "temperature": 26.7,
+      "humidity": 30,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-29 23:58:28",
+      "temperature": 27.7,
+      "humidity": 70,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-30 00:58:28",
+      "temperature": 12.0,
+      "humidity": 32,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-30 01:58:28",
+      "temperature": 13.1,
+      "humidity": 39,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-30 02:58:28",
+      "temperature": 13.9,
+      "humidity": 60,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-30 03:58:28",
+      "temperature": 13.2,
+      "humidity": 38,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-30 04:58:28",
+      "temperature": 15.0,
+      "humidity": 68,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-30 05:58:28",
+      "temperature": 15.2,
+      "humidity": 60,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-30 06:58:28",
+      "temperature": 15.9,
+      "humidity": 57,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-30 07:58:28",
+      "temperature": 16.6,
+      "humidity": 48,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-30 08:58:28",
+      "temperature": 16.9,
+      "humidity": 60,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-30 09:58:28",
+      "temperature": 18.4,
+      "humidity": 49,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-30 10:58:28",
+      "temperature": 18.1,
+      "humidity": 67,
+      "condition": "小雨"
+    },
+    {
+      "timestamp": "2026-05-30 11:58:28",
+      "temperature": 18.4,
+      "humidity": 53,
+      "condition": "晴"
+    },
+    {
+      "timestamp": "2026-05-30 12:58:28",
+      "temperature": 19.2,
+      "humidity": 69,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-30 13:58:28",
+      "temperature": 21.0,
+      "humidity": 50,
+      "condition": "多云"
+    },
+    {
+      "timestamp": "2026-05-30 14:58:36",
+      "temperature": 36.0,
+      "humidity": 25,
+      "condition": "Sunny"
+    }
+  ]
+}

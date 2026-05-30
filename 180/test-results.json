@@ -1,0 +1,398 @@
+[
+  {
+    "test": "页面加载成功",
+    "passed": true,
+    "details": "状态码: 200",
+    "timestamp": "2026-05-30T05:01:29.975Z"
+  },
+  {
+    "test": "无控制台错误",
+    "passed": true,
+    "details": "无错误",
+    "timestamp": "2026-05-30T05:01:30.978Z"
+  },
+  {
+    "test": "无运行时异常",
+    "passed": true,
+    "details": "无异常",
+    "timestamp": "2026-05-30T05:01:30.978Z"
+  },
+  {
+    "test": "AudioContext已激活",
+    "passed": true,
+    "details": "已触发第一次用户交互",
+    "timestamp": "2026-05-30T05:01:31.341Z"
+  },
+  {
+    "test": "标题 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.349Z"
+  },
+  {
+    "test": "频率显示 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.364Z"
+  },
+  {
+    "test": "波形Canvas 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.368Z"
+  },
+  {
+    "test": "波形类型选择 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.374Z"
+  },
+  {
+    "test": "振幅滑块 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.377Z"
+  },
+  {
+    "test": "频率偏移滑块 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.383Z"
+  },
+  {
+    "test": "混响开关 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.385Z"
+  },
+  {
+    "test": "延迟开关 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.389Z"
+  },
+  {
+    "test": "录音按钮 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.392Z"
+  },
+  {
+    "test": "回放按钮 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.397Z"
+  },
+  {
+    "test": "导出按钮 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.400Z"
+  },
+  {
+    "test": "乐谱选择 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.405Z"
+  },
+  {
+    "test": "自动播放按钮 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.409Z"
+  },
+  {
+    "test": "钢琴键盘 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.414Z"
+  },
+  {
+    "test": "白键C4 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.419Z"
+  },
+  {
+    "test": "黑键C#4 存在",
+    "passed": true,
+    "details": "元素已找到",
+    "timestamp": "2026-05-30T05:01:31.425Z"
+  },
+  {
+    "test": "13个琴键存在",
+    "passed": true,
+    "details": "找到 13 个琴键",
+    "timestamp": "2026-05-30T05:01:31.440Z"
+  },
+  {
+    "test": "鼠标点击C4琴键高亮",
+    "passed": true,
+    "details": "琴键已高亮",
+    "timestamp": "2026-05-30T05:01:31.555Z"
+  },
+  {
+    "test": "频率显示更新",
+    "passed": true,
+    "details": "当前显示: 261.63 Hz",
+    "timestamp": "2026-05-30T05:01:31.557Z"
+  },
+  {
+    "test": "琴键点击后自动取消高亮",
+    "passed": true,
+    "details": "已取消高亮",
+    "timestamp": "2026-05-30T05:01:32.163Z"
+  },
+  {
+    "test": "键盘按键A触发C4",
+    "passed": true,
+    "details": "键盘按键有效",
+    "timestamp": "2026-05-30T05:01:32.269Z"
+  },
+  {
+    "test": "键盘按键W触发C#4",
+    "passed": true,
+    "details": "黑键按键有效",
+    "timestamp": "2026-05-30T05:01:32.381Z"
+  },
+  {
+    "test": "Canvas尺寸正常",
+    "passed": true,
+    "details": "Canvas: 1198x200, CSS: 1198x200",
+    "timestamp": "2026-05-30T05:01:32.385Z"
+  },
+  {
+    "test": "4种波形类型切换",
+    "passed": true,
+    "details": "所有波形类型可选",
+    "timestamp": "2026-05-30T05:01:32.425Z"
+  },
+  {
+    "test": "Canvas绘制波形",
+    "passed": true,
+    "details": "非空像素: 239600/239600",
+    "timestamp": "2026-05-30T05:01:32.974Z"
+  },
+  {
+    "test": "振幅调节",
+    "passed": true,
+    "details": "当前振幅值: 0.8",
+    "timestamp": "2026-05-30T05:01:32.984Z"
+  },
+  {
+    "test": "频率偏移调节",
+    "passed": true,
+    "details": "当前偏移: 50 Hz",
+    "timestamp": "2026-05-30T05:01:32.989Z"
+  },
+  {
+    "test": "混响开关启用",
+    "passed": true,
+    "details": "混响已启用",
+    "timestamp": "2026-05-30T05:01:32.996Z"
+  },
+  {
+    "test": "混响干湿比调节",
+    "passed": true,
+    "details": "干湿比: 0.5",
+    "timestamp": "2026-05-30T05:01:33.002Z"
+  },
+  {
+    "test": "延迟开关启用",
+    "passed": true,
+    "details": "延迟已启用",
+    "timestamp": "2026-05-30T05:01:33.008Z"
+  },
+  {
+    "test": "延迟干湿比调节",
+    "passed": true,
+    "details": "干湿比: 0.4",
+    "timestamp": "2026-05-30T05:01:33.015Z"
+  },
+  {
+    "test": "延迟时间调节",
+    "passed": true,
+    "details": "延迟时间: 0.5s",
+    "timestamp": "2026-05-30T05:01:33.022Z"
+  },
+  {
+    "test": "录音按钮进入录制状态",
+    "passed": true,
+    "details": "按钮显示录制状态",
+    "timestamp": "2026-05-30T05:01:33.258Z"
+  },
+  {
+    "test": "录音按钮文字更新",
+    "passed": true,
+    "details": "按钮文字: \"停止\"",
+    "timestamp": "2026-05-30T05:01:33.260Z"
+  },
+  {
+    "test": "回放按钮启用",
+    "passed": true,
+    "details": "回放按钮可用",
+    "timestamp": "2026-05-30T05:01:34.142Z"
+  },
+  {
+    "test": "导出按钮启用",
+    "passed": true,
+    "details": "导出按钮可用",
+    "timestamp": "2026-05-30T05:01:34.148Z"
+  },
+  {
+    "test": "录音计时重置",
+    "passed": true,
+    "details": "显示: 00:00",
+    "timestamp": "2026-05-30T05:01:34.153Z"
+  },
+  {
+    "test": "3首乐谱可选",
+    "passed": true,
+    "details": "小星星、欢乐颂、生日快乐",
+    "timestamp": "2026-05-30T05:01:34.167Z"
+  },
+  {
+    "test": "自动播放开始后按钮禁用",
+    "passed": true,
+    "details": "播放按钮已禁用",
+    "timestamp": "2026-05-30T05:01:34.750Z"
+  },
+  {
+    "test": "停止按钮启用",
+    "passed": true,
+    "details": "停止按钮可用",
+    "timestamp": "2026-05-30T05:01:34.751Z"
+  },
+  {
+    "test": "自动演奏时键盘高亮",
+    "passed": true,
+    "details": "琴键有高亮",
+    "timestamp": "2026-05-30T05:01:35.756Z"
+  },
+  {
+    "test": "停止后自动播放按钮恢复",
+    "passed": true,
+    "details": "播放按钮恢复可用",
+    "timestamp": "2026-05-30T05:01:36.082Z"
+  },
+  {
+    "test": "播放速度调节",
+    "passed": true,
+    "details": "速度: 1.5x",
+    "timestamp": "2026-05-30T05:01:36.093Z"
+  },
+  {
+    "test": "audioEngine模块存在",
+    "passed": true,
+    "details": "audioEngine对象已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "visualizer模块存在",
+    "passed": true,
+    "details": "visualizer对象已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "pianoKeyboard模块存在",
+    "passed": true,
+    "details": "pianoKeyboard对象已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "audioEffects模块存在",
+    "passed": true,
+    "details": "audioEffects对象已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "recorder模块存在",
+    "passed": true,
+    "details": "recorder对象已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "autoPlayer模块存在",
+    "passed": true,
+    "details": "autoPlayer对象已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "AudioContext已初始化",
+    "passed": true,
+    "details": "音频上下文已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "AnalyserNode已创建",
+    "passed": true,
+    "details": "音频分析器已创建",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "13个音符频率映射",
+    "passed": true,
+    "details": "映射数量: 13",
+    "timestamp": "2026-05-30T05:01:36.094Z"
+  },
+  {
+    "test": "触摸事件支持",
+    "passed": true,
+    "details": "桌面浏览器，触摸事件已在代码中绑定",
+    "timestamp": "2026-05-30T05:01:36.098Z"
+  },
+  {
+    "test": "touchstart事件绑定",
+    "passed": true,
+    "details": "piano.js中已绑定touchstart事件监听器",
+    "timestamp": "2026-05-30T05:01:36.098Z"
+  },
+  {
+    "test": "touchmove事件绑定",
+    "passed": true,
+    "details": "piano.js中已绑定touchmove事件监听器",
+    "timestamp": "2026-05-30T05:01:36.098Z"
+  },
+  {
+    "test": "touchend事件绑定",
+    "passed": true,
+    "details": "piano.js中已绑定touchend事件监听器",
+    "timestamp": "2026-05-30T05:01:36.098Z"
+  },
+  {
+    "test": "移动端viewport配置",
+    "passed": true,
+    "details": "viewport: width=device-width, initial-scale=1.0",
+    "timestamp": "2026-05-30T05:01:36.100Z"
+  },
+  {
+    "test": "平板尺寸Canvas正常",
+    "passed": true,
+    "details": "尺寸: 706x150",
+    "timestamp": "2026-05-30T05:01:36.611Z"
+  },
+  {
+    "test": "手机尺寸Canvas正常",
+    "passed": true,
+    "details": "尺寸: 313x150",
+    "timestamp": "2026-05-30T05:01:37.117Z"
+  },
+  {
+    "test": "移动端琴键尺寸适配",
+    "passed": true,
+    "details": "白键宽度: 34px (最小要求32px)",
+    "timestamp": "2026-05-30T05:01:37.119Z"
+  },
+  {
+    "test": "测试全程无新控制台错误",
+    "passed": true,
+    "details": "无错误",
+    "timestamp": "2026-05-30T05:01:38.627Z"
+  },
+  {
+    "test": "测试全程无新运行时异常",
+    "passed": true,
+    "details": "无异常",
+    "timestamp": "2026-05-30T05:01:38.628Z"
+  }
+]

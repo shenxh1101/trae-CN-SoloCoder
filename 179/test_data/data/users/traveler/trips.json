@@ -1,0 +1,219 @@
+[
+  {
+    "id": "e7a6976c68f3",
+    "name": "2024东京之旅",
+    "destination": "日本东京",
+    "start_date": "2024-04-01",
+    "end_date": "2024-04-05",
+    "description": "东京5日游，探索现代与传统交融的魅力都市",
+    "diary_entries": [
+      {
+        "id": "bf5fc9f903d9",
+        "date": "2024-04-01",
+        "content": "今天抵达东京成田机场，乘坐N'EX快车前往新宿。下午在新宿逛街，晚上去了新宿御苑散步。东京的繁华超出想象，霓虹灯照亮了整个街区。",
+        "mood": "兴奋",
+        "photo_path": "",
+        "location": {
+          "name": "新宿",
+          "latitude": 35.6895,
+          "longitude": 139.6917
+        },
+        "expenses": [
+          {
+            "id": "892b3ff75ad0",
+            "date": "2024-04-01",
+            "category": "交通",
+            "amount": 12000.0,
+            "description": "成田机场到新宿车票",
+            "currency": "CNY"
+          },
+          {
+            "id": "effe64a0760e",
+            "date": "2024-04-01",
+            "category": "住宿",
+            "amount": 15000.0,
+            "description": "新宿酒店",
+            "currency": "CNY"
+          },
+          {
+            "id": "3e99f89fcb7a",
+            "date": "2024-04-01",
+            "category": "餐饮",
+            "amount": 3500.0,
+            "description": "一兰拉面",
+            "currency": "CNY"
+          }
+        ]
+      },
+      {
+        "id": "6b43811ffb94",
+        "date": "2024-04-02",
+        "content": "早上前往浅草寺，雷门的巨大灯笼非常震撼。之后去了秋叶原，逛了很多动漫店和电器店。晚上在涩谷十字路口看人潮，太壮观了！",
+        "mood": "开心",
+        "photo_path": "",
+        "location": {
+          "name": "浅草寺",
+          "latitude": 35.7148,
+          "longitude": 139.7967
+        },
+        "expenses": [
+          {
+            "id": "b28e8a70194d",
+            "date": "2024-04-02",
+            "category": "交通",
+            "amount": 1500.0,
+            "description": "地铁一日券",
+            "currency": "CNY"
+          },
+          {
+            "id": "5db10235eef4",
+            "date": "2024-04-02",
+            "category": "门票",
+            "amount": 500.0,
+            "description": "浅草寺",
+            "currency": "CNY"
+          },
+          {
+            "id": "076ba36703f0",
+            "date": "2024-04-02",
+            "category": "餐饮",
+            "amount": 4000.0,
+            "description": "寿司早餐",
+            "currency": "CNY"
+          },
+          {
+            "id": "d13466d32334",
+            "date": "2024-04-02",
+            "category": "购物",
+            "amount": 8000.0,
+            "description": "动漫周边",
+            "currency": "CNY"
+          }
+        ]
+      },
+      {
+        "id": "6e93ae5fe324",
+        "date": "2024-04-03",
+        "content": "今天去了迪士尼乐园！虽然人很多，但每个项目都很精彩。晚上的烟花表演太梦幻了，一天走了3万步但是完全不觉得累。",
+        "mood": "狂喜",
+        "photo_path": "",
+        "location": {
+          "name": "东京迪士尼",
+          "latitude": 35.6329,
+          "longitude": 139.8804
+        },
+        "expenses": [
+          {
+            "id": "7ce80ab587f4",
+            "date": "2024-04-03",
+            "category": "门票",
+            "amount": 7900.0,
+            "description": "迪士尼门票",
+            "currency": "CNY"
+          },
+          {
+            "id": "46c813c1548a",
+            "date": "2024-04-03",
+            "category": "餐饮",
+            "amount": 5500.0,
+            "description": "园内餐饮",
+            "currency": "CNY"
+          },
+          {
+            "id": "0576394f7385",
+            "date": "2024-04-03",
+            "category": "交通",
+            "amount": 2000.0,
+            "description": "往返迪士尼",
+            "currency": "CNY"
+          },
+          {
+            "id": "2d03ec656dfe",
+            "date": "2024-04-03",
+            "category": "购物",
+            "amount": 3000.0,
+            "description": "迪士尼纪念品",
+            "currency": "CNY"
+          }
+        ]
+      },
+      {
+        "id": "ef11ca5c9c74",
+        "date": "2024-04-04",
+        "content": "上午参观了明治神宫，在闹市区中的一片宁静绿洲。下午在原宿逛街，看到了很多时尚的年轻人。晚上去台场看彩虹大桥夜景。",
+        "mood": "平静",
+        "photo_path": "",
+        "location": {
+          "name": "明治神宫",
+          "latitude": 35.6764,
+          "longitude": 139.6993
+        },
+        "expenses": [
+          {
+            "id": "7efc6589c622",
+            "date": "2024-04-04",
+            "category": "餐饮",
+            "amount": 3000.0,
+            "description": "原宿可丽饼+晚餐",
+            "currency": "CNY"
+          },
+          {
+            "id": "c9abd8d9c53e",
+            "date": "2024-04-04",
+            "category": "交通",
+            "amount": 1500.0,
+            "description": "地铁",
+            "currency": "CNY"
+          },
+          {
+            "id": "ba9ce86c2654",
+            "date": "2024-04-04",
+            "category": "娱乐",
+            "amount": 2000.0,
+            "description": "台场摩天轮",
+            "currency": "CNY"
+          }
+        ]
+      },
+      {
+        "id": "7ef2e3f2ad7e",
+        "date": "2024-04-05",
+        "content": "最后一天，上午去了银座购物，买了很多伴手礼。下午乘坐机场快线返回成田机场。这次东京之旅非常完美，期待下次再来！",
+        "mood": "依依不舍",
+        "photo_path": "",
+        "location": {
+          "name": "银座",
+          "latitude": 35.6721,
+          "longitude": 139.7636
+        },
+        "expenses": [
+          {
+            "id": "95bff6238b25",
+            "date": "2024-04-05",
+            "category": "交通",
+            "amount": 12000.0,
+            "description": "到机场",
+            "currency": "CNY"
+          },
+          {
+            "id": "093331854748",
+            "date": "2024-04-05",
+            "category": "购物",
+            "amount": 25000.0,
+            "description": "银座伴手礼",
+            "currency": "CNY"
+          },
+          {
+            "id": "5ac4494d1a46",
+            "date": "2024-04-05",
+            "category": "餐饮",
+            "amount": 2500.0,
+            "description": "机场午餐",
+            "currency": "CNY"
+          }
+        ]
+      }
+    ],
+    "created_at": "2026-05-30 12:56:00"
+  }
+]

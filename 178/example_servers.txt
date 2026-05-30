@@ -1,0 +1,10 @@
+# 示例服务器列表
+# 格式: 目标:端口
+google.com:80
+google.com:443
+baidu.com:80
+baidu.com:443
+github.com:22
+github.com:443
+1.1.1.1:53
+8.8.8.8:53

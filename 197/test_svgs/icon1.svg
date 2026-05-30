@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+  <!-- This is a comment that should be removed -->
+  <metadata>
+    <dc:creator>Test Creator</dc:creator>
+    <dc:date>2024-01-01</dc:date>
+  </metadata>
+  <title>Home Icon</title>
+  <desc>A simple home icon</desc>
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <g id="container" style="fill: none;">
+    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="#000000" id="home-path"/>
+  </g>
+</svg>

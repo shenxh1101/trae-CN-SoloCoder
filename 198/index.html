@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D 弹性球体变形器</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { overflow: hidden; background: #1a1a2e; font-family: 'Segoe UI', sans-serif; color: #e0e0e0; }
+#canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+canvas { display: block; }
+
+#ui-panel {
+  position: fixed; top: 16px; right: 16px; width: 320px;
+  max-height: calc(100vh - 32px); overflow-y: auto;
+  background: rgba(20, 20, 40, 0.92); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+  padding: 20px; z-index: 100;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+#ui-panel::-webkit-scrollbar { width: 4px; }
+#ui-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+.panel-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #7c8cf8; letter-spacing: 1px; }
+.section { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.section-title { font-size: 13px; font-weight: 600; color: #a0a8d0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.control-row label { font-size: 12px; color: #b0b8d0; min-width: 80px; }
+.control-row input[type="range"] { flex: 1; margin: 0 8px; accent-color: #7c8cf8; }
+.control-row .value { font-size: 11px; color: #7c8cf8; min-width: 36px; text-align: right; font-family: monospace; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px; border: 1px solid rgba(124,140,248,0.4);
+  background: rgba(124,140,248,0.12); color: #b0b8f8; border-radius: 6px;
+  font-size: 12px; cursor: pointer; transition: all 0.2s; margin: 3px;
+  font-family: inherit;
+}
+.btn:hover { background: rgba(124,140,248,0.25); border-color: rgba(124,140,248,0.6); }
+.btn.active { background: rgba(124,140,248,0.35); border-color: #7c8cf8; color: #fff; }
+
+.btn-group { display: flex; flex-wrap: wrap; gap: 0; }
+
+#info-bar {
+  position: fixed; bottom: 16px; left: 16px;
+  background: rgba(20,20,40,0.88); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+  padding: 12px 16px; z-index: 100; font-size: 12px;
+}
+#info-bar .stat { margin-bottom: 4px; color: #a0a8d0; }
+#info-bar .stat span { color: #7c8cf8; font-family: monospace; }
+
+.checkbox-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.checkbox-row input { accent-color: #7c8cf8; }
+.checkbox-row label { font-size: 12px; color: #b0b8d0; cursor: pointer; }
+
+.hint { font-size: 11px; color: #6a7290; margin-top: 6px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<div id="ui-panel">
+  <div class="panel-title">🫧 弹性球体变形器</div>
+
+  <div class="section">
+    <div class="section-title">控制点</div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="showControlPoints" checked>
+      <label for="showControlPoints">显示可拖拽控制点</label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="showInfluenceRadius">
+      <label for="showInfluenceRadius">显示影响范围</label>
+    </div>
+    <div class="control-row">
+      <label>影响半径</label>
+      <input type="range" id="influenceRadius" min="0.5" max="3" step="0.05" value="1.5">
+      <span class="value" id="influenceRadiusVal">1.50</span>
+    </div>
+    <div class="control-row">
+      <label>衰减强度</label>
+      <input type="range" id="falloff" min="1" max="6" step="0.1" value="2.5">
+      <span class="value" id="falloffVal">2.5</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn" id="btnAddPoint">+ 添加控制点</button>
+      <button class="btn" id="btnClearPoints">清除控制点</button>
+    </div>
+    <div class="hint">💡 点击球体上的橙色控制点拖拽，使用G键切换，R键旋转，S键缩放</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">全局变形控制</div>
+    <div class="control-row">
+      <label>椭球 X</label>
+      <input type="range" id="stretchX" min="0.3" max="2.5" step="0.01" value="1">
+      <span class="value" id="stretchXVal">1.00</span>
+    </div>
+    <div class="control-row">
+      <label>椭球 Y</label>
+      <input type="range" id="stretchY" min="0.3" max="2.5" step="0.01" value="1">
+      <span class="value" id="stretchYVal">1.00</span>
+    </div>
+    <div class="control-row">
+      <label>椭球 Z</label>
+      <input type="range" id="stretchZ" min="0.3" max="2.5" step="0.01" value="1">
+      <span class="value" id="stretchZVal">1.00</span>
+    </div>
+    <div class="control-row">
+      <label>水滴变形</label>
+      <input type="range" id="waterdrop" min="0" max="1" step="0.01" value="0">
+      <span class="value" id="waterdropVal">0.00</span>
+    </div>
+    <div class="control-row">
+      <label>噪声变形</label>
+      <input type="range" id="noise" min="0" max="0.8" step="0.01" value="0">
+      <span class="value" id="noiseVal">0.00</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">材质切换</div>
+    <div class="btn-group">
+      <button class="btn active" data-material="solid">实体</button>
+      <button class="btn" data-material="wireframe">线框</button>
+      <button class="btn" data-material="transparent">半透明</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">显示选项</div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="showNormals">
+      <label for="showNormals">显示顶点法线</label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="showGrid" checked>
+      <label for="showGrid">显示格子纹理</label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="showFloor" checked>
+      <label for="showFloor">显示地板</label>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">动画演示</div>
+    <div class="btn-group">
+      <button class="btn" id="btnAnimate">▶ 播放动画</button>
+      <button class="btn" id="btnStopAnimate">⏹ 停止</button>
+    </div>
+    <div class="control-row" style="margin-top:8px">
+      <label>动画速度</label>
+      <input type="range" id="animSpeed" min="0.2" max="3" step="0.1" value="1">
+      <span class="value" id="animSpeedVal">1.0</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">操作</div>
+    <div class="btn-group">
+      <button class="btn" id="btnReset">↺ 重置球体</button>
+      <button class="btn" id="btnScreenshot">📷 截图保存</button>
+      <button class="btn" id="btnExportOBJ">💾 导出OBJ</button>
+    </div>
+  </div>
+</div>
+
+<div id="info-bar">
+  <div class="stat">顶点数: <span id="vertexCount">0</span></div>
+  <div class="stat">体积比: <span id="volumeRatio">100.0%</span></div>
+  <div class="stat">面片数: <span id="faceCount">0</span></div>
+  <div class="stat">控制点数: <span id="cpCount">0</span></div>
+  <div class="stat" id="cpInfo" style="color:#ff9966; display:none;">控制点: <span id="cpPos">-</span></div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+
+const SPHERE_RADIUS = 2;
+const SPHERE_SEGMENTS = 64;
+const SPHERE_RINGS = 48;
+
+let scene, camera, renderer, controls;
+let sphereMesh, floorMesh;
+let originalPositions, originalNormals, originalUVs;
+let deformedPositions;
+let normalHelper;
+let gridTexture;
+let currentMaterialType = 'solid';
+let animating = false;
+let animTime = 0;
+let animSpeed = 1;
+let raycaster, mouse;
+
+let controlPoints = [];
+let transformControls = [];
+let influenceMeshes = [];
+let selectedControlPointIndex = -1;
+let isDragging = false;
+
+const defaultControlPoints = [
+  { x: SPHERE_RADIUS, y: 0, z: 0 },
+  { x: -SPHERE_RADIUS, y: 0, z: 0 },
+  { x: 0, y: SPHERE_RADIUS, z: 0 },
+  { x: 0, y: -SPHERE_RADIUS, z: 0 },
+  { x: 0, y: 0, z: SPHERE_RADIUS },
+  { x: 0, y: 0, z: -SPHERE_RADIUS },
+  { x: SPHERE_RADIUS * 0.707, y: SPHERE_RADIUS * 0.707, z: 0 },
+  { x: -SPHERE_RADIUS * 0.707, y: -SPHERE_RADIUS * 0.707, z: 0 },
+];
+
+function init() {
+  const container = document.getElementById('canvas-container');
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a1a2e);
+  scene.fog = new THREE.Fog(0x1a1a2e, 10, 30);
+
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(4, 3, 5);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  container.appendChild(renderer.domElement);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 3;
+  controls.maxDistance = 15;
+
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
+
+  setupLights();
+  createGridTexture();
+  createSphere();
+  createFloor();
+  createDefaultControlPoints();
+  updateInfo();
+
+  window.addEventListener('resize', onResize);
+  window.addEventListener('keydown', onKeyDown);
+  setupUI();
+  animate();
+}
+
+function setupLights() {
+  const ambient = new THREE.AmbientLight(0x505070, 0.7);
+  scene.add(ambient);
+
+  const hemiLight = new THREE.HemisphereLight(0x7c8cf8, 0xf87ca8, 0.4);
+  scene.add(hemiLight);
+
+  const pointLight1 = new THREE.PointLight(0x7c8cf8, 100, 20, 1.5);
+  pointLight1.position.set(5, 5, 5);
+  pointLight1.castShadow = true;
+  pointLight1.shadow.mapSize.width = 1024;
+  pointLight1.shadow.mapSize.height = 1024;
+  scene.add(pointLight1);
+
+  const pointLight2 = new THREE.PointLight(0xf87ca8, 60, 18, 1.5);
+  pointLight2.position.set(-5, 3, -3);
+  scene.add(pointLight2);
+
+  const pointLight3 = new THREE.PointLight(0xa8f87c, 40, 15, 1.5);
+  pointLight3.position.set(0, -4, 5);
+  scene.add(pointLight3);
+
+  const pointLight4 = new THREE.PointLight(0xffd87c, 30, 12, 2);
+  pointLight4.position.set(4, -2, -4);
+  scene.add(pointLight4);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  dirLight.position.set(3, 8, 4);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 1024;
+  dirLight.shadow.mapSize.height = 1024;
+  dirLight.shadow.camera.left = -6;
+  dirLight.shadow.camera.right = 6;
+  dirLight.shadow.camera.top = 6;
+  dirLight.shadow.camera.bottom = -6;
+  scene.add(dirLight);
+
+  const lightsGroup = new THREE.Group();
+  const lightSphere1 = new THREE.Mesh(
+    new THREE.SphereGeometry(0.1, 16, 16),
+    new THREE.MeshBasicMaterial({ color: 0x7c8cf8 })
+  );
+  lightSphere1.position.copy(pointLight1.position);
+  lightsGroup.add(lightSphere1);
+
+  const lightSphere2 = new THREE.Mesh(
+    new THREE.SphereGeometry(0.08, 16, 16),
+    new THREE.MeshBasicMaterial({ color: 0xf87ca8 })
+  );
+  lightSphere2.position.copy(pointLight2.position);
+  lightsGroup.add(lightSphere2);
+
+  const lightSphere3 = new THREE.Mesh(
+    new THREE.SphereGeometry(0.06, 16, 16),
+    new THREE.MeshBasicMaterial({ color: 0xa8f87c })
+  );
+  lightSphere3.position.copy(pointLight3.position);
+  lightsGroup.add(lightSphere3);
+
+  scene.add(lightsGroup);
+}
+
+function createGridTexture() {
+  const size = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#3a4a7a';
+  ctx.fillRect(0, 0, size, size);
+
+  const gridCount = 16;
+  const cellSize = size / gridCount;
+
+  ctx.strokeStyle = '#7c8cf8';
+  ctx.lineWidth = 3;
+  for (let i = 0; i <= gridCount; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * cellSize, 0);
+    ctx.lineTo(i * cellSize, size);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, i * cellSize);
+    ctx.lineTo(size, i * cellSize);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  const subCount = gridCount * 4;
+  const subCellSize = size / subCount;
+  for (let i = 0; i <= subCount; i++) {
+    if (i % 4 !== 0) {
+      ctx.beginPath();
+      ctx.moveTo(i * subCellSize, 0);
+      ctx.lineTo(i * subCellSize, size);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, i * subCellSize);
+      ctx.lineTo(size, i * subCellSize);
+      ctx.stroke();
+    }
+  }
+
+  ctx.fillStyle = '#ff9966';
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  gridTexture = new THREE.CanvasTexture(canvas);
+  gridTexture.wrapS = THREE.RepeatWrapping;
+  gridTexture.wrapT = THREE.RepeatWrapping;
+  gridTexture.anisotropy = 8;
+  gridTexture.needsUpdate = true;
+}
+
+function createSphere() {
+  const geometry = new THREE.SphereGeometry(SPHERE_RADIUS, SPHERE_SEGMENTS, SPHERE_RINGS);
+
+  originalPositions = new Float32Array(geometry.attributes.position.array);
+  originalNormals = new Float32Array(geometry.attributes.normal.array);
+  originalUVs = new Float32Array(geometry.attributes.uv.array);
+  deformedPositions = new Float32Array(originalPositions.length);
+  deformedPositions.set(originalPositions);
+
+  geometry.setAttribute('originalPosition', new THREE.BufferAttribute(new Float32Array(originalPositions), 3));
+
+  const material = createMaterial('solid');
+  sphereMesh = new THREE.Mesh(geometry, material);
+  sphereMesh.castShadow = true;
+  sphereMesh.receiveShadow = true;
+  sphereMesh.name = 'elasticSphere';
+  scene.add(sphereMesh);
+
+  document.getElementById('vertexCount').textContent = geometry.attributes.position.count;
+  document.getElementById('faceCount').textContent = geometry.index ? geometry.index.count / 3 : geometry.attributes.position.count / 3;
+}
+
+function createMaterial(type) {
+  const showGrid = document.getElementById('showGrid').checked;
+  const map = showGrid ? gridTexture : null;
+
+  switch (type) {
+    case 'wireframe':
+      return new THREE.MeshPhongMaterial({
+        color: 0x7c8cf8, wireframe: true, emissive: 0x1a1a4e, emissiveIntensity: 0.3,
+        side: THREE.DoubleSide, flatShading: false,
+      });
+    case 'transparent':
+      return new THREE.MeshPhongMaterial({
+        color: 0x7c8cf8, transparent: true, opacity: 0.5, side: THREE.DoubleSide,
+        map: map, specular: 0xffffff, shininess: 100,
+        flatShading: false,
+      });
+    case 'solid':
+    default:
+      return new THREE.MeshPhongMaterial({
+        color: 0x5a6aaa, map: map, specular: 0x8888cc, shininess: 70,
+        side: THREE.DoubleSide, flatShading: false,
+      });
+  }
+}
+
+function createFloor() {
+  const floorGeo = new THREE.PlaneGeometry(20, 20, 40, 40);
+  const floorMat = new THREE.MeshPhongMaterial({
+    color: 0x15152a, transparent: true, opacity: 0.5,
+    shininess: 100, specular: 0x333355,
+  });
+  floorMesh = new THREE.Mesh(floorGeo, floorMat);
+  floorMesh.rotation.x = -Math.PI / 2;
+  floorMesh.position.y = -SPHERE_RADIUS - 0.5;
+  floorMesh.receiveShadow = true;
+  scene.add(floorMesh);
+}
+
+function createDefaultControlPoints() {
+  defaultControlPoints.forEach(pos => {
+    addControlPoint(pos.x, pos.y, pos.z);
+  });
+  updateControlPointsVisibility();
+  applyAllDeformations();
+}
+
+function addControlPoint(x, y, z) {
+  const sphereGeo = new THREE.SphereGeometry(0.09, 16, 16);
+  const sphereMat = new THREE.MeshPhongMaterial({
+    color: 0xff9966, emissive: 0xff6633, emissiveIntensity: 0.4,
+    shininess: 100, specular: 0xffffff,
+  });
+  const pointMesh = new THREE.Mesh(sphereGeo, sphereMat);
+  pointMesh.position.set(x, y, z);
+  pointMesh.userData.isControlPoint = true;
+  pointMesh.userData.index = controlPoints.length;
+  pointMesh.userData.originalPosition = new THREE.Vector3(x, y, z);
+  pointMesh.castShadow = true;
+  scene.add(pointMesh);
+
+  const influenceGeo = new THREE.RingGeometry(0.02, 0.04, 32);
+  const influenceMat = new THREE.MeshBasicMaterial({
+    color: 0xff9966, transparent: true, opacity: 0.3, side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const influenceMesh = new THREE.Mesh(influenceGeo, influenceMat);
+  influenceMesh.position.copy(pointMesh.position);
+  influenceMesh.visible = false;
+  scene.add(influenceMesh);
+
+  const tc = new TransformControls(camera, renderer.domElement);
+  tc.attach(pointMesh);
+  tc.addEventListener('dragging-changed', onControlPointDrag);
+  tc.addEventListener('objectChange', onControlPointChanged);
+  tc.addEventListener('mouseDown', () => { controls.enabled = false; isDragging = true; });
+  tc.addEventListener('mouseUp', () => { controls.enabled = true; isDragging = false; });
+  tc.setMode('translate');
+  tc.setSize(0.8);
+  tc.visible = false;
+  scene.add(tc);
+
+  controlPoints.push({
+    mesh: pointMesh,
+    originalPos: new THREE.Vector3(x, y, z),
+    displacement: new THREE.Vector3(0, 0, 0),
+    transformControl: tc,
+    influenceMesh: influenceMesh,
+  });
+  transformControls.push(tc);
+  influenceMeshes.push(influenceMesh);
+
+  document.getElementById('cpCount').textContent = controlPoints.length;
+
+  return pointMesh;
+}
+
+function onControlPointDrag(event) {
+  isDragging = event.value;
+}
+
+function onControlPointChanged() {
+  if (!isDragging) return;
+
+  for (let i = 0; i < controlPoints.length; i++) {
+    const cp = controlPoints[i];
+    cp.displacement.subVectors(cp.mesh.position, cp.originalPos);
+    cp.influenceMesh.position.copy(cp.mesh.position);
+
+    if (cp.transformControl.visible) {
+      selectedControlPointIndex = i;
+      const pos = cp.mesh.position;
+      document.getElementById('cpPos').textContent =
+        `(${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)})`;
+      document.getElementById('cpInfo').style.display = 'block';
+    }
+  }
+
+  applyAllDeformations();
+}
+
+function gaussianFalloff(distance, radius, falloff) {
+  if (distance >= radius) return 0;
+  const normalizedDist = distance / radius;
+  return Math.exp(-normalizedDist * normalizedDist * falloff);
+}
+
+function applyControlPointDeformations(positions) {
+  const influenceRadius = parseFloat(document.getElementById('influenceRadius').value);
+  const falloff = parseFloat(document.getElementById('falloff').value);
+  const count = positions.length / 3;
+  const tempPos = new Float32Array(positions);
+
+  for (let i = 0; i < count; i++) {
+    let totalDx = 0, totalDy = 0, totalDz = 0;
+    let totalWeight = 0;
+
+    for (const cp of controlPoints) {
+      const cx = cp.originalPos.x;
+      const cy = cp.originalPos.y;
+      const cz = cp.originalPos.z;
+
+      const px = tempPos[i * 3];
+      const py = tempPos[i * 3 + 1];
+      const pz = tempPos[i * 3 + 2];
+
+      const dx = px - cx;
+      const dy = py - cy;
+      const dz = pz - cz;
+      const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      const weight = gaussianFalloff(distance, influenceRadius, falloff);
+
+      if (weight > 0.001) {
+        totalDx += cp.displacement.x * weight;
+        totalDy += cp.displacement.y * weight;
+        totalDz += cp.displacement.z * weight;
+        totalWeight += weight;
+      }
+    }
+
+    if (totalWeight > 0) {
+      positions[i * 3] += totalDx;
+      positions[i * 3 + 1] += totalDy;
+      positions[i * 3 + 2] += totalDz;
+    }
+  }
+}
+
+function simpleNoise3D(x, y, z) {
+  const n = Math.sin(x * 12.9898 + y * 78.233 + z * 45.164) * 43758.5453;
+  return (n - Math.floor(n)) * 2 - 1;
+}
+
+function fbmNoise(x, y, z, octaves) {
+  let value = 0;
+  let amplitude = 1;
+  let frequency = 1;
+  for (let i = 0; i < octaves; i++) {
+    value += amplitude * simpleNoise3D(x * frequency, y * frequency, z * frequency);
+    amplitude *= 0.5;
+    frequency *= 2.0;
+  }
+  return value;
+}
+
+function applyParametricDeformations(positions) {
+  const stretchX = parseFloat(document.getElementById('stretchX').value);
+  const stretchY = parseFloat(document.getElementById('stretchY').value);
+  const stretchZ = parseFloat(document.getElementById('stretchZ').value);
+  const waterdropAmt = parseFloat(document.getElementById('waterdrop').value);
+  const noiseAmt = parseFloat(document.getElementById('noise').value);
+
+  const count = positions.length / 3;
+
+  for (let i = 0; i < count; i++) {
+    const ox = originalPositions[i * 3];
+    const oy = originalPositions[i * 3 + 1];
+    const oz = originalPositions[i * 3 + 2];
+    const nx = originalNormals[i * 3];
+    const ny = originalNormals[i * 3 + 1];
+    const nz = originalNormals[i * 3 + 2];
+
+    let px = ox * stretchX;
+    let py = oy * stretchY;
+    let pz = oz * stretchZ;
+
+    if (waterdropAmt > 0) {
+      const normalizedY = oy / SPHERE_RADIUS;
+      const squeeze = 1 - waterdropAmt * 0.5 * Math.pow(normalizedY, 2);
+      const pull = waterdropAmt * 0.6 * Math.pow(normalizedY, 2);
+      px *= squeeze;
+      pz *= squeeze;
+      py += pull * SPHERE_RADIUS;
+    }
+
+    if (noiseAmt > 0) {
+      const noiseVal = fbmNoise(ox * 0.8, oy * 0.8, oz * 0.8, 4);
+      const displacement = noiseAmt * noiseVal * SPHERE_RADIUS * 0.3;
+      px += nx * displacement;
+      py += ny * displacement;
+      pz += nz * displacement;
+    }
+
+    positions[i * 3] = px;
+    positions[i * 3 + 1] = py;
+    positions[i * 3 + 2] = pz;
+  }
+}
+
+function applyAllDeformations() {
+  if (!sphereMesh) return;
+
+  const positions = sphereMesh.geometry.attributes.position.array;
+  applyParametricDeformations(positions);
+  applyControlPointDeformations(positions);
+  deformedPositions.set(positions);
+
+  sphereMesh.geometry.attributes.position.needsUpdate = true;
+  sphereMesh.geometry.computeVertexNormals();
+  sphereMesh.geometry.computeBoundingSphere();
+  sphereMesh.geometry.computeBoundingBox();
+
+  updateNormalHelper();
+  updateInfo();
+}
+
+function updateNormalHelper() {
+  if (normalHelper) {
+    scene.remove(normalHelper);
+    normalHelper.geometry.dispose();
+    normalHelper.material.dispose();
+    normalHelper = null;
+  }
+  if (document.getElementById('showNormals').checked) {
+    const normalsGeom = new THREE.BufferGeometry();
+    const posArr = sphereMesh.geometry.attributes.position.array;
+    const normArr = sphereMesh.geometry.attributes.normal.array;
+    const count = posArr.length / 3;
+    const linePositions = new Float32Array(count * 2 * 3);
+    const normalLen = 0.12;
+
+    for (let i = 0; i < count; i++) {
+      linePositions[i * 6] = posArr[i * 3];
+      linePositions[i * 6 + 1] = posArr[i * 3 + 1];
+      linePositions[i * 6 + 2] = posArr[i * 3 + 2];
+      linePositions[i * 6 + 3] = posArr[i * 3] + normArr[i * 3] * normalLen;
+      linePositions[i * 6 + 4] = posArr[i * 3 + 1] + normArr[i * 3 + 1] * normalLen;
+      linePositions[i * 6 + 5] = posArr[i * 3 + 2] + normArr[i * 3 + 2] * normalLen;
+    }
+
+    normalsGeom.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    const normalsMat = new THREE.LineBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.6 });
+    normalHelper = new THREE.LineSegments(normalsGeom, normalsMat);
+    normalHelper.renderOrder = 10;
+    scene.add(normalHelper);
+  }
+}
+
+function estimateVolume() {
+  if (!sphereMesh) return 0;
+  const positions = sphereMesh.geometry.attributes.position.array;
+  const index = sphereMesh.geometry.index;
+  let volume = 0;
+
+  if (index) {
+    const indices = index.array;
+    for (let i = 0; i < indices.length; i += 3) {
+      const a = indices[i], b = indices[i + 1], c = indices[i + 2];
+      const vax = positions[a * 3], vay = positions[a * 3 + 1], vaz = positions[a * 3 + 2];
+      const vbx = positions[b * 3], vby = positions[b * 3 + 1], vbz = positions[b * 3 + 2];
+      const vcx = positions[c * 3], vcy = positions[c * 3 + 1], vcz = positions[c * 3 + 2];
+      volume += signedVolume(vax, vay, vaz, vbx, vby, vbz, vcx, vcy, vcz);
+    }
+  } else {
+    const count = positions.length / 3;
+    for (let i = 0; i < count; i += 3) {
+      volume += signedVolume(
+        positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
+        positions[(i + 1) * 3], positions[(i + 1) * 3 + 1], positions[(i + 1) * 3 + 2],
+        positions[(i + 2) * 3], positions[(i + 2) * 3 + 1], positions[(i + 2) * 3 + 2]
+      );
+    }
+  }
+
+  return Math.abs(volume);
+}
+
+function signedVolume(x1, y1, z1, x2, y2, z2, x3, y3, z3) {
+  return (x1 * (y2 * z3 - y3 * z2) - x2 * (y1 * z3 - y3 * z1) + x3 * (y1 * z2 - y2 * z1)) / 6.0;
+}
+
+function updateInfo() {
+  if (!sphereMesh) return;
+  const currentVol = estimateVolume();
+  const originalVol = (4 / 3) * Math.PI * Math.pow(SPHERE_RADIUS, 3);
+  const ratio = (currentVol / originalVol) * 100;
+  document.getElementById('volumeRatio').textContent = ratio.toFixed(1) + '%';
+}
+
+function resetSphere() {
+  document.getElementById('stretchX').value = 1;
+  document.getElementById('stretchY').value = 1;
+  document.getElementById('stretchZ').value = 1;
+  document.getElementById('waterdrop').value = 0;
+  document.getElementById('noise').value = 0;
+  updateSliderDisplays();
+
+  controlPoints.forEach(cp => {
+    cp.mesh.position.copy(cp.originalPos);
+    cp.displacement.set(0, 0, 0);
+    cp.influenceMesh.position.copy(cp.originalPos);
+  });
+
+  selectedControlPointIndex = -1;
+  document.getElementById('cpInfo').style.display = 'none';
+
+  transformControls.forEach(tc => {
+    tc.visible = false;
+    tc.detach();
+  });
+
+  applyAllDeformations();
+}
+
+function clearControlPoints() {
+  controlPoints.forEach(cp => {
+    scene.remove(cp.mesh);
+    cp.mesh.geometry.dispose();
+    cp.mesh.material.dispose();
+    scene.remove(cp.transformControl);
+    cp.transformControl.dispose();
+    scene.remove(cp.influenceMesh);
+    cp.influenceMesh.geometry.dispose();
+    cp.influenceMesh.material.dispose();
+  });
+  controlPoints = [];
+  transformControls = [];
+  influenceMeshes = [];
+  document.getElementById('cpCount').textContent = 0;
+  document.getElementById('cpInfo').style.display = 'none';
+  selectedControlPointIndex = -1;
+  applyAllDeformations();
+}
+
+function updateSliderDisplays() {
+  document.getElementById('stretchXVal').textContent = parseFloat(document.getElementById('stretchX').value).toFixed(2);
+  document.getElementById('stretchYVal').textContent = parseFloat(document.getElementById('stretchY').value).toFixed(2);
+  document.getElementById('stretchZVal').textContent = parseFloat(document.getElementById('stretchZ').value).toFixed(2);
+  document.getElementById('waterdropVal').textContent = parseFloat(document.getElementById('waterdrop').value).toFixed(2);
+  document.getElementById('noiseVal').textContent = parseFloat(document.getElementById('noise').value).toFixed(2);
+  document.getElementById('animSpeedVal').textContent = parseFloat(document.getElementById('animSpeed').value).toFixed(1);
+  document.getElementById('influenceRadiusVal').textContent = parseFloat(document.getElementById('influenceRadius').value).toFixed(2);
+  document.getElementById('falloffVal').textContent = parseFloat(document.getElementById('falloff').value).toFixed(1);
+}
+
+function updateInfluenceRadiusDisplay() {
+  const show = document.getElementById('showInfluenceRadius').checked;
+  const radius = parseFloat(document.getElementById('influenceRadius').value);
+
+  influenceMeshes.forEach((mesh, i) => {
+    mesh.visible = show;
+    if (show && controlPoints[i]) {
+      const scale = radius / 0.04;
+      mesh.scale.set(scale, scale, 1);
+      mesh.lookAt(camera.position);
+    }
+  });
+}
+
+function updateControlPointsVisibility() {
+  const visible = document.getElementById('showControlPoints').checked;
+  controlPoints.forEach((cp, i) => {
+    cp.mesh.visible = visible;
+    if (!visible) {
+      cp.transformControl.visible = false;
+    }
+  });
+}
+
+function switchMaterial(type) {
+  currentMaterialType = type;
+  document.querySelectorAll('[data-material]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.material === type);
+  });
+  const oldMat = sphereMesh.material;
+  sphereMesh.material = createMaterial(type);
+  oldMat.dispose();
+}
+
+function screenshot() {
+  const cpVisible = document.getElementById('showControlPoints').checked;
+  if (cpVisible) {
+    controlPoints.forEach(cp => {
+      cp.mesh.visible = false;
+      cp.transformControl.visible = false;
+    });
+  }
+
+  renderer.render(scene, camera);
+  const dataURL = renderer.domElement.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.download = 'elastic_sphere_' + Date.now() + '.png';
+  link.href = dataURL;
+  link.click();
+
+  if (cpVisible) {
+    controlPoints.forEach(cp => {
+      cp.mesh.visible = true;
+    });
+  }
+}
+
+function exportOBJ() {
+  const positions = sphereMesh.geometry.attributes.position.array;
+  const normals = sphereMesh.geometry.attributes.normal.array;
+  const uvs = sphereMesh.geometry.attributes.uv ? sphereMesh.geometry.attributes.uv.array : null;
+  const index = sphereMesh.geometry.index;
+  let obj = '# Elastic Sphere OBJ Export\n';
+  obj += '# Generated by 3D Elastic Sphere Deformer\n';
+  obj += '# Vertices: ' + (positions.length / 3) + '\n';
+  obj += '# Faces: ' + (index ? index.count / 3 : positions.length / 9) + '\n';
+  obj += '# Volume ratio: ' + document.getElementById('volumeRatio').textContent + '\n\n';
+
+  const count = positions.length / 3;
+  for (let i = 0; i < count; i++) {
+    obj += `v ${positions[i * 3].toFixed(6)} ${positions[i * 3 + 1].toFixed(6)} ${positions[i * 3 + 2].toFixed(6)}\n`;
+  }
+  obj += '\n';
+
+  if (uvs) {
+    for (let i = 0; i < uvs.length / 2; i++) {
+      obj += `vt ${uvs[i * 2].toFixed(6)} ${uvs[i * 2 + 1].toFixed(6)}\n`;
+    }
+    obj += '\n';
+  }
+
+  if (normals) {
+    for (let i = 0; i < count; i++) {
+      obj += `vn ${normals[i * 3].toFixed(6)} ${normals[i * 3 + 1].toFixed(6)} ${normals[i * 3 + 2].toFixed(6)}\n`;
+    }
+    obj += '\n';
+  }
+
+  obj += 'g Sphere\n';
+  obj += 'usemtl sphere_mtl\n\n';
+
+  if (index) {
+    const indices = index.array;
+    for (let i = 0; i < indices.length; i += 3) {
+      const a = indices[i] + 1;
+      const b = indices[i + 1] + 1;
+      const c = indices[i + 2] + 1;
+      if (uvs && normals) {
+        obj += `f ${a}/${a}/${a} ${b}/${b}/${b} ${c}/${c}/${c}\n`;
+      } else if (uvs) {
+        obj += `f ${a}/${a} ${b}/${b} ${c}/${c}\n`;
+      } else if (normals) {
+        obj += `f ${a}//${a} ${b}//${b} ${c}//${c}\n`;
+      } else {
+        obj += `f ${a} ${b} ${c}\n`;
+      }
+    }
+  }
+
+  const blob = new Blob([obj], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.download = 'elastic_sphere_' + Date.now() + '.obj';
+  link.href = url;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+const shapePresets = [
+  { stretchX: 1, stretchY: 1, stretchZ: 1, waterdrop: 0, noise: 0 },
+  { stretchX: 1.8, stretchY: 0.7, stretchZ: 0.9, waterdrop: 0, noise: 0 },
+  { stretchX: 0.8, stretchY: 1.6, stretchZ: 0.8, waterdrop: 0.7, noise: 0 },
+  { stretchX: 1, stretchY: 1, stretchZ: 1, waterdrop: 0, noise: 0.4 },
+  { stretchX: 1, stretchY: 1, stretchZ: 1, waterdrop: 0, noise: 0 },
+];
+
+function animateShapeInterpolation() {
+  if (!animating) return;
+
+  animTime += 0.005 * animSpeed;
+
+  const totalSegments = shapePresets.length - 1;
+  const segmentDuration = 1 / totalSegments;
+  const rawIndex = (animTime % 1) / segmentDuration;
+  const segIndex = Math.min(Math.floor(rawIndex), totalSegments - 1);
+  const t = rawIndex - segIndex;
+  const smoothT = t * t * (3 - 2 * t);
+
+  const from = shapePresets[segIndex];
+  const to = shapePresets[segIndex + 1];
+
+  document.getElementById('stretchX').value = from.stretchX + (to.stretchX - from.stretchX) * smoothT;
+  document.getElementById('stretchY').value = from.stretchY + (to.stretchY - from.stretchY) * smoothT;
+  document.getElementById('stretchZ').value = from.stretchZ + (to.stretchZ - from.stretchZ) * smoothT;
+  document.getElementById('waterdrop').value = from.waterdrop + (to.waterdrop - from.waterdrop) * smoothT;
+  document.getElementById('noise').value = from.noise + (to.noise - from.noise) * smoothT;
+
+  updateSliderDisplays();
+  applyAllDeformations();
+}
+
+function onKeyDown(event) {
+  if (selectedControlPointIndex < 0) return;
+
+  const tc = transformControls[selectedControlPointIndex];
+  if (!tc.visible) return;
+
+  switch (event.key.toLowerCase()) {
+    case 'g':
+    case 'w':
+      tc.setMode('translate');
+      break;
+    case 'e':
+      tc.setMode('rotate');
+      break;
+    case 'r':
+      tc.setMode('scale');
+      break;
+    case 'escape':
+      tc.visible = false;
+      tc.detach();
+      selectedControlPointIndex = -1;
+      document.getElementById('cpInfo').style.display = 'none';
+      break;
+  }
+}
+
+function setupUI() {
+  const sliders = ['stretchX', 'stretchY', 'stretchZ', 'waterdrop', 'noise'];
+  sliders.forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      if (!animating) {
+        updateSliderDisplays();
+        applyAllDeformations();
+      }
+    });
+  });
+
+  document.getElementById('influenceRadius').addEventListener('input', () => {
+    updateSliderDisplays();
+    updateInfluenceRadiusDisplay();
+    if (selectedControlPointIndex >= 0) {
+      applyAllDeformations();
+    }
+  });
+
+  document.getElementById('falloff').addEventListener('input', () => {
+    updateSliderDisplays();
+    if (selectedControlPointIndex >= 0) {
+      applyAllDeformations();
+    }
+  });
+
+  document.getElementById('animSpeed').addEventListener('input', () => {
+    animSpeed = parseFloat(document.getElementById('animSpeed').value);
+    updateSliderDisplays();
+  });
+
+  document.querySelectorAll('[data-material]').forEach(btn => {
+    btn.addEventListener('click', () => switchMaterial(btn.dataset.material));
+  });
+
+  document.getElementById('showNormals').addEventListener('change', () => {
+    updateNormalHelper();
+  });
+
+  document.getElementById('showGrid').addEventListener('change', () => {
+    switchMaterial(currentMaterialType);
+  });
+
+  document.getElementById('showFloor').addEventListener('change', () => {
+    floorMesh.visible = document.getElementById('showFloor').checked;
+  });
+
+  document.getElementById('showControlPoints').addEventListener('change', () => {
+    updateControlPointsVisibility();
+  });
+
+  document.getElementById('showInfluenceRadius').addEventListener('change', () => {
+    updateInfluenceRadiusDisplay();
+  });
+
+  document.getElementById('btnReset').addEventListener('click', resetSphere);
+  document.getElementById('btnScreenshot').addEventListener('click', screenshot);
+  document.getElementById('btnExportOBJ').addEventListener('click', exportOBJ);
+  document.getElementById('btnClearPoints').addEventListener('click', clearControlPoints);
+
+  document.getElementById('btnAddPoint').addEventListener('click', () => {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const x = SPHERE_RADIUS * Math.sin(phi) * Math.cos(theta);
+    const y = SPHERE_RADIUS * Math.sin(phi) * Math.sin(theta);
+    const z = SPHERE_RADIUS * Math.cos(phi);
+    addControlPoint(x, y, z);
+    updateControlPointsVisibility();
+    applyAllDeformations();
+  });
+
+  document.getElementById('btnAnimate').addEventListener('click', () => {
+    animating = true;
+    animTime = 0;
+    document.getElementById('btnAnimate').classList.add('active');
+    document.getElementById('btnStopAnimate').classList.remove('active');
+    transformControls.forEach(tc => tc.visible = false);
+  });
+
+  document.getElementById('btnStopAnimate').addEventListener('click', () => {
+    animating = false;
+    document.getElementById('btnAnimate').classList.remove('active');
+    document.getElementById('btnStopAnimate').classList.add('active');
+  });
+
+  renderer.domElement.addEventListener('click', onCanvasClick);
+}
+
+function onCanvasClick(event) {
+  if (isDragging) return;
+
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const cpMeshes = controlPoints.map(cp => cp.mesh).filter(m => m.visible);
+  const cpIntersects = raycaster.intersectObjects(cpMeshes, false);
+
+  if (cpIntersects.length > 0) {
+    const clickedMesh = cpIntersects[0].object;
+    const index = clickedMesh.userData.index;
+
+    transformControls.forEach(tc => tc.visible = false);
+
+    if (index >= 0 && index < transformControls.length) {
+      selectedControlPointIndex = index;
+      transformControls[index].visible = true;
+      transformControls[index].attach(controlPoints[index].mesh);
+      updateInfluenceRadiusDisplay();
+
+      const pos = controlPoints[index].mesh.position;
+      document.getElementById('cpPos').textContent =
+        `(${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)})`;
+      document.getElementById('cpInfo').style.display = 'block';
+    }
+    return;
+  }
+
+  if (event.shiftKey && document.getElementById('showControlPoints').checked) {
+    const sphereIntersects = raycaster.intersectObject(sphereMesh, false);
+    if (sphereIntersects.length > 0) {
+      const point = sphereIntersects[0].point;
+      addControlPoint(point.x, point.y, point.z);
+      updateControlPointsVisibility();
+      applyAllDeformations();
+    }
+  }
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+
+  if (animating) {
+    animateShapeInterpolation();
+  }
+
+  if (document.getElementById('showInfluenceRadius').checked) {
+    influenceMeshes.forEach(mesh => {
+      if (mesh.visible) mesh.lookAt(camera.position);
+    });
+  }
+
+  renderer.render(scene, camera);
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路径绘制游戏 - 演示</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .demo-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .demo-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        .demo-info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .demo-info h3 {
+            margin: 0 0 10px 0;
+            color: #2e7d32;
+        }
+        .demo-info p {
+            margin: 5px 0;
+            color: #388e3c;
+        }
+        .path-coords {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🎨 彩色路径绘制游戏 - 功能演示</h1>
+            <p class="subtitle">自动绘制3×3正方形路径，验证面积计算</p>
+        </header>
+
+        <div class="demo-info">
+            <h3>📊 测试说明</h3>
+            <p>本页面将自动绘制一个 <strong>3×3的正方形路径</strong>（从(3,3)到(5,5)）</p>
+            <p>路径包含 <strong>8个格子</strong>，应该包围 <strong>1个内部格子</strong> (坐标4,4)</p>
+            <div class="path-coords">
+                路径坐标: (3,3) → (4,3) → (5,3) → (5,4) → (5,5) → (4,5) → (3,5) → (3,4)
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="label">当前面积</span>
+                <span class="value" id="currentArea">0</span>
+            </div>
+            <div class="status-item">
+                <span class="label">路径长度</span>
+                <span class="value" id="pathLength">0</span>
+            </div>
+            <div class="status-item">
+                <span class="label">预期面积</span>
+                <span class="value" style="color: #4caf50;">1</span>
+            </div>
+            <div class="status-item">
+                <span class="label">测试结果</span>
+                <span class="value" id="testResult">等待中</span>
+            </div>
+        </div>
+
+        <div class="game-main">
+            <div class="grid-container">
+                <div id="gameGrid" class="game-grid"></div>
+            </div>
+        </div>
+
+        <div class="demo-controls">
+            <button id="drawDemoBtn" class="action-btn demo-btn">▶️ 开始演示</button>
+            <button id="stepBtn" class="action-btn demo-btn" style="background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);">⏭️ 单步执行</button>
+            <button id="resetBtn" class="action-btn demo-btn" style="background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);">🔄 重置</button>
+        </div>
+
+        <div class="tips">
+            <p>💡 红色格子 = 路径 | 蓝色格子 = 被包围的区域 | 绿色格子 = 起点</p>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script>
+        let demoStep = 0;
+        let autoDrawInterval = null;
+        
+        const demoPath = [
+            { x: 3, y: 3 },
+            { x: 4, y: 3 },
+            { x: 5, y: 3 },
+            { x: 5, y: 4 },
+            { x: 5, y: 5 },
+            { x: 4, y: 5 },
+            { x: 3, y: 5 },
+            { x: 3, y: 4 }
+        ];
+
+        function drawStep() {
+            if (demoStep >= demoPath.length) {
+                clearInterval(autoDrawInterval);
+                game.closePath();
+                checkResult();
+                return;
+            }
+            
+            const pos = demoPath[demoStep];
+            const cell = game.getCell(pos.x, pos.y);
+            if (cell) {
+                game.addCellToPath(pos.x, pos.y);
+                game.updateUI();
+            }
+            
+            demoStep++;
+        }
+
+        function startAutoDraw() {
+            resetDemo();
+            autoDrawInterval = setInterval(drawStep, 800);
+        }
+
+        function stepDraw() {
+            if (demoStep === 0) {
+                resetDemo();
+            }
+            drawStep();
+        }
+
+        function resetDemo() {
+            clearInterval(autoDrawInterval);
+            demoStep = 0;
+            game.clearAll();
+            document.getElementById('testResult').textContent = '等待中';
+            document.getElementById('testResult').style.color = '#667eea';
+        }
+
+        function checkResult() {
+            const resultEl = document.getElementById('testResult');
+            if (game.currentArea === 1) {
+                resultEl.textContent = '✅ 通过';
+                resultEl.style.color = '#4caf50';
+            } else {
+                resultEl.textContent = '❌ 失败';
+                resultEl.style.color = '#f44336';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('drawDemoBtn').addEventListener('click', startAutoDraw);
+            document.getElementById('stepBtn').addEventListener('click', stepDraw);
+            document.getElementById('resetBtn').addEventListener('click', resetDemo);
+            
+            setTimeout(() => {
+                startAutoDraw();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

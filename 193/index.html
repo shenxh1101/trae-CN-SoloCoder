@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>乐器调音器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <h1>🎵 乐器调音器</h1>
+            <div class="header-controls">
+                <button id="themeToggle" class="icon-btn" title="切换主题">🌙</button>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="meter-container">
+                <canvas id="meterCanvas" width="400" height="260"></canvas>
+                <div class="note-display">
+                    <span id="noteName" class="note-name">--</span>
+                    <span id="octave" class="octave"></span>
+                </div>
+                <div class="cents-display">
+                    <span id="centsValue">0</span> 音分
+                </div>
+                <div class="freq-display">
+                    <span id="freqValue">--</span> Hz
+                </div>
+            </div>
+
+            <div class="volume-container">
+                <div class="volume-label">音量</div>
+                <div class="volume-bar-bg">
+                    <div id="volumeBar" class="volume-bar"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>调音模式</label>
+                    <div class="mode-buttons">
+                        <button class="mode-btn active" data-mode="guitar">吉他</button>
+                        <button class="mode-btn" data-mode="violin">小提琴</button>
+                        <button class="mode-btn" data-mode="ukulele">尤克里里</button>
+                        <button class="mode-btn" data-mode="chromatic">半音</button>
+                    </div>
+                </div>
+
+                <div class="control-group strings-group" id="stringsGroup">
+                    <label>空弦音</label>
+                    <div class="string-buttons" id="stringButtons"></div>
+                </div>
+
+                <div class="control-group">
+                    <label>标准音高 (A4)</label>
+                    <div class="calibration">
+                        <button id="calibDown" class="calib-btn">−</button>
+                        <span id="calibValue" class="calib-value">440</span>
+                        <span class="calib-unit">Hz</span>
+                        <button id="calibUp" class="calib-btn">+</button>
+                    </div>
+                </div>
+
+                <button id="startBtn" class="start-btn">🎤 开始调音</button>
+            </div>
+
+            <div class="history-section">
+                <div class="history-header">
+                    <h2>调音历史</h2>
+                    <button id="clearHistory" class="clear-btn">清除</button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <div class="history-empty">暂无调音记录</div>
+                </div>
+            </div>
+        </main>
+
+        <div id="permissionModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>需要麦克风权限</h3>
+                <p>请允许浏览器访问您的麦克风以进行调音。</p>
+                <button id="permissionRetry" class="start-btn">重试</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="tuner.js"></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化学实验 pH 值模拟器</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 3h6v6l3 8H6l3-8V3z"/>
+                    <line x1="9" y1="3" x2="15" y2="3"/>
+                </svg>
+            </div>
+            <h1 class="app-title">pH 模拟实验室</h1>
+        </div>
+        <div class="header-right">
+            <button class="tool-btn" id="btn-sound" title="声音开关">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                </svg>
+            </button>
+            <button class="tool-btn" id="btn-export" title="导出CSV">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+            </button>
+            <button class="tool-btn tool-btn--danger" id="btn-reset" title="重置烧杯">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"/>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="beaker-section">
+            <div class="beaker-wrapper">
+                <svg class="beaker-svg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <clipPath id="beaker-clip">
+                            <path d="M60 40 L60 320 Q60 360 100 360 L200 360 Q240 360 240 320 L240 40 Z"/>
+                        </clipPath>
+                        <linearGradient id="glass-shine" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
+                            <stop offset="50%" stop-color="rgba(255,255,255,0.02)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0.08)"/>
+                        </linearGradient>
+                        <filter id="liquid-glow">
+                            <feGaussianBlur stdDeviation="3" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <g clip-path="url(#beaker-clip)">
+                        <rect id="liquid" class="liquid" x="60" y="360" width="180" height="0" opacity="0.85"/>
+                        <g id="bubbles"></g>
+                    </g>
+
+                    <path class="beaker-glass" d="M60 40 L60 320 Q60 360 100 360 L200 360 Q240 360 240 320 L240 40" fill="none" stroke="rgba(180,210,240,0.4)" stroke-width="3"/>
+                    <line class="beaker-rim" x1="50" y1="40" x2="60" y2="40" stroke="rgba(180,210,240,0.6)" stroke-width="3"/>
+                    <line class="beaker-rim" x1="240" y1="40" x2="250" y2="40" stroke="rgba(180,210,240,0.6)" stroke-width="3"/>
+                    <line x1="50" y1="40" x2="250" y2="40" stroke="rgba(180,210,240,0.3)" stroke-width="2"/>
+                    <path d="M60 40 L60 320 Q60 360 100 360 L200 360 Q240 360 240 320 L240 40" fill="url(#glass-shine)"/>
+
+                    <g class="scale-marks">
+                        <line x1="240" y1="80" x2="250" y2="80" stroke="rgba(180,210,240,0.3)" stroke-width="1"/>
+                        <text x="254" y="84" fill="rgba(180,210,240,0.4)" font-size="9" font-family="JetBrains Mono">200</text>
+                        <line x1="240" y1="130" x2="250" y2="130" stroke="rgba(180,210,240,0.3)" stroke-width="1"/>
+                        <text x="254" y="134" fill="rgba(180,210,240,0.4)" font-size="9" font-family="JetBrains Mono">150</text>
+                        <line x1="240" y1="180" x2="250" y2="180" stroke="rgba(180,210,240,0.3)" stroke-width="1"/>
+                        <text x="254" y="184" fill="rgba(180,210,240,0.4)" font-size="9" font-family="JetBrains Mono">100</text>
+                        <line x1="240" y1="230" x2="250" y2="230" stroke="rgba(180,210,240,0.3)" stroke-width="1"/>
+                        <text x="254" y="234" fill="rgba(180,210,240,0.4)" font-size="9" font-family="JetBrains Mono">50</text>
+                        <line x1="240" y1="280" x2="248" y2="280" stroke="rgba(180,210,240,0.2)" stroke-width="1"/>
+                        <line x1="240" y1="330" x2="248" y2="330" stroke="rgba(180,210,240,0.2)" stroke-width="1"/>
+                    </g>
+                </svg>
+                <div class="volume-label" id="volume-label">0 mL</div>
+            </div>
+
+            <div class="ph-display-area">
+                <div class="ph-value-container">
+                    <span class="ph-label">pH</span>
+                    <span class="ph-value" id="ph-value">7.00</span>
+                </div>
+                <div class="ph-scale">
+                    <div class="ph-scale-bar">
+                        <div class="ph-scale-indicator" id="ph-indicator"></div>
+                        <div class="ph-scale-segments">
+                            <span class="ph-seg ph-acid">酸性</span>
+                            <span class="ph-seg ph-neutral">中性</span>
+                            <span class="ph-seg ph-base">碱性</span>
+                        </div>
+                    </div>
+                    <div class="ph-scale-numbers">
+                        <span>0</span><span>7</span><span>14</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concentration-panel">
+                <div class="conc-item">
+                    <span class="conc-label">H⁺</span>
+                    <span class="conc-value" id="h-conc">1.00×10⁻⁷</span>
+                    <span class="conc-unit">mol/L</span>
+                </div>
+                <div class="conc-divider"></div>
+                <div class="conc-item">
+                    <span class="conc-label">OH⁻</span>
+                    <span class="conc-value" id="oh-conc">1.00×10⁻⁷</span>
+                    <span class="conc-unit">mol/L</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="control-section">
+            <div class="panel reagent-panel">
+                <h3 class="panel-title">添加试剂</h3>
+                <div class="reagent-buttons">
+                    <button class="reagent-btn reagent-hcl" id="btn-hcl">
+                        <span class="reagent-icon">HCl</span>
+                        <span class="reagent-name">盐酸</span>
+                        <span class="reagent-info">0.1 mol/L · 10mL</span>
+                    </button>
+                    <button class="reagent-btn reagent-naoh" id="btn-naoh">
+                        <span class="reagent-icon">NaOH</span>
+                        <span class="reagent-name">氢氧化钠</span>
+                        <span class="reagent-info">0.1 mol/L · 10mL</span>
+                    </button>
+                    <button class="reagent-btn reagent-water" id="btn-water">
+                        <span class="reagent-icon">H₂O</span>
+                        <span class="reagent-name">蒸馏水</span>
+                        <span class="reagent-info">中性 · 10mL</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel indicator-panel">
+                <h3 class="panel-title">指示剂</h3>
+                <div class="indicator-toggles">
+                    <div class="indicator-item">
+                        <div class="toggle-row">
+                            <span class="indicator-name">酚酞</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-phenolphthalein">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <span class="indicator-desc">pH &lt; 8.2 无色 → pH 8.2-10 粉红 → pH &gt; 10 深红</span>
+                    </div>
+                    <div class="indicator-item">
+                        <div class="toggle-row">
+                            <span class="indicator-name">甲基橙</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-methyl-orange">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <span class="indicator-desc">pH &lt; 3.1 红色 → pH 3.1-4.4 橙色 → pH &gt; 4.4 黄色</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel buffer-panel">
+                <h3 class="panel-title">缓冲溶液</h3>
+                <div class="buffer-buttons">
+                    <button class="buffer-btn" data-ph="4">pH 4</button>
+                    <button class="buffer-btn" data-ph="7">pH 7</button>
+                    <button class="buffer-btn" data-ph="9">pH 9</button>
+                </div>
+            </div>
+
+            <div class="panel titration-panel">
+                <h3 class="panel-title">滴定实验</h3>
+                <div class="titration-controls">
+                    <div class="titration-row">
+                        <label>滴定试剂</label>
+                        <select id="titration-reagent">
+                            <option value="hcl">盐酸 (0.1 mol/L)</option>
+                            <option value="naoh">氢氧化钠 (0.1 mol/L)</option>
+                        </select>
+                    </div>
+                    <div class="titration-row">
+                        <label>滴定速度</label>
+                        <div class="speed-control">
+                            <input type="range" id="titration-speed" min="1" max="10" value="3">
+                            <span class="speed-value" id="speed-display">3 滴/秒</span>
+                        </div>
+                    </div>
+                    <div class="titration-row">
+                        <label>目标 pH</label>
+                        <input type="number" id="titration-target" min="0" max="14" step="0.1" value="7.0" class="target-input">
+                    </div>
+                    <div class="titration-actions">
+                        <button class="action-btn action-start" id="btn-titration-start">开始滴定</button>
+                        <button class="action-btn action-stop" id="btn-titration-stop" disabled>停止滴定</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel curve-panel">
+                <h3 class="panel-title">pH 变化曲线</h3>
+                <div class="canvas-wrapper">
+                    <canvas id="ph-curve" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <div class="panel history-panel">
+                <h3 class="panel-title">试剂历史</h3>
+                <div class="history-list" id="history-list">
+                    <div class="history-empty">尚无记录，请添加试剂</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

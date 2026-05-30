@@ -1,0 +1,26 @@
+/* SVG Sprite CSS */
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  vertical-align: -0.125em;
+}
+
+/* 使用示例:
+<svg class="icon icon-home">
+  <use xlink:href="#home"></use>
+</svg>
+*/
+
+.icon-icon1 {
+  /* 使用方法: <svg class="icon icon-icon1"><use xlink:href="#icon1"></use></svg> */
+}
+.icon-icon2 {
+  /* 使用方法: <svg class="icon icon-icon2"><use xlink:href="#icon2"></use></svg> */
+}
+.icon-icon3 {
+  /* 使用方法: <svg class="icon icon-icon3"><use xlink:href="#icon3"></use></svg> */
+}

@@ -1,0 +1,339 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+}
+
+#container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#tunnelCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#fpsCounter {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #0ff;
+    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    z-index: 100;
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+#controlPanel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: rgba(10, 10, 30, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    z-index: 100;
+    border: 1px solid rgba(100, 100, 255, 0.3);
+    box-shadow: 0 0 30px rgba(100, 100, 255, 0.2),
+                inset 0 0 30px rgba(100, 100, 255, 0.05);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#controlPanel.hidden {
+    transform: translateX(380px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#controlPanel::-webkit-scrollbar {
+    width: 6px;
+}
+
+#controlPanel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+#controlPanel::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 255, 0.5);
+    border-radius: 3px;
+}
+
+#controlPanel h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    background: linear-gradient(90deg, #f0f, #0ff, #f0f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientText 3s ease infinite;
+    background-size: 200% 100%;
+}
+
+@keyframes gradientText {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.control-group {
+    margin-bottom: 18px;
+}
+
+.control-group label {
+    display: block;
+    font-size: 14px;
+    color: #aaf;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.control-group label span {
+    color: #0ff;
+    font-weight: bold;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(90deg, rgba(100, 100, 255, 0.3), rgba(255, 0, 255, 0.3));
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #0ff, #f0f);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+    transition: transform 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.shape-buttons,
+.texture-buttons,
+.bg-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 6px;
+}
+
+.shape-buttons button,
+.texture-buttons button,
+.bg-buttons button {
+    padding: 8px 6px;
+    font-size: 12px;
+    border: 1px solid rgba(100, 100, 255, 0.4);
+    background: rgba(50, 50, 100, 0.3);
+    color: #ccf;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shape-buttons button:hover,
+.texture-buttons button:hover,
+.bg-buttons button:hover {
+    background: rgba(100, 100, 255, 0.3);
+    border-color: rgba(100, 100, 255, 0.8);
+    box-shadow: 0 0 10px rgba(100, 100, 255, 0.5);
+}
+
+.shape-buttons button.active,
+.texture-buttons button.active,
+.bg-buttons button.active {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+    border-color: #0ff;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.toggle-group {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #aaf;
+    margin-bottom: 0 !important;
+}
+
+.toggle-label input {
+    display: none;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: rgba(100, 100, 100, 0.5);
+    border-radius: 13px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #888;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.toggle-label input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #0ff, #f0f);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+}
+
+.toggle-label input:checked + .toggle-slider::before {
+    left: 24px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(100, 100, 255, 0.3);
+}
+
+.action-buttons button {
+    padding: 10px 8px;
+    font-size: 13px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, rgba(100, 100, 255, 0.4), rgba(255, 0, 255, 0.4));
+    color: #fff;
+    border: 1px solid rgba(100, 100, 255, 0.5);
+}
+
+.action-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(100, 100, 255, 0.5);
+}
+
+#screenshotBtn {
+    background: linear-gradient(135deg, rgba(0, 255, 150, 0.4), rgba(0, 200, 255, 0.4));
+    border-color: rgba(0, 255, 150, 0.5);
+}
+
+#screenshotBtn:hover {
+    box-shadow: 0 5px 20px rgba(0, 255, 150, 0.5);
+}
+
+#exportBtn {
+    background: linear-gradient(135deg, rgba(255, 200, 0, 0.4), rgba(255, 100, 0, 0.4));
+    border-color: rgba(255, 200, 0, 0.5);
+}
+
+#exportBtn:hover {
+    box-shadow: 0 5px 20px rgba(255, 200, 0, 0.5);
+}
+
+#importBtn {
+    background: linear-gradient(135deg, rgba(150, 0, 255, 0.4), rgba(255, 0, 200, 0.4));
+    border-color: rgba(150, 0, 255, 0.5);
+}
+
+#importBtn:hover {
+    box-shadow: 0 5px 20px rgba(150, 0, 255, 0.5);
+}
+
+#togglePanelBtn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(10, 10, 30, 0.85);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 101;
+    border: 1px solid rgba(100, 100, 255, 0.3);
+    box-shadow: 0 0 20px rgba(100, 100, 255, 0.3);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+#togglePanelBtn:hover {
+    transform: rotate(90deg);
+    box-shadow: 0 0 30px rgba(100, 100, 255, 0.6);
+}
+
+#controlPanel.hidden ~ #togglePanelBtn {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    #controlPanel {
+        width: calc(100vw - 40px);
+        max-height: 50vh;
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+    }
+    
+    #controlPanel.hidden {
+        transform: translateY(calc(50vh + 40px));
+    }
+    
+    #togglePanelBtn {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    #fpsCounter {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+}

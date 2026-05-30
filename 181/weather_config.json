@@ -1,0 +1,21 @@
+{
+  "cities": [
+    "Beijing",
+    "Shanghai",
+    "London"
+  ],
+  "api_provider": "openweathermap",
+  "api_key": "",
+  "qweather_key": "",
+  "temp_change_threshold": 5,
+  "smtp": {
+    "enabled": false,
+    "server": "",
+    "port": 587,
+    "use_ssl": false,
+    "username": "",
+    "password": "",
+    "from_email": "",
+    "to_email": ""
+  }
+}

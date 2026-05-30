@@ -1,0 +1,435 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+.game-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.game-header h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 14px;
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-radius: 12px;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+}
+
+.status-item .label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 3px;
+}
+
+.status-item .value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+#timer.warning {
+    color: #e74c3c;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.game-main {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.grid-container {
+    display: inline-block;
+    padding: 10px;
+    background: #2c3e50;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-grid {
+    display: grid;
+    gap: 2px;
+    background: #34495e;
+    padding: 2px;
+    border-radius: 8px;
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    background: #ecf0f1;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.cell:hover {
+    background: #d5dbdb;
+    transform: scale(1.05);
+}
+
+.cell.path {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 0 10px rgba(240, 147, 251, 0.6);
+    animation: pathGlow 0.3s ease;
+}
+
+.cell.path.player1 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.6);
+}
+
+.cell.path.player2 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 0 10px rgba(240, 147, 251, 0.6);
+}
+
+@keyframes pathGlow {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.cell.filled {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    opacity: 0.6;
+}
+
+.cell.filled.player1 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.4;
+}
+
+.cell.filled.player2 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    opacity: 0.4;
+}
+
+.cell.start {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    box-shadow: 0 0 15px rgba(56, 239, 125, 0.8) !important;
+}
+
+.cell.invalid {
+    animation: shake 0.3s ease;
+    background: #e74c3c !important;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+.control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-group.full-width {
+    width: 100%;
+}
+
+.control-group label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+    text-align: center;
+}
+
+.btn-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.size-btn, .mode-btn {
+    padding: 8px 16px;
+    border: 2px solid #ddd;
+    background: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    color: #666;
+}
+
+.size-btn:hover, .mode-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.size-btn.active, .mode-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: #fff;
+}
+
+.action-btns {
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 10px 20px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#undoBtn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+}
+
+#clearBtn {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    box-shadow: 0 4px 15px rgba(235, 51, 73, 0.4);
+}
+
+#closePathBtn {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+}
+
+#versusScores {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border-radius: 12px;
+}
+
+.player-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 25px;
+    border-radius: 10px;
+    background: #fff;
+    min-width: 100px;
+}
+
+.player-score:first-child {
+    border: 2px solid #667eea;
+}
+
+.player-score:last-child {
+    border: 2px solid #f093fb;
+}
+
+.player-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.player-area {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.player-score:first-child .player-area {
+    color: #667eea;
+}
+
+.player-score:last-child .player-area {
+    color: #f093fb;
+}
+
+.vs-label {
+    font-size: 20px;
+    font-weight: bold;
+    color: #999;
+}
+
+.tips {
+    text-align: center;
+    padding: 12px;
+    background: #fff3cd;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+}
+
+.tips p {
+    color: #856404;
+    font-size: 13px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h2 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.modal-content p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    
+    .game-container {
+        padding: 15px;
+    }
+    
+    .game-header h1 {
+        font-size: 22px;
+    }
+    
+    .status-item .value {
+        font-size: 20px;
+    }
+    
+    .cell {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .action-btn {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+    
+    .size-btn, .mode-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .cell {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .status-bar {
+        gap: 5px;
+    }
+    
+    .status-item {
+        min-width: 55px;
+    }
+    
+    .status-item .value {
+        font-size: 18px;
+    }
+}

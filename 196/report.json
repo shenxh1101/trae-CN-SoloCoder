@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "total": 6,
+    "success": 6,
+    "failed": 0,
+    "total_time_seconds": 0.257,
+    "generated_at": "2026-05-30T18:02:05.243790"
+  },
+  "results": [
+    {
+      "input": "/Users/mac/code/solo coder/196/test_heic_files/photo_no_exif.heic",
+      "output": "/Users/mac/code/solo coder/196/test_output_report/photo_no_exif.jpg",
+      "success": true,
+      "error": null,
+      "duration_seconds": 0.05
+    },
+    {
+      "input": "/Users/mac/code/solo coder/196/test_heic_files/photo_normal.heic",
+      "output": "/Users/mac/code/solo coder/196/test_output_report/photo_normal.jpg",
+      "success": true,
+      "error": null,
+      "duration_seconds": 0.159
+    },
+    {
+      "input": "/Users/mac/code/solo coder/196/test_heic_files/photo_rotated.heic",
+      "output": "/Users/mac/code/solo coder/196/test_output_report/photo_rotated.jpg",
+      "success": true,
+      "error": null,
+      "duration_seconds": 0.256
+    },
+    {
+      "input": "/Users/mac/code/solo coder/196/test_heic_files/photo_rotated180.heic",
+      "output": "/Users/mac/code/solo coder/196/test_output_report/photo_rotated180.jpg",
+      "success": true,
+      "error": null,
+      "duration_seconds": 0.18
+    },
+    {
+      "input": "/Users/mac/code/solo coder/196/test_heic_files/photo_small.heic",
+      "output": "/Users/mac/code/solo coder/196/test_output_report/photo_small.jpg",
+      "success": true,
+      "error": null,
+      "duration_seconds": 0.011
+    },
+    {
+      "input": "/Users/mac/code/solo coder/196/test_heic_files/subdir/photo_subdir.heic",
+      "output": "/Users/mac/code/solo coder/196/test_output_report/subdir/photo_subdir.jpg",
+      "success": true,
+      "error": null,
+      "duration_seconds": 0.059
+    }
+  ]
+}

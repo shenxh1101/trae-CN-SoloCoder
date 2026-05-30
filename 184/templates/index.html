@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件哈希校验工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>文件哈希校验工具</h1>
+            <div class="auth-info">
+                {% if is_admin %}
+                <span class="admin-badge">管理员</span>
+                <a href="{{ url_for('logout') }}" class="btn-small">退出</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn-small">管理员登录</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="hash">计算哈希</button>
+            <button class="tab-btn" data-tab="verify">校验文件</button>
+            <button class="tab-btn" data-tab="url">URL哈希</button>
+            {% if is_admin %}
+            <button class="tab-btn" data-tab="batch">批量计算</button>
+            <button class="tab-btn" data-tab="manifest">生成清单</button>
+            <button class="tab-btn" data-tab="verify-folder">批量校验</button>
+            {% endif %}
+        </div>
+
+        <div class="tab-content">
+            <div id="hash" class="tab-pane active">
+                <h2>计算文件哈希值</h2>
+                <form id="hash-form">
+                    <div class="form-group">
+                        <label>选择文件:</label>
+                        <input type="file" id="hash-file" required>
+                    </div>
+                    <div class="form-group">
+                        <label>哈希算法:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="algorithms" value="md5" checked> MD5</label>
+                            <label><input type="checkbox" name="algorithms" value="sha1" checked> SHA1</label>
+                            <label><input type="checkbox" name="algorithms" value="sha256" checked> SHA256</label>
+                            <label><input type="checkbox" name="algorithms" value="sha512"> SHA512</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">计算哈希</button>
+                </form>
+                <div class="progress-bar" id="hash-progress" style="display:none;">
+                    <div class="progress-fill"></div>
+                    <span class="progress-text">0%</span>
+                </div>
+                <div id="hash-result" class="result-box"></div>
+            </div>
+
+            <div id="verify" class="tab-pane">
+                <h2>校验文件哈希</h2>
+                <form id="verify-form">
+                    <div class="form-group">
+                        <label>选择文件:</label>
+                        <input type="file" id="verify-file" required>
+                    </div>
+                    <div class="form-group">
+                        <label>预期哈希值:</label>
+                        <input type="text" id="expected-hash" placeholder="输入MD5/SHA1/SHA256/SHA512哈希值" required>
+                    </div>
+                    <button type="submit" class="btn">校验</button>
+                </form>
+                <div id="verify-result" class="result-box"></div>
+            </div>
+
+            <div id="url" class="tab-pane">
+                <h2>远程文件哈希计算</h2>
+                <form id="url-form">
+                    <div class="form-group">
+                        <label>文件URL:</label>
+                        <input type="url" id="file-url" placeholder="https://example.com/file.zip" required>
+                    </div>
+                    <div class="form-group">
+                        <label>哈希算法:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="url_algorithms" value="md5" checked> MD5</label>
+                            <label><input type="checkbox" name="url_algorithms" value="sha1" checked> SHA1</label>
+                            <label><input type="checkbox" name="url_algorithms" value="sha256" checked> SHA256</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">下载并计算</button>
+                </form>
+                <div id="url-result" class="result-box"></div>
+            </div>
+
+            {% if is_admin %}
+            <div id="batch" class="tab-pane">
+                <h2>批量计算哈希 (管理员)</h2>
+                <form id="batch-form">
+                    <div class="form-group">
+                        <label>上传文件列表 (txt):</label>
+                        <input type="file" id="batch-file" accept=".txt" required>
+                        <small class="help-text">每行一个服务器上的文件绝对路径</small>
+                    </div>
+                    <div class="form-group">
+                        <label>哈希算法:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="batch_algorithms" value="md5" checked> MD5</label>
+                            <label><input type="checkbox" name="batch_algorithms" value="sha1" checked> SHA1</label>
+                            <label><input type="checkbox" name="batch_algorithms" value="sha256" checked> SHA256</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">批量计算</button>
+                </form>
+                <div id="batch-result" class="result-box"></div>
+            </div>
+
+            <div id="manifest" class="tab-pane">
+                <h2>生成哈希清单 (管理员)</h2>
+                <form id="manifest-form">
+                    <div class="form-group">
+                        <label>文件路径列表 (每行一个):</label>
+                        <textarea id="manifest-paths" rows="6" placeholder="/path/to/file1&#10;/path/to/file2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>哈希算法:</label>
+                        <select id="manifest-algo">
+                            <option value="md5">MD5</option>
+                            <option value="sha1">SHA1</option>
+                            <option value="sha256">SHA256</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">生成清单</button>
+                </form>
+                <div id="manifest-result" class="result-box"></div>
+            </div>
+
+            <div id="verify-folder" class="tab-pane">
+                <h2>文件夹批量校验 (管理员)</h2>
+                <form id="verify-folder-form">
+                    <div class="form-group">
+                        <label>哈希清单文件:</label>
+                        <input type="file" id="folder-manifest" accept=".md5,.sha1,.sha256,.txt" required>
+                    </div>
+                    <div class="form-group">
+                        <label>文件夹路径:</label>
+                        <input type="text" id="folder-path" placeholder="/path/to/folder" required>
+                    </div>
+                    <button type="submit" class="btn">开始校验</button>
+                </form>
+                <div id="folder-result" class="result-box"></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

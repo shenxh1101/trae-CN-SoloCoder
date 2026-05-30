@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虚拟钢琴波形可视化</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">虚拟钢琴<span class="glow">波形可视化</span></h1>
+            <div class="freq-display" id="freqDisplay">-- Hz</div>
+        </header>
+
+        <div class="visualizer-container">
+            <canvas id="waveformCanvas"></canvas>
+        </div>
+
+        <div class="control-panels">
+            <div class="panel left-panel">
+                <div class="panel-section">
+                    <h3>波形控制</h3>
+                    <div class="control-group">
+                        <label>波形类型</label>
+                        <select id="waveformType" class="control-select">
+                            <option value="sine">正弦波</option>
+                            <option value="square">方波</option>
+                            <option value="sawtooth">锯齿波</option>
+                            <option value="triangle">三角波</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>振幅: <span id="ampValue">0.5</span></label>
+                        <input type="range" id="amplitude" min="0.1" max="1" step="0.1" value="0.5" class="control-slider">
+                    </div>
+                    <div class="control-group">
+                        <label>频率偏移: <span id="offsetValue">0</span> Hz</label>
+                        <input type="range" id="freqOffset" min="-100" max="100" step="1" value="0" class="control-slider">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>音效效果</h3>
+                    <div class="control-group">
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="reverbEnabled">
+                                <span class="toggle-slider"></span>
+                                混响
+                            </label>
+                        </div>
+                        <label>混响干湿比: <span id="reverbWetValue">0.3</span></label>
+                        <input type="range" id="reverbWet" min="0" max="1" step="0.1" value="0.3" class="control-slider">
+                    </div>
+                    <div class="control-group">
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="delayEnabled">
+                                <span class="toggle-slider"></span>
+                                延迟
+                            </label>
+                        </div>
+                        <label>延迟干湿比: <span id="delayWetValue">0.3</span></label>
+                        <input type="range" id="delayWet" min="0" max="1" step="0.1" value="0.3" class="control-slider">
+                    </div>
+                    <div class="control-group">
+                        <label>延迟时间: <span id="delayTimeValue">0.3</span>s</label>
+                        <input type="range" id="delayTime" min="0.1" max="1" step="0.1" value="0.3" class="control-slider">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel right-panel">
+                <div class="panel-section">
+                    <h3>录音控制</h3>
+                    <div class="button-group">
+                        <button id="recordBtn" class="btn btn-record">
+                            <span class="record-dot"></span>
+                            录音
+                        </button>
+                        <button id="playBtn" class="btn btn-play" disabled>
+                            ▶ 回放
+                        </button>
+                        <button id="exportBtn" class="btn btn-export" disabled>
+                            ↓ 导出WAV
+                        </button>
+                    </div>
+                    <div class="recording-status" id="recordingStatus">
+                        <span id="recordTime">00:00</span>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>自动演奏</h3>
+                    <div class="control-group">
+                        <label>选择乐谱</label>
+                        <select id="sheetMusic" class="control-select">
+                            <option value="twinkle">小星星</option>
+                            <option value="ode">欢乐颂</option>
+                            <option value="birthday">生日快乐</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>播放速度: <span id="tempoValue">1.0</span>x</label>
+                        <input type="range" id="tempo" min="0.5" max="2" step="0.1" value="1" class="control-slider">
+                    </div>
+                    <div class="button-group">
+                        <button id="autoPlayBtn" class="btn btn-autoplay">
+                            ▶ 播放
+                        </button>
+                        <button id="stopAutoPlayBtn" class="btn btn-stop" disabled>
+                            ■ 停止
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-section">
+    <h3>键盘映射</h3>
+                    <div class="keyboard-hint">
+                        <span>白键: A S D F G H J K</span>
+                        <span>黑键: W E T Y U</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="piano-container">
+            <div class="piano" id="piano">
+                <div class="key white" data-note="C4" data-key="a">
+                    <span class="key-label">A</span>
+                </div>
+                <div class="key black" data-note="C#4" data-key="w">
+                    <span class="key-label">W</span>
+                </div>
+                <div class="key white" data-note="D4" data-key="s">
+                    <span class="key-label">S</span>
+                </div>
+                <div class="key black" data-note="D#4" data-key="e">
+                    <span class="key-label">E</span>
+                </div>
+                <div class="key white" data-note="E4" data-key="d">
+                    <span class="key-label">D</span>
+                </div>
+                <div class="key white" data-note="F4" data-key="f">
+                    <span class="key-label">F</span>
+                </div>
+                <div class="key black" data-note="F#4" data-key="t">
+                    <span class="key-label">T</span>
+                </div>
+                <div class="key white" data-note="G4" data-key="g">
+                    <span class="key-label">G</span>
+                </div>
+                <div class="key black" data-note="G#4" data-key="y">
+                    <span class="key-label">Y</span>
+                </div>
+                <div class="key white" data-note="A4" data-key="h">
+                    <span class="key-label">H</span>
+                </div>
+                <div class="key black" data-note="A#4" data-key="u">
+                    <span class="key-label">U</span>
+                </div>
+                <div class="key white" data-note="B4" data-key="j">
+                    <span class="key-label">J</span>
+                </div>
+                <div class="key white" data-note="C5" data-key="k">
+                    <span class="key-label">K</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/audio.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/piano.js"></script>
+    <script src="js/recorder.js"></script>
+    <script src="js/autoplay.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

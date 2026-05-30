@@ -1,0 +1,13 @@
+.markdown-body h1 {
+    color: red !important;
+    border-bottom: 3px dashed red !important;
+}
+
+.markdown-body h2 {
+    color: blue !important;
+    border-bottom: 2px dotted blue !important;
+}
+
+.markdown-body {
+    background-color: #fffde7 !important;
+}

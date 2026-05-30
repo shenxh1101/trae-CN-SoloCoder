@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>管理员登录</h1>
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+            <form method="POST">
+                <div class="form-group">
+                    <label>密码:</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">登录</button>
+            </form>
+            <p><a href="{{ url_for('index') }}">返回首页</a></p>
+        </div>
+    </div>
+</body>
+</html>

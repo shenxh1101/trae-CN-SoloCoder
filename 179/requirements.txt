@@ -1,0 +1,5 @@
+click>=8.0.0
+markdown>=3.4.0
+weasyprint>=59.0
+Jinja2>=3.1.0
+python-dateutil>=2.8.0

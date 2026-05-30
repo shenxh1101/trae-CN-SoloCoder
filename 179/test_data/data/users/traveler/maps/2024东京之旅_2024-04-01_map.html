@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行地图 - 2024东京之旅</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header .info {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .header .info span { display: flex; align-items: center; gap: 5px; }
+        #map {
+            flex: 1;
+            width: 100%;
+        }
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 13px;
+        }
+        .legend h4 { margin-bottom: 10px; color: #333; }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        .legend-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .legend-line {
+            width: 20px;
+            height: 3px;
+            background: #3498db;
+        }
+        .popup-content {
+            min-width: 200px;
+            max-width: 300px;
+        }
+        .popup-content h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        .popup-content .date {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .popup-content .content {
+            color: #34495e;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .popup-content .meta {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+        .popup-content img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        .trip-info {
+            position: absolute;
+            top: 100px;
+            left: 30px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 250px;
+        }
+        .trip-info h4 { color: #2c3e50; margin-bottom: 10px; }
+        .trip-info p { color: #7f8c8d; font-size: 13px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🗺️ 2024东京之旅</h1>
+        <div class="info">
+            <span>📍 日本东京</span>
+            <span>📅 2024-04-01 ~ 2024-04-05</span>
+            <span>🏁 5 个停留点</span>
+            <span>💰 总开销 ¥108900.00</span>
+        </div>
+    </div>
+    <div id="map"></div>
+    <div class="trip-info">
+        <h4>📝 旅行简介</h4>
+        <p>东京5日游，探索现代与传统交融的魅力都市</p>
+    </div>
+    <div class="legend">
+        <h4>📌 图例</h4>
+        <div class="legend-item">
+            <div class="legend-marker"></div>
+            <span>停留位置</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-line"></div>
+            <span>旅行路线</span>
+        </div>
+    </div>
+    <script>
+        var map = L.map('map').setView([35.677140, 139.766340], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        var locations = [{"lat": 35.6895, "lng": 139.6917, "popup": "<div class=\"popup-content\"><h3>#1 新宿</h3><div class=\"date\">📅 2024-04-01 | 😊 兴奋</div><div class=\"content\">今天抵达东京成田机场，乘坐N'EX快车前往新宿。下午在新宿逛街，晚上去了新宿御苑散步。东京的繁华超出想象，霓虹灯照亮了整个街区。</div><div class=\"meta\"><span>💰 ¥30500.00</span></div></div>", "date": "2024-04-01", "name": "新宿"}, {"lat": 35.7148, "lng": 139.7967, "popup": "<div class=\"popup-content\"><h3>#2 浅草寺</h3><div class=\"date\">📅 2024-04-02 | 😊 开心</div><div class=\"content\">早上前往浅草寺，雷门的巨大灯笼非常震撼。之后去了秋叶原，逛了很多动漫店和电器店。晚上在涩谷十字路口看人潮，太壮观了！</div><div class=\"meta\"><span>💰 ¥14000.00</span></div></div>", "date": "2024-04-02", "name": "浅草寺"}, {"lat": 35.6329, "lng": 139.8804, "popup": "<div class=\"popup-content\"><h3>#3 东京迪士尼</h3><div class=\"date\">📅 2024-04-03 | 😊 狂喜</div><div class=\"content\">今天去了迪士尼乐园！虽然人很多，但每个项目都很精彩。晚上的烟花表演太梦幻了，一天走了3万步但是完全不觉得累。</div><div class=\"meta\"><span>💰 ¥18400.00</span></div></div>", "date": "2024-04-03", "name": "东京迪士尼"}, {"lat": 35.6764, "lng": 139.6993, "popup": "<div class=\"popup-content\"><h3>#4 明治神宫</h3><div class=\"date\">📅 2024-04-04 | 😊 平静</div><div class=\"content\">上午参观了明治神宫，在闹市区中的一片宁静绿洲。下午在原宿逛街，看到了很多时尚的年轻人。晚上去台场看彩虹大桥夜景。</div><div class=\"meta\"><span>💰 ¥6500.00</span></div></div>", "date": "2024-04-04", "name": "明治神宫"}, {"lat": 35.6721, "lng": 139.7636, "popup": "<div class=\"popup-content\"><h3>#5 银座</h3><div class=\"date\">📅 2024-04-05 | 😊 依依不舍</div><div class=\"content\">最后一天，上午去了银座购物，买了很多伴手礼。下午乘坐机场快线返回成田机场。这次东京之旅非常完美，期待下次再来！</div><div class=\"meta\"><span>💰 ¥39500.00</span></div></div>", "date": "2024-04-05", "name": "银座"}];
+        var pathCoords = [[35.6895, 139.6917], [35.7148, 139.7967], [35.6329, 139.8804], [35.6764, 139.6993], [35.6721, 139.7636]];
+        var customIcon = L.divIcon({
+            className: 'custom-marker',
+            html: '<div style="background: #e74c3c; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+        var bounds = [];
+        locations.forEach(function(loc, index) {
+            bounds.push([loc.lat, loc.lng]);
+            var marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).addTo(map);
+            var numberIcon = L.divIcon({
+                className: 'number-marker',
+                html: '<div style="background: #3498db; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">' + (index + 1) + '</div>',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+            L.marker([loc.lat, loc.lng], { icon: numberIcon }).addTo(map).bindPopup(loc.popup);
+        });
+        if (pathCoords.length > 1) {
+            var pathLine = L.polyline(pathCoords, {
+                color: '#3498db',
+                weight: 3,
+                opacity: 0.7,
+                dashArray: '10, 10'
+            }).addTo(map);
+        }
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [50, 50] });
+        }
+    </script>
+</body>
+</html>

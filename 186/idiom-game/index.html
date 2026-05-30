@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Infinite Tunnel - 无限隧道</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="container">
+        <canvas id="tunnelCanvas"></canvas>
+        
+        <div id="fpsCounter">FPS: --</div>
+        
+        <div id="controlPanel">
+            <h2>🎛️ 控制面板</h2>
+            
+            <div class="control-group">
+                <label>隧道形状</label>
+                <div class="shape-buttons">
+                    <button class="shape-btn active" data-shape="circle">⭕ 圆形</button>
+                    <button class="shape-btn" data-shape="square">⬜ 方形</button>
+                    <button class="shape-btn" data-shape="hexagon">⬡ 六边形</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>飞行速度: <span id="speedValue">1.0</span></label>
+                <input type="range" id="speedSlider" min="0.1" max="5.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <label>隧道直径: <span id="diameterValue">3.0</span></label>
+                <input type="range" id="diameterSlider" min="1.0" max="8.0" step="0.1" value="3.0">
+            </div>
+            
+            <div class="control-group">
+                <label>颜色变化速度: <span id="colorSpeedValue">1.0</span></label>
+                <input type="range" id="colorSpeedSlider" min="0.1" max="5.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <label>内壁纹理</label>
+                <div class="texture-buttons">
+                    <button class="texture-btn" data-texture="none">无</button>
+                    <button class="texture-btn active" data-texture="stripes">条纹</button>
+                    <button class="texture-btn" data-texture="grid">网格</button>
+                    <button class="texture-btn" data-texture="dots">点阵</button>
+                    <button class="texture-btn" data-texture="random">🎲 随机</button>
+                </div>
+            </div>
+            
+            <div class="control-group toggle-group">
+                <label class="toggle-label">
+                    <input type="checkbox" id="motionBlurToggle">
+                    <span class="toggle-slider"></span>
+                    运动模糊
+                </label>
+            </div>
+            
+            <div class="control-group toggle-group">
+                <label class="toggle-label">
+                    <input type="checkbox" id="particlesToggle" checked>
+                    <span class="toggle-slider"></span>
+                    粒子效果
+                </label>
+            </div>
+            
+            <div class="control-group toggle-group">
+                <label class="toggle-label">
+                    <input type="checkbox" id="cameraShakeToggle" checked>
+                    <span class="toggle-slider"></span>
+                    相机摇摆
+                </label>
+            </div>
+            
+            <div class="control-group">
+                <label>背景</label>
+                <div class="bg-buttons">
+                    <button class="bg-btn active" data-bg="black">⬛ 纯黑</button>
+                    <button class="bg-btn" data-bg="nebula">🌌 星云</button>
+                </div>
+            </div>
+            
+            <div class="control-group action-buttons">
+                <button id="screenshotBtn">📷 截图</button>
+                <button id="exportBtn">💾 导出配置</button>
+                <button id="importBtn">📂 导入配置</button>
+                <button id="validateBtn">✅ 功能验证</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </div>
+        
+        <button id="togglePanelBtn">⚙️</button>
+    </div>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

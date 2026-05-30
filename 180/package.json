@@ -1,0 +1,16 @@
+{
+  "name": "virtual-piano",
+  "version": "1.0.0",
+  "description": "虚拟钢琴波形可视化",
+  "scripts": {
+    "serve": "python3 -m http.server 8765",
+    "test": "node test.js"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.60.0"
+  }
+}

@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 漩涡隧道文字效果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+        }
+        
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 15, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: #88ccff;
+            font-size: 18px;
+            transition: opacity 0.8s ease;
+        }
+        
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(136, 204, 255, 0.2);
+            border-top: 3px solid #88ccff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        #loading-text {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6699cc;
+        }
+        
+        #stats-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            z-index: 100;
+            font-family: 'Consolas', monospace;
+            line-height: 1.6;
+        }
+        
+        #stats-panel div {
+            margin: 2px 0;
+        }
+        
+        .label {
+            color: #88ccff;
+            margin-right: 8px;
+        }
+        
+        .value {
+            color: #ffcc00;
+        }
+        
+        #audio-visualizer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            display: none;
+            z-index: 100;
+        }
+        
+        #audio-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div>正在加载3D场景...</div>
+        <div id="loading-text">下载字体资源中</div>
+    </div>
+    
+    <div id="stats-panel">
+        <div><span class="label">文字总数:</span><span class="value" id="text-count">0</span></div>
+        <div><span class="label">帧率:</span><span class="value" id="fps">0</span> FPS</div>
+        <div><span class="label">速度:</span><span class="value" id="speed-display">1.0</span></div>
+        <div><span class="label">半径:</span><span class="value" id="radius-display">10.0</span></div>
+        <div><span class="label">密度:</span><span class="value" id="density-display">50</span></div>
+    </div>
+    
+    <div id="audio-visualizer">
+        <canvas id="audio-canvas"></canvas>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+            "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19.1/dist/lil-gui.esm.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import GUI from 'lil-gui';
+
+        class VortexTunnel {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.controls = null;
+                this.font = null;
+                this.textObjects = [];
+                this.wordPool = ['Dream', 'Future', 'Space', 'Time', 'Love', 'Peace', 'Joy', 'Hope',
+                                'Cosmos', 'Light', 'Flow', 'Wave', 'Star', 'Mind', 'Soul', 'Glow',
+                                'Hello', 'World', 'Code', 'Art', 'Deep', 'Vast', 'Free', 'Wind'];
+                this.customWords = [];
+                
+                this.params = {
+                    speed: 1.0,
+                    radius: 10.0,
+                    density: 50,
+                    spiralTurns: 3.0,
+                    tunnelLength: 200,
+                    textSize: 0.8,
+                    autoRotate: true,
+                    rotateSpeed: 0.003,
+                    materialType: 'standard',
+                    background: 'space',
+                    audioEnabled: false,
+                    audioReactive: false,
+                    audioMode: '停止',
+                    customText: ''
+                };
+                
+                this.audioContext = null;
+                this.analyser = null;
+                this.dataArray = null;
+                this.gainNode = null;
+                this.oscillators = [];
+                this.microphoneStream = null;
+                this.micSource = null;
+                
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.fps = 0;
+                
+                this.starField = null;
+                this.clock = new THREE.Clock();
+                
+                this.init();
+            }
+            
+            init() {
+                this.createScene();
+                this.createCamera();
+                this.createRenderer();
+                this.createControls();
+                this.createLighting();
+                this.createBackground();
+                this.loadFont();
+                this.createGUI();
+                this.animate();
+                
+                window.addEventListener('resize', () => this.onResize());
+            }
+            
+            createScene() {
+                this.scene = new THREE.Scene();
+                this.scene.fog = new THREE.FogExp2(0x000011, 0.008);
+            }
+            
+            createCamera() {
+                this.camera = new THREE.PerspectiveCamera(
+                    75,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(0, 2, 15);
+            }
+            
+            createRenderer() {
+                this.renderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    preserveDrawingBuffer: true,
+                    alpha: false
+                });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                this.renderer.toneMappingExposure = 1.2;
+                document.getElementById('canvas-container').appendChild(this.renderer.domElement);
+            }
+            
+            createControls() {
+                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.minDistance = 3;
+                this.controls.maxDistance = 60;
+                this.controls.autoRotate = this.params.autoRotate;
+                this.controls.autoRotateSpeed = this.params.rotateSpeed * 500;
+                this.controls.target.set(0, 0, -10);
+            }
+            
+            createLighting() {
+                const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+                this.scene.add(ambientLight);
+                
+                const pointLight1 = new THREE.PointLight(0x0088ff, 3, 120);
+                pointLight1.position.set(10, 10, 10);
+                this.scene.add(pointLight1);
+                
+                const pointLight2 = new THREE.PointLight(0xff0088, 3, 120);
+                pointLight2.position.set(-10, -10, 10);
+                this.scene.add(pointLight2);
+                
+                const pointLight3 = new THREE.PointLight(0x00ff88, 2, 80);
+                pointLight3.position.set(0, 5, -30);
+                this.scene.add(pointLight3);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+                directionalLight.position.set(0, 20, 10);
+                this.scene.add(directionalLight);
+            }
+            
+            createBackground() {
+                if (this.params.background === 'space') {
+                    this.createStarField();
+                    this.scene.background = new THREE.Color(0x000011);
+                    this.scene.fog.color.setHex(0x000011);
+                } else {
+                    if (this.starField) {
+                        this.scene.remove(this.starField);
+                        this.starField.geometry.dispose();
+                        this.starField.material.dispose();
+                        this.starField = null;
+                    }
+                    this.scene.background = new THREE.Color(0x000000);
+                    this.scene.fog.color.setHex(0x000000);
+                }
+            }
+            
+            createStarField() {
+                if (this.starField) {
+                    this.scene.remove(this.starField);
+                    this.starField.geometry.dispose();
+                    this.starField.material.dispose();
+                }
+                
+                const starsGeometry = new THREE.BufferGeometry();
+                const starCount = 3000;
+                const positions = new Float32Array(starCount * 3);
+                const colors = new Float32Array(starCount * 3);
+                const sizes = new Float32Array(starCount);
+                
+                for (let i = 0; i < starCount; i++) {
+                    const r = 150 + Math.random() * 150;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    
+                    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                    positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                    positions[i * 3 + 2] = r * Math.cos(phi);
+                    
+                    const color = new THREE.Color();
+                    color.setHSL(0.55 + Math.random() * 0.2, 0.5 + Math.random() * 0.5, 0.7 + Math.random() * 0.3);
+                    colors[i * 3] = color.r;
+                    colors[i * 3 + 1] = color.g;
+                    colors[i * 3 + 2] = color.b;
+                    
+                    sizes[i] = 0.3 + Math.random() * 0.7;
+                }
+                
+                starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                
+                const starsMaterial = new THREE.PointsMaterial({
+                    size: 0.6,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.9,
+                    sizeAttenuation: true
+                });
+                
+                this.starField = new THREE.Points(starsGeometry, starsMaterial);
+                this.scene.add(this.starField);
+            }
+            
+            loadFont() {
+                const loader = new FontLoader();
+                const loadingText = document.getElementById('loading-text');
+                
+                const fontUrls = [
+                    'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_regular.typeface.json',
+                    'https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_regular.typeface.json',
+                    'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json'
+                ];
+                
+                let urlIndex = 0;
+                
+                const tryLoadFont = () => {
+                    if (urlIndex >= fontUrls.length) {
+                        loadingText.textContent = '字体加载失败，使用备用方案';
+                        this.createFallbackTextObjects();
+                        this.hideLoading();
+                        return;
+                    }
+                    
+                    const url = fontUrls[urlIndex];
+                    loadingText.textContent = `尝试加载字体 (${urlIndex + 1}/${fontUrls.length})...`;
+                    
+                    loader.load(
+                        url,
+                        (font) => {
+                            this.font = font;
+                            loadingText.textContent = '字体加载成功！创建文字中...';
+                            this.createTextObjects();
+                            setTimeout(() => this.hideLoading(), 500);
+                        },
+                        (xhr) => {
+                            if (xhr.total > 0) {
+                                const pct = Math.round(xhr.loaded / xhr.total * 100);
+                                loadingText.textContent = `字体下载中... ${pct}%`;
+                            }
+                        },
+                        (error) => {
+                            console.warn(`Font URL ${urlIndex + 1} failed:`, error);
+                            urlIndex++;
+                            tryLoadFont();
+                        }
+                    );
+                };
+                
+                tryLoadFont();
+            }
+            
+            hideLoading() {
+                const overlay = document.getElementById('loading-overlay');
+                overlay.classList.add('hidden');
+                setTimeout(() => overlay.remove(), 1000);
+            }
+            
+            createFallbackTextObjects() {
+                this.clearTextObjects();
+                const words = this.getWords();
+                const count = this.params.density;
+                
+                for (let i = 0; i < count; i++) {
+                    const word = words[Math.floor(Math.random() * words.length)];
+                    this.createSpriteText(word, i / count * this.params.tunnelLength);
+                }
+                
+                this.updateStats();
+            }
+            
+            createSpriteText(word, initialZ) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 256;
+                canvas.height = 64;
+                
+                ctx.fillStyle = 'transparent';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const hue = Math.random() * 360;
+                ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+                ctx.font = 'bold 40px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(word, canvas.width / 2, canvas.height / 2);
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.needsUpdate = true;
+                
+                const material = new THREE.SpriteMaterial({
+                    map: texture,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                
+                const sprite = new THREE.Sprite(material);
+                
+                const angle = (initialZ / this.params.tunnelLength) * Math.PI * 2 * this.params.spiralTurns;
+                const radius = this.params.radius;
+                
+                sprite.position.x = Math.cos(angle) * radius;
+                sprite.position.y = Math.sin(angle) * radius * 0.5;
+                sprite.position.z = -initialZ;
+                
+                const baseScale = this.params.textSize * 2;
+                sprite.scale.set(baseScale * 4, baseScale, 1);
+                
+                const data = {
+                    mesh: sprite,
+                    speed: 0.8 + Math.random() * 0.4,
+                    rotationSpeed: { x: 0, y: 0, z: (Math.random() - 0.5) * 0.02 },
+                    angle: angle,
+                    baseSize: this.params.textSize,
+                    originalColor: new THREE.Color().setHSL(hue / 360, 0.8, 0.6),
+                    word: word,
+                    isSprite: true,
+                    hue: hue
+                };
+                
+                this.textObjects.push(data);
+                this.scene.add(sprite);
+            }
+            
+            getWords() {
+                if (this.customWords.length > 0) {
+                    return this.customWords;
+                }
+                return this.wordPool;
+            }
+            
+            createMaterial() {
+                const hue = Math.random();
+                const saturation = 0.6 + Math.random() * 0.4;
+                const lightness = 0.4 + Math.random() * 0.3;
+                const color = new THREE.Color().setHSL(hue, saturation, lightness);
+                
+                switch (this.params.materialType) {
+                    case 'emissive':
+                        return new THREE.MeshBasicMaterial({
+                            color: color,
+                            transparent: true,
+                            opacity: 0.9
+                        });
+                    case 'wireframe':
+                        return new THREE.MeshBasicMaterial({
+                            color: color,
+                            wireframe: true,
+                            transparent: true,
+                            opacity: 0.8
+                        });
+                    case 'standard':
+                    default:
+                        return new THREE.MeshStandardMaterial({
+                            color: color,
+                            emissive: color.clone().multiplyScalar(0.3),
+                            metalness: 0.3,
+                            roughness: 0.4,
+                            transparent: true,
+                            opacity: 0.95
+                        });
+                }
+            }
+            
+            createTextObjects() {
+                this.clearTextObjects();
+                
+                if (!this.font) return;
+                
+                const words = this.getWords();
+                const count = this.params.density;
+                
+                for (let i = 0; i < count; i++) {
+                    const word = words[Math.floor(Math.random() * words.length)];
+                    this.createTextObject(word, i / count * this.params.tunnelLength);
+                }
+                
+                this.updateStats();
+            }
+            
+            createTextObject(word, initialZ) {
+                if (!this.font) return;
+                
+                const geometry = new TextGeometry(word, {
+                    font: this.font,
+                    size: this.params.textSize,
+                    height: 0.1,
+                    curveSegments: 4,
+                    bevelEnabled: false
+                });
+                
+                geometry.computeBoundingBox();
+                geometry.center();
+                
+                const material = this.createMaterial();
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                const angle = (initialZ / this.params.tunnelLength) * Math.PI * 2 * this.params.spiralTurns;
+                
+                mesh.position.x = Math.cos(angle) * this.params.radius;
+                mesh.position.y = Math.sin(angle) * this.params.radius * 0.5;
+                mesh.position.z = -initialZ;
+                
+                mesh.rotation.x = (Math.random() - 0.5) * 0.5;
+                mesh.rotation.y = (Math.random() - 0.5) * 0.5;
+                mesh.rotation.z = (Math.random() - 0.5) * 0.5;
+                
+                const hsl = {};
+                material.color.getHSL(hsl);
+                
+                const data = {
+                    mesh: mesh,
+                    speed: 0.8 + Math.random() * 0.4,
+                    rotationSpeed: {
+                        x: (Math.random() - 0.5) * 0.02,
+                        y: (Math.random() - 0.5) * 0.02,
+                        z: (Math.random() - 0.5) * 0.02
+                    },
+                    angle: angle,
+                    baseSize: this.params.textSize,
+                    originalColor: material.color.clone(),
+                    originalHue: hsl.h,
+                    word: word,
+                    isSprite: false
+                };
+                
+                this.textObjects.push(data);
+                this.scene.add(mesh);
+            }
+            
+            clearTextObjects() {
+                this.textObjects.forEach(data => {
+                    this.scene.remove(data.mesh);
+                    data.mesh.geometry.dispose();
+                    if (data.mesh.material.map) {
+                        data.mesh.material.map.dispose();
+                    }
+                    if (Array.isArray(data.mesh.material)) {
+                        data.mesh.material.forEach(m => m.dispose());
+                    } else {
+                        data.mesh.material.dispose();
+                    }
+                });
+                this.textObjects = [];
+            }
+            
+            updateTextObjects(delta) {
+                const words = this.getWords();
+                const audioActive = this.params.audioReactive && this.dataArray && this.analyser;
+                
+                if (audioActive) {
+                    this.analyser.getByteFrequencyData(this.dataArray);
+                }
+                
+                for (let i = this.textObjects.length - 1; i >= 0; i--) {
+                    const data = this.textObjects[i];
+                    const mesh = data.mesh;
+                    
+                    mesh.position.z += delta * 30 * this.params.speed * data.speed;
+                    
+                    const progress = (mesh.position.z + this.params.tunnelLength) / this.params.tunnelLength;
+                    const currentAngle = data.angle + progress * Math.PI * 2 * this.params.spiralTurns;
+                    
+                    mesh.position.x = Math.cos(currentAngle) * this.params.radius;
+                    mesh.position.y = Math.sin(currentAngle) * this.params.radius * 0.5;
+                    
+                    const distance = mesh.position.length();
+                    const scale = Math.max(0.1, Math.min(3, 20 / distance));
+                    mesh.scale.setScalar(scale * data.baseSize / this.params.textSize);
+                    
+                    if (!data.isSprite) {
+                        mesh.rotation.x += data.rotationSpeed.x;
+                        mesh.rotation.y += data.rotationSpeed.y;
+                    }
+                    mesh.rotation.z += data.rotationSpeed.z;
+                    
+                    if (audioActive) {
+                        const freqIndex = Math.floor((i / this.textObjects.length) * this.dataArray.length);
+                        const freqValue = this.dataArray[freqIndex] / 255;
+                        
+                        const audioScale = 1 + freqValue * 1.5;
+                        mesh.scale.multiplyScalar(audioScale);
+                        
+                        const mat = mesh.material;
+                        if (mat.color) {
+                            const hue = (freqValue * 0.3 + data.originalHue) % 1;
+                            mat.color.setHSL(hue, 0.8, 0.5 + freqValue * 0.3);
+                            if (mat.emissive) {
+                                mat.emissive.copy(mat.color).multiplyScalar(freqValue * 0.5);
+                            }
+                        }
+                    } else if (!data.isSprite) {
+                        mesh.material.color.copy(data.originalColor);
+                        if (mesh.material.emissive) {
+                            mesh.material.emissive.copy(data.originalColor).multiplyScalar(0.3);
+                        }
+                    }
+                    
+                    if (mesh.position.z > 20) {
+                        mesh.position.z = -this.params.tunnelLength;
+                        data.angle = Math.random() * Math.PI * 2;
+                        
+                        const newWord = words[Math.floor(Math.random() * words.length)];
+                        
+                        if (this.font && !data.isSprite) {
+                            this.scene.remove(mesh);
+                            mesh.geometry.dispose();
+                            mesh.material.dispose();
+                            
+                            const geometry = new TextGeometry(newWord, {
+                                font: this.font,
+                                size: this.params.textSize,
+                                height: 0.1,
+                                curveSegments: 4,
+                                bevelEnabled: false
+                            });
+                            geometry.computeBoundingBox();
+                            geometry.center();
+                            
+                            const material = this.createMaterial();
+                            const newMesh = new THREE.Mesh(geometry, material);
+                            
+                            newMesh.position.copy(mesh.position);
+                            newMesh.rotation.set(
+                                (Math.random() - 0.5) * 0.5,
+                                (Math.random() - 0.5) * 0.5,
+                                (Math.random() - 0.5) * 0.5
+                            );
+                            
+                            const hsl = {};
+                            material.color.getHSL(hsl);
+                            
+                            data.mesh = newMesh;
+                            data.word = newWord;
+                            data.originalColor = material.color.clone();
+                            data.originalHue = hsl.h;
+                            
+                            this.scene.add(newMesh);
+                        } else if (data.isSprite) {
+                            data.word = newWord;
+                            
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            canvas.width = 256;
+                            canvas.height = 64;
+                            
+                            const hue = Math.random() * 360;
+                            ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+                            ctx.font = 'bold 40px Arial, sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(newWord, canvas.width / 2, canvas.height / 2);
+                            
+                            mesh.material.map.image = canvas;
+                            mesh.material.map.needsUpdate = true;
+                            data.originalHue = hue / 360;
+                        }
+                    }
+                }
+            }
+            
+            async initAudio(useMicrophone = false) {
+                try {
+                    this.stopAudio();
+                    
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    if (this.audioContext.state === 'suspended') {
+                        await this.audioContext.resume();
+                    }
+                    
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 256;
+                    this.analyser.smoothingTimeConstant = 0.8;
+                    this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                    
+                    if (useMicrophone) {
+                        this.microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        this.micSource = this.audioContext.createMediaStreamSource(this.microphoneStream);
+                        this.micSource.connect(this.analyser);
+                    } else {
+                        this.gainNode = this.audioContext.createGain();
+                        this.gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+                        
+                        const osc1 = this.audioContext.createOscillator();
+                        osc1.type = 'sine';
+                        osc1.frequency.setValueAtTime(220, this.audioContext.currentTime);
+                        
+                        const lfo1 = this.audioContext.createOscillator();
+                        lfo1.type = 'sine';
+                        lfo1.frequency.setValueAtTime(0.5, this.audioContext.currentTime);
+                        const lfo1Gain = this.audioContext.createGain();
+                        lfo1Gain.gain.setValueAtTime(100, this.audioContext.currentTime);
+                        lfo1.connect(lfo1Gain);
+                        lfo1Gain.connect(osc1.frequency);
+                        
+                        const osc2 = this.audioContext.createOscillator();
+                        osc2.type = 'triangle';
+                        osc2.frequency.setValueAtTime(330, this.audioContext.currentTime);
+                        
+                        const lfo2 = this.audioContext.createOscillator();
+                        lfo2.type = 'sine';
+                        lfo2.frequency.setValueAtTime(0.3, this.audioContext.currentTime);
+                        const lfo2Gain = this.audioContext.createGain();
+                        lfo2Gain.gain.setValueAtTime(80, this.audioContext.currentTime);
+                        lfo2.connect(lfo2Gain);
+                        lfo2Gain.connect(osc2.frequency);
+                        
+                        const osc3 = this.audioContext.createOscillator();
+                        osc3.type = 'sawtooth';
+                        osc3.frequency.setValueAtTime(110, this.audioContext.currentTime);
+                        const osc3Gain = this.audioContext.createGain();
+                        osc3Gain.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+                        
+                        osc1.connect(this.gainNode);
+                        osc2.connect(this.gainNode);
+                        osc3.connect(osc3Gain);
+                        osc3Gain.connect(this.gainNode);
+                        
+                        this.gainNode.connect(this.analyser);
+                        this.gainNode.connect(this.audioContext.destination);
+                        
+                        osc1.start();
+                        osc2.start();
+                        osc3.start();
+                        lfo1.start();
+                        lfo2.start();
+                        
+                        this.oscillators = [osc1, osc2, osc3, lfo1, lfo2];
+                    }
+                    
+                    document.getElementById('audio-visualizer').style.display = 'block';
+                    this.params.audioEnabled = true;
+                    this.params.audioMode = useMicrophone ? '麦克风' : '示例音乐';
+                    
+                } catch (error) {
+                    console.error('Audio init error:', error);
+                    alert('无法初始化音频：' + error.message);
+                    this.stopAudio();
+                    this.params.audioMode = '停止';
+                }
+            }
+            
+            stopAudio() {
+                this.oscillators.forEach(osc => {
+                    try { osc.stop(); } catch (e) {}
+                    try { osc.disconnect(); } catch (e) {}
+                });
+                this.oscillators = [];
+                
+                if (this.gainNode) {
+                    try { this.gainNode.disconnect(); } catch (e) {}
+                    this.gainNode = null;
+                }
+                
+                if (this.micSource) {
+                    try { this.micSource.disconnect(); } catch (e) {}
+                    this.micSource = null;
+                }
+                
+                if (this.microphoneStream) {
+                    this.microphoneStream.getTracks().forEach(track => track.stop());
+                    this.microphoneStream = null;
+                }
+                
+                if (this.analyser) {
+                    try { this.analyser.disconnect(); } catch (e) {}
+                    this.analyser = null;
+                }
+                
+                this.dataArray = null;
+                
+                if (this.audioContext) {
+                    this.audioContext.close().catch(() => {});
+                    this.audioContext = null;
+                }
+                
+                this.params.audioEnabled = false;
+                this.params.audioReactive = false;
+                this.params.audioMode = '停止';
+                
+                document.getElementById('audio-visualizer').style.display = 'none';
+            }
+            
+            updateAudioVisualizer() {
+                if (!this.analyser || !this.dataArray) return;
+                
+                this.analyser.getByteFrequencyData(this.dataArray);
+                
+                const canvas = document.getElementById('audio-canvas');
+                const ctx = canvas.getContext('2d');
+                
+                const dpr = window.devicePixelRatio || 1;
+                const displayW = canvas.offsetWidth;
+                const displayH = canvas.offsetHeight;
+                canvas.width = displayW * dpr;
+                canvas.height = displayH * dpr;
+                ctx.scale(dpr, dpr);
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.fillRect(0, 0, displayW, displayH);
+                
+                const barCount = Math.min(this.dataArray.length, 64);
+                const barWidth = displayW / barCount;
+                const gap = 1;
+                
+                for (let i = 0; i < barCount; i++) {
+                    const val = this.dataArray[i] / 255;
+                    const barHeight = val * displayH;
+                    const hue = (i / barCount) * 0.6 + 0.5;
+                    
+                    ctx.fillStyle = `hsl(${hue * 360}, 100%, ${40 + val * 30}%)`;
+                    ctx.fillRect(
+                        i * barWidth + gap,
+                        displayH - barHeight,
+                        barWidth - gap * 2,
+                        barHeight
+                    );
+                }
+            }
+            
+            takeScreenshot() {
+                this.renderer.render(this.scene, this.camera);
+                const canvas = this.renderer.domElement;
+                const dataURL = canvas.toDataURL('image/png');
+                
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = `vortex-tunnel-${Date.now()}.png`;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                }, 'image/png');
+            }
+            
+            exportParams() {
+                const exportData = {
+                    speed: this.params.speed,
+                    radius: this.params.radius,
+                    density: this.params.density,
+                    spiralTurns: this.params.spiralTurns,
+                    tunnelLength: this.params.tunnelLength,
+                    textSize: this.params.textSize,
+                    autoRotate: this.params.autoRotate,
+                    rotateSpeed: this.params.rotateSpeed,
+                    materialType: this.params.materialType,
+                    background: this.params.background,
+                    audioEnabled: this.params.audioEnabled,
+                    audioMode: this.params.audioMode,
+                    audioReactive: this.params.audioReactive,
+                    customText: this.params.customText,
+                    timestamp: new Date().toISOString(),
+                    wordCount: this.textObjects.length,
+                    customWords: this.customWords,
+                    cameraPosition: {
+                        x: this.camera.position.x,
+                        y: this.camera.position.y,
+                        z: this.camera.position.z
+                    },
+                    cameraTarget: {
+                        x: this.controls.target.x,
+                        y: this.controls.target.y,
+                        z: this.controls.target.z
+                    }
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.download = `vortex-tunnel-params-${Date.now()}.json`;
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }
+            
+            updateCustomText(text) {
+                if (text && text.trim()) {
+                    this.customWords = text.split(/[\s,，.。!！?？;；:：、]+/).filter(w => w.length > 0);
+                } else {
+                    this.customWords = [];
+                }
+                
+                if (this.font) {
+                    this.createTextObjects();
+                } else {
+                    this.createFallbackTextObjects();
+                }
+            }
+            
+            updateMaterialType() {
+                this.textObjects.forEach(data => {
+                    if (data.isSprite) return;
+                    
+                    const oldMaterial = data.mesh.material;
+                    const newMaterial = this.createMaterial();
+                    newMaterial.color.copy(data.originalColor);
+                    if (newMaterial.emissive) {
+                        newMaterial.emissive.copy(data.originalColor.clone().multiplyScalar(0.3));
+                    }
+                    data.mesh.material = newMaterial;
+                    oldMaterial.dispose();
+                });
+            }
+            
+            createGUI() {
+                const gui = new GUI({ title: '控制面板', width: 300 });
+                
+                const tunnelFolder = gui.addFolder('隧道参数');
+                tunnelFolder.add(this.params, 'speed', 0.1, 5.0, 0.1).name('飞行速度').onChange(v => {
+                    document.getElementById('speed-display').textContent = v.toFixed(1);
+                });
+                tunnelFolder.add(this.params, 'radius', 3.0, 30.0, 0.5).name('螺旋半径').onChange(v => {
+                    document.getElementById('radius-display').textContent = v.toFixed(1);
+                });
+                tunnelFolder.add(this.params, 'density', 10, 200, 1).name('文字密度').onChange(v => {
+                    document.getElementById('density-display').textContent = Math.round(v);
+                    if (this.font) {
+                        this.createTextObjects();
+                    } else {
+                        this.createFallbackTextObjects();
+                    }
+                });
+                tunnelFolder.add(this.params, 'spiralTurns', 1.0, 10.0, 0.5).name('螺旋圈数').onChange(() => {
+                    if (this.font) {
+                        this.createTextObjects();
+                    } else {
+                        this.createFallbackTextObjects();
+                    }
+                });
+                tunnelFolder.add(this.params, 'textSize', 0.3, 2.0, 0.1).name('文字大小').onChange(() => {
+                    if (this.font) {
+                        this.createTextObjects();
+                    } else {
+                        this.createFallbackTextObjects();
+                    }
+                });
+                
+                const appearanceFolder = gui.addFolder('外观设置');
+                appearanceFolder.add(this.params, 'materialType', ['standard', 'emissive', 'wireframe'])
+                    .name('文字材质')
+                    .onChange(() => this.updateMaterialType());
+                appearanceFolder.add(this.params, 'background', ['space', 'black'])
+                    .name('背景类型')
+                    .onChange(() => this.createBackground());
+                
+                const textFolder = gui.addFolder('文字设置');
+                textFolder.add(this.params, 'customText').name('自定义文本').onFinishChange(v => {
+                    this.updateCustomText(v);
+                });
+                textFolder.add({ reset: () => {
+                    this.params.customText = '';
+                    this.customWords = [];
+                    if (this.font) {
+                        this.createTextObjects();
+                    } else {
+                        this.createFallbackTextObjects();
+                    }
+                    gui.controllersRecursive().forEach(c => {
+                        if (c.property === 'customText') c.updateDisplay();
+                    });
+                }}, 'reset').name('重置为默认');
+                
+                const cameraFolder = gui.addFolder('相机设置');
+                cameraFolder.add(this.params, 'autoRotate').name('自动旋转').onChange(v => {
+                    this.controls.autoRotate = v;
+                });
+                cameraFolder.add(this.params, 'rotateSpeed', 0.001, 0.02, 0.001).name('旋转速度').onChange(v => {
+                    this.controls.autoRotateSpeed = v * 500;
+                });
+                
+                const audioFolder = gui.addFolder('音频设置');
+                audioFolder.add(this.params, 'audioMode', ['麦克风', '示例音乐', '停止'])
+                    .name('音频源')
+                    .listen()
+                    .onChange(async (v) => {
+                        if (v === '麦克风') {
+                            await this.initAudio(true);
+                        } else if (v === '示例音乐') {
+                            await this.initAudio(false);
+                        } else {
+                            this.stopAudio();
+                        }
+                        audioFolder.controllersRecursive().forEach(c => c.updateDisplay());
+                    });
+                audioFolder.add(this.params, 'audioReactive').name('音频响应').listen();
+                
+                const exportFolder = gui.addFolder('导出操作');
+                exportFolder.add({ screenshot: () => this.takeScreenshot() }, 'screenshot').name('保存截图');
+                exportFolder.add({ export: () => this.exportParams() }, 'export').name('导出参数JSON');
+            }
+            
+            updateStats() {
+                document.getElementById('text-count').textContent = this.textObjects.length;
+            }
+            
+            updateFPS() {
+                this.frameCount++;
+                const currentTime = performance.now();
+                
+                if (currentTime - this.lastTime >= 1000) {
+                    this.fps = this.frameCount;
+                    this.frameCount = 0;
+                    this.lastTime = currentTime;
+                    document.getElementById('fps').textContent = this.fps;
+                }
+            }
+            
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                const delta = Math.min(this.clock.getDelta(), 0.05);
+                
+                this.updateTextObjects(delta);
+                this.updateFPS();
+                
+                if (this.params.audioEnabled) {
+                    this.updateAudioVisualizer();
+                }
+                
+                if (this.starField) {
+                    this.starField.rotation.y += 0.0001 * this.params.speed;
+                    this.starField.rotation.x += 0.00005 * this.params.speed;
+                }
+                
+                this.controls.update();
+                this.renderer.render(this.scene, this.camera);
+            }
+            
+            onResize() {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+        
+        const app = new VortexTunnel();
+        window.app = app;
+    </script>
+</body>
+</html>

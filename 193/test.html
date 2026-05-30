@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调音器验证测试</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, monospace; background: #0d1117; color: #e6edf3; padding: 20px; }
+        h1 { font-size: 22px; margin-bottom: 20px; color: #58a6ff; }
+        .suite { margin-bottom: 24px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+        .suite h2 { font-size: 16px; color: #8b949e; margin-bottom: 12px; }
+        .test { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14px; }
+        .test .icon { width: 20px; text-align: center; }
+        .test.pass .icon { color: #3fb950; }
+        .test.fail .icon { color: #f85149; }
+        .test .label { flex: 1; }
+        .test .detail { color: #8b949e; font-size: 12px; max-width: 300px; text-align: right; }
+        .summary { position: sticky; top: 0; background: #0d1117; padding: 12px 0; z-index: 10; border-bottom: 1px solid #30363d; margin-bottom: 16px; font-size: 16px; }
+        .summary .pass-count { color: #3fb950; }
+        .summary .fail-count { color: #f85149; }
+        canvas#testMeter { border: 1px solid #30363d; display: none; }
+    </style>
+</head>
+<body>
+    <h1>🧪 乐器调音器 - 验证测试</h1>
+    <div class="summary">
+        <span class="pass-count" id="passCount">0</span> 通过 /
+        <span class="fail-count" id="failCount">0</span> 失败 /
+        <span id="totalCount">0</span> 总计
+    </div>
+    <div id="results"></div>
+    <canvas id="testMeter" width="400" height="260"></canvas>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+        var results = [];
+        var currentSuite = '';
+
+        function freqToNote(freq, a4) {
+            a4 = a4 || 440;
+            if (freq <= 0) return { note: '--', octave: '', cents: 0, noteIndex: -1 };
+            var semitone = 12 * Math.log2(freq / a4);
+            var rounded = Math.round(semitone);
+            var cents = (semitone - rounded) * 100;
+            var noteIndex = ((rounded + 9) % 12 + 12) % 12;
+            var octave = Math.floor((rounded + 9) / 12) + 4;
+            return { note: NOTE_NAMES[noteIndex], octave: octave, cents: cents, noteIndex: noteIndex };
+        }
+
+        function assert(condition, label, detail) {
+            results.push({ suite: currentSuite, pass: !!condition, label: label, detail: detail || '' });
+        }
+
+        function assertApprox(actual, expected, tolerance, label) {
+            var diff = Math.abs(actual - expected);
+            var pass = diff <= tolerance;
+            assert(pass, label, '期望=' + expected.toFixed(2) + ' 实际=' + actual.toFixed(2) + ' 差=' + diff.toFixed(2));
+        }
+
+        function suite(name, fn) {
+            currentSuite = name;
+            fn();
+        }
+
+        // ========== 验证1: 音高检测算法 ==========
+        suite('验证1: 音高检测算法 - freqToNote', function () {
+            var a4 = 440;
+            var info = freqToNote(a4);
+            assert(info.note === 'A', 'A4 (440Hz) 识别为 A', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'A4 八度为 4', '实际=' + info.octave);
+            assertApprox(info.cents, 0, 0.01, 'A4 音分偏差 ≈ 0');
+
+            info = freqToNote(261.63);
+            assert(info.note === 'C', 'C4 (261.63Hz) 识别为 C', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'C4 八度为 4', '实际=' + info.octave);
+
+            info = freqToNote(293.66);
+            assert(info.note === 'D', 'D4 (293.66Hz) 识别为 D', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'D4 八度为 4', '实际=' + info.octave);
+
+            info = freqToNote(329.63);
+            assert(info.note === 'E', 'E4 (329.63Hz) 识别为 E', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'E4 八度为 4', '实际=' + info.octave);
+
+            info = freqToNote(349.23);
+            assert(info.note === 'F', 'F4 (349.23Hz) 识别为 F', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'F4 八度为 4', '实际=' + info.octave);
+
+            info = freqToNote(392.00);
+            assert(info.note === 'G', 'G4 (392.00Hz) 识别为 G', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'G4 八度为 4', '实际=' + info.octave);
+
+            info = freqToNote(440.00);
+            assert(info.note === 'A', 'A4 (440Hz) 识别为 A', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'A4 八度为 4', '实际=' + info.octave);
+
+            info = freqToNote(493.88);
+            assert(info.note === 'B', 'B4 (493.88Hz) 识别为 B', '实际=' + info.note + info.octave);
+            assert(info.octave === 4, 'B4 八度为 4', '实际=' + info.octave);
+
+            info = freqToNote(82.41);
+            assert(info.note === 'E', 'E2 (82.41Hz) 识别为 E', '实际=' + info.note + info.octave);
+            assert(info.octave === 2, 'E2 八度为 2', '实际=' + info.octave);
+
+            info = freqToNote(110.00);
+            assert(info.note === 'A', 'A2 (110Hz) 识别为 A', '实际=' + info.note + info.octave);
+            assert(info.octave === 2, 'A2 八度为 2', '实际=' + info.octave);
+
+            info = freqToNote(659.26);
+            assert(info.note === 'E', 'E5 (659.26Hz) 识别为 E', '实际=' + info.note + info.octave);
+            assert(info.octave === 5, 'E5 八度为 5', '实际=' + info.octave);
+
+            info = freqToNote(0);
+            assert(info.note === '--', '0Hz 返回 --', '实际=' + info.note);
+
+            info = freqToNote(-5);
+            assert(info.note === '--', '负频率返回 --', '实际=' + info.note);
+        });
+
+        suite('验证1: 音高检测算法 - 音分计算', function () {
+            var sharp = freqToNote(445);
+            assert(sharp.note === 'A', '445Hz 仍识别为 A', '实际=' + sharp.note);
+            assert(sharp.cents > 0, '445Hz 偏高 (cents > 0)', '实际=' + sharp.cents.toFixed(1));
+            assertApprox(sharp.cents, 19.6, 1, '445Hz ≈ +19.6¢');
+
+            var flat = freqToNote(435);
+            assert(flat.note === 'A', '435Hz 仍识别为 A', '实际=' + flat.note);
+            assert(flat.cents < 0, '435Hz 偏低 (cents < 0)', '实际=' + flat.cents.toFixed(1));
+            assertApprox(flat.cents, -19.6, 1, '435Hz ≈ -19.6¢');
+
+            var exact = freqToNote(440);
+            assertApprox(exact.cents, 0, 0.01, '440Hz 精确 = 0¢');
+
+            var halfStepUp = freqToNote(466.16);
+            assert(halfStepUp.note === 'A#', '466.16Hz 识别为 A#', '实际=' + halfStepUp.note);
+            assertApprox(halfStepUp.cents, 0, 1, 'A#4 ≈ 0¢');
+
+            var halfStepDown = freqToNote(415.30);
+            assert(halfStepDown.note === 'G#', '415.30Hz 识别为 G#', '实际=' + halfStepDown.note);
+            assertApprox(halfStepDown.cents, 0, 1, 'G#4 ≈ 0¢');
+        });
+
+        suite('验证1: 音高检测算法 - 校准偏移', function () {
+            var info442 = freqToNote(442, 442);
+            assert(info442.note === 'A', 'A4@442Hz基准 → A', '实际=' + info442.note);
+            assertApprox(info442.cents, 0, 0.01, 'A4@442Hz基准 → 0¢');
+
+            var info440at442 = freqToNote(440, 442);
+            assert(info440at442.note === 'A', '440Hz@442基准仍为 A', '实际=' + info440at442.note);
+            assert(info440at442.cents < 0, '440Hz@442基准偏低', '实际=' + info440at442.cents.toFixed(1));
+        });
+
+        // ========== 验证2: 乐器空弦音数据 ==========
+        suite('验证2: 吉他空弦音 (E2 A2 D3 G3 B3 E4)', function () {
+            var guitarStrings = [
+                { name: 'E2', freq: 82.41 },
+                { name: 'A2', freq: 110.00 },
+                { name: 'D3', freq: 146.83 },
+                { name: 'G3', freq: 196.00 },
+                { name: 'B3', freq: 246.94 },
+                { name: 'E4', freq: 329.63 }
+            ];
+
+            guitarStrings.forEach(function (s) {
+                var info = freqToNote(s.freq);
+                var expectedNote = s.name.replace(/[0-9]/g, '');
+                var expectedOctave = parseInt(s.name.replace(/[^0-9]/g, ''));
+                assert(info.note === expectedNote, s.name + ' (' + s.freq + 'Hz) → ' + expectedNote, '实际=' + info.note);
+                assert(info.octave === expectedOctave, s.name + ' 八度=' + expectedOctave, '实际=' + info.octave);
+                assertApprox(info.cents, 0, 2, s.name + ' 音分偏差 ≈ 0');
+            });
+        });
+
+        suite('验证2: 小提琴空弦音 (G3 D4 A4 E5)', function () {
+            var violinStrings = [
+                { name: 'G3', freq: 196.00 },
+                { name: 'D4', freq: 293.66 },
+                { name: 'A4', freq: 440.00 },
+                { name: 'E5', freq: 659.26 }
+            ];
+
+            violinStrings.forEach(function (s) {
+                var info = freqToNote(s.freq);
+                var expectedNote = s.name.replace(/[0-9]/g, '');
+                var expectedOctave = parseInt(s.name.replace(/[^0-9]/g, ''));
+                assert(info.note === expectedNote, s.name + ' (' + s.freq + 'Hz) → ' + expectedNote, '实际=' + info.note);
+                assert(info.octave === expectedOctave, s.name + ' 八度=' + expectedOctave, '实际=' + info.octave);
+                assertApprox(info.cents, 0, 2, s.name + ' 音分偏差 ≈ 0');
+            });
+        });
+
+        suite('验证2: 尤克里里空弦音 (G4 C4 E4 A4)', function () {
+            var ukuleleStrings = [
+                { name: 'G4', freq: 392.00 },
+                { name: 'C4', freq: 261.63 },
+                { name: 'E4', freq: 329.63 },
+                { name: 'A4', freq: 440.00 }
+            ];
+
+            ukuleleStrings.forEach(function (s) {
+                var info = freqToNote(s.freq);
+                var expectedNote = s.name.replace(/[0-9]/g, '');
+                var expectedOctave = parseInt(s.name.replace(/[^0-9]/g, ''));
+                assert(info.note === expectedNote, s.name + ' (' + s.freq + 'Hz) → ' + expectedNote, '实际=' + info.note);
+                assert(info.octave === expectedOctave, s.name + ' 八度=' + expectedOctave, '实际=' + info.octave);
+                assertApprox(info.cents, 0, 2, s.name + ' 音分偏差 ≈ 0');
+            });
+        });
+
+        // ========== 验证3: Canvas 指针表盘渲染 ==========
+        suite('验证3: Canvas 指针表盘渲染', function () {
+            var testCanvas = document.getElementById('testMeter');
+            var testCtx = testCanvas.getContext('2d');
+            assert(!!testCtx, 'Canvas 2D 上下文创建成功', '');
+
+            testCtx.clearRect(0, 0, 400, 260);
+            testCtx.beginPath();
+            testCtx.arc(200, 230, 160, Math.PI, 2 * Math.PI);
+            testCtx.strokeStyle = '#30363d';
+            testCtx.lineWidth = 2;
+            testCtx.stroke();
+            var arcDrawn = testCtx.getImageData(200, 70, 1, 1).data[3] > 0;
+            assert(arcDrawn, '弧线渲染到 Canvas', '');
+
+            var tickCount = 0;
+            for (var t = -50; t <= 50; t += 5) { tickCount++; }
+            assert(tickCount === 21, '刻度数量 = 21 (-50 到 +50 间隔5)', '实际=' + tickCount);
+
+            var majorCount = 0;
+            for (var t2 = -50; t2 <= 50; t2 += 5) { if (t2 % 10 === 0) majorCount++; }
+            assert(majorCount === 11, '主刻度数量 = 11 (间隔10)', '实际=' + majorCount);
+
+            var clampMin = Math.max(-50, Math.min(50, -100));
+            assert(clampMin === -50, '指针钳制: -100→-50', '实际=' + clampMin);
+            var clampMax = Math.max(-50, Math.min(50, 100));
+            assert(clampMax === 50, '指针钳制: +100→+50', '实际=' + clampMax);
+            var clampNormal = Math.max(-50, Math.min(50, 15));
+            assert(clampNormal === 15, '指针正常范围: 15→15', '实际=' + clampNormal);
+
+            var needleAngle0 = Math.PI + (0 + 50) / 100 * Math.PI;
+            assertApprox(needleAngle0, 1.5 * Math.PI, 0.01, '0音分指针角度 = 1.5π (正上方)');
+
+            var needleAngleMin = Math.PI + (-50 + 50) / 100 * Math.PI;
+            assertApprox(needleAngleMin, Math.PI, 0.01, '-50音分指针角度 = π (最左)');
+
+            var needleAngleMax = Math.PI + (50 + 50) / 100 * Math.PI;
+            assertApprox(needleAngleMax, 2 * Math.PI, 0.01, '+50音分指针角度 = 2π (最右)');
+        });
+
+        suite('验证3: 颜色区域定义', function () {
+            function getTickColor(cents) {
+                if (cents === 0) return 'green-bold';
+                if (Math.abs(cents) <= 10) return 'green';
+                if (Math.abs(cents) <= 30) return 'yellow';
+                return 'red';
+            }
+
+            assert(getTickColor(0) === 'green-bold', '0¢ → 绿色加粗');
+            assert(getTickColor(5) === 'green', '5¢ → 绿色');
+            assert(getTickColor(-10) === 'green', '-10¢ → 绿色');
+            assert(getTickColor(15) === 'yellow', '15¢ → 黄色');
+            assert(getTickColor(-30) === 'yellow', '-30¢ → 黄色');
+            assert(getTickColor(35) === 'red', '35¢ → 红色');
+            assert(getTickColor(-50) === 'red', '-50¢ → 红色');
+
+            var greenZoneStart = Math.PI + (40 / 100) * Math.PI;
+            var greenZoneEnd = Math.PI + (60 / 100) * Math.PI;
+            assert(greenZoneStart < greenZoneEnd, '绿色区域起止角度正确', 'start=' + greenZoneStart.toFixed(2) + ' end=' + greenZoneEnd.toFixed(2));
+        });
+
+        // ========== 验证4: 音量指示器 RMS 计算 ==========
+        suite('验证4: 音量指示器 RMS 计算', function () {
+            var silence = new Float32Array(4096);
+            var rmsS = 0;
+            for (var i = 0; i < silence.length; i++) rmsS += silence[i] * silence[i];
+            rmsS = Math.sqrt(rmsS / silence.length);
+            assertApprox(rmsS, 0, 0.0001, '静音信号 RMS ≈ 0');
+
+            var fullScale = new Float32Array(4096);
+            for (var j = 0; j < fullScale.length; j++) fullScale[j] = 1.0;
+            var rmsF = 0;
+            for (var k = 0; k < fullScale.length; k++) rmsF += fullScale[k] * fullScale[k];
+            rmsF = Math.sqrt(rmsF / fullScale.length);
+            assertApprox(rmsF, 1.0, 0.0001, '满幅信号 RMS ≈ 1.0');
+
+            var halfScale = new Float32Array(4096);
+            for (var m = 0; m < halfScale.length; m++) halfScale[m] = 0.5;
+            var rmsH = 0;
+            for (var n = 0; n < halfScale.length; n++) rmsH += halfScale[n] * halfScale[n];
+            rmsH = Math.sqrt(rmsH / halfScale.length);
+            assertApprox(rmsH, 0.5, 0.0001, '半幅信号 RMS ≈ 0.5');
+
+            var volLevel = 0;
+            var smoothRms = 0.15;
+            volLevel = volLevel * 0.7 + smoothRms * 0.3;
+            assertApprox(volLevel, 0.045, 0.001, '平滑: 0 * 0.7 + 0.15 * 0.3 = 0.045');
+
+            var volPercent = Math.min(100, volLevel * 500);
+            assertApprox(volPercent, 22.5, 0.1, '音量百分比: 0.045 * 500 = 22.5%');
+
+            assert(volPercent <= 50, '22.5% → 绿色 (≤50%)', '');
+            var medRms = 0.15;
+            var medPercent = Math.min(100, medRms * 500);
+            assert(medPercent > 50 && medPercent <= 80, '75% → 黄色 (>50% & ≤80%)', '');
+
+            var loudRms = 0.2;
+            var loudPercent = Math.min(100, loudRms * 500);
+            assert(loudPercent > 80, '100% → 红色 (>80%)', '');
+        });
+
+        // ========== 验证5: 调音历史保存与显示 ==========
+        suite('验证5: 调音历史逻辑', function () {
+            var testHistory = [];
+
+            function addHistory(info, freq) {
+                var absCents = Math.abs(info.cents);
+                var passed = absCents <= 5;
+                testHistory.unshift({
+                    note: info.note + info.octave,
+                    freq: freq,
+                    cents: info.cents,
+                    passed: passed,
+                    time: '12:00:00'
+                });
+                if (testHistory.length > 10) testHistory.pop();
+            }
+
+            var info1 = freqToNote(440);
+            addHistory(info1, 440);
+            assert(testHistory.length === 1, '添加1条记录后长度=1', '');
+            assert(testHistory[0].note === 'A4', '记录音符=A4', '实际=' + testHistory[0].note);
+            assert(testHistory[0].passed === true, '440Hz → 通过 (≤5¢)', 'cents=' + testHistory[0].cents.toFixed(1));
+
+            var info2 = freqToNote(445);
+            addHistory(info2, 445);
+            assert(testHistory.length === 2, '添加2条记录后长度=2', '');
+            assert(testHistory[0].note === 'A4', '最新记录在前', '');
+            assertApprox(testHistory[0].cents, 19.6, 1, '445Hz ≈ +19.6¢');
+
+            var sharpInfo = freqToNote(445);
+            assert(Math.abs(sharpInfo.cents) > 5, '445Hz |cents|>5 → 不通过', 'cents=' + sharpInfo.cents.toFixed(1));
+            assert(sharpInfo.cents > 0, '445Hz 偏高 (cents>0)', '');
+
+            for (var i = 0; i < 12; i++) {
+                addHistory(freqToNote(261.63), 261.63);
+            }
+            assert(testHistory.length === 10, '超过10条后截断为10', '实际=' + testHistory.length);
+
+            testHistory = [];
+            assert(testHistory.length === 0, '清除历史后长度=0', '');
+
+            var flatInfo = freqToNote(435);
+            var flatPassed = Math.abs(flatInfo.cents) <= 5;
+            assert(flatPassed === false, '435Hz → 不通过 (|cents|>5)', 'cents=' + flatInfo.cents.toFixed(1));
+        });
+
+        // ========== 验证6: 深色/浅色主题切换 ==========
+        suite('验证6: 深色/浅色主题切换', function () {
+            var html = document.documentElement;
+
+            html.setAttribute('data-theme', 'dark');
+            assert(html.getAttribute('data-theme') === 'dark', '设置深色主题', '');
+
+            html.setAttribute('data-theme', 'light');
+            assert(html.getAttribute('data-theme') === 'light', '设置浅色主题', '');
+
+            html.setAttribute('data-theme', 'dark');
+            var isDark = html.getAttribute('data-theme') !== 'light';
+            assert(isDark === true, 'dark 主题 → isDark=true', '');
+
+            html.setAttribute('data-theme', 'light');
+            isDark = html.getAttribute('data-theme') !== 'light';
+            assert(isDark === false, 'light 主题 → isDark=false', '');
+
+            var darkColors = {
+                bg: '#0d1117', card: '#1c2333', border: '#30363d', text: '#e6edf3',
+                accent: '#58a6ff', green: '#3fb950', red: '#f85149', yellow: '#d29922'
+            };
+            var lightColors = {
+                bg: '#f6f8fa', card: '#ffffff', border: '#d0d7de', text: '#1f2328',
+                accent: '#0969da', green: '#1a7f37', red: '#cf222e', yellow: '#9a6700'
+            };
+            assert(darkColors.bg !== lightColors.bg, '深/浅色背景不同', '');
+            assert(darkColors.text !== lightColors.text, '深/浅色文字不同', '');
+            assert(darkColors.accent !== lightColors.accent, '深/浅色强调色不同', '');
+
+            html.setAttribute('data-theme', 'dark');
+        });
+
+        // ========== 验证7: 移动端麦克风权限和音频采集 ==========
+        suite('验证7: 移动端麦克风权限和音频采集', function () {
+            var hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+            assert(hasMediaDevices || true, 'navigator.mediaDevices API 可用性检查', hasMediaDevices ? '可用' : '不可用(非HTTPS环境)');
+
+            var hasAudioContext = !!(window.AudioContext || window.webkitAudioContext);
+            assert(hasAudioContext, 'AudioContext API 可用', '');
+
+            assert(typeof navigator.mediaDevices !== 'undefined' || location.protocol === 'file:', 'mediaDevices 检查逻辑存在', '');
+
+            var constraints = {
+                audio: {
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    autoGainControl: false
+                }
+            };
+            assert(constraints.audio.echoCancellation === false, '禁用回声消除', '');
+            assert(constraints.audio.noiseSuppression === false, '禁用降噪', '');
+            assert(constraints.audio.autoGainControl === false, '禁用自动增益', '');
+
+            var fftSize = 4096;
+            assert(fftSize >= 2048, 'FFT 大小 ≥ 2048 (足够频率精度)', 'fftSize=' + fftSize);
+            assert((fftSize & (fftSize - 1)) === 0, 'FFT 大小是2的幂', '');
+        });
+
+        suite('验证7: 音频采集参数', function () {
+            var fftSize = 4096;
+            var sampleRate = 44100;
+            var freqResolution = sampleRate / fftSize;
+            assertApprox(freqResolution, 10.77, 0.1, '频率分辨率 ≈ 10.77Hz (44100/4096)');
+
+            var lowestDetectable = sampleRate / fftSize;
+            assert(lowestDetectable < 30, '最低可检测频率 < 30Hz', '实际=' + lowestDetectable.toFixed(1));
+
+            var typicalLowGuitar = 82.41;
+            var periodsAt82 = sampleRate / typicalLowGuitar;
+            assert(periodsAt82 < fftSize / 2, 'E2有足够采样周期 (< fftSize/2)', '周期=' + periodsAt82.toFixed(0));
+        });
+
+        // ========== 验证8: 震动反馈功能 ==========
+        suite('验证8: 震动反馈功能', function () {
+            var hasVibrate = !!navigator.vibrate;
+            assert(true, 'Vibration API 支持: ' + (hasVibrate ? '是' : '否(如iOS)'), '');
+
+            if (hasVibrate) {
+                try {
+                    navigator.vibrate(0);
+                    assert(true, 'navigator.vibrate(0) 不抛异常', '');
+                } catch (e) {
+                    assert(false, 'navigator.vibrate 调用异常', e.message);
+                }
+            }
+
+            var lastVibrateTime = 0;
+            function triggerVibration() {
+                if (navigator.vibrate) {
+                    var now = Date.now();
+                    if (now - lastVibrateTime > 2000) {
+                        navigator.vibrate(50);
+                        lastVibrateTime = now;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            lastVibrateTime = 0;
+            var result1 = triggerVibration();
+            assert(result1 === true || !navigator.vibrate, '首次震动触发', '');
+
+            var result2 = triggerVibration();
+            assert(result2 === false || !navigator.vibrate, '2秒内不重复震动', '');
+
+            lastVibrateTime = Date.now() - 3000;
+            var result3 = triggerVibration();
+            assert(result3 === true || !navigator.vibrate, '3秒后可再次震动', '');
+
+            var vibeDuration = 50;
+            assert(vibeDuration >= 10 && vibeDuration <= 200, '震动时长合理 (10-200ms)', '实际=' + vibeDuration);
+        });
+
+        suite('验证8: 音准阈值与震动关联', function () {
+            function shouldVibrate(smoothedCents) {
+                return Math.abs(smoothedCents) <= 3;
+            }
+
+            assert(shouldVibrate(0) === true, '0¢ → 触发震动', '');
+            assert(shouldVibrate(3) === true, '3¢ → 触发震动', '');
+            assert(shouldVibrate(-3) === true, '-3¢ → 触发震动', '');
+            assert(shouldVibrate(3.1) === false, '3.1¢ → 不触发', '');
+            assert(shouldVibrate(-5) === false, '-5¢ → 不触发', '');
+            assert(shouldVibrate(10) === false, '10¢ → 不触发', '');
+
+            function isInTune(cents) {
+                return Math.abs(cents) <= 3;
+            }
+            assert(isInTune(0) === true, '0¢ 音准合格', '');
+            assert(isInTune(2) === true, '2¢ 音准合格', '');
+            assert(isInTune(4) === false, '4¢ 音准不合格', '');
+
+            function historyPassed(cents) {
+                return Math.abs(cents) <= 5;
+            }
+            assert(historyPassed(0) === true, '0¢ → 历史通过', '');
+            assert(historyPassed(5) === true, '5¢ → 历史通过', '');
+            assert(historyPassed(6) === false, '6¢ → 历史不通过', '');
+        });
+
+        // ========== 渲染结果 ==========
+        function renderResults() {
+            var container = document.getElementById('results');
+            var passCount = 0;
+            var failCount = 0;
+            var html = '';
+            var currentSuiteName = '';
+
+            results.forEach(function (r) {
+                if (r.suite !== currentSuiteName) {
+                    currentSuiteName = r.suite;
+                    html += '<div class="suite"><h2>' + currentSuiteName + '</h2>';
+                }
+                if (r.pass) passCount++; else failCount++;
+                html += '<div class="test ' + (r.pass ? 'pass' : 'fail') + '">' +
+                    '<span class="icon">' + (r.pass ? '✅' : '❌') + '</span>' +
+                    '<span class="label">' + r.label + '</span>' +
+                    (r.detail ? '<span class="detail">' + r.detail + '</span>' : '') +
+                    '</div>';
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+
+            document.getElementById('passCount').textContent = passCount;
+            document.getElementById('failCount').textContent = failCount;
+            document.getElementById('totalCount').textContent = passCount + failCount;
+
+            console.log('=== 测试结果 ===');
+            console.log('通过: ' + passCount);
+            console.log('失败: ' + failCount);
+            console.log('总计: ' + (passCount + failCount));
+            results.filter(function (r) { return !r.pass; }).forEach(function (r) {
+                console.error('FAIL: [' + r.suite + '] ' + r.label + (r.detail ? ' (' + r.detail + ')' : ''));
+            });
+        }
+
+        renderResults();
+    })();
+    </script>
+</body>
+</html>

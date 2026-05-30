@@ -1,0 +1,10 @@
+<template>
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" v-bind="$attrs"><path d="m12 17 6.2 3.7-1.6-7 5.5-4.7-7.2-0.61-2.8-6.6-2.8 6.6-7.2 0.61 5.5 4.7-1.6 7z" fill="#FFD700"/></svg>
+</template>
+
+<script>
+export default {
+  name: 'Icon2',
+  inheritAttrs: false
+};
+</script>
