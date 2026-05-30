@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FinalDraft DocumentType="Script" Template="No" Version="1">
+  <Content>
+    <Paragraph Type="Scene Heading">
+      <Text>INT. 咖啡店内，男女初次相遇 - DAY</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Text>咖啡店内，男女初次相遇。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>男主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(紧张地结巴)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>你好...请问这里有人坐吗？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>女主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(好奇地微笑)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>没有呢，请坐！你是在看什么书呀？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>男主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(脸颊微红)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>是...是一本关于量子物理的科普书。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>女主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(饶有兴致地眨眼)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>哇，量子物理！听起来很有意思，能给我讲讲吗？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>男主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(逐渐放松)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>当...当然可以。其实量子世界比我们想象的要奇妙得多...</Text>
+    </Paragraph>
+  </Content>
+</FinalDraft>

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-30T14:02:42.110Z",
+  "model": "MobileNet V2 (快速)",
+  "threshold": 0.5,
+  "detectionMode": "image",
+  "resolution": {
+    "width": 800,
+    "height": 600
+  },
+  "totalDetections": 1,
+  "detections": [
+    {
+      "id": 1,
+      "class": "person",
+      "confidence": 0.9714979529380798,
+      "confidencePercent": "97.1%",
+      "boundingBox": {
+        "x": 189,
+        "y": 10,
+        "width": 498,
+        "height": 587
+      }
+    }
+  ]
+}

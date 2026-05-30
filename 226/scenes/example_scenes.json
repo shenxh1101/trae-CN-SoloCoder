@@ -1,0 +1,45 @@
+[
+  {
+    "scene": "咖啡店内，男女初次相遇",
+    "character1": {
+      "name": "男主",
+      "personality": "内向，书呆子，喜欢物理"
+    },
+    "character2": {
+      "name": "女主",
+      "personality": "外向，风趣，喜欢艺术"
+    },
+    "min_turns": 4,
+    "max_turns": 6,
+    "num_versions": 2,
+    "include_emotion": true
+  },
+  {
+    "scene": "雨天公交车站，两人同撑一把伞",
+    "character1": {
+      "name": "小蓝",
+      "personality": "温柔体贴，有些害羞"
+    },
+    "character2": {
+      "name": "小红",
+      "personality": "活泼开朗，有点冒失"
+    },
+    "min_turns": 3,
+    "max_turns": 5,
+    "num_versions": 1
+  },
+  {
+    "scene": "公司会议室，竞争对手讨论合作",
+    "character1": {
+      "name": "张经理",
+      "personality": "精明干练，强势"
+    },
+    "character2": {
+      "name": "李总监",
+      "personality": "沉稳睿智，不卑不亢"
+    },
+    "min_turns": 4,
+    "max_turns": 6,
+    "num_versions": 2
+  }
+]

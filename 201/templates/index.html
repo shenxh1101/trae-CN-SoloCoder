@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短网址服务</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 40px; max-width: 600px; width: 100%; }
+        h1 { color: #333; margin-bottom: 8px; text-align: center; font-size: 32px; }
+        .subtitle { color: #666; text-align: center; margin-bottom: 30px; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; font-size: 14px; }
+        input[type="url"], input[type="text"], input[type="number"], input[type="password"] { width: 100%; padding: 12px 16px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 14px; transition: all 0.3s; }
+        input:focus { outline: none; border-color: #667eea; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        button:hover { transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        .result { margin-top: 24px; padding: 20px; background: #f8f9fa; border-radius: 8px; display: none; }
+        .result.show { display: block; }
+        .result h3 { color: #333; margin-bottom: 12px; font-size: 16px; }
+        .short-url { display: flex; gap: 8px; margin-bottom: 12px; }
+        .short-url input { flex: 1; background: white; }
+        .copy-btn { padding: 12px 20px; background: #667eea; width: auto; font-size: 14px; }
+        .admin-key { background: #fff3cd; padding: 12px; border-radius: 6px; margin-top: 12px; font-size: 13px; }
+        .admin-key strong { color: #856404; }
+        .links { margin-top: 24px; text-align: center; font-size: 14px; }
+        .links a { color: #667eea; text-decoration: none; margin: 0 12px; }
+        .links a:hover { text-decoration: underline; }
+        .error { color: #dc3545; margin-top: 12px; font-size: 14px; }
+        .success { color: #28a745; margin-top: 12px; font-size: 14px; }
+        .qr-section { margin-top: 16px; text-align: center; }
+        .qr-section img { width: 150px; height: 150px; border: 1px solid #ddd; padding: 8px; background: white; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 短网址服务</h1>
+        <p class="subtitle">快速生成短网址，支持统计、密码保护、自定义短码</p>
+        
+        <form id="createForm">
+            <div class="form-group">
+                <label for="url">长网址 *</label>
+                <input type="url" id="url" name="url" placeholder="https://example.com/very/long/url" required>
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label for="custom_code">自定义短码（可选）</label>
+                    <input type="text" id="custom_code" name="custom_code" placeholder="3-10位字母数字" maxlength="10">
+                </div>
+                <div class="form-group">
+                    <label for="expire_days">有效期（天，0=永久）</label>
+                    <input type="number" id="expire_days" name="expire_days" value="0" min="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">访问密码（可选）</label>
+                <input type="password" id="password" name="password" placeholder="设置密码后访问需要验证">
+            </div>
+            
+            <button type="submit">生成短网址</button>
+            <div id="message"></div>
+        </form>
+        
+        <div id="result" class="result">
+            <h3>✅ 生成成功！</h3>
+            <div class="short-url">
+                <input type="text" id="shortUrl" readonly>
+                <button class="copy-btn" onclick="copyUrl()">复制</button>
+            </div>
+            <div class="qr-section">
+                <img id="qrImg" alt="二维码">
+            </div>
+            <div class="admin-key">
+                <strong>🔑 管理密钥：</strong><span id="adminKey"></span><br>
+                <small>请妥善保管此密钥，用于管理和删除短网址</small>
+            </div>
+            <div style="margin-top: 16px; text-align: center;">
+                <a id="statsLink" style="color: #667eea; text-decoration: none;">查看统计信息</a>
+            </div>
+        </div>
+        
+        <div class="links">
+            <a href="/batch">批量生成</a>
+            <a href="/admin">管理后台</a>
+            <a href="/export">导出报表</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('createForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const message = document.getElementById('message');
+            const result = document.getElementById('result');
+            message.innerHTML = '';
+            result.classList.remove('show');
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/create', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('shortUrl').value = data.short_url;
+                    document.getElementById('adminKey').textContent = data.admin_key;
+                    document.getElementById('qrImg').src = '/' + data.short_code + '/qr';
+                    document.getElementById('statsLink').href = '/' + data.short_code + '/stats';
+                    result.classList.add('show');
+                } else {
+                    message.innerHTML = '<div class="error">❌ ' + data.error + '</div>';
+                }
+            } catch (err) {
+                message.innerHTML = '<div class="error">❌ 网络错误，请重试</div>';
+            }
+        });
+        
+        function copyUrl() {
+            const input = document.getElementById('shortUrl');
+            input.select();
+            document.execCommand('copy');
+            const message = document.getElementById('message');
+            message.innerHTML = '<div class="success">✅ 已复制到剪贴板</div>';
+            setTimeout(() => message.innerHTML = '', 2000);
+        }
+    </script>
+</body>
+</html>

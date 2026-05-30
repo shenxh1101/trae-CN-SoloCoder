@@ -1,0 +1,5 @@
+{
+  "simulate_delay": true,
+  "min_delay_seconds": 0.3,
+  "max_delay_seconds": 1.5
+}

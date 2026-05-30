@@ -1,0 +1,37 @@
+# AI剧本对话生成器配置文件
+
+# 默认生成配置
+defaults:
+  min_turns: 4
+  max_turns: 6
+  num_versions: 3
+  temperature: 0.8
+  include_emotion_tags: true
+  output_dir: ./output
+
+# 导出格式配置
+export_formats:
+  - txt
+  - json
+  - fdx
+
+# 情感分析配置
+sentiment_analysis:
+  enabled: true
+  ascii_chart_width: 50
+  emotion_categories:
+    - joy
+    - sadness
+    - anger
+    - fear
+    - surprise
+    - neutral
+    - tension
+    - affection
+
+# 目录配置
+directories:
+  history: ./history
+  output: ./output
+  scenes: ./scenes
+  characters: ./characters

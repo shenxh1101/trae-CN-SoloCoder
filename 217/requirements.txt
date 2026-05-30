@@ -1,0 +1,12 @@
+# No external dependencies required for core functionality
+# The tool uses only Python standard library (urllib, ast, json, etc.)
+# Optional: install these for enhanced features
+
+# If you want to use the requests library instead of urllib (optional):
+# requests>=2.28.0
+
+# If you want better JavaScript parsing (optional):
+# esprima>=4.0.1
+
+# If you want better Java parsing (optional):
+# javalang>=0.13.0

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 闲聊机器人</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">🤖</div>
+                <h1>小智聊天</h1>
+            </div>
+
+            <div class="panel">
+                <h3>性格设定</h3>
+                <select id="personality-select" class="select-style">
+                    <option value="friendly">😊 友好型</option>
+                    <option value="sarcastic">😏 讽刺型</option>
+                    <option value="professional">👔 专业型</option>
+                </select>
+                <div id="personality-info" class="personality-info">
+                    当前: <span id="current-personality">友好</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>扩展知识库</h3>
+                <div class="upload-area" id="upload-area">
+                    <input type="file" id="qa-file" accept=".json" hidden>
+                    <div class="upload-icon">📁</div>
+                    <p>拖拽 JSON 文件到此处<br>或点击上传</p>
+                    <button class="btn-secondary" onclick="document.getElementById('qa-file').click()">选择文件</button>
+                </div>
+                <div id="upload-status" class="upload-status"></div>
+            </div>
+
+            <div class="panel">
+                <h3>会话信息</h3>
+                <div class="info-item">
+                    <span class="label">会话ID:</span>
+                    <span class="value" id="session-id">{{ session_id[:8] }}...</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">对话轮次:</span>
+                    <span class="value" id="round-count">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">当前情感:</span>
+                    <span class="value" id="current-emotion">—</span>
+                </div>
+            </div>
+
+            <div class="footer-link">
+                <a href="/admin" target="_blank">🔐 管理后台</a>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <main class="chat-main">
+            <div class="chat-header">
+                <button class="sidebar-toggle" id="sidebar-toggle" title="打开控制面板">☰</button>
+                <div class="bot-info">
+                    <div class="bot-avatar">🤖</div>
+                    <div>
+                        <div class="bot-name">小智</div>
+                        <div class="bot-status"><span class="status-dot"></span> 在线</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messages-container">
+                <div class="message bot-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <p>你好呀！我是你的AI聊天伙伴小智。很高兴认识你！</p>
+                        <p>有什么想聊的吗？你可以：</p>
+                        <ul>
+                            <li>和我闲聊任何话题</li>
+                            <li>在左侧切换我的性格</li>
+                            <li>上传自定义问答对扩展我的知识</li>
+                            <li>点击 🎤 按钮用语音输入</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="suggestions-container" id="suggestions-container" style="display: none;">
+                <div class="suggestions-label">快速回复：</div>
+                <div class="suggestions-list" id="suggestions-list"></div>
+            </div>
+
+            <div class="input-area">
+                <button class="voice-btn" id="voice-btn" title="语音输入">
+                    <span class="mic-icon">🎤</span>
+                </button>
+                <textarea id="message-input" placeholder="输入你想说的话..." rows="1"></textarea>
+                <button class="send-btn" id="send-btn">发送</button>
+            </div>
+
+            <div class="voice-status" id="voice-status" style="display: none;">
+                <span class="pulse">🎙️</span> 正在聆听... 点击停止
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const SESSION_ID = "{{ session_id }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>规则管理 - AI语音指令模拟执行器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2a2a4a;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .navbar h1 {
+            font-size: 22px;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .navbar nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 14px;
+            transition: color 0.2s;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        .navbar nav a:hover { color: #00d2ff; background: rgba(0,210,255,0.08); }
+        .navbar nav a.active { color: #00d2ff; background: rgba(0,210,255,0.08); }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .card {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #00d2ff;
+            margin-bottom: 16px;
+        }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #7b2ff7;
+        }
+        .form-group textarea {
+            min-height: 60px;
+            resize: vertical;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+        .form-row .form-group { flex: 1; }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.25s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #7b2ff7, #00d2ff);
+            color: #fff;
+        }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .btn-secondary { background: #2a2a4a; color: #ccc; }
+        .btn-secondary:hover { background: #3a3a5a; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .rules-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .rules-table th {
+            background: #1a1a2e;
+            padding: 10px 12px;
+            text-align: left;
+            color: #00d2ff;
+            font-weight: 600;
+            border-bottom: 1px solid #2a2a4a;
+        }
+        .rules-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #1a1a2e;
+            color: #ccc;
+        }
+        .rules-table tr:hover td { background: #12122a; }
+        .keyword-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(123,47,247,0.15);
+            color: #b388ff;
+            border-radius: 4px;
+            font-size: 11px;
+            margin: 2px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 24px;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            color: #00d2ff;
+            margin-bottom: 16px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+        .upload-area {
+            border: 2px dashed #2a2a4a;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upload-area:hover {
+            border-color: #7b2ff7;
+            background: rgba(123,47,247,0.05);
+        }
+        .upload-area input[type="file"] { display: none; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-followup { background: rgba(155,89,182,0.15); color: #9b59b6; }
+        .config-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .config-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        .config-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+        }
+        .config-switch input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #7b2ff7;
+        }
+        .config-switch label {
+            font-size: 14px;
+            color: #ccc;
+            margin: 0;
+        }
+        .warning-text {
+            color: #e74c3c;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .warning-icon {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .import-preview {
+            background: #0f0f1a;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            font-family: monospace;
+            font-size: 12px;
+            color: #888;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🎙️ AI语音指令模拟执行器</h1>
+        <nav>
+            <a href="/">指令执行</a>
+            <a href="/admin" class="active">规则管理</a>
+            <a href="/stats">指令统计</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h3>➕ 添加新规则</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>关键词（逗号分隔）</label>
+                    <input type="text" id="addKeywords" placeholder="例如：打开微信,微信,wechat">
+                </div>
+                <div class="form-group">
+                    <label>分类</label>
+                    <input type="text" id="addCategory" placeholder="例如：应用操作">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>响应文本</label>
+                    <input type="text" id="addText" placeholder="例如：正在打开微信...">
+                </div>
+                <div class="form-group">
+                    <label>模拟命令</label>
+                    <input type="text" id="addCommand" placeholder="例如：open -a WeChat">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>API调用（JSON格式，可选）</label>
+                    <textarea id="addApiCall" placeholder='{"method": "POST", "endpoint": "/api/app/launch", "params": {"app": "wechat"}}'></textarea>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:4px;">
+                <label style="display:flex;align-items:center;gap:6px;color:#888;font-size:13px;">
+                    <input type="checkbox" id="addFollowup"> 上下文追问规则
+                </label>
+                <button class="btn btn-primary" onclick="addRule()">添加规则</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>⚙️ 全局配置</h3>
+            <div class="config-section">
+                <div class="config-item">
+                    <label style="display:block;font-size:13px;color:#888;margin-bottom:6px;">模拟执行延时</label>
+                    <div class="config-switch">
+                        <input type="checkbox" id="configSimulateDelay" onchange="saveConfig()">
+                        <label for="configSimulateDelay">
+                            <strong style="color:#e0e0e0;">启用模拟延时</strong>
+                            <span style="color:#888;font-size:12px;display:block;">执行指令时添加随机延时，更真实</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="config-item">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>最小时延（秒）</label>
+                        <input type="number" id="configMinDelay" step="0.1" min="0" max="10" value="0.3" onchange="saveConfig()">
+                    </div>
+                </div>
+                <div class="config-item">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>最大时延（秒）</label>
+                        <input type="number" id="configMaxDelay" step="0.1" min="0" max="10" value="1.5" onchange="saveConfig()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="margin-bottom:0;">📋 规则列表</h3>
+                <div class="toolbar" style="margin-bottom:0;">
+                    <button class="btn btn-sm btn-primary" onclick="exportRules()">📥 导出规则库</button>
+                    <button class="btn btn-sm btn-secondary" onclick="document.getElementById('importFile').click()">📤 导入规则库</button>
+                    <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importRules()">
+                </div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="rules-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>关键词</th>
+                            <th>分类</th>
+                            <th>响应文本</th>
+                            <th>模拟命令</th>
+                            <th>追问</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rulesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <h3>✏️ 编辑规则</h3>
+            <input type="hidden" id="editRuleId">
+            <div class="form-group">
+                <label>关键词（逗号分隔）</label>
+                <input type="text" id="editKeywords">
+            </div>
+            <div class="form-group">
+                <label>分类</label>
+                <input type="text" id="editCategory">
+            </div>
+            <div class="form-group">
+                <label>响应文本</label>
+                <input type="text" id="editText">
+            </div>
+            <div class="form-group">
+                <label>模拟命令</label>
+                <input type="text" id="editCommand">
+            </div>
+            <div class="form-group">
+                <label>API调用（JSON格式）</label>
+                <textarea id="editApiCall"></textarea>
+            </div>
+            <label style="display:flex;align-items:center;gap:6px;color:#888;font-size:13px;margin-bottom:8px;">
+                <input type="checkbox" id="editFollowup"> 上下文追问规则
+            </label>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveEditRule()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Confirmation Modal -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal">
+            <div class="warning-icon">⚠️</div>
+            <h3 style="text-align:center;color:#e74c3c;">确认导入规则库</h3>
+            <p class="warning-text">
+                导入操作将 <strong>完全覆盖</strong> 现有的所有规则！此操作不可撤销。
+            </p>
+            <div class="import-preview" id="importPreview">
+                待导入内容预览...
+            </div>
+            <div style="margin-top:12px;padding:10px;background:rgba(231,76,60,0.1);border-radius:8px;border:1px solid rgba(231,76,60,0.3);">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                    <input type="checkbox" id="importConfirmCheck" style="accent-color:#e74c3c;">
+                    <span style="font-size:13px;color:#e74c3c;">我已了解此操作将覆盖所有现有规则</span>
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeImportModal()">取消</button>
+                <button class="btn btn-danger" id="importConfirmBtn" onclick="confirmImport()" disabled>确认导入</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pendingImportFile = null;
+        let currentConfig = null;
+
+        async function loadRules() {
+            const res = await fetch('/api/rules');
+            const rules = await res.json();
+            renderRulesTable(rules);
+            loadConfig();
+        }
+
+        async function loadConfig() {
+            const res = await fetch('/api/config');
+            const config = await res.json();
+            currentConfig = config;
+            document.getElementById('configSimulateDelay').checked = config.simulate_delay;
+            document.getElementById('configMinDelay').value = config.min_delay_seconds;
+            document.getElementById('configMaxDelay').value = config.max_delay_seconds;
+        }
+
+        async function saveConfig() {
+            const simulateDelay = document.getElementById('configSimulateDelay').checked;
+            const minDelay = parseFloat(document.getElementById('configMinDelay').value);
+            const maxDelay = parseFloat(document.getElementById('configMaxDelay').value);
+
+            if (minDelay < 0 || maxDelay < 0) {
+                alert('延时不能为负数');
+                loadConfig();
+                return;
+            }
+            if (minDelay > maxDelay) {
+                alert('最小时延不能大于最大时延');
+                loadConfig();
+                return;
+            }
+
+            await fetch('/api/config', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    simulate_delay: simulateDelay,
+                    min_delay_seconds: minDelay,
+                    max_delay_seconds: maxDelay
+                })
+            });
+        }
+
+        function renderRulesTable(rules) {
+            const tbody = document.getElementById('rulesTableBody');
+            tbody.innerHTML = rules.map(r => `<tr>
+                <td style="color:#888;font-size:11px;">${r.id}</td>
+                <td>${r.keywords.map(k => '<span class="keyword-tag">' + escapeHtml(k) + '</span>').join('')}</td>
+                <td>${escapeHtml(r.category || '')}</td>
+                <td>${escapeHtml(r.response.text || '')}</td>
+                <td><code style="color:#e74c3c;font-size:12px;">${escapeHtml(r.response.command || '-')}</code></td>
+                <td>${r.context_followup ? '<span class="badge badge-followup">追问</span>' : '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-secondary" onclick="openEditModal('${r.id}')" style="margin-right:4px;">编辑</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteRule('${r.id}')">删除</button>
+                </td>
+            </tr>`).join('');
+        }
+
+        async function addRule() {
+            const keywords = document.getElementById('addKeywords').value.split(',').map(s => s.trim()).filter(Boolean);
+            const category = document.getElementById('addCategory').value.trim();
+            const text = document.getElementById('addText').value.trim();
+            const command = document.getElementById('addCommand').value.trim() || null;
+            const apiCallStr = document.getElementById('addApiCall').value.trim();
+            const followup = document.getElementById('addFollowup').checked;
+
+            if (!keywords.length || !text) {
+                alert('关键词和响应文本不能为空');
+                return;
+            }
+
+            let apiCall = null;
+            if (apiCallStr) {
+                try { apiCall = JSON.parse(apiCallStr); } catch(e) { alert('API调用JSON格式错误'); return; }
+            }
+
+            const res = await fetch('/api/rules', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    keywords, category: category || '自定义',
+                    response: {text, command, api_call: apiCall},
+                    context_followup: followup
+                })
+            });
+
+            if (res.ok) {
+                document.getElementById('addKeywords').value = '';
+                document.getElementById('addCategory').value = '';
+                document.getElementById('addText').value = '';
+                document.getElementById('addCommand').value = '';
+                document.getElementById('addApiCall').value = '';
+                document.getElementById('addFollowup').checked = false;
+                loadRules();
+            }
+        }
+
+        async function deleteRule(id) {
+            if (!confirm('确定删除此规则？')) return;
+            await fetch('/api/rules/' + id, {method: 'DELETE'});
+            loadRules();
+        }
+
+        let allRules = [];
+        async function openEditModal(id) {
+            const res = await fetch('/api/rules');
+            allRules = await res.json();
+            const rule = allRules.find(r => r.id === id);
+            if (!rule) return;
+
+            document.getElementById('editRuleId').value = id;
+            document.getElementById('editKeywords').value = rule.keywords.join(', ');
+            document.getElementById('editCategory').value = rule.category || '';
+            document.getElementById('editText').value = rule.response.text || '';
+            document.getElementById('editCommand').value = rule.response.command || '';
+            document.getElementById('editApiCall').value = rule.response.api_call ? JSON.stringify(rule.response.api_call, null, 2) : '';
+            document.getElementById('editFollowup').checked = !!rule.context_followup;
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        async function saveEditRule() {
+            const id = document.getElementById('editRuleId').value;
+            const keywords = document.getElementById('editKeywords').value.split(',').map(s => s.trim()).filter(Boolean);
+            const category = document.getElementById('editCategory').value.trim();
+            const text = document.getElementById('editText').value.trim();
+            const command = document.getElementById('editCommand').value.trim() || null;
+            const apiCallStr = document.getElementById('editApiCall').value.trim();
+            const followup = document.getElementById('editFollowup').checked;
+
+            let apiCall = null;
+            if (apiCallStr) {
+                try { apiCall = JSON.parse(apiCallStr); } catch(e) { alert('API调用JSON格式错误'); return; }
+            }
+
+            await fetch('/api/rules/' + id, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    keywords, category,
+                    response: {text, command, api_call: apiCall},
+                    context_followup: followup
+                })
+            });
+
+            closeEditModal();
+            loadRules();
+        }
+
+        function exportRules() {
+            window.open('/api/rules/export', '_blank');
+        }
+
+        async function importRules() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files[0]) return;
+
+            const file = fileInput.files[0];
+            const content = await file.text();
+
+            let parsed = null;
+            let previewText = '';
+            try {
+                parsed = JSON.parse(content);
+                if (!Array.isArray(parsed)) {
+                    alert('JSON格式错误，应为数组');
+                    fileInput.value = '';
+                    return;
+                }
+                previewText = `文件名: ${file.name}\n文件大小: ${file.size} bytes\n规则数量: ${parsed.length} 条\n\n前3条规则预览:\n`;
+                parsed.slice(0, 3).forEach((r, i) => {
+                    previewText += `  ${i+1}. ${r.keywords ? r.keywords.join(', ') : '无关键词'} → ${r.response ? r.response.text : '无响应'}\n`;
+                });
+                if (parsed.length > 3) {
+                    previewText += `  ...还有 ${parsed.length - 3} 条更多...\n`;
+                }
+            } catch (e) {
+                alert('JSON解析失败: ' + e.message);
+                fileInput.value = '';
+                return;
+            }
+
+            pendingImportFile = file;
+            document.getElementById('importPreview').textContent = previewText;
+            document.getElementById('importConfirmCheck').checked = false;
+            document.getElementById('importConfirmBtn').disabled = true;
+
+            document.getElementById('importConfirmCheck').onchange = function() {
+                document.getElementById('importConfirmBtn').disabled = !this.checked;
+            };
+
+            document.getElementById('importModal').classList.add('active');
+            fileInput.value = '';
+        }
+
+        function closeImportModal() {
+            pendingImportFile = null;
+            document.getElementById('importModal').classList.remove('active');
+        }
+
+        async function confirmImport() {
+            if (!pendingImportFile) return;
+
+            const formData = new FormData();
+            formData.append('file', pendingImportFile);
+
+            const res = await fetch('/api/rules/import', {method: 'POST', body: formData});
+            const data = await res.json();
+
+            closeImportModal();
+
+            if (res.ok) {
+                alert('导入成功，共 ' + data.count + ' 条规则');
+                loadRules();
+            } else {
+                alert('导入失败: ' + (data.error || '未知错误'));
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        loadRules();
+    </script>
+</body>
+</html>

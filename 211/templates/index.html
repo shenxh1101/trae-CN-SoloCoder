@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI语音指令模拟执行器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2a2a4a;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .navbar h1 {
+            font-size: 22px;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .navbar nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 14px;
+            transition: color 0.2s;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        .navbar nav a:hover, .navbar nav a.active {
+            color: #00d2ff;
+            background: rgba(0,210,255,0.08);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s;
+        }
+        .tab-btn:hover { color: #ccc; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #7b2ff7, #00d2ff);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(123,47,247,0.3);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #00d2ff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .input-group input, .input-group select {
+            flex: 1;
+            padding: 12px 16px;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: #7b2ff7;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #7b2ff7, #00d2ff);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(123,47,247,0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(123,47,247,0.4);
+        }
+        .btn-secondary {
+            background: #2a2a4a;
+            color: #ccc;
+        }
+        .btn-secondary:hover { background: #3a3a5a; }
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+        .quick-commands {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .quick-cmd {
+            padding: 8px 16px;
+            background: #1e1e3a;
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .quick-cmd:hover {
+            border-color: #7b2ff7;
+            color: #7b2ff7;
+            background: rgba(123,47,247,0.08);
+        }
+        .result-panel {
+            background: #0a0a15;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 120px;
+        }
+        .result-panel.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 14px;
+        }
+        .result-item {
+            margin-bottom: 12px;
+        }
+        .result-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .result-value {
+            font-size: 14px;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            background: #12122a;
+            border-radius: 8px;
+            border-left: 3px solid #7b2ff7;
+        }
+        .result-value.command { border-left-color: #e74c3c; }
+        .result-value.api { border-left-color: #2ecc71; }
+        .confidence-bar {
+            height: 4px;
+            background: #2a2a4a;
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #e74c3c, #f1c40f, #2ecc71);
+            transition: width 0.5s;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-exact { background: rgba(46,204,113,0.15); color: #2ecc71; }
+        .badge-synonym { background: rgba(0,210,255,0.15); color: #00d2ff; }
+        .badge-fuzzy { background: rgba(241,196,15,0.15); color: #f1c40f; }
+        .badge-context { background: rgba(155,89,182,0.15); color: #9b59b6; }
+        .badge-none { background: rgba(231,76,60,0.15); color: #e74c3c; }
+        .history-list {
+            list-style: none;
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #12122a;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        .history-item:hover { background: #1a1a3a; }
+        .history-cmd {
+            font-weight: 600;
+            color: #00d2ff;
+            font-size: 14px;
+        }
+        .history-category {
+            font-size: 12px;
+            color: #888;
+        }
+        .history-time {
+            font-size: 11px;
+            color: #555;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.active { display: block; }
+        .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #2a2a4a;
+            border-top-color: #7b2ff7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .json-output {
+            background: #0a0a15;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 12px;
+            color: #2ecc71;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .upload-area {
+            border: 2px dashed #2a2a4a;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upload-area:hover {
+            border-color: #7b2ff7;
+            background: rgba(123,47,247,0.05);
+        }
+        .upload-area input[type="file"] { display: none; }
+        .batch-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .batch-table th {
+            background: #1a1a2e;
+            padding: 10px 12px;
+            text-align: left;
+            color: #00d2ff;
+            font-weight: 600;
+            border-bottom: 1px solid #2a2a4a;
+        }
+        .batch-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #1a1a2e;
+            color: #ccc;
+        }
+        .batch-table tr:hover td { background: #12122a; }
+        .format-info {
+            background: #12122a;
+            border: 1px solid #2a2a4a;
+            border-left: 3px solid #7b2ff7;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .format-info h4 {
+            color: #00d2ff;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .format-info ul {
+            padding-left: 20px;
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .format-info code {
+            background: #0f0f1a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e74c3c;
+            font-size: 12px;
+        }
+        .batch-detail {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #0f0f1a;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .batch-detail .label {
+            color: #888;
+            margin-right: 6px;
+        }
+        .batch-detail .cmd-code {
+            color: #e74c3c;
+            font-family: monospace;
+        }
+        .batch-detail .api-code {
+            color: #2ecc71;
+            font-family: monospace;
+        }
+        .batch-expand-btn {
+            background: none;
+            border: 1px solid #2a2a4a;
+            color: #888;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .batch-expand-btn:hover {
+            color: #00d2ff;
+            border-color: #00d2ff;
+        }
+        .context-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(155,89,182,0.1);
+            border: 1px solid rgba(155,89,182,0.3);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #9b59b6;
+            margin-bottom: 16px;
+        }
+        .context-indicator .dot {
+            width: 6px;
+            height: 6px;
+            background: #9b59b6;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .dialogue-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .dialogue-msg {
+            max-width: 80%;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .dialogue-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #7b2ff7, #5b1fd7);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .dialogue-msg.system {
+            align-self: flex-start;
+            background: #1e1e3a;
+            border: 1px solid #2a2a4a;
+            color: #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+        .delay-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #888;
+        }
+        .delay-toggle input[type="checkbox"] {
+            accent-color: #7b2ff7;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🎙️ AI语音指令模拟执行器</h1>
+        <nav>
+            <a href="/" class="active">指令执行</a>
+            <a href="/admin">规则管理</a>
+            <a href="/stats">指令统计</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('execute')">指令执行</button>
+            <button class="tab-btn" onclick="switchTab('dialogue')">多轮对话</button>
+            <button class="tab-btn" onclick="switchTab('batch')">批量测试</button>
+            <button class="tab-btn" onclick="switchTab('history')">指令历史</button>
+        </div>
+
+        <!-- Tab: 指令执行 -->
+        <div id="tab-execute" class="tab-content active">
+            <div class="card">
+                <h3>⚡ 快速指令</h3>
+                <div class="quick-commands" id="quickCommands">
+                    {% for rule in rules %}
+                    <span class="quick-cmd" onclick="quickExecute('{{ rule.keywords[0] }}')">{{ rule.keywords[0] }}</span>
+                    {% endfor %}
+                </div>
+                <div class="input-group">
+                    <input type="text" id="commandInput" placeholder="输入语音指令，如：打开记事本、查询天气..."
+                           onkeydown="if(event.key==='Enter')executeCommand()">
+                    <select id="outputFormat" onchange="toggleOutputFormat()">
+                        <option value="visual">可视化</option>
+                        <option value="json">JSON格式</option>
+                    </select>
+                    <label class="delay-toggle">
+                        <input type="checkbox" id="simulateDelay" checked>
+                        模拟延时
+                    </label>
+                    <button class="btn btn-primary" onclick="executeCommand()">执行</button>
+                </div>
+            </div>
+
+            <div id="contextIndicator" style="display:none;">
+                <div class="context-indicator">
+                    <span class="dot"></span>
+                    <span>当前上下文: <strong id="contextCategory"></strong></span>
+                    <button class="btn btn-sm btn-secondary" onclick="clearContext()" style="margin-left:8px;">清除上下文</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📋 执行结果</h3>
+                <div id="resultPanel" class="result-panel empty">
+                    输入指令并点击执行，结果将在此显示
+                </div>
+                <div id="jsonOutput" class="json-output" style="display:none;margin-top:16px;"></div>
+            </div>
+        </div>
+
+        <!-- Tab: 多轮对话 -->
+        <div id="tab-dialogue" class="tab-content">
+            <div class="card">
+                <h3>💬 多轮对话模拟</h3>
+                <p style="color:#888;font-size:13px;margin-bottom:16px;">
+                    多轮对话会保持上下文，例如先问"查询天气"，再问"那明天呢？"
+                </p>
+                <div class="dialogue-flow" id="dialogueFlow"></div>
+                <div class="input-group">
+                    <input type="text" id="dialogueInput" placeholder="输入对话内容..."
+                           onkeydown="if(event.key==='Enter')sendDialogue()">
+                    <button class="btn btn-primary" onclick="sendDialogue()">发送</button>
+                    <button class="btn btn-secondary" onclick="clearDialogue()">清空对话</button>
+                </div>
+                <div id="dialogueContextInfo" class="context-indicator" style="display:none;margin-top:12px;">
+                    <span class="dot"></span>
+                    <span>上下文: <strong id="dialogueContextCategory"></strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: 批量测试 -->
+        <div id="tab-batch" class="tab-content">
+            <div class="card">
+                <h3>📁 批量指令测试</h3>
+
+                <div class="format-info">
+                    <h4>📋 CSV 文件格式要求</h4>
+                    <ul>
+                        <li><strong>必须包含</strong> <code>command</code> 列，用于指定要测试的指令文本</li>
+                        <li>可选列：<code>category</code>（预期分类，用于结果对比）、<code>expected_response</code>（预期响应）</li>
+                        <li>文件编码必须为 UTF-8，避免中文乱码</li>
+                        <li>首行为表头，每行一条指令，空行会被自动跳过</li>
+                    </ul>
+                    <div style="margin-top:10px;padding:10px;background:#0a0a15;border-radius:6px;font-family:monospace;font-size:12px;color:#2ecc71;">
+                        command,category,expected_response<br>
+                        打开记事本,应用操作,正在打开记事本...<br>
+                        查询天气,信息查询,正在查询天气信息...<br>
+                        播放音乐,媒体控制,正在播放音乐...
+                    </div>
+                </div>
+
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('csvFile').click()">
+                    <p style="color:#888;font-size:16px;margin-bottom:8px;">📂 点击上传CSV文件</p>
+                    <p style="color:#555;font-size:12px;">支持 .csv 格式，需包含 command 列</p>
+                    <input type="file" id="csvFile" accept=".csv" onchange="uploadCSV()">
+                </div>
+                <div id="batchLoading" class="loading">
+                    <div class="spinner"></div>
+                    <p style="color:#888;margin-top:8px;">批量处理中...</p>
+                </div>
+                <div id="batchResults" style="margin-top:16px;display:none;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+                        <h3 style="color:#00d2ff;font-size:14px;margin-bottom:0;">批量测试结果 · <span id="batchSummary" style="color:#888;font-size:13px;"></span></h3>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-sm btn-secondary" onclick="toggleAllBatchDetails(this)">展开全部详情</button>
+                            <button class="btn btn-sm btn-secondary" onclick="downloadBatchJSON()">下载JSON结果</button>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="batch-table" id="batchTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px;">#</th>
+                                    <th>指令</th>
+                                    <th style="width:100px;">分类</th>
+                                    <th style="width:90px;">匹配类型</th>
+                                    <th style="width:70px;">置信度</th>
+                                    <th>响应结果</th>
+                                    <th style="width:60px;">详情</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: 指令历史 -->
+        <div id="tab-history" class="tab-content">
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h3>📝 最近20条指令历史</h3>
+                    <button class="btn btn-sm btn-danger" onclick="clearHistory()">清空历史</button>
+                </div>
+                <ul class="history-list" id="historyList">
+                    <li style="text-align:center;color:#555;padding:20px;">暂无历史记录</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastResult = null;
+        let batchData = null;
+
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            event.target.classList.add('active');
+            if (name === 'history') loadHistory();
+            if (name === 'dialogue') loadContext();
+        }
+
+        function getSimulateDelay() {
+            return document.getElementById('simulateDelay').checked;
+        }
+
+        async function executeCommand() {
+            const input = document.getElementById('commandInput');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            const panel = document.getElementById('resultPanel');
+            panel.className = 'result-panel';
+            panel.innerHTML = '<div class="loading active"><div class="spinner"></div><p style="color:#888;margin-top:8px;">正在执行...</p></div>';
+
+            try {
+                const res = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({command: cmd, simulate_delay: getSimulateDelay()})
+                });
+                const data = await res.json();
+                lastResult = data;
+                renderResult(data);
+                loadContext();
+            } catch (e) {
+                panel.innerHTML = '<div style="color:#e74c3c;">请求失败: ' + e.message + '</div>';
+            }
+            input.value = '';
+        }
+
+        function quickExecute(cmd) {
+            document.getElementById('commandInput').value = cmd;
+            executeCommand();
+        }
+
+        function renderResult(data) {
+            const panel = document.getElementById('resultPanel');
+            const format = document.getElementById('outputFormat').value;
+
+            if (format === 'json') {
+                panel.className = 'result-panel empty';
+                panel.innerHTML = '';
+                const jsonDiv = document.getElementById('jsonOutput');
+                jsonDiv.style.display = 'block';
+                jsonDiv.textContent = JSON.stringify(data, null, 2);
+                return;
+            }
+
+            document.getElementById('jsonOutput').style.display = 'none';
+            panel.className = 'result-panel';
+
+            let matchBadge = '';
+            const mt = data.match_type || 'none';
+            const badgeMap = {exact: '精确匹配', synonym: '同义词匹配', fuzzy: '模糊匹配', context: '上下文推断', none: '未匹配'};
+            matchBadge = `<span class="badge badge-${mt}">${badgeMap[mt] || mt}</span>`;
+
+            let html = `
+                <div class="result-item">
+                    <div class="result-label">匹配状态</div>
+                    <div class="result-value">${matchBadge}
+                        ${data.matched_keyword ? '<span style="margin-left:8px;color:#888;">关键词: ' + data.matched_keyword + '</span>' : ''}
+                        <span style="float:right;color:#888;font-size:12px;">延时: ${data.delay || 0}s</span>
+                    </div>
+                    <div class="confidence-bar"><div class="confidence-fill" style="width:${(data.confidence || 0) * 100}%"></div></div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">文本回复</div>
+                    <div class="result-value">${data.response.text}</div>
+                </div>`;
+
+            if (data.response.command) {
+                html += `
+                <div class="result-item">
+                    <div class="result-label">模拟命令</div>
+                    <div class="result-value command"><code>${data.response.command}</code></div>
+                </div>`;
+            }
+
+            if (data.response.api_call) {
+                html += `
+                <div class="result-item">
+                    <div class="result-label">模拟API调用</div>
+                    <div class="result-value api"><code>${data.response.api_call.method} ${data.response.api_call.endpoint}</code><br><small style="color:#888;">${JSON.stringify(data.response.api_call.params)}</small></div>
+                </div>`;
+            }
+
+            panel.innerHTML = html;
+        }
+
+        function toggleOutputFormat() {
+            if (lastResult) renderResult(lastResult);
+        }
+
+        async function loadContext() {
+            try {
+                const res = await fetch('/api/context');
+                const ctx = await res.json();
+                const indicator = document.getElementById('contextIndicator');
+                if (ctx.last_category) {
+                    indicator.style.display = 'block';
+                    document.getElementById('contextCategory').textContent = ctx.last_category;
+                } else {
+                    indicator.style.display = 'none';
+                }
+                const dlgCtx = document.getElementById('dialogueContextInfo');
+                if (ctx.last_category) {
+                    dlgCtx.style.display = 'inline-flex';
+                    document.getElementById('dialogueContextCategory').textContent = ctx.last_category;
+                } else {
+                    dlgCtx.style.display = 'none';
+                }
+            } catch (e) {}
+        }
+
+        async function clearContext() {
+            await fetch('/api/context/clear', {method: 'POST'});
+            document.getElementById('contextIndicator').style.display = 'none';
+            document.getElementById('dialogueContextInfo').style.display = 'none';
+        }
+
+        async function sendDialogue() {
+            const input = document.getElementById('dialogueInput');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            const flow = document.getElementById('dialogueFlow');
+            flow.innerHTML += `<div class="dialogue-msg user">${escapeHtml(cmd)}</div>`;
+
+            try {
+                const res = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({command: cmd, simulate_delay: getSimulateDelay()})
+                });
+                const data = await res.json();
+                flow.innerHTML += `<div class="dialogue-msg system">${data.response.text}<br><small style="color:#888;">[${data.match_type}] 置信度: ${data.confidence}</small></div>`;
+                flow.scrollTop = flow.scrollHeight;
+                loadContext();
+            } catch (e) {
+                flow.innerHTML += `<div class="dialogue-msg system" style="color:#e74c3c;">请求失败</div>`;
+            }
+            input.value = '';
+        }
+
+        function clearDialogue() {
+            document.getElementById('dialogueFlow').innerHTML = '';
+            clearContext();
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/history');
+                const history = await res.json();
+                const list = document.getElementById('historyList');
+                if (!history.length) {
+                    list.innerHTML = '<li style="text-align:center;color:#555;padding:20px;">暂无历史记录</li>';
+                    return;
+                }
+                list.innerHTML = history.reverse().map(h => {
+                    const mt = h.result.match_type || 'none';
+                    const badgeMap = {exact: '精确', synonym: '同义词', fuzzy: '模糊', context: '上下文', none: '未匹配'};
+                    return `<li class="history-item">
+                        <div>
+                            <span class="history-cmd">${escapeHtml(h.command)}</span>
+                            <span class="history-category" style="margin-left:8px;">${h.result.category || '未知'} · <span class="badge badge-${mt}" style="font-size:10px;">${badgeMap[mt]}</span></span>
+                        </div>
+                        <span class="history-time">${h.timestamp}</span>
+                    </li>`;
+                }).join('');
+            } catch (e) {}
+        }
+
+        async function clearHistory() {
+            await fetch('/api/history/clear', {method: 'POST'});
+            document.getElementById('historyList').innerHTML = '<li style="text-align:center;color:#555;padding:20px;">暂无历史记录</li>';
+        }
+
+        async function uploadCSV() {
+            const fileInput = document.getElementById('csvFile');
+            if (!fileInput.files[0]) return;
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            document.getElementById('batchLoading').classList.add('active');
+            document.getElementById('batchResults').style.display = 'none';
+
+            try {
+                const res = await fetch('/api/batch', {method: 'POST', body: formData});
+                const data = await res.json();
+                batchData = data;
+                renderBatchResults(data);
+            } catch (e) {
+                alert('批量处理失败: ' + e.message);
+            }
+            document.getElementById('batchLoading').classList.remove('active');
+        }
+
+        function renderBatchResults(data) {
+            const tbody = document.getElementById('batchTableBody');
+            document.getElementById('batchResults').style.display = 'block';
+
+            const matched = data.results.filter(r => r.matched).length;
+            const total = data.total;
+            document.getElementById('batchSummary').textContent = `共 ${total} 条，成功匹配 ${matched} 条 (${Math.round(matched/total*100)}%)`;
+
+            const badgeMap = {exact: '精确匹配', synonym: '同义词', fuzzy: '模糊匹配', context: '上下文', none: '未匹配'};
+            tbody.innerHTML = data.results.map((r, i) => {
+                const hasDetails = r.response.command || r.response.api_call;
+                const confPct = (r.confidence * 100).toFixed(0);
+                const confColor = confPct >= 70 ? '#2ecc71' : (confPct >= 40 ? '#f1c40f' : '#e74c3c');
+
+                let detailHtml = '';
+                if (r.response.command) {
+                    detailHtml += `<div><span class="label">命令:</span><span class="cmd-code">${escapeHtml(r.response.command)}</span></div>`;
+                }
+                if (r.response.api_call) {
+                    const api = r.response.api_call;
+                    detailHtml += `<div style="margin-top:4px;"><span class="label">API:</span><span class="api-code">${api.method} ${escapeHtml(api.endpoint)}</span><br><small style="color:#888;">${escapeHtml(JSON.stringify(api.params))}</small></div>`;
+                }
+                if (r.matched_keyword) {
+                    detailHtml += `<div style="margin-top:4px;"><span class="label">匹配关键词:</span>${escapeHtml(r.matched_keyword)}</div>`;
+                }
+                detailHtml += `<div style="margin-top:4px;"><span class="label">延时:</span>${r.delay || 0}s</div>`;
+
+                return `<tr>
+                    <td>${i + 1}</td>
+                    <td><strong style="color:#00d2ff;">${escapeHtml(r.input_command || '')}</strong></td>
+                    <td>${r.category || '未知'}</td>
+                    <td><span class="badge badge-${r.match_type || 'none'}">${badgeMap[r.match_type] || r.match_type}</span></td>
+                    <td style="color:${confColor};font-weight:600;">${confPct}%</td>
+                    <td>
+                        <div>${escapeHtml(r.response.text || '')}</div>
+                        <div class="batch-detail" id="batch-detail-${i}" style="display:none;">
+                            ${detailHtml || '<span style="color:#555;">无其他详情</span>'}
+                        </div>
+                    </td>
+                    <td>
+                        ${hasDetails ? `<button class="batch-expand-btn" onclick="toggleBatchDetail(${i}, this)">详情</button>` : '-'}
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function toggleBatchDetail(index, btn) {
+            const el = document.getElementById('batch-detail-' + index);
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+                btn.textContent = '收起';
+            } else {
+                el.style.display = 'none';
+                btn.textContent = '详情';
+            }
+        }
+
+        function toggleAllBatchDetails(btn) {
+            const details = document.querySelectorAll('[id^="batch-detail-"]');
+            const buttons = document.querySelectorAll('.batch-expand-btn');
+            const showAll = btn.textContent.includes('展开');
+
+            details.forEach(el => { el.style.display = showAll ? 'block' : 'none'; });
+            buttons.forEach(b => { b.textContent = showAll ? '收起' : '详情'; });
+            btn.textContent = showAll ? '收起全部详情' : '展开全部详情';
+        }
+
+        function downloadBatchJSON() {
+            if (!batchData) return;
+            const blob = new Blob([JSON.stringify(batchData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'batch_results.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        loadContext();
+    </script>
+</body>
+</html>

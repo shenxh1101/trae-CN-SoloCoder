@@ -1,0 +1,13 @@
+numpy>=1.21.0
+
+librosa>=0.9.0
+mido>=1.2.0
+mutagen>=1.45.0
+soundfile>=0.10.0
+
+# 外部工具依赖（不通过pip安装）
+# ffmpeg - 用于从视频文件提取音频轨道
+#   macOS:   brew install ffmpeg
+#   Ubuntu:  sudo apt install ffmpeg
+#   Windows: 从 https://ffmpeg.org/download.html 下载并添加到PATH
+#   验证安装: ffmpeg -version

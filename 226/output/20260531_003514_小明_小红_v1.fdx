@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FinalDraft DocumentType="Script" Template="No" Version="1">
+  <Content>
+    <Paragraph Type="Scene Heading">
+      <Text>INT. 公园长椅上，两人初次相遇 - DAY</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Text>公园长椅上，两人初次相遇。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>小明</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(礼貌地点头)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>你好，很高兴认识你。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>小红</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(友好地微笑)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>你好！我也很高兴认识你。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>小明</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(看向窗外)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>今天天气真不错，不是吗？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>小红</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(好奇地询问)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>是啊，最适合出来走走了。你平时喜欢做什么？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>小明</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(放松地笑了笑)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>我喜欢看书和听音乐。你呢？</Text>
+    </Paragraph>
+  </Content>
+</FinalDraft>

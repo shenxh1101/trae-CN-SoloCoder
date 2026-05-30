@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能测试 - AI美食识别</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+    <script src="data.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .loading { background: #fff3cd; color: #856404; }
+        h1 { color: #333; }
+        h2 { color: #666; font-size: 1.2rem; margin-top: 20px; }
+        .code { background: #f5f5f5; padding: 10px; border-radius: 5px; font-family: monospace; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 AI美食识别 - 功能测试</h1>
+    
+    <h2>1. CDN 引用检查</h2>
+    <div id="cdnTest" class="test loading">检查 TensorFlow.js 和模型 CDN 引用...</div>
+    
+    <h2>2. 数据文件函数检查</h2>
+    <div id="dataTest" class="test loading">检查数据文件函数...</div>
+    
+    <h2>3. 全局函数检查</h2>
+    <div id="globalFuncTest" class="test loading">检查全局函数是否存在...</div>
+    
+    <h2>4. 模型加载测试</h2>
+    <div id="modelTest" class="test loading">加载 MobileNet 和 COCO-SSD 模型...</div>
+    
+    <h2>5. IndexedDB 支持检查</h2>
+    <div id="dbTest" class="test loading">检查 IndexedDB 支持...</div>
+    
+    <h2>6. Web Speech API 检查</h2>
+    <div id="speechTest" class="test loading">检查语音播报支持...</div>
+    
+    <h2>7. 摄像头支持检查</h2>
+    <div id="cameraTest" class="test loading">检查摄像头支持...</div>
+    
+    <h2>8. 营养数据库测试</h2>
+    <div id="nutritionTest" class="test loading">测试营养数据查询...</div>
+    
+    <h2>9. 食谱推荐测试</h2>
+    <div id="recipeTest" class="test loading">测试食谱推荐...</div>
+    
+    <h2>10. 食物分类判断测试</h2>
+    <div id="foodTest" class="test loading">测试食物分类判断...</div>
+    
+    <h2>📋 函数清单</h2>
+    <div class="code">
+        <strong>已实现的全局函数：</strong><br>
+        • loadModel() - 加载AI模型<br>
+        • recognizeFood(imageElement) - 识别单张图片食物<br>
+        • detectMultipleFoods(imageElement) - 检测多个食物<br>
+        • speakResult(text) - 语音播报结果<br>
+        • startCamera(videoElement, facingMode) - 启动摄像头<br>
+        <br>
+        <strong>已实现的数据函数：</strong><br>
+        • findNutrition(label) - 查询营养成分<br>
+        • findRecipe(label) - 查找推荐食谱<br>
+        • isFoodPrediction(label) - 判断是否为食物<br>
+        • translateLabel(label) - 翻译标签为中文<br>
+        <br>
+        <strong>已实现的类方法（app.*）：</strong><br>
+        • app.loadModels() - 加载模型<br>
+        • app.detectFood() - 单张识别<br>
+        • app.detectMultipleFood() - 多食物检测<br>
+        • app.speakResults() - 语音播报<br>
+        • app.startCamera() - 启动摄像头<br>
+        • app.capturePhoto() - 拍照<br>
+        • app.batchDetect() - 批量识别<br>
+        • app.saveCorrection() - 保存纠正样本<br>
+        • app.saveToHistory() - 保存历史记录<br>
+        • app.export*ToCSV() - 导出CSV文件<br>
+        • app.initIndexedDB() - 初始化数据库
+    </div>
+
+    <div id="summary" style="margin-top: 30px; padding: 20px; background: #f0f0f0; border-radius: 10px;">
+        <h2>📊 测试总结</h2>
+        <div id="summaryContent">正在运行测试...</div>
+    </div>
+
+    <script>
+        let passed = 0;
+        let failed = 0;
+        let total = 10;
+
+        function updateTest(id, result, message) {
+            const el = document.getElementById(id);
+            el.className = 'test ' + (result ? 'pass' : 'fail');
+            el.innerHTML = (result ? '✅ ' : '❌ ') + message;
+            if (result) passed++; else failed++;
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const done = passed + failed;
+            document.getElementById('summaryContent').innerHTML = `
+                <p><strong>已完成:</strong> ${done}/${total}</p>
+                <p><strong>通过:</strong> <span style="color:green;">${passed}</span></p>
+                <p><strong>失败:</strong> <span style="color:red;">${failed}</span></p>
+                ${done === total ? `<p style="font-size:1.2rem;margin-top:10px;">🎉 ${passed === total ? '所有测试通过！' : '部分测试失败，请检查。'}</p>` : ''}
+            `;
+        }
+
+        setTimeout(() => {
+            const hasTf = typeof tf !== 'undefined';
+            const hasMobilenet = typeof mobilenet !== 'undefined';
+            const hasCocoSsd = typeof cocoSsd !== 'undefined';
+            updateTest('cdnTest', hasTf && hasMobilenet && hasCocoSsd, 
+                `TensorFlow.js: ${hasTf ? '✓' : '✗'}, MobileNet: ${hasMobilenet ? '✓' : '✗'}, COCO-SSD: ${hasCocoSsd ? '✓' : '✗'}`);
+        }, 1000);
+
+        setTimeout(() => {
+            const hasFindNutrition = typeof findNutrition === 'function';
+            const hasFindRecipe = typeof findRecipe === 'function';
+            const hasIsFood = typeof isFoodPrediction === 'function';
+            const hasTranslate = typeof translateLabel === 'function';
+            updateTest('dataTest', hasFindNutrition && hasFindRecipe && hasIsFood && hasTranslate,
+                `findNutrition: ${hasFindNutrition ? '✓' : '✗'}, findRecipe: ${hasFindRecipe ? '✓' : '✗'}, isFoodPrediction: ${hasIsFood ? '✓' : '✗'}, translateLabel: ${hasTranslate ? '✓' : '✗'}`);
+        }, 1500);
+
+        setTimeout(() => {
+            const hasLoadModel = typeof loadModel === 'function';
+            const hasRecognize = typeof recognizeFood === 'function';
+            const hasDetectMulti = typeof detectMultipleFoods === 'function';
+            const hasSpeak = typeof speakResult === 'function';
+            const hasStartCam = typeof startCamera === 'function';
+            updateTest('globalFuncTest', hasLoadModel && hasRecognize && hasDetectMulti && hasSpeak && hasStartCam,
+                `loadModel: ${hasLoadModel ? '✓' : '✗'}, recognizeFood: ${hasRecognize ? '✓' : '✗'}, detectMultipleFoods: ${hasDetectMulti ? '✓' : '✗'}, speakResult: ${hasSpeak ? '✓' : '✗'}, startCamera: ${hasStartCam ? '✓' : '✗'}`);
+        }, 2000);
+
+        setTimeout(async () => {
+            try {
+                const mobileModel = await mobilenet.load();
+                const cocoModel = await cocoSsd.load();
+                updateTest('modelTest', mobileModel && cocoModel, 
+                    `MobileNet v2 加载成功, COCO-SSD 加载成功`);
+            } catch (e) {
+                updateTest('modelTest', false, `模型加载失败: ${e.message}`);
+            }
+        }, 2500);
+
+        setTimeout(() => {
+            const hasIDB = 'indexedDB' in window;
+            updateTest('dbTest', hasIDB, hasIDB ? 'IndexedDB 可用' : 'IndexedDB 不可用');
+        }, 5000);
+
+        setTimeout(() => {
+            const hasSpeech = 'speechSynthesis' in window;
+            updateTest('speechTest', hasSpeech, hasSpeech ? 'Web Speech API 可用' : 'Web Speech API 不可用');
+        }, 5100);
+
+        setTimeout(() => {
+            const hasCamera = 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices;
+            updateTest('cameraTest', hasCamera, hasCamera ? '摄像头API可用' : '摄像头API不可用');
+        }, 5200);
+
+        setTimeout(() => {
+            const pizza = findNutrition('pizza');
+            const apple = findNutrition('apple');
+            const sushi = findNutrition('sushi');
+            const unknown = findNutrition('unknown_item_xyz');
+            const all = pizza && apple && sushi;
+            updateTest('nutritionTest', all, 
+                `披萨: ${pizza ? pizza.calories + 'kcal' : '✗'}, 苹果: ${apple ? apple.calories + 'kcal' : '✗'}, 寿司: ${sushi ? sushi.calories + 'kcal' : '✗'}, 未知: ${unknown === null ? '正确返回null' : '✗'}`);
+        }, 5300);
+
+        setTimeout(() => {
+            const pizzaRecipe = findRecipe('pizza');
+            const burgerRecipe = findRecipe('burger');
+            const fallbackRecipe = findRecipe('unknown_xyz');
+            const all = pizzaRecipe && burgerRecipe && fallbackRecipe;
+            updateTest('recipeTest', all,
+                `披萨食谱: ${pizzaRecipe ? pizzaRecipe.title : '✗'}, 汉堡食谱: ${burgerRecipe ? burgerRecipe.title : '✗'}, 回退: ${fallbackRecipe ? '找到回退食谱' : '✗'}`);
+        }, 5400);
+
+        setTimeout(() => {
+            const isPizza = isFoodPrediction('pizza');
+            const isCar = isFoodPrediction('car');
+            const isSushi = isFoodPrediction('sushi');
+            const isPizzaPie = isFoodPrediction('pizza pie');
+            const all = isPizza && !isCar && isSushi && isPizzaPie;
+            updateTest('foodTest', all,
+                `pizza: ${isPizza}, car: ${!isCar}, sushi: ${isSushi}, pizza pie: ${isPizzaPie}`);
+        }, 5500);
+
+        setTimeout(() => {
+            if (passed + failed < total) {
+                updateSummary();
+            }
+        }, 8000);
+    </script>
+</body>
+</html>

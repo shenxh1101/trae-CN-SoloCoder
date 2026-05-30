@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义风险规则</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="navbar-brand">📄 AI合同风险检测</a>
+            <div class="navbar-links">
+                <a href="{{ url_for('index') }}" class="navbar-link">首页</a>
+                <a href="{{ url_for('custom_rules') }}" class="navbar-link active">自定义规则</a>
+            </div>
+        </nav>
+
+        <div class="header">
+            <h1>自定义风险规则</h1>
+            <p>添加和管理您的专属风险检测规则</p>
+        </div>
+
+        <div class="card">
+            <h2>添加新规则</h2>
+            <form id="custom-rule-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>规则ID *</label>
+                        <input type="text" name="rule_id" placeholder="例如: C001" required>
+                    </div>
+                    <div class="form-group">
+                        <label>规则名称 *</label>
+                        <input type="text" name="name" placeholder="例如: 自定义风险规则" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>规则描述 *</label>
+                    <textarea name="description" rows="2" placeholder="描述该规则检测的风险类型" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>关键词（逗号分隔）</label>
+                        <input type="text" name="keywords" placeholder="例如: 关键词1, 关键词2, 关键词3">
+                        <small style="color: #666;">包含任意关键词即触发规则</small>
+                    </div>
+                    <div class="form-group">
+                        <label>正则表达式</label>
+                        <input type="text" name="pattern" placeholder="例如: \d+%违约金">
+                        <small style="color: #666;">可选，使用正则进行更精确匹配</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>风险等级</label>
+                        <select name="severity">
+                            <option value="high">高风险</option>
+                            <option value="medium" selected>中风险</option>
+                            <option value="low">低风险</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>分类</label>
+                        <input type="text" name="category" placeholder="例如: 自定义" value="自定义">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>修改建议 *</label>
+                    <textarea name="suggestion" rows="2" placeholder="针对该风险的修改建议" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>适用合同类型</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="supported_types" value="all" checked> 全部类型
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="supported_types" value="employment"> 劳动合同
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="supported_types" value="lease"> 租赁合同
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="supported_types" value="nda"> 保密协议
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="supported_types" value="service"> 服务合同
+                        </label>
+                    </div>
+                </div>
+
+                <div id="custom-rule-error" class="alert alert-error" style="display: none;"></div>
+                <div id="custom-rule-success" class="alert alert-success" style="display: none;"></div>
+
+                <button type="button" class="btn btn-primary" onclick="saveCustomRule()">💾 保存规则</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>现有规则列表</h2>
+            <button class="btn btn-secondary" onclick="loadRulesList()" style="margin-bottom: 15px;">🔄 刷新列表</button>
+            <table class="rules-table" id="rules-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>规则名称</th>
+                        <th>分类</th>
+                        <th>等级</th>
+                        <th>权重</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #999;">点击刷新按钮加载规则列表</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>规则格式说明</h2>
+            <h3 style="margin-bottom: 15px; color: #333;">JSON 规则格式</h3>
+            <div class="template-preview">
+{
+  "id": "C001",
+  "name": "规则名称（简短描述）",
+  "description": "详细的规则说明，解释该规则检测什么风险",
+  "keywords": ["关键词1", "关键词2", "关键词3"],
+  "pattern": "正则表达式（可选，用于复杂匹配）",
+  "severity": "high",
+  "category": "风险分类名称",
+  "suggestion": "针对该风险的具体修改建议措辞",
+  "supported_types": ["all"],
+  "weight": 1.0
+}
+
+字段说明：
+• id: 唯一规则标识，建议格式：C001、C002 等
+• name: 规则名称，简洁明了
+• description: 详细描述该规则检测的风险类型
+• keywords: 关键词数组，包含任意一个即触发
+• pattern: 可选，正则表达式进行更精确的匹配
+• severity: 风险等级，可选值：high（高）、medium（中）、low（低）
+• category: 风险分类，如"终止条款"、"责任条款"等
+• suggestion: 针对该风险的修改建议
+• supported_types: 适用合同类型数组，可选值：
+    - "all": 所有类型
+    - "employment": 劳动合同
+    - "lease": 租赁合同
+    - "nda": 保密协议
+    - "service": 服务合同
+• weight: 规则权重，0.1-2.0，默认为1.0
+</div>
+
+            <h3 style="margin: 20px 0 15px; color: #333;">示例规则 1：检测"甲方有权随时"条款</h3>
+            <div class="template-preview">
+{
+  "id": "C001",
+  "name": "甲方单方随时终止条款",
+  "description": "合同中包含甲方有权随时终止合同的表述，对乙方不利",
+  "keywords": ["甲方有权随时", "甲方可随时", "甲方有权单方终止"],
+  "pattern": "",
+  "severity": "high",
+  "category": "终止条款",
+  "suggestion": "建议修改为：双方协商一致可终止合同，或一方需提前30天书面通知对方",
+  "supported_types": ["all"]
+}
+</div>
+
+            <h3 style="margin: 20px 0 15px; color: #333;">示例规则 2：检测违约金超过30%</h3>
+            <div class="template-preview">
+{
+  "id": "C002",
+  "name": "违约金比例过高",
+  "description": "违约金比例超过合同金额的30%，可能被认定为过高",
+  "keywords": ["违约金"],
+  "pattern": "违约金.*(3[1-9]%|[4-9][0-9]%|100%)",
+  "severity": "medium",
+  "category": "违约条款",
+  "suggestion": "建议违约金不超过合同金额的30%，或与实际损失相当",
+  "supported_types": ["all"]
+}
+</div>
+
+            <p style="margin-top: 15px; color: #666;">
+                💡 也可以直接编辑 <code>rules/custom_rules.json</code> 文件批量添加自定义规则。
+            </p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRulesList();
+        });
+    </script>
+</body>
+</html>

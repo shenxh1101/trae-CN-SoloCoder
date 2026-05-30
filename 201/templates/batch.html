@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量生成短网址</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 40px; max-width: 600px; width: 100%; }
+        h1 { color: #333; margin-bottom: 8px; text-align: center; font-size: 28px; }
+        .subtitle { color: #666; text-align: center; margin-bottom: 30px; font-size: 14px; }
+        .upload-area { border: 3px dashed #e1e8ed; border-radius: 12px; padding: 40px; text-align: center; transition: all 0.3s; cursor: pointer; margin-bottom: 20px; }
+        .upload-area:hover { border-color: #667eea; background: #f8f9ff; }
+        .upload-area.dragover { border-color: #667eea; background: #f0f4ff; }
+        .upload-icon { font-size: 48px; margin-bottom: 12px; }
+        .upload-text { color: #666; font-size: 14px; margin-bottom: 8px; }
+        .upload-hint { color: #999; font-size: 12px; }
+        input[type="file"] { display: none; }
+        .file-info { background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .file-info.show { display: block; }
+        .file-name { color: #333; font-weight: 500; margin-bottom: 4px; }
+        .file-preview { color: #666; font-size: 13px; max-height: 100px; overflow-y: auto; background: white; padding: 8px; border-radius: 4px; margin-top: 8px; font-family: monospace; }
+        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        button:hover:not(:disabled) { transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .links { margin-top: 24px; text-align: center; font-size: 14px; }
+        .links a { color: #667eea; text-decoration: none; margin: 0 12px; }
+        .links a:hover { text-decoration: underline; }
+        .error { color: #dc3545; margin-top: 12px; font-size: 14px; }
+        .success { color: #28a745; margin-top: 12px; font-size: 14px; }
+        .instructions { background: #fff3cd; padding: 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #856404; }
+        .instructions strong { display: block; margin-bottom: 8px; }
+        .instructions code { background: #fff; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 批量生成短网址</h1>
+        <p class="subtitle">上传CSV文件，每行一个URL，批量生成短网址</p>
+        
+        <div class="instructions">
+            <strong>📋 CSV文件格式说明：</strong>
+            文件需为 <code>.csv</code> 格式，每行一个完整的URL地址（需包含 http:// 或 https://）。<br>
+            示例内容：<br>
+            <code>https://example.com/page1</code><br>
+            <code>https://example.com/page2</code><br>
+            <code>https://google.com</code>
+        </div>
+        
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('csvFile').click()">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">点击选择CSV文件，或拖拽文件到此处</div>
+            <div class="upload-hint">支持 .csv 格式，最大 10MB</div>
+        </div>
+        
+        <input type="file" id="csvFile" accept=".csv">
+        
+        <div class="file-info" id="fileInfo">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-preview" id="filePreview"></div>
+        </div>
+        
+        <form id="batchForm">
+            <button type="submit" id="submitBtn" disabled>生成短网址</button>
+            <div id="message"></div>
+        </form>
+        
+        <div class="links">
+            <a href="/">返回首页</a>
+            <a href="/admin">管理后台</a>
+            <a href="/export">导出报表</a>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const csvFile = document.getElementById('csvFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const filePreview = document.getElementById('filePreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const message = document.getElementById('message');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                csvFile.files = e.dataTransfer.files;
+                handleFile(csvFile.files[0]);
+            }
+        });
+        
+        csvFile.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                handleFile(this.files[0]);
+            }
+        });
+        
+        function handleFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                message.innerHTML = '<div class="error">❌ 请上传CSV格式文件</div>';
+                return;
+            }
+            
+            fileName.textContent = '📄 ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n').filter(l => l.trim()).slice(0, 10);
+                filePreview.innerHTML = lines.map(l => '• ' + l.trim()).join('<br>');
+                if (e.target.result.split('\n').filter(l => l.trim()).length > 10) {
+                    filePreview.innerHTML += '<br>... 更多内容';
+                }
+            };
+            reader.readAsText(file);
+            
+            fileInfo.classList.add('show');
+            submitBtn.disabled = false;
+            message.innerHTML = '';
+        }
+        
+        document.getElementById('batchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            message.innerHTML = '';
+            
+            const formData = new FormData();
+            formData.append('csv_file', csvFile.files[0]);
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '生成中...';
+            
+            try {
+                const response = await fetch('/batch', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'shorturls.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    message.innerHTML = '<div class="success">✅ 生成成功！CSV文件已下载</div>';
+                } else {
+                    const data = await response.json();
+                    message.innerHTML = '<div class="error">❌ ' + data.error + '</div>';
+                }
+            } catch (err) {
+                message.innerHTML = '<div class="error">❌ 网络错误，请重试</div>';
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = '生成短网址';
+        });
+    </script>
+</body>
+</html>

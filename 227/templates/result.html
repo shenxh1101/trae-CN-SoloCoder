@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合同风险检测结果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="navbar-brand">📄 AI合同风险检测</a>
+            <div class="navbar-links">
+                <a href="{{ url_for('index') }}" class="navbar-link">首页</a>
+                <a href="{{ url_for('custom_rules') }}" class="navbar-link">自定义规则</a>
+            </div>
+        </nav>
+
+        <div class="header">
+            <h1>合同风险检测结果</h1>
+            <p>文件：{{ filename }}</p>
+        </div>
+
+        <div class="card">
+            <div class="risk-overview">
+                <div class="risk-level-circle {{ risk_level }}">
+                    {% if risk_level == 'high' %}高风险
+                    {% elif risk_level == 'medium' %}中风险
+                    {% else %}低风险{% endif %}
+                </div>
+                <div class="risk-stats">
+                    <h3>风险概览</h3>
+                    <div class="stat-row">
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #dc2626;">{{ risks|selectattr('severity', 'equalto', 'high')|list|length }}</span>
+                            <span class="stat-label">高风险</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #d97706;">{{ risks|selectattr('severity', 'equalto', 'medium')|list|length }}</span>
+                            <span class="stat-label">中风险</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #059669;">{{ risks|selectattr('severity', 'equalto', 'low')|list|length }}</span>
+                            <span class="stat-label">低风险</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #667eea;">{{ risks|length }}</span>
+                            <span class="stat-label">总计</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="exportReport('{{ session_id }}', 'html')">📥 导出HTML报告</button>
+                <button class="btn btn-secondary" onclick="exportReport('{{ session_id }}', 'pdf')">📄 导出PDF报告</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">🔄 重新检测</a>
+            </div>
+
+            <h2>合同摘要</h2>
+            <div class="summary-box">
+                <div class="summary-content">{{ summary }}</div>
+            </div>
+
+            <h2>风险点详情</h2>
+            {% if risks %}
+                {% for risk in risks %}
+                <div class="risk-item {{ risk.severity }}">
+                    <div class="risk-header">
+                        <h3>{{ risk.name }}</h3>
+                        <div>
+                            <span class="risk-category">{{ risk.category }}</span>
+                            <span class="risk-badge risk-{{ risk.severity }}">
+                                {% if risk.severity == 'high' %}高风险
+                                {% elif risk.severity == 'medium' %}中风险
+                                {% else %}低风险{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="risk-description">{{ risk.description }}</p>
+                    <p class="risk-description"><strong>相关内容：</strong>{{ risk.paragraph_text }}</p>
+                    <div class="risk-suggestion">
+                        <strong>💡 修改建议：</strong> {{ risk.suggestion }}
+                    </div>
+                    <div class="feedback-buttons">
+                        <span style="margin-right: 10px; color: #666;">对此风险点：</span>
+                        <button class="feedback-btn important" data-rule-id="{{ risk.rule_id }}" data-feedback="important">⚠️ 重要</button>
+                        <button class="feedback-btn ignore" data-rule-id="{{ risk.rule_id }}" data-feedback="ignore">🙅 忽略</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-success">
+                    🎉 未检测到明显风险点，请继续保持！
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>风险热力图</h2>
+            <p style="color: #666; margin-bottom: 20px;">颜色越深表示该段落风险密度越高</p>
+            <div class="heatmap">
+                {% for item in heatmap_data %}
+                <div class="heatmap-paragraph {{ item.level }}" onclick="this.classList.toggle('expanded')">
+                    {% if item.risk_count > 0 %}
+                    <span class="heatmap-badge">⚠️ {{ item.risk_count }}个风险</span>
+                    {% endif %}
+                    {{ item.text[:200] }}{% if item.text|length > 200 %}...{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

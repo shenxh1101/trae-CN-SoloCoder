@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量合同风险检测汇总报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            padding: 40px;
+            background: #fff;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .risk-level {
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 5px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .risk-level.high { background: #dc2626; }
+        .risk-level.medium { background: #d97706; }
+        .risk-level.low { background: #059669; }
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            min-width: 120px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .stat-label {
+            color: #666;
+        }
+        .file-result {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 15px;
+        }
+        .risk-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .risk-badge.high { background: #fee2e2; color: #dc2626; }
+        .risk-badge.medium { background: #fef3c7; color: #d97706; }
+        .risk-badge.low { background: #d1fae5; color: #059669; }
+        .risk-item {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .risk-item.high { border-left: 3px solid #dc2626; }
+        .risk-item.medium { border-left: 3px solid #d97706; }
+        .risk-item.low { border-left: 3px solid #059669; }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>批量合同风险检测汇总报告</h1>
+        <p>源文件：{{ data.original_filename }}</p>
+        <p>生成时间：{{ now }}</p>
+    </div>
+
+    <div style="text-align: center;">
+        <div class="risk-level {{ data.overall_level }}">
+            {% if data.overall_level == 'high' %}整体高风险
+            {% elif data.overall_level == 'medium' %}整体中风险
+            {% else %}整体低风险{% endif %}
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-number" style="color: #667eea;">{{ data.total_files }}</div>
+            <div class="stat-label">检测文件数</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" style="color: #dc2626;">{{ data.total_risks }}</div>
+            <div class="stat-label">风险总数</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" style="color: #dc2626;">{{ data.high_risk_count }}</div>
+            <div class="stat-label">高风险文件</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" style="color: #d97706;">{{ data.medium_risk_count }}</div>
+            <div class="stat-label">中风险文件</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" style="color: #059669;">{{ data.low_risk_count }}</div>
+            <div class="stat-label">低风险文件</div>
+        </div>
+    </div>
+
+    <h2 style="margin-bottom: 20px;">各文件检测结果</h2>
+    {% for result in data.results %}
+    <div class="file-result">
+        <div class="file-header">
+            <h3>{{ result.filename }}</h3>
+            <div>
+                <span style="margin-right: 15px;">{{ result.risk_count }} 个风险点</span>
+                <span class="risk-badge {{ result.risk_level }}">
+                    {% if result.risk_level == 'high' %}高风险
+                    {% elif result.risk_level == 'medium' %}中风险
+                    {% else %}低风险{% endif %}
+                </span>
+            </div>
+        </div>
+        {% if result.risks %}
+            {% for risk in result.risks %}
+            <div class="risk-item {{ risk.severity }}">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong>{{ risk.name }}</strong>
+                    <span class="risk-badge {{ risk.severity }}">
+                        {% if risk.severity == 'high' %}高
+                        {% elif risk.severity == 'medium' %}中
+                        {% else %}低{% endif %}
+                    </span>
+                </div>
+                <p style="color: #666; margin: 8px 0;">{{ risk.description }}</p>
+                <p style="color: #059669; font-size: 0.95rem;">💡 {{ risk.suggestion }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #059669;">✅ 未检测到明显风险点</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+        <p>本报告由AI合同风险检测系统自动生成</p>
+        <p>仅供参考，不构成法律建议</p>
+    </div>
+</body>
+</html>

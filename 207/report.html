@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeDoc 诊断报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+               background: #0d1117; color: #c9d1d9; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #58a6ff; margin-bottom: 8px; font-size: 28px; }
+        .timestamp { color: #8b949e; margin-bottom: 24px; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                    gap: 16px; margin-bottom: 32px; }
+        .summary-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+                        padding: 20px; text-align: center; }
+        .summary-card .number { font-size: 32px; font-weight: bold; }
+        .summary-card .label { color: #8b949e; margin-top: 4px; }
+        .card-errors .number { color: #f85149; }
+        .card-warnings .number { color: #d29922; }
+        .card-info .number { color: #58a6ff; }
+        .card-files .number { color: #3fb950; }
+        h2 { color: #c9d1d9; margin: 24px 0 12px; font-size: 20px;
+             border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 24px;
+                background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
+        th { background: #21262d; color: #8b949e; padding: 12px 16px; text-align: left;
+             font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 10px 16px; border-top: 1px solid #21262d; font-size: 14px; }
+        tr:hover { background: #1c2128; }
+        .sev-error td:first-child { border-left: 3px solid #f85149; }
+        .sev-warning td:first-child { border-left: 3px solid #d29922; }
+        .sev-info td:first-child { border-left: 3px solid #58a6ff; }
+        code { background: #1c2128; padding: 2px 6px; border-radius: 4px; font-size: 13px;
+               color: #79c0ff; }
+        .section-empty { color: #8b949e; text-align: center; padding: 40px;
+                         background: #161b22; border-radius: 8px; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 CodeDoc 代码诊断报告</h1>
+        <p class="timestamp">生成时间: 2026-05-30 23:30:11</p>
+
+        <div class="summary">
+            <div class="summary-card card-files">
+                <div class="number">2</div>
+                <div class="label">扫描文件数</div>
+            </div>
+            <div class="summary-card card-errors">
+                <div class="number">0</div>
+                <div class="label">🔴 错误</div>
+            </div>
+            <div class="summary-card card-warnings">
+                <div class="number">19</div>
+                <div class="label">🟡 警告</div>
+            </div>
+            <div class="summary-card card-info">
+                <div class="number">11</div>
+                <div class="label">🔵 提示</div>
+            </div>
+        </div>
+
+        <h2>📊 圈复杂度</h2>
+        <table><tr><th>文件</th><th>函数</th><th>行号</th><th>复杂度</th><th>等级</th><th>建议</th></tr>
+                <tr>
+                    <td>sample.js</td>
+                    <td>processData</td>
+                    <td>L1-L15</td>
+                    <td><span style="color:#27ae60;font-weight:bold">4</span></td>
+                    <td><span style="color:#27ae60">低</span></td>
+                    <td>函数 'processData' 圈复杂度为 4，复杂度良好。</td>
+                </tr>
+                <tr>
+                    <td>sample.py</td>
+                    <td>process_data</td>
+                    <td>L3-L32</td>
+                    <td><span style="color:#e74c3c;font-weight:bold">24</span></td>
+                    <td><span style="color:#e74c3c">高</span></td>
+                    <td>函数 'process_data' 圈复杂度为 24（过高），建议拆分为多个小函数，每个函数职责单一。可以将条件分支提取为独立函数，或使用策略模式/查找表替代多重if-else。</td>
+                </tr>
+                <tr>
+                    <td>sample.py</td>
+                    <td>calculate</td>
+                    <td>L34-L39</td>
+                    <td><span style="color:#27ae60;font-weight:bold">3</span></td>
+                    <td><span style="color:#27ae60">低</span></td>
+                    <td>函数 'calculate' 圈复杂度为 3，复杂度良好。</td>
+                </tr></table>
+
+        <h2>📋 诊断详情</h2>
+        <table><tr><th>文件</th><th>行号</th><th>严重度</th><th>规则</th><th>描述</th><th>修复建议</th><th>可修复</th></tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>3</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'length' 可能未声明</td>
+                    <td>变量 'length' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>6</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'log' 可能未声明</td>
+                    <td>变量 'log' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>6</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'Total' 可能未声明</td>
+                    <td>变量 'Total' 未声明，是否指的是 'total'？否则请使用 var/let/const 声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>7</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-DEBUGGER</code></td>
+                    <td>发现 debugger 语句</td>
+                    <td>移除 debugger 语句，生产代码中不应包含调试断点</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>8</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'count' 可能未声明</td>
+                    <td>变量 'count' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>9</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'result' 可能未声明</td>
+                    <td>变量 'result' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>11</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'x' 可能未声明</td>
+                    <td>变量 'x' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>11</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-EQUALITY</code></td>
+                    <td>使用了 == 而非 === 进行比较</td>
+                    <td>建议使用 === 进行严格相等比较，避免类型强制转换</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>18</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'readFileSync' 可能未声明</td>
+                    <td>变量 'readFileSync' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>18</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'tmp' 可能未声明</td>
+                    <td>变量 'tmp' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>18</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'test' 可能未声明</td>
+                    <td>变量 'test' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>18</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'txt' 可能未声明</td>
+                    <td>变量 'txt' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.js</td>
+                    <td>18</td>
+                    <td>🟡 warning</td>
+                    <td><code>JS-UNDEF</code></td>
+                    <td>变量 'utf8' 可能未声明</td>
+                    <td>变量 'utf8' 可能未声明，建议使用 var/let/const 在使用前声明</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.js</td>
+                    <td>2</td>
+                    <td>🔵 info</td>
+                    <td><code>JS-VAR-DECL</code></td>
+                    <td>使用了 'var' 声明变量 'total'</td>
+                    <td>建议使用 'const' 或 'let' 替代 'var'，以获得块级作用域</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.js</td>
+                    <td>3</td>
+                    <td>🔵 info</td>
+                    <td><code>JS-VAR-DECL</code></td>
+                    <td>使用了 'var' 声明变量 'i'</td>
+                    <td>建议使用 'const' 或 'let' 替代 'var'，以获得块级作用域</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.js</td>
+                    <td>6</td>
+                    <td>🔵 info</td>
+                    <td><code>JS-CONSOLE</code></td>
+                    <td>发现 console 调用，生产代码中应移除</td>
+                    <td>移除 console 调用或使用专门的日志库替代</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.js</td>
+                    <td>9</td>
+                    <td>🔵 info</td>
+                    <td><code>JS-SEMICOLON</code></td>
+                    <td>语句缺少分号</td>
+                    <td>在行尾添加分号:         return result;</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.js</td>
+                    <td>12</td>
+                    <td>🔵 info</td>
+                    <td><code>JS-SEMICOLON</code></td>
+                    <td>语句缺少分号</td>
+                    <td>在行尾添加分号:         return 1;</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.js</td>
+                    <td>14</td>
+                    <td>🔵 info</td>
+                    <td><code>JS-SEMICOLON</code></td>
+                    <td>语句缺少分号</td>
+                    <td>在行尾添加分号:     return total;</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.py</td>
+                    <td>4</td>
+                    <td>🟡 warning</td>
+                    <td><code>PY-UNDEF</code></td>
+                    <td>变量 'undefined_var' 在使用前可能未定义</td>
+                    <td>变量 'undefined_var' 在使用前未赋值，建议在第4行初始化（如: undefined_var = None）</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.py</td>
+                    <td>5</td>
+                    <td>🟡 warning</td>
+                    <td><code>PY-UNDEF</code></td>
+                    <td>变量 'os' 在使用前可能未定义</td>
+                    <td>变量 'os' 可能是模块对象，建议添加: import os</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.py</td>
+                    <td>5</td>
+                    <td>🟡 warning</td>
+                    <td><code>PY-MISSING-IMPORT</code></td>
+                    <td>可能缺少导入: import os</td>
+                    <td>建议在文件顶部添加: import os</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.py</td>
+                    <td>6</td>
+                    <td>🟡 warning</td>
+                    <td><code>PY-UNDEF</code></td>
+                    <td>变量 're' 在使用前可能未定义</td>
+                    <td>变量 're' 可能是模块对象，建议添加: import re</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.py</td>
+                    <td>6</td>
+                    <td>🟡 warning</td>
+                    <td><code>PY-MISSING-IMPORT</code></td>
+                    <td>可能缺少导入: import re</td>
+                    <td>建议在文件顶部添加: import re</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-warning">
+                    <td>sample.py</td>
+                    <td>37</td>
+                    <td>🟡 warning</td>
+                    <td><code>PY-TYPE-IS-CMP</code></td>
+                    <td>使用 'is' 比较非单例值可能导致意外行为</td>
+                    <td>使用 '==' 代替 'is' 来比较值，'is' 仅用于 None/True/False</td>
+                    <td>❌</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.py</td>
+                    <td>1</td>
+                    <td>🔵 info</td>
+                    <td><code>PY-UNUSED-IMPORT</code></td>
+                    <td>导入的模块 'json' 未被使用</td>
+                    <td>移除未使用的导入: json</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.py</td>
+                    <td>34</td>
+                    <td>🔵 info</td>
+                    <td><code>PY-TOO-MANY-ARGS</code></td>
+                    <td>函数 'calculate' 参数过多 (9个)</td>
+                    <td>考虑将部分参数封装为数据类或使用 **kwargs</td>
+                    <td>❌</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.py</td>
+                    <td>35</td>
+                    <td>🔵 info</td>
+                    <td><code>PY-TYPE-BOOL-CMP</code></td>
+                    <td>不建议直接与布尔值比较</td>
+                    <td>使用 'if x:' 代替 'if x == True'，使用 'if not x:' 代替 'if x == False'</td>
+                    <td>❌</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.py</td>
+                    <td>41</td>
+                    <td>🔵 info</td>
+                    <td><code>PY-UNUSED-IMPORT</code></td>
+                    <td>导入的模块 'csv' 未被使用</td>
+                    <td>移除未使用的导入: csv</td>
+                    <td>✅</td>
+                </tr>
+                <tr class="sev-info">
+                    <td>sample.py</td>
+                    <td>42</td>
+                    <td>🔵 info</td>
+                    <td><code>PY-UNUSED-IMPORT</code></td>
+                    <td>导入的模块 'xml' 未被使用</td>
+                    <td>移除未使用的导入: xml</td>
+                    <td>✅</td>
+                </tr></table>
+    </div>
+</body>
+</html>

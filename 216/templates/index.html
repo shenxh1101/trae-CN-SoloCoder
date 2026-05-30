@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 食谱推荐系统</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍳 AI 食谱推荐系统</h1>
+            <p>输入您的食材，AI 为您推荐美味佳肴</p>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="card">
+                    <h2>⚙️ 偏好设置</h2>
+                    <div class="preferences">
+                        <label>
+                            <input type="checkbox" id="vegetarian">
+                            素食主义
+                        </label>
+                        <label>
+                            <input type="checkbox" id="gluten_free">
+                            无麸质
+                        </label>
+                    </div>
+                    <button class="btn btn-secondary" onclick="savePreferences()">保存偏好</button>
+                    <button class="btn btn-secondary" onclick="exportPreferences()">导出偏好</button>
+                </div>
+
+                <div class="card">
+                    <h2>📊 筛选条件</h2>
+                    <div class="filter-group">
+                        <label>烹饪难度：</label>
+                        <select id="difficulty">
+                            <option value="">全部</option>
+                            <option value="简单">简单</option>
+                            <option value="中等">中等</option>
+                            <option value="困难">困难</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>推荐数量：</label>
+                        <select id="limit">
+                            <option value="3">3道</option>
+                            <option value="5" selected>5道</option>
+                            <option value="10">10道</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📦 批量推荐</h2>
+                    <p class="hint">上传CSV文件，每行一组食材</p>
+                    <input type="file" id="csvFile" accept=".csv">
+                    <button class="btn btn-secondary" onclick="batchRecommend()">批量推荐</button>
+                </div>
+
+                <div class="card">
+                    <h2>📋 工具</h2>
+                    <button class="btn btn-secondary" onclick="exportHistory()">导出推荐历史</button>
+                    <button class="btn btn-secondary" onclick="generateShoppingList()">生成购物清单</button>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="card input-section">
+                    <h2>🥗 输入食材</h2>
+                    <div class="ingredient-input">
+                        <input type="text" id="ingredientInput" placeholder="输入食材，如：鸡蛋、番茄" onkeypress="handleKeyPress(event)">
+                        <button class="btn btn-primary" onclick="addIngredient()">添加</button>
+                    </div>
+                    <div class="ingredient-tags" id="ingredientTags"></div>
+                    <button class="btn btn-primary btn-large" onclick="getRecommendations()">🔍 获取推荐</button>
+                </div>
+
+                <div id="batchResults" class="batch-results" style="display:none;"></div>
+
+                <div class="recommendations" id="recommendations">
+                    <h2>🍽️ 推荐结果</h2>
+                    <p class="hint">请输入食材开始推荐</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="shoppingListModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>🛒 购物清单</h2>
+                <div id="shoppingListContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

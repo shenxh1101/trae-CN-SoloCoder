@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 美食识别演示器</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ AI 美食识别演示器</h1>
+            <p class="subtitle">基于 TensorFlow.js 的智能食物识别系统</p>
+        </header>
+
+        <div class="model-status" id="modelStatus">
+            <span class="loading-spinner"></span>
+            <span id="statusText">正在加载 AI 模型...</span>
+        </div>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="single">📷 单张识别</button>
+            <button class="tab-btn" data-tab="batch">📁 批量识别</button>
+            <button class="tab-btn" data-tab="history">📜 历史记录</button>
+            <button class="tab-btn" data-tab="corrections">✏️ 纠正样本</button>
+        </nav>
+
+        <div class="tab-content active" id="tab-single">
+            <div class="input-section">
+                <div class="input-methods">
+                    <button class="method-btn active" data-method="upload">📁 上传图片</button>
+                    <button class="method-btn" data-method="camera">📹 摄像头拍照</button>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="imageInput" accept="image/*" hidden>
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">🍕</div>
+                        <p>点击或拖拽食物图片到此处</p>
+                        <p class="hint">支持 JPG、PNG、WebP 格式</p>
+                    </div>
+                </div>
+
+                <div class="camera-area" id="cameraArea" style="display: none;">
+                    <video id="video" autoplay playsinline></video>
+                    <div class="camera-controls">
+                        <button id="captureBtn" class="capture-btn">📸 拍照</button>
+                        <button id="switchCameraBtn" class="switch-btn">🔄 切换摄像头</button>
+                    </div>
+                </div>
+
+                <div class="preview-container" id="previewContainer" style="display: none;">
+                    <div class="image-wrapper">
+                        <canvas id="detectionCanvas"></canvas>
+                        <img id="previewImage" alt="预览图片">
+                    </div>
+                    <div class="preview-controls">
+                        <button id="retakeBtn" class="secondary-btn">🔄 重新选择</button>
+                        <button id="detectBtn" class="primary-btn">🔍 开始识别</button>
+                        <button id="detectMultiBtn" class="secondary-btn">🎯 多食物检测</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2>识别结果</h2>
+                    <button id="speakBtn" class="speak-btn" title="语音播报">🔊 播报结果</button>
+                    <button id="exportSingleBtn" class="export-btn" title="导出CSV">📊 导出CSV</button>
+                </div>
+
+                <div class="predictions" id="predictions"></div>
+
+                <div class="correction-section">
+                    <h3>✏️ 结果不正确？</h3>
+                    <div class="correction-form">
+                        <input type="text" id="correctionInput" placeholder="输入正确的食物名称，如：意面">
+                        <button id="submitCorrectionBtn" class="primary-btn">提交纠正</button>
+                    </div>
+                    <p class="correction-hint">纠正样本将保存在本地，用于后续模型微调</p>
+                </div>
+
+                <div class="nutrition-section" id="nutritionSection" style="display: none;">
+                    <h3>🥗 营养成分 (每100g)</h3>
+                    <div class="nutrition-grid" id="nutritionGrid"></div>
+                </div>
+
+                <div class="recipe-section" id="recipeSection" style="display: none;">
+                    <h3>👨‍🍳 推荐食谱</h3>
+                    <div class="recipe-card" id="recipeCard"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-batch">
+            <div class="batch-section">
+                <div class="batch-upload-area" id="batchUploadArea">
+                    <input type="file" id="batchImageInput" accept="image/*" multiple hidden>
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📁</div>
+                        <p>点击或拖拽多张食物图片到此处</p>
+                        <p class="hint">按住 Ctrl/Cmd 可多选图片</p>
+                    </div>
+                </div>
+
+                <div class="batch-preview" id="batchPreview" style="display: none;">
+                    <div class="batch-controls">
+                        <span id="batchCount">已选择 0 张图片</span>
+                        <button id="clearBatchBtn" class="secondary-btn">清空</button>
+                        <button id="batchDetectBtn" class="primary-btn">🚀 批量识别</button>
+                        <button id="exportBatchBtn" class="export-btn" style="display: none;">📊 导出CSV</button>
+                    </div>
+                    <div class="batch-grid" id="batchGrid"></div>
+                </div>
+
+                <div class="batch-results" id="batchResults" style="display: none;">
+                    <h3>批量识别结果</h3>
+                    <div class="table-container">
+                        <table id="batchResultsTable">
+                            <thead>
+                                <tr>
+                                    <th>图片</th>
+                                    <th>文件名</th>
+                                    <th>识别结果</th>
+                                    <th>置信度</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchResultsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-history">
+            <div class="history-section">
+                <div class="history-controls">
+                    <button id="clearHistoryBtn" class="secondary-btn">🗑️ 清空历史</button>
+                    <button id="exportHistoryBtn" class="export-btn">📊 导出CSV</button>
+                </div>
+                <div class="history-empty" id="historyEmpty" style="display: none;">
+                    <p>暂无识别历史记录</p>
+                </div>
+                <div class="history-grid" id="historyGrid"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-corrections">
+            <div class="corrections-section">
+                <div class="corrections-controls">
+                    <button id="exportCorrectionsBtn" class="export-btn">📤 导出样本 (JSON)</button>
+                    <button id="importCorrectionsBtn" class="secondary-btn">📥 导入样本</button>
+                    <input type="file" id="importFileInput" accept=".json" hidden>
+                    <button id="clearCorrectionsBtn" class="secondary-btn">🗑️ 清空样本</button>
+                </div>
+                <div class="corrections-empty" id="correctionsEmpty" style="display: none;">
+                    <p>暂无纠正样本</p>
+                </div>
+                <div class="corrections-grid" id="correctionsGrid"></div>
+                <div class="corrections-stats" id="correctionsStats"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

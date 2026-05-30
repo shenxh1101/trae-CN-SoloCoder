@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI情感分析API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .thresholds {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .threshold-item {
+            flex: 1;
+        }
+        .threshold-item label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .threshold-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.positive {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .result.negative {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .result.neutral {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        .result.show {
+            display: block;
+        }
+        .result-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .positive .result-label { color: #28a745; }
+        .negative .result-label { color: #dc3545; }
+        .neutral .result-label { color: #856404; }
+        .result-details {
+            color: #666;
+            font-size: 14px;
+        }
+        .result-details p {
+            margin: 5px 0;
+        }
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .file-upload:hover {
+            border-color: #667eea;
+        }
+        .file-upload input {
+            display: none;
+        }
+        .file-name {
+            margin-top: 10px;
+            color: #666;
+        }
+        .warning {
+            background: #fff3cd;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            color: #856404;
+            display: none;
+        }
+        .warning.show {
+            display: block;
+        }
+        .nav {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        .nav a:hover {
+            opacity: 1;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.show {
+            display: block;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI情感分析API</h1>
+            <p>支持中英文，可自定义阈值，批量处理</p>
+        </div>
+
+        <div class="card">
+            <h2>📝 单文本分析</h2>
+            <textarea id="textInput" placeholder="请输入要分析的文本..."></textarea>
+            
+            <div class="thresholds">
+                <div class="threshold-item">
+                    <label>正面阈值: <span class="threshold-value" id="posValue">0.6</span></label>
+                    <input type="range" id="posThreshold" min="0" max="1" step="0.05" value="0.6">
+                </div>
+                <div class="threshold-item">
+                    <label>负面阈值: <span class="threshold-value" id="negValue">0.6</span></label>
+                    <input type="range" id="negThreshold" min="0" max="1" step="0.05" value="0.6">
+                </div>
+            </div>
+            
+            <button class="btn" id="analyzeBtn" onclick="analyzeText()">开始分析</button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <span>分析中...</span>
+            </div>
+            
+            <div class="warning" id="warning"></div>
+            
+            <div class="result" id="result">
+                <div class="result-label" id="sentimentLabel"></div>
+                <div class="result-details" id="resultDetails"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 批量CSV分析</h2>
+            <label class="file-upload">
+                <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
+                <div>点击或拖拽上传CSV文件</div>
+                <div style="font-size: 12px; color: #999; margin-top: 5px;">每行一段文本</div>
+            </label>
+            <div class="file-name" id="fileName"></div>
+            
+            <div style="margin-top: 15px;">
+                <button class="btn" id="batchBtn" onclick="batchAnalyze()" disabled>批量分析</button>
+            </div>
+        </div>
+
+        <div class="nav">
+            <a href="/admin">📋 查看管理员日志页面</a>
+        </div>
+    </div>
+
+    <script>
+        const posSlider = document.getElementById('posThreshold');
+        const negSlider = document.getElementById('negThreshold');
+        const posValue = document.getElementById('posValue');
+        const negValue = document.getElementById('negValue');
+
+        posSlider.oninput = () => posValue.textContent = posSlider.value;
+        negSlider.oninput = () => negValue.textContent = negSlider.value;
+
+        async function analyzeText() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                alert('请输入要分析的文本');
+                return;
+            }
+
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const warning = document.getElementById('warning');
+
+            btn.disabled = true;
+            loading.classList.add('show');
+            result.classList.remove('show');
+            warning.classList.remove('show');
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        positive_threshold: parseFloat(posSlider.value),
+                        negative_threshold: parseFloat(negSlider.value)
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.has_sensitive) {
+                    warning.textContent = '⚠️ 检测到敏感词: ' + data.sensitive_words.join(', ');
+                    warning.classList.add('show');
+                }
+
+                result.className = 'result show ' + data.sentiment;
+                const sentimentMap = {
+                    'positive': '😊 正面',
+                    'negative': '😞 负面',
+                    'neutral': '😐 中性'
+                };
+                document.getElementById('sentimentLabel').textContent = sentimentMap[data.sentiment];
+                document.getElementById('resultDetails').innerHTML = `
+                    <p>置信度: <strong>${(data.confidence * 100).toFixed(2)}%</strong></p>
+                    <p>语言: ${data.language === 'chinese' ? '中文' : '英文'}</p>
+                    <p>正面阈值: ${data.positive_threshold} | 负面阈值: ${data.negative_threshold}</p>
+                    <p>耗时: ${data.duration_seconds}秒</p>
+                    <p>来自缓存: ${data.from_cache ? '是' : '否'}</p>
+                `;
+            } catch (error) {
+                alert('分析失败: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                loading.classList.remove('show');
+            }
+        }
+
+        let selectedFile = null;
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById('fileName').textContent = '已选择: ' + file.name;
+                document.getElementById('batchBtn').disabled = false;
+            }
+        }
+
+        async function batchAnalyze() {
+            if (!selectedFile) return;
+
+            const btn = document.getElementById('batchBtn');
+            btn.disabled = true;
+            btn.textContent = '处理中...';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('positive_threshold', posSlider.value);
+                formData.append('negative_threshold', negSlider.value);
+
+                const response = await fetch('/api/batch', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'sentiment_results.csv';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    const error = await response.json();
+                    alert('处理失败: ' + error.error);
+                }
+            } catch (error) {
+                alert('处理失败: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '批量分析';
+            }
+        }
+    </script>
+</body>
+</html>

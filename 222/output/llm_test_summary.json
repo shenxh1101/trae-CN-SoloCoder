@@ -1,0 +1,119 @@
+{
+  "metadata": {
+    "filename": "example_meeting.txt",
+    "total_utterances": 11,
+    "total_words": 385,
+    "estimated_duration_minutes": 2.57,
+    "speaker_count": 4,
+    "speakers": [
+      "张三",
+      "李四",
+      "王五",
+      "赵六"
+    ],
+    "parsed_at": "2026-05-31T00:21:40.942919"
+  },
+  "speaker_statistics": {
+    "张三": {
+      "utterance_count": 5,
+      "total_words": 191,
+      "estimated_duration_minutes": 1.27,
+      "avg_words_per_utterance": 38.2
+    },
+    "李四": {
+      "utterance_count": 3,
+      "total_words": 96,
+      "estimated_duration_minutes": 0.64,
+      "avg_words_per_utterance": 32.0
+    },
+    "王五": {
+      "utterance_count": 2,
+      "total_words": 73,
+      "estimated_duration_minutes": 0.49,
+      "avg_words_per_utterance": 36.5
+    },
+    "赵六": {
+      "utterance_count": 1,
+      "total_words": 25,
+      "estimated_duration_minutes": 0.17,
+      "avg_words_per_utterance": 25.0
+    }
+  },
+  "summary": {},
+  "meeting_consensus": [],
+  "todo_items": [
+    {
+      "task": "在周五前完成",
+      "assignee": "李四",
+      "deadline": "周五"
+    },
+    {
+      "task": "李四帮忙调整一下接口的响应格式",
+      "assignee": "王五",
+      "deadline": ""
+    },
+    {
+      "task": "没问题，我下午就去看一下，明天应该能调整好。",
+      "assignee": "李四",
+      "deadline": "明天"
+    },
+    {
+      "task": "整理一下？",
+      "assignee": "品文档谁",
+      "deadline": "下周一"
+    },
+    {
+      "task": "产品文档吧，我周三之前提交初稿，大家评审",
+      "assignee": "赵六",
+      "deadline": "周三"
+    },
+    {
+      "task": "在周三前提交产品文档初稿",
+      "assignee": "张三",
+      "deadline": "周三"
+    },
+    {
+      "task": "好前端的演示页面",
+      "assignee": "王五",
+      "deadline": ""
+    },
+    {
+      "task": "我这边也会把后端环境部署好",
+      "assignee": "李四",
+      "deadline": ""
+    }
+  ],
+  "time_events": [
+    {
+      "event": "大家好，我们今天来讨论一下新产品的开发进度。首先请李四说一下后端的情况。",
+      "time": "今天",
+      "original_text": "张三: 大家好，我们今天来讨论一下新产品的开发进度。嗯，首先请李四说一下后端的情况。"
+    },
+    {
+      "event": "用户认证和数据存储模块都已经测试",
+      "time": "周五",
+      "original_text": "李四: 好的，后端的API接口已经完成了80%，嗯，用户认证和数据存储模块都已经测试通过了。啊，剩下的就是报表导出功能，我负责在周五前完成。"
+    },
+    {
+      "event": "没问题，我下午就去看一下，明天应该能调整好。",
+      "time": "明天",
+      "original_text": "李四: 没问题，我下午就去看一下，明天应该能调整好。"
+    },
+    {
+      "event": "第一次联调",
+      "time": "下周一",
+      "original_text": "张三: 嗯，那我们下周一进行第一次联调测试，大家都准备一下。还有，产品文档谁负责整理一下？"
+    },
+    {
+      "event": "档吧，我周三之前提交初稿，大家评审",
+      "time": "周三",
+      "original_text": "赵六: 我来负责产品文档吧，我周三之前提交初稿，然后大家评审。"
+    },
+    {
+      "event": "事情，下周三下午三点有个客户评审",
+      "time": "下周三下午",
+      "original_text": "张三: 好的，赵六负责在周三前提交产品文档初稿。还有一个事情，下周三下午三点有个客户评审会议，大家记得准备演示材料。"
+    }
+  ],
+  "overall_summary": "(AI总结调用失败，已降级为关键词提取模式)"
+}

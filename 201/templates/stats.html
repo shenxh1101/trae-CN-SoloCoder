@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计信息 - {{ short_url.short_code }}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .header h1 { color: #333; font-size: 24px; margin-bottom: 8px; }
+        .short-info { color: #666; font-size: 14px; word-break: break-all; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center; }
+        .stat-value { font-size: 32px; font-weight: 700; color: #667eea; margin-bottom: 4px; }
+        .stat-label { font-size: 14px; color: #666; }
+        .chart-section { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .chart-section h2 { font-size: 18px; color: #333; margin-bottom: 16px; }
+        .hourly-chart { display: flex; align-items: flex-end; gap: 4px; height: 200px; padding: 16px 0; border-bottom: 2px solid #e1e8ed; }
+        .hour-bar { flex: 1; background: linear-gradient(to top, #667eea, #764ba2); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; transition: all 0.3s; }
+        .hour-bar:hover { opacity: 0.8; }
+        .hour-bar::after { content: attr(data-count); position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #666; opacity: 0; transition: opacity 0.2s; }
+        .hour-bar:hover::after { opacity: 1; }
+        .hour-labels { display: flex; gap: 4px; margin-top: 8px; }
+        .hour-label { flex: 1; text-align: center; font-size: 10px; color: #999; }
+        .province-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+        .province-item { background: #f8f9fa; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .province-name { font-size: 14px; color: #333; }
+        .province-count { font-size: 14px; font-weight: 600; color: #667eea; }
+        .actions { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; transition: transform 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .btn-secondary { background: #e1e8ed; color: #333; }
+        .btn:hover { transform: translateY(-2px); }
+        .back { margin-bottom: 20px; }
+        .back a { color: #667eea; text-decoration: none; font-size: 14px; }
+        .back a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back">
+            <a href="/">← 返回首页</a>
+        </div>
+        
+        <div class="header">
+            <h1>📊 统计信息</h1>
+            <div class="short-info">
+                <strong>短码：</strong>{{ short_url.short_code }}<br>
+                <strong>原始链接：</strong>{{ short_url.original_url }}<br>
+                <strong>短链接：</strong><a href="{{ short_url_full }}" target="_blank">{{ short_url_full }}</a>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ short_url.click_count }}</div>
+                <div class="stat-label">总点击量</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ short_url.created_at.strftime('%Y-%m-%d') }}</div>
+                <div class="stat-label">创建日期</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{% if short_url.expires_at %}{{ short_url.expires_at.strftime('%Y-%m-%d') }}{% else %}∞{% endif %}</div>
+                <div class="stat-label">过期日期</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{% if short_url.password_hash %}🔒{% else %}🔓{% endif %}</div>
+                <div class="stat-label">密码保护</div>
+            </div>
+        </div>
+        
+        <div class="chart-section">
+            <h2>⏱️ 最近24小时点击分布</h2>
+            <div class="hourly-chart">
+                {% set max_count = hourly | max if hourly | max > 0 else 1 %}
+                {% for count in hourly %}
+                <div class="hour-bar" data-count="{{ count }}" style="height: {{ (count / max_count) * 100 }}%"></div>
+                {% endfor %}
+            </div>
+            <div class="hour-labels">
+                {% for i in range(24) %}
+                <div class="hour-label">{{ 23 - i }}h</div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="chart-section">
+            <h2>📍 访问来源省份分布</h2>
+            {% if provinces %}
+            <div class="province-list">
+                {% for province, count in provinces.items() | sort(attribute='1', reverse=true) %}
+                <div class="province-item">
+                    <span class="province-name">{{ province }}</span>
+                    <span class="province-count">{{ count }}次</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: #999; text-align: center; padding: 20px;">暂无访问数据</p>
+            {% endif %}
+        </div>
+        
+        <div class="actions">
+            <a href="/{{ short_url.short_code }}/qr" class="btn btn-primary" target="_blank">📱 查看二维码</a>
+            <a href="/admin" class="btn btn-secondary">⚙️ 管理后台</a>
+            <a href="/export" class="btn btn-secondary">📥 导出报表</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量检测结果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="navbar-brand">📄 AI合同风险检测</a>
+            <div class="navbar-links">
+                <a href="{{ url_for('index') }}" class="navbar-link">首页</a>
+                <a href="{{ url_for('custom_rules') }}" class="navbar-link">自定义规则</a>
+            </div>
+        </nav>
+
+        <div class="header">
+            <h1>批量检测结果</h1>
+            <p>文件：{{ data.original_filename }}</p>
+        </div>
+
+        <div class="card">
+            <div class="risk-overview">
+                <div class="risk-level-circle {{ data.overall_level }}">
+                    {% if data.overall_level == 'high' %}高风险
+                    {% elif data.overall_level == 'medium' %}中风险
+                    {% else %}低风险{% endif %}
+                </div>
+                <div class="risk-stats">
+                    <h3>批量检测概览</h3>
+                    <div class="stat-row">
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #667eea;">{{ data.total_files }}</span>
+                            <span class="stat-label">检测文件</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #dc2626;">{{ data.total_risks }}</span>
+                            <span class="stat-label">风险总数</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #dc2626;">{{ data.high_risk_count }}</span>
+                            <span class="stat-label">高风险文件</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" style="color: #d97706;">{{ data.medium_risk_count }}</span>
+                            <span class="stat-label">中风险文件</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="exportBatchReport('{{ batch_id }}', 'html')">📥 导出HTML报告</button>
+                <button class="btn btn-success" onclick="exportBatchReport('{{ batch_id }}', 'pdf')">📄 导出PDF报告</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">🔄 重新检测</a>
+            </div>
+
+            <h2>检测结果明细</h2>
+            {% for result in data.results %}
+            <div class="batch-result-item" onclick="toggleBatchDetails(this)">
+                <div class="batch-result-header">
+                    <div>
+                        <strong>{{ result.filename }}</strong>
+                        <span style="margin-left: 15px;">
+                            检测到 <strong>{{ result.risk_count }}</strong> 个风险点
+                        </span>
+                    </div>
+                    <span class="risk-badge risk-{{ result.risk_level }}">
+                        {% if result.risk_level == 'high' %}高风险
+                        {% elif result.risk_level == 'medium' %}中风险
+                        {% else %}低风险{% endif %}
+                    </span>
+                </div>
+                <div class="batch-result-details">
+                    {% if result.risks %}
+                        {% for risk in result.risks %}
+                        <div class="risk-item {{ risk.severity }}" style="margin-top: 10px;">
+                            <div class="risk-header">
+                                <h3 style="font-size: 1rem;">{{ risk.name }}</h3>
+                                <span class="risk-badge risk-{{ risk.severity }}">
+                                    {% if risk.severity == 'high' %}高
+                                    {% elif risk.severity == 'medium' %}中
+                                    {% else %}低{% endif %}
+                                </span>
+                            </div>
+                            <p class="risk-description" style="font-size: 0.9rem;">{{ risk.description }}</p>
+                            <div class="risk-suggestion" style="font-size: 0.9rem;">
+                                <strong>💡 建议：</strong> {{ risk.suggestion }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #059669; padding: 15px;">✅ 未检测到明显风险点</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

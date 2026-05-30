@@ -1,0 +1,118 @@
+[
+  {
+    "input": {
+      "speakers": [
+        "张三",
+        "李四",
+        "王五",
+        "赵六"
+      ],
+      "utterances": "example_meeting.txt"
+    },
+    "output": {
+      "summary": {},
+      "consensus": [],
+      "todos": [
+        {
+          "task": "在周五前完成",
+          "assignee": "李四",
+          "deadline": "周五"
+        },
+        {
+          "task": "李四帮忙调整一下接口的响应格式",
+          "assignee": "王五",
+          "deadline": ""
+        },
+        {
+          "task": "没问题，我下午就去看一下，明天应该能调整好。",
+          "assignee": "李四",
+          "deadline": "明天"
+        },
+        {
+          "task": "整理一下？",
+          "assignee": "品文档谁",
+          "deadline": "下周一"
+        },
+        {
+          "task": "产品文档吧，我周三之前提交初稿，大家评审",
+          "assignee": "赵六",
+          "deadline": "周三"
+        },
+        {
+          "task": "在周三前提交产品文档初稿",
+          "assignee": "张三",
+          "deadline": "周三"
+        },
+        {
+          "task": "好前端的演示页面",
+          "assignee": "王五",
+          "deadline": ""
+        },
+        {
+          "task": "我这边也会把后端环境部署好",
+          "assignee": "李四",
+          "deadline": ""
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "speakers": [
+        "张三",
+        "李四",
+        "王五",
+        "赵六"
+      ],
+      "utterances": "example_meeting.txt"
+    },
+    "output": {
+      "summary": {},
+      "consensus": [
+        "确定下周一联调测试"
+      ],
+      "todos": [
+        {
+          "task": "在周五前完成",
+          "assignee": "李四",
+          "deadline": "周五"
+        },
+        {
+          "task": "李四帮忙调整一下接口的响应格式",
+          "assignee": "王五",
+          "deadline": ""
+        },
+        {
+          "task": "没问题，我下午就去看一下，明天应该能调整好。",
+          "assignee": "李四",
+          "deadline": "明天"
+        },
+        {
+          "task": "整理一下？",
+          "assignee": "品文档谁",
+          "deadline": "下周一"
+        },
+        {
+          "task": "产品文档吧，我周三之前提交初稿，大家评审",
+          "assignee": "赵六",
+          "deadline": "周三"
+        },
+        {
+          "task": "在周三前提交产品文档初稿",
+          "assignee": "张三",
+          "deadline": "周三"
+        },
+        {
+          "task": "好前端的演示页面",
+          "assignee": "王五",
+          "deadline": ""
+        },
+        {
+          "task": "我这边也会把后端环境部署好",
+          "assignee": "李四",
+          "deadline": ""
+        }
+      ]
+    }
+  }
+]

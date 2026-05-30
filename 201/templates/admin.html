@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .header h1 { color: #333; font-size: 24px; margin-bottom: 16px; }
+        .login-form { display: flex; gap: 12px; flex-wrap: wrap; }
+        .login-form input { padding: 10px 16px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 14px; flex: 1; min-width: 150px; }
+        .login-form input:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 10px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: transform 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .btn-secondary { background: #e1e8ed; color: #333; }
+        .btn:hover { transform: translateY(-2px); }
+        .error { color: #dc3545; margin-top: 12px; font-size: 14px; }
+        .success { color: #28a745; margin-top: 12px; font-size: 14px; }
+        .dashboard { display: none; }
+        .dashboard.show { display: block; }
+        .info-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .info-card h2 { font-size: 18px; color: #333; margin-bottom: 16px; }
+        .info-row { display: flex; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { width: 120px; color: #666; font-size: 14px; }
+        .info-value { flex: 1; color: #333; font-size: 14px; word-break: break-all; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center; }
+        .stat-value { font-size: 24px; font-weight: 700; color: #667eea; }
+        .stat-label { font-size: 12px; color: #666; margin-top: 4px; }
+        .hourly-chart { display: flex; align-items: flex-end; gap: 4px; height: 150px; padding: 16px 0; border-bottom: 2px solid #e1e8ed; }
+        .hour-bar { flex: 1; background: linear-gradient(to top, #667eea, #764ba2); border-radius: 4px 4px 0 0; min-height: 4px; }
+        .hour-labels { display: flex; gap: 4px; margin-top: 8px; }
+        .hour-label { flex: 1; text-align: center; font-size: 10px; color: #999; }
+        .province-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+        .province-item { background: #f8f9fa; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; font-size: 13px; }
+        .logs-section { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .logs-header h2 { font-size: 18px; color: #333; }
+        .live-badge { display: inline-flex; align-items: center; gap: 6px; background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .live-dot { width: 8px; height: 8px; background: #28a745; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .logs-container { max-height: 400px; overflow-y: auto; background: #1a1a2e; border-radius: 8px; padding: 12px; font-family: 'Monaco', 'Menlo', monospace; font-size: 12px; }
+        .log-entry { color: #e0e0e0; padding: 6px 0; border-bottom: 1px solid #2d2d44; line-height: 1.5; }
+        .log-time { color: #667eea; }
+        .log-code { color: #f5576c; }
+        .log-ip { color: #4ecdc4; }
+        .log-province { color: #ffe66d; }
+        .back { margin-bottom: 20px; }
+        .back a { color: #667eea; text-decoration: none; font-size: 14px; }
+        .back a:hover { text-decoration: underline; }
+        .actions { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; padding: 32px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; }
+        .modal-content h3 { color: #333; margin-bottom: 12px; }
+        .modal-content p { color: #666; margin-bottom: 24px; }
+        .modal-buttons { display: flex; gap: 12px; justify-content: center; }
+        .realtime-logs-section { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back">
+            <a href="/">← 返回首页</a>
+        </div>
+        
+        <div class="header">
+            <h1>⚙️ 管理后台</h1>
+            <form id="adminForm" class="login-form">
+                <input type="text" id="short_code" name="short_code" placeholder="短码" required>
+                <input type="text" id="admin_key" name="admin_key" placeholder="管理密钥" required>
+                <button type="submit" class="btn btn-primary">查询</button>
+            </form>
+            <div id="message"></div>
+        </div>
+        
+        <div id="dashboard" class="dashboard">
+            <div class="info-card">
+                <h2>📋 基本信息</h2>
+                <div class="info-row"><span class="info-label">短码：</span><span class="info-value" id="info-code"></span></div>
+                <div class="info-row"><span class="info-label">原始链接：</span><span class="info-value" id="info-url"></span></div>
+                <div class="info-row"><span class="info-label">创建时间：</span><span class="info-value" id="info-created"></span></div>
+                <div class="info-row"><span class="info-label">过期时间：</span><span class="info-value" id="info-expires"></span></div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-clicks">0</div>
+                    <div class="stat-label">总点击量</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-provinces">0</div>
+                    <div class="stat-label">访问省份</div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h2>⏱️ 最近24小时点击分布</h2>
+                <div class="hourly-chart" id="hourlyChart"></div>
+                <div class="hour-labels" id="hourlyLabels"></div>
+            </div>
+            
+            <div class="info-card">
+                <h2>📍 来源省份分布</h2>
+                <div class="province-list" id="provinceList"></div>
+            </div>
+            
+            <div class="logs-section">
+                <div class="logs-header">
+                    <h2>📜 最近访问记录</h2>
+                </div>
+                <div class="logs-container" id="logsContainer"></div>
+            </div>
+            
+            <div class="info-card">
+                <h2>🔧 操作</h2>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="viewQR()">📱 二维码</button>
+                    <button class="btn btn-secondary" onclick="viewStats()">📊 统计页</button>
+                    <button class="btn btn-danger" onclick="confirmDelete()">🗑️ 删除</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="realtime-logs-section">
+            <div class="logs-header">
+                <h2>🌐 实时访问日志（全站）</h2>
+                <span class="live-badge"><span class="live-dot"></span>实时更新</span>
+            </div>
+            <div class="logs-container" id="realtimeLogs"></div>
+        </div>
+    </div>
+    
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>⚠️ 确认删除</h3>
+            <p>确定要删除这个短网址吗？此操作不可恢复，所有统计数据也将被删除。</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-danger" onclick="doDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCode = '';
+        let currentAdminKey = '';
+        
+        document.getElementById('adminForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const message = document.getElementById('message');
+            message.innerHTML = '';
+            
+            currentCode = document.getElementById('short_code').value;
+            currentAdminKey = document.getElementById('admin_key').value;
+            
+            const formData = new FormData();
+            formData.append('short_code', currentCode);
+            formData.append('admin_key', currentAdminKey);
+            
+            try {
+                const response = await fetch('/admin/check', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showDashboard(data);
+                } else {
+                    message.innerHTML = '<div class="error">❌ ' + data.error + '</div>';
+                    document.getElementById('dashboard').classList.remove('show');
+                }
+            } catch (err) {
+                message.innerHTML = '<div class="error">❌ 网络错误，请重试</div>';
+            }
+        });
+        
+        function showDashboard(data) {
+            document.getElementById('info-code').textContent = data.short_code;
+            document.getElementById('info-url').textContent = data.original_url;
+            document.getElementById('info-created').textContent = data.created_at;
+            document.getElementById('info-expires').textContent = data.expires_at;
+            document.getElementById('stat-clicks').textContent = data.click_count;
+            document.getElementById('stat-provinces').textContent = Object.keys(data.provinces).length;
+            
+            const chart = document.getElementById('hourlyChart');
+            const labels = document.getElementById('hourlyLabels');
+            chart.innerHTML = '';
+            labels.innerHTML = '';
+            
+            const maxCount = Math.max(...data.hourly, 1);
+            data.hourly.forEach((count, i) => {
+                const bar = document.createElement('div');
+                bar.className = 'hour-bar';
+                bar.style.height = (count / maxCount * 100) + '%';
+                bar.title = count + '次';
+                chart.appendChild(bar);
+            });
+            
+            for (let i = 0; i < 24; i++) {
+                const label = document.createElement('div');
+                label.className = 'hour-label';
+                label.textContent = (23 - i) + 'h';
+                labels.appendChild(label);
+            }
+            
+            const provinceList = document.getElementById('provinceList');
+            provinceList.innerHTML = '';
+            const sortedProvinces = Object.entries(data.provinces).sort((a, b) => b[1] - a[1]);
+            sortedProvinces.forEach(([name, count]) => {
+                const item = document.createElement('div');
+                item.className = 'province-item';
+                item.innerHTML = `<span>${name}</span><span style="color: #667eea; font-weight: 600;">${count}次</span>`;
+                provinceList.appendChild(item);
+            });
+            
+            const logsContainer = document.getElementById('logsContainer');
+            logsContainer.innerHTML = '';
+            data.visits.forEach(visit => {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = `<span class="log-time">[${visit.time}]</span> <span class="log-code">${currentCode}</span> <span class="log-ip">${visit.ip}</span> <span class="log-province">(${visit.province})</span> ${visit.user_agent.substring(0, 80)}`;
+                logsContainer.appendChild(entry);
+            });
+            
+            document.getElementById('dashboard').classList.add('show');
+        }
+        
+        function viewQR() {
+            window.open('/' + currentCode + '/qr', '_blank');
+        }
+        
+        function viewStats() {
+            window.open('/' + currentCode + '/stats', '_blank');
+        }
+        
+        function confirmDelete() {
+            document.getElementById('deleteModal').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+        
+        async function doDelete() {
+            const formData = new FormData();
+            formData.append('admin_key', currentAdminKey);
+            
+            try {
+                const response = await fetch('/' + currentCode + '/delete', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('删除成功！');
+                    document.getElementById('dashboard').classList.remove('show');
+                    document.getElementById('short_code').value = '';
+                    document.getElementById('admin_key').value = '';
+                } else {
+                    alert('删除失败：' + data.error);
+                }
+            } catch (err) {
+                alert('网络错误，请重试');
+            }
+            
+            closeModal();
+        }
+        
+        const eventSource = new EventSource('/logs/stream');
+        eventSource.onmessage = function(e) {
+            try {
+                const data = JSON.parse(e.data);
+                const logsContainer = document.getElementById('realtimeLogs');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = `<span class="log-time">[${data.time}]</span> <span class="log-code">${data.short_code}</span> <span class="log-ip">${data.ip}</span> <span class="log-province">(${data.province})</span> ${data.user_agent.substring(0, 80)}`;
+                logsContainer.insertBefore(entry, logsContainer.firstChild);
+                
+                while (logsContainer.children.length > 100) {
+                    logsContainer.removeChild(logsContainer.lastChild);
+                }
+            } catch(err) {
+                console.log('Parse error:', err);
+            }
+        };
+    </script>
+</body>
+</html>

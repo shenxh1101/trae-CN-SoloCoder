@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>电路搭建模拟器</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header id="toolbar">
+            <div class="toolbar-left">
+                <h1 class="app-title">⚡ 电路搭建模拟器</h1>
+            </div>
+            <div class="toolbar-center">
+                <button id="btn-preset-simple" class="toolbar-btn" title="简单回路">
+                    <span class="btn-icon">◎</span>
+                    <span class="btn-label">简单回路</span>
+                </button>
+                <button id="btn-preset-series" class="toolbar-btn" title="串联电路">
+                    <span class="btn-icon">☷</span>
+                    <span class="btn-label">串联电路</span>
+                </button>
+                <button id="btn-preset-parallel" class="toolbar-btn" title="并联电路">
+                    <span class="btn-icon">⊞</span>
+                    <span class="btn-label">并联电路</span>
+                </button>
+                <div class="toolbar-divider"></div>
+                <button id="btn-save" class="toolbar-btn" title="保存电路">
+                    <span class="btn-icon">💾</span>
+                    <span class="btn-label">保存</span>
+                </button>
+                <button id="btn-load" class="toolbar-btn" title="加载电路">
+                    <span class="btn-icon">📂</span>
+                    <span class="btn-label">加载</span>
+                </button>
+                <div class="toolbar-divider"></div>
+                <button id="btn-reset" class="toolbar-btn danger" title="重置画布">
+                    <span class="btn-icon">🗑</span>
+                    <span class="btn-label">重置</span>
+                </button>
+            </div>
+        </header>
+
+        <div id="main-container">
+            <aside id="component-library">
+                <h2 class="panel-title">元件库</h2>
+                <div id="library-items">
+                    <div class="library-item" data-type="battery" draggable="true">
+                        <div class="item-icon battery-icon"></div>
+                        <span class="item-name">电池</span>
+                        <span class="item-hint">9V</span>
+                    </div>
+                    <div class="library-item" data-type="bulb" draggable="true">
+                        <div class="item-icon bulb-icon"></div>
+                        <span class="item-name">灯泡</span>
+                        <span class="item-hint">10Ω</span>
+                    </div>
+                    <div class="library-item" data-type="switch" draggable="true">
+                        <div class="item-icon switch-icon"></div>
+                        <span class="item-name">开关</span>
+                        <span class="item-hint">通/断</span>
+                    </div>
+                    <div class="library-item" data-type="resistor" draggable="true">
+                        <div class="item-icon resistor-icon"></div>
+                        <span class="item-name">电阻</span>
+                        <span class="item-hint">可调</span>
+                    </div>
+                    <div class="library-item" data-type="wire" draggable="true">
+                        <div class="item-icon wire-icon"></div>
+                        <span class="item-name">导线</span>
+                        <span class="item-hint">0Ω</span>
+                    </div>
+                </div>
+                <div id="library-help">
+                    <p>拖拽元件到画布</p>
+                    <p>点击端口连接导线</p>
+                    <p>右键/长按旋转元件</p>
+                </div>
+            </aside>
+
+            <div id="canvas-container">
+                <canvas id="circuit-canvas"></canvas>
+                <div id="drag-preview"></div>
+            </div>
+
+            <aside id="info-panel">
+                <div id="ohm-panel" class="info-card">
+                    <h3 class="card-title">欧姆定律</h3>
+                    <div class="formula">V = I × R</div>
+                    <div class="ohm-values">
+                        <div class="ohm-row">
+                            <span class="ohm-label">电压 V</span>
+                            <span class="ohm-value" id="voltage-value">0 V</span>
+                        </div>
+                        <div class="ohm-row">
+                            <span class="ohm-label">电流 I</span>
+                            <span class="ohm-value" id="current-value">0 A</span>
+                        </div>
+                        <div class="ohm-row">
+                            <span class="ohm-label">电阻 R</span>
+                            <span class="ohm-value" id="resistance-value">0 Ω</span>
+                        </div>
+                    </div>
+                    <div id="ohm-verification" class="verification"></div>
+                </div>
+
+                <div id="circuit-status" class="info-card">
+                    <h3 class="card-title">电路状态</h3>
+                    <div id="status-indicator" class="status-open">
+                        <span class="status-dot"></span>
+                        <span id="status-text">开路</span>
+                    </div>
+                    <div id="circuit-details"></div>
+                </div>
+
+                <div id="resistor-control" class="info-card" style="display:none;">
+                    <h3 class="card-title">电阻调节</h3>
+                    <div class="resistor-slider-container">
+                        <label>电阻值: <span id="resistor-value-display">100</span> Ω</label>
+                        <input type="range" id="resistor-slider" min="10" max="1000" value="100" step="10">
+                        <div class="slider-labels">
+                            <span>10Ω</span>
+                            <span>1000Ω</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <div id="toast-container"></div>
+        <div id="short-circuit-warning" class="hidden">
+            <div class="warning-content">
+                <div class="warning-icon">⚠️</div>
+                <div class="warning-text">
+                    <strong>短路警告!</strong>
+                    <p>电池直接连接，没有负载！请添加灯泡或电阻。</p>
+                </div>
+                <button id="warning-close" class="warning-close">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

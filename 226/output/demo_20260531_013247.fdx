@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FinalDraft DocumentType="Script" Template="No" Version="3">
+  <WordProcessing>No</WordProcessing>
+  <Content>
+    <Paragraph Type="Scene Heading">
+      <Alignment Justify="Left" />
+      <Text AdornmentStyle="0" Shadow="0" Font="Courier Final Draft" Size="12">INT. 咖啡店内，雨天，男主捧着一本书正在阅读 - DAY</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">咖啡店内，雨天，男主捧着一本书正在阅读。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">男主角</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(紧张地结巴)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">请...请问，这个座位有人吗？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">女主角</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(开心地笑着)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">哈哈完全没有！快坐快坐，外面雨好大对吧？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">男主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(轻松地)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">哈哈确实，我本来想在公园看书的，结果被雨淋过来了。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">女主角</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(好奇地)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">哇，你也喜欢看科幻小说吗？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">女主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(感兴趣地)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">在公园看书？好文艺啊！你在看什么书呀？</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">男主</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(开心地)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">一本科幻小说，叫《三体》，你听过吗？</Text>
+    </Paragraph>
+  </Content>
+</FinalDraft>

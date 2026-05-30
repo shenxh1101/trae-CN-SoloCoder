@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroDigit - AI手写数字识别</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <h1 class="glow-text">NeuroDigit</h1>
+            <p>AI手写数字识别系统</p>
+        </div>
+        <div class="mode-toggle">
+            <button id="btnModeOnline" class="active">在线</button>
+            <button id="btnModeOffline">离线</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="canvas-column">
+            <div class="canvas-wrapper">
+                <canvas id="drawCanvas" width="280" height="280"></canvas>
+                <div id="scanOverlay" class="scan-overlay">
+                    <div class="scan-line"></div>
+                </div>
+            </div>
+            <div class="toolbar">
+                <button id="btnClear">清除</button>
+                <button id="btnRecognize">识别</button>
+                <button id="btnRandom">随机示例</button>
+                <label class="toggle-label">
+                    <span>连续识别</span>
+                    <input type="checkbox" id="toggleContinuous">
+                    <span class="toggle-switch"></span>
+                </label>
+            </div>
+            <div class="brush-control">
+                <label for="brushSize">画笔粗细</label>
+                <input type="range" id="brushSize" min="8" max="30" value="16">
+            </div>
+            <div class="preprocess-options">
+                <label class="toggle-label">
+                    <span>二值化预处理</span>
+                    <input type="checkbox" id="toggleBinarize">
+                    <span class="toggle-switch"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="result-column">
+            <div class="result-panel">
+                <div class="result-digit-display">
+                    <span id="resultDigit" class="glow-text">?</span>
+                </div>
+                <div class="result-confidence">
+                    <span>置信度</span>
+                    <span id="resultConfidence">0%</span>
+                </div>
+                <div class="chart-wrapper" id="chartContainer"></div>
+                <div class="processing-info">
+                    <span>处理时间</span>
+                    <span id="processingTime">0ms</span>
+                </div>
+            </div>
+            <div class="save-error-section">
+                <select id="actualDigit">
+                    <option value="" disabled selected>实际数字</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                </select>
+                <button id="btnSaveError">保存错误案例</button>
+            </div>
+        </div>
+    </main>
+
+    <aside id="settingsPanel" class="settings-drawer">
+        <button id="btnCloseSettings" class="close-btn">&times;</button>
+        <h2>设置</h2>
+        <div class="setting-group">
+            <label for="modelSelect">模型选择</label>
+            <select id="modelSelect">
+                <option value="default">默认模型</option>
+            </select>
+        </div>
+        <div class="setting-group">
+            <label for="modelUpload">上传模型</label>
+            <input type="file" id="modelUpload" accept=".h5,.onnx">
+            <button id="btnUpload">上传</button>
+        </div>
+        <div class="setting-group">
+            <label>当前模型</label>
+            <div id="modelInfo">默认模型</div>
+        </div>
+    </aside>
+
+    <section id="errorPanel" class="error-panel">
+        <button id="btnToggleErrors" class="panel-toggle">错误案例</button>
+        <div class="error-content">
+            <div id="errorList" class="error-list"></div>
+            <button id="btnExportErrors">导出</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>NeuroDigit &copy; 2026 | Powered by TensorFlow.js &amp; MNIST</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+    <script src="js/preprocess.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/offline.js"></script>
+    <script src="js/errors.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

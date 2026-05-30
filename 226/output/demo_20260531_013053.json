@@ -1,0 +1,118 @@
+{
+  "scene": "咖啡店内，雨天，男主捧着一本书正在阅读",
+  "characters": [
+    {
+      "name": "男主",
+      "personality": "内向、害羞、喜欢读书",
+      "source": "",
+      "style": ""
+    },
+    {
+      "name": "女主",
+      "personality": "外向、活泼、喜欢艺术",
+      "source": "",
+      "style": ""
+    }
+  ],
+  "dialogue": [
+    {
+      "line_index": 0,
+      "speaker": "男主角",
+      "text": "请...请问，这个座位有人吗？",
+      "emotion": "紧张地结巴",
+      "sentiment": {
+        "joy": 0.2,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.1,
+        "surprise": 0.0,
+        "neutral": 0.0,
+        "tension": 0.8,
+        "affection": 0.1
+      }
+    },
+    {
+      "line_index": 1,
+      "speaker": "女主角",
+      "text": "哈哈完全没有！快坐快坐，外面雨好大对吧？",
+      "emotion": "开心地笑着",
+      "sentiment": {
+        "joy": 0.8,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.3,
+        "neutral": 0.0,
+        "tension": 0.1,
+        "affection": 0.5
+      }
+    },
+    {
+      "line_index": 2,
+      "speaker": "男主",
+      "text": "哈哈确实，我本来想在公园看书的，结果被雨淋过来了。",
+      "emotion": "轻松地",
+      "sentiment": {
+        "joy": 0.6,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.2,
+        "neutral": 0.0,
+        "tension": 0.3,
+        "affection": 0.4
+      }
+    },
+    {
+      "line_index": 3,
+      "speaker": "女主角",
+      "text": "哇，你也喜欢看科幻小说吗？",
+      "emotion": "好奇地",
+      "sentiment": {
+        "joy": 0.7,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.5,
+        "neutral": 0.0,
+        "tension": 0.1,
+        "affection": 0.6
+      }
+    },
+    {
+      "line_index": 4,
+      "speaker": "女主",
+      "text": "在公园看书？好文艺啊！你在看什么书呀？",
+      "emotion": "感兴趣地",
+      "sentiment": {
+        "joy": 0.5,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.1,
+        "neutral": 0.0,
+        "tension": 0.2,
+        "affection": 0.5
+      }
+    },
+    {
+      "line_index": 5,
+      "speaker": "男主",
+      "text": "一本科幻小说，叫《三体》，你听过吗？",
+      "emotion": "开心地",
+      "sentiment": {
+        "joy": 0.6,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.4,
+        "neutral": 0.0,
+        "tension": 0.1,
+        "affection": 0.7
+      }
+    }
+  ],
+  "version": 2,
+  "created_at": "2026-05-31T01:30:53.569024",
+  "overall_arc": ""
+}

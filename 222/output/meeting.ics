@@ -1,0 +1,150 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Meeting Summarizer//CN
+CALSCALE:GREGORIAN
+X-WR-TIMEZONE:Asia/Shanghai
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:cabf0205-0238-462b-82d5-d87a9dc02e55@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260530T100000
+DTEND;TZID=Asia/Shanghai:20260530T110000
+SUMMARY:大家好，我们今天来讨论一下新产品的开发进度。首先请李四说一下后端的情况。
+DESCRIPTION:大家好，我们今天来讨论一下新产品的开发进度。首先请李四说一下后端的情况。\n\n原文: 张三: 大家好，我们今天来讨论一下新产品的开发进度。嗯，首先请李四说一下后端的情况。
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 大家好，我们今天来讨论一下新产品的开发进度。首先请李四说一下
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:c5ab9973-9891-49b5-a575-3231d467dc00@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260605T100000
+DTEND;TZID=Asia/Shanghai:20260605T110000
+SUMMARY:，用户认证和数据存储模块都已经测试
+DESCRIPTION:，用户认证和数据存储模块都已经测试\n\n原文: 李四: 好的，后端的API接口已经完成了80%，嗯，用户认证和数据存储模块都已经测试通过了。啊，剩下的就是报表导出功能，我负责在周五前完成。
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: ，用户认证和数据存储模块都已经测试
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:b9fa025a-bd13-4543-855a-d8dbd607f84a@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260531T100000
+DTEND;TZID=Asia/Shanghai:20260531T110000
+SUMMARY:没问题，我下午就去看一下，明天应该能调整好。
+DESCRIPTION:没问题，我下午就去看一下，明天应该能调整好。\n\n原文: 李四: 没问题，我下午就去看一下，明天应该能调整好。
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 没问题，我下午就去看一下，明天应该能调整好。
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:6a4ce0a3-daa8-4ee7-85db-fa390702e99c@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260608T100000
+DTEND;TZID=Asia/Shanghai:20260608T110000
+SUMMARY:第一次联调
+DESCRIPTION:第一次联调\n\n原文: 张三: 嗯，那我们下周一进行第一次联调测试，大家都准备一下。还有，产品文档谁负责整理一下？
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 第一次联调
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:ebd14978-93b1-4a2d-8dd3-6d6ddcab74ad@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260603T100000
+DTEND;TZID=Asia/Shanghai:20260603T110000
+SUMMARY:档吧，我周三之前提交初稿，大家评审
+DESCRIPTION:档吧，我周三之前提交初稿，大家评审\n\n原文: 赵六: 我来负责产品文档吧，我周三之前提交初稿，然后大家评审。
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 档吧，我周三之前提交初稿，大家评审
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:b786003b-cc2e-4467-9f32-522fcec7211e@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260610T140000
+DTEND;TZID=Asia/Shanghai:20260610T150000
+SUMMARY:事情，下周三下午三点有个客户评审
+DESCRIPTION:事情，下周三下午三点有个客户评审\n\n原文: 张三: 好的，赵六负责在周三前提交产品文档初稿。还有一个事情，下周三下午三点有个客户评审会议，大家记得准备演示材料。
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 事情，下周三下午三点有个客户评审
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:e8464429-f48f-45f4-8a79-801302c6b010@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260605T100000
+DTEND;TZID=Asia/Shanghai:20260605T110000
+SUMMARY:待办: 在周五前完成
+DESCRIPTION:待办: 在周五前完成\n\n原文: 在周五前完成
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 待办: 在周五前完成
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:e9cb0ec1-07d5-49c2-857d-fb558af0460c@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260531T100000
+DTEND;TZID=Asia/Shanghai:20260531T110000
+SUMMARY:待办: 没问题，我下午就去看一下，明天应该能调整好。
+DESCRIPTION:待办: 没问题，我下午就去看一下，明天应该能调整好。\n\n原文: 没问题，我下午就去看一下，明天应该能调整好。
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 待办: 没问题，我下午就去看一下，明天应该能调整好。
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:0426fdc8-e5fc-4cbf-9c27-907ec2108275@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260608T100000
+DTEND;TZID=Asia/Shanghai:20260608T110000
+SUMMARY:待办: 整理一下？
+DESCRIPTION:待办: 整理一下？\n\n原文: 整理一下？
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 待办: 整理一下？
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:49aa6b56-89d2-45fd-9d9f-87994cfc277e@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260603T100000
+DTEND;TZID=Asia/Shanghai:20260603T110000
+SUMMARY:待办: 产品文档吧，我周三之前提交初稿，大家评审
+DESCRIPTION:待办: 产品文档吧，我周三之前提交初稿，大家评审\n\n原文: 产品文档吧，我周三之前提交初稿，大家评审
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 待办: 产品文档吧，我周三之前提交初稿，大家评审
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:bcd83472-4574-410f-b4f2-f1fbd243d1f9@meeting-summarizer
+DTSTAMP:20260530T233659
+DTSTART;TZID=Asia/Shanghai:20260603T100000
+DTEND;TZID=Asia/Shanghai:20260603T110000
+SUMMARY:待办: 在周三前提交产品文档初稿
+DESCRIPTION:待办: 在周三前提交产品文档初稿\n\n原文: 在周三前提交产品文档初稿
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:提醒: 待办: 在周三前提交产品文档初稿
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

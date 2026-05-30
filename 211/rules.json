@@ -1,0 +1,123 @@
+[
+  {
+    "id": "rule_001",
+    "keywords": ["打开记事本", "记事本", "notepad"],
+    "category": "应用操作",
+    "response": {
+      "text": "正在打开记事本...",
+      "command": "notepad.exe",
+      "api_call": {"method": "POST", "endpoint": "/api/app/launch", "params": {"app": "notepad"}}
+    }
+  },
+  {
+    "id": "rule_002",
+    "keywords": ["查询天气", "天气", "天气预报", "今天天气"],
+    "category": "信息查询",
+    "response": {
+      "text": "正在查询天气信息...",
+      "command": "curl -s 'http://api.weather.com/v1/forecast?city=local'",
+      "api_call": {"method": "GET", "endpoint": "/api/weather/query", "params": {"city": "local", "type": "current"}}
+    }
+  },
+  {
+    "id": "rule_003",
+    "keywords": ["播放音乐", "音乐", "放首歌"],
+    "category": "媒体控制",
+    "response": {
+      "text": "正在播放音乐...",
+      "command": "spotify play --shuffle",
+      "api_call": {"method": "POST", "endpoint": "/api/media/play", "params": {"type": "music", "mode": "shuffle"}}
+    }
+  },
+  {
+    "id": "rule_004",
+    "keywords": ["设置闹钟", "闹钟", "提醒我"],
+    "category": "生活助手",
+    "response": {
+      "text": "已为您设置闹钟",
+      "command": "alarms set --time 07:00",
+      "api_call": {"method": "POST", "endpoint": "/api/alarm/set", "params": {"time": "07:00"}}
+    }
+  },
+  {
+    "id": "rule_005",
+    "keywords": ["打开浏览器", "浏览器", "browser"],
+    "category": "应用操作",
+    "response": {
+      "text": "正在打开浏览器...",
+      "command": "open -a 'Google Chrome'",
+      "api_call": {"method": "POST", "endpoint": "/api/app/launch", "params": {"app": "chrome"}}
+    }
+  },
+  {
+    "id": "rule_006",
+    "keywords": ["发送邮件", "发邮件", "邮件"],
+    "category": "通信",
+    "response": {
+      "text": "正在打开发邮件界面...",
+      "command": "open mailto:",
+      "api_call": {"method": "POST", "endpoint": "/api/email/compose", "params": {}}
+    }
+  },
+  {
+    "id": "rule_007",
+    "keywords": ["翻译", "翻译一下"],
+    "category": "工具",
+    "response": {
+      "text": "正在启动翻译服务...",
+      "command": "translate --source auto --target en",
+      "api_call": {"method": "POST", "endpoint": "/api/translate", "params": {"source": "auto", "target": "en"}}
+    }
+  },
+  {
+    "id": "rule_008",
+    "keywords": ["拍照", "照相机", "相机"],
+    "category": "媒体控制",
+    "response": {
+      "text": "正在打开相机...",
+      "command": "open -a 'Photo Booth'",
+      "api_call": {"method": "POST", "endpoint": "/api/camera/open", "params": {}}
+    }
+  },
+  {
+    "id": "rule_009",
+    "keywords": ["计算器", "算一下"],
+    "category": "工具",
+    "response": {
+      "text": "正在打开计算器...",
+      "command": "open -a Calculator",
+      "api_call": {"method": "POST", "endpoint": "/api/app/launch", "params": {"app": "calculator"}}
+    }
+  },
+  {
+    "id": "rule_010",
+    "keywords": ["导航", "地图", "路线"],
+    "category": "信息查询",
+    "response": {
+      "text": "正在打开导航...",
+      "command": "open -a Maps",
+      "api_call": {"method": "POST", "endpoint": "/api/navigation/start", "params": {}}
+    }
+  },
+  {
+    "id": "rule_011",
+    "keywords": ["那明天呢", "明天呢", "明天天气"],
+    "category": "信息查询",
+    "context_followup": true,
+    "response": {
+      "text": "正在查询明天的天气...",
+      "command": "curl -s 'http://api.weather.com/v1/forecast?city=local&day=tomorrow'",
+      "api_call": {"method": "GET", "endpoint": "/api/weather/query", "params": {"city": "local", "type": "tomorrow"}}
+    }
+  },
+  {
+    "id": "rule_012",
+    "keywords": ["暂停", "停止播放", "暂停音乐"],
+    "category": "媒体控制",
+    "response": {
+      "text": "已暂停播放",
+      "command": "spotify pause",
+      "api_call": {"method": "POST", "endpoint": "/api/media/pause", "params": {}}
+    }
+  }
+]

@@ -1,0 +1,415 @@
+{
+  "tool": "CodeDoc",
+  "version": "1.0.0",
+  "generated_at": "2026-05-30T23:30:11.804102",
+  "summary": {
+    "files_scanned": 2,
+    "total_issues": 30,
+    "errors": 0,
+    "warnings": 19,
+    "info": 11
+  },
+  "results": [
+    {
+      "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+      "diagnoses": [
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 3,
+          "column": 30,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'length' 可能未声明",
+          "suggestion": "变量 'length' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let length;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 6,
+          "column": 12,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'log' 可能未声明",
+          "suggestion": "变量 'log' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let log;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 6,
+          "column": 17,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'Total' 可能未声明",
+          "suggestion": "变量 'Total' 未声明，是否指的是 'total'？否则请使用 var/let/const 声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let Total;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 8,
+          "column": 8,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'count' 可能未声明",
+          "suggestion": "变量 'count' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let count;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 9,
+          "column": 15,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'result' 可能未声明",
+          "suggestion": "变量 'result' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let result;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 11,
+          "column": 8,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'x' 可能未声明",
+          "suggestion": "变量 'x' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let x;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 18,
+          "column": 19,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'readFileSync' 可能未声明",
+          "suggestion": "变量 'readFileSync' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let readFileSync;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 18,
+          "column": 34,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'tmp' 可能未声明",
+          "suggestion": "变量 'tmp' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let tmp;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 18,
+          "column": 38,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'test' 可能未声明",
+          "suggestion": "变量 'test' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let test;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 18,
+          "column": 43,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'txt' 可能未声明",
+          "suggestion": "变量 'txt' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let txt;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 18,
+          "column": 50,
+          "severity": "warning",
+          "rule_id": "JS-UNDEF",
+          "message": "变量 'utf8' 可能未声明",
+          "suggestion": "变量 'utf8' 可能未声明，建议使用 var/let/const 在使用前声明",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "let utf8;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 6,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "JS-CONSOLE",
+          "message": "发现 console 调用，生产代码中应移除",
+          "suggestion": "移除 console 调用或使用专门的日志库替代",
+          "category": "style",
+          "fixable": true,
+          "fix_code": ""
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 9,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "JS-SEMICOLON",
+          "message": "语句缺少分号",
+          "suggestion": "在行尾添加分号:         return result;",
+          "category": "style",
+          "fixable": true,
+          "fix_code": "        return result;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 12,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "JS-SEMICOLON",
+          "message": "语句缺少分号",
+          "suggestion": "在行尾添加分号:         return 1;",
+          "category": "style",
+          "fixable": true,
+          "fix_code": "        return 1;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 14,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "JS-SEMICOLON",
+          "message": "语句缺少分号",
+          "suggestion": "在行尾添加分号:     return total;",
+          "category": "style",
+          "fixable": true,
+          "fix_code": "    return total;"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 7,
+          "column": 0,
+          "severity": "warning",
+          "rule_id": "JS-DEBUGGER",
+          "message": "发现 debugger 语句",
+          "suggestion": "移除 debugger 语句，生产代码中不应包含调试断点",
+          "category": "debug",
+          "fixable": true,
+          "fix_code": ""
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 2,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "JS-VAR-DECL",
+          "message": "使用了 'var' 声明变量 'total'",
+          "suggestion": "建议使用 'const' 或 'let' 替代 'var'，以获得块级作用域",
+          "category": "style",
+          "fixable": true,
+          "fix_code": "let total"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 3,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "JS-VAR-DECL",
+          "message": "使用了 'var' 声明变量 'i'",
+          "suggestion": "建议使用 'const' 或 'let' 替代 'var'，以获得块级作用域",
+          "category": "style",
+          "fixable": true,
+          "fix_code": "let i"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "line": 11,
+          "column": 0,
+          "severity": "warning",
+          "rule_id": "JS-EQUALITY",
+          "message": "使用了 == 而非 === 进行比较",
+          "suggestion": "建议使用 === 进行严格相等比较，避免类型强制转换",
+          "category": "type",
+          "fixable": true,
+          "fix_code": "    if (x === 10) {"
+        }
+      ],
+      "complexity_results": [
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.js",
+          "function_name": "processData",
+          "line_start": 1,
+          "line_end": 15,
+          "complexity": 4,
+          "level": "low",
+          "suggestion": "函数 'processData' 圈复杂度为 4，复杂度良好。"
+        }
+      ]
+    },
+    {
+      "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+      "diagnoses": [
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 4,
+          "column": 13,
+          "severity": "warning",
+          "rule_id": "PY-UNDEF",
+          "message": "变量 'undefined_var' 在使用前可能未定义",
+          "suggestion": "变量 'undefined_var' 在使用前未赋值，建议在第4行初始化（如: undefined_var = None）",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "# 变量 'undefined_var' 需要在使用前初始化"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 6,
+          "column": 14,
+          "severity": "warning",
+          "rule_id": "PY-UNDEF",
+          "message": "变量 're' 在使用前可能未定义",
+          "suggestion": "变量 're' 可能是模块对象，建议添加: import re",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "# 变量 're' 需要在使用前初始化"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 5,
+          "column": 11,
+          "severity": "warning",
+          "rule_id": "PY-UNDEF",
+          "message": "变量 'os' 在使用前可能未定义",
+          "suggestion": "变量 'os' 可能是模块对象，建议添加: import os",
+          "category": "undefined",
+          "fixable": true,
+          "fix_code": "# 变量 'os' 需要在使用前初始化"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 1,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "PY-UNUSED-IMPORT",
+          "message": "导入的模块 'json' 未被使用",
+          "suggestion": "移除未使用的导入: json",
+          "category": "unused",
+          "fixable": true,
+          "fix_code": "# 可安全删除: import json"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 41,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "PY-UNUSED-IMPORT",
+          "message": "导入的模块 'csv' 未被使用",
+          "suggestion": "移除未使用的导入: csv",
+          "category": "unused",
+          "fixable": true,
+          "fix_code": "# 可安全删除: import csv"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 42,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "PY-UNUSED-IMPORT",
+          "message": "导入的模块 'xml' 未被使用",
+          "suggestion": "移除未使用的导入: xml",
+          "category": "unused",
+          "fixable": true,
+          "fix_code": "# 可安全删除: import xml"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 6,
+          "column": 0,
+          "severity": "warning",
+          "rule_id": "PY-MISSING-IMPORT",
+          "message": "可能缺少导入: import re",
+          "suggestion": "建议在文件顶部添加: import re",
+          "category": "import",
+          "fixable": true,
+          "fix_code": "import re"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 5,
+          "column": 0,
+          "severity": "warning",
+          "rule_id": "PY-MISSING-IMPORT",
+          "message": "可能缺少导入: import os",
+          "suggestion": "建议在文件顶部添加: import os",
+          "category": "import",
+          "fixable": true,
+          "fix_code": "import os"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 35,
+          "column": 7,
+          "severity": "info",
+          "rule_id": "PY-TYPE-BOOL-CMP",
+          "message": "不建议直接与布尔值比较",
+          "suggestion": "使用 'if x:' 代替 'if x == True'，使用 'if not x:' 代替 'if x == False'",
+          "category": "type",
+          "fixable": false,
+          "fix_code": ""
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 37,
+          "column": 7,
+          "severity": "warning",
+          "rule_id": "PY-TYPE-IS-CMP",
+          "message": "使用 'is' 比较非单例值可能导致意外行为",
+          "suggestion": "使用 '==' 代替 'is' 来比较值，'is' 仅用于 None/True/False",
+          "category": "type",
+          "fixable": false,
+          "fix_code": ""
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "line": 34,
+          "column": 0,
+          "severity": "info",
+          "rule_id": "PY-TOO-MANY-ARGS",
+          "message": "函数 'calculate' 参数过多 (9个)",
+          "suggestion": "考虑将部分参数封装为数据类或使用 **kwargs",
+          "category": "style",
+          "fixable": false,
+          "fix_code": ""
+        }
+      ],
+      "complexity_results": [
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "function_name": "process_data",
+          "line_start": 3,
+          "line_end": 32,
+          "complexity": 24,
+          "level": "high",
+          "suggestion": "函数 'process_data' 圈复杂度为 24（过高），建议拆分为多个小函数，每个函数职责单一。可以将条件分支提取为独立函数，或使用策略模式/查找表替代多重if-else。"
+        },
+        {
+          "file": "/Users/mac/code/solo coder/207/test_samples/sample.py",
+          "function_name": "calculate",
+          "line_start": 34,
+          "line_end": 39,
+          "complexity": 3,
+          "level": "low",
+          "suggestion": "函数 'calculate' 圈复杂度为 3，复杂度良好。"
+        }
+      ]
+    }
+  ]
+}

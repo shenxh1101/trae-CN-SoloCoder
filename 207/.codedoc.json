@@ -1,0 +1,75 @@
+{
+  "ignore_rules": [],
+  "ignore_files": [],
+  "ignore_patterns": [
+    "node_modules/",
+    ".git/",
+    "__pycache__/",
+    "venv/",
+    ".venv/",
+    "*.min.js"
+  ],
+  "severity_threshold": "info",
+  "auto_fix": false,
+  "email": {
+    "smtp_host": "",
+    "smtp_port": 587,
+    "smtp_user": "",
+    "smtp_password": "",
+    "from_addr": "",
+    "to_addr": ""
+  },
+  "complexity": {
+    "threshold_high": 10,
+    "threshold_medium": 5
+  },
+  "python": {
+    "known_modules": [
+      "os",
+      "sys",
+      "json",
+      "re",
+      "math",
+      "datetime",
+      "collections",
+      "itertools",
+      "functools",
+      "pathlib",
+      "typing",
+      "dataclasses",
+      "abc",
+      "copy",
+      "hashlib",
+      "random",
+      "string",
+      "time",
+      "logging",
+      "argparse",
+      "subprocess",
+      "shutil",
+      "tempfile",
+      "unittest",
+      "io",
+      "csv",
+      "xml",
+      "html",
+      "http",
+      "urllib",
+      "socket",
+      "threading",
+      "multiprocessing",
+      "queue",
+      "struct",
+      "enum",
+      "operator",
+      "textwrap",
+      "warnings",
+      "contextlib",
+      "traceback"
+    ]
+  },
+  "javascript": {
+    "check_semicolons": true,
+    "check_console": true
+  }
+}

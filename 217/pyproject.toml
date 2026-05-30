@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "code-annotator"
+version = "1.0.0"
+description = "AI Code Comment Generator - Automatically generate comments for Python, JavaScript, and Java code"
+requires-python = ">=3.8"
+
+[project.scripts]
+code-annotator = "code_annotator.cli:main"

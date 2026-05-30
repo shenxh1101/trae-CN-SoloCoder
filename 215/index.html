@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI情感可视化 - 3D粒子球体</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="container">
+        <canvas id="scene"></canvas>
+        
+        <div class="control-panel">
+            <h1>🎨 AI情感可视化</h1>
+            
+            <div class="section">
+                <h3>文本输入</h3>
+                <textarea id="textInput" placeholder="输入一段文字，AI将分析情感并驱动粒子..."></textarea>
+                <div class="btn-group">
+                    <button id="analyzeBtn" class="primary">分析情感</button>
+                    <button id="voiceBtn">🎤 语音输入</button>
+                    <button id="stopVoiceBtn" class="danger" style="display:none;">⏹ 停止</button>
+                </div>
+                <div id="voiceStatus" class="status"></div>
+            </div>
+            
+            <div class="section">
+                <h3>情感结果</h3>
+                <div class="emotion-result">
+                    <div class="emotion-bar">
+                        <div id="positiveBar" class="bar positive"></div>
+                        <div id="neutralBar" class="bar neutral"></div>
+                        <div id="negativeBar" class="bar negative"></div>
+                    </div>
+                    <div class="emotion-labels">
+                        <span>正面: <span id="positiveVal">0%</span></span>
+                        <span>中性: <span id="neutralVal">0%</span></span>
+                        <span>负面: <span id="negativeVal">0%</span></span>
+                    </div>
+                    <div id="emotionText" class="emotion-text">等待输入...</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>手动控制</h3>
+                <div class="control-row">
+                    <label>粒子数量: <span id="countVal">5000</span></label>
+                    <input type="range" id="particleCount" min="1000" max="20000" value="5000" step="500">
+                </div>
+                <div class="control-row">
+                    <label>粒子大小: <span id="sizeVal">1.0</span></label>
+                    <input type="range" id="particleSize" min="0.1" max="3" value="1" step="0.1">
+                </div>
+                <div class="control-row">
+                    <label>运动速度: <span id="speedVal">1.0</span></label>
+                    <input type="range" id="motionSpeed" min="0.1" max="3" value="1" step="0.1">
+                </div>
+                <div class="control-row">
+                    <label>旋转速度: <span id="rotationVal">1.0</span></label>
+                    <input type="range" id="rotationSpeed" min="0" max="5" value="1" step="0.1">
+                </div>
+                <button id="resetManual">重置为AI驱动</button>
+            </div>
+            
+            <div class="section">
+                <h3>场景控制</h3>
+                <div class="control-row">
+                    <label>背景颜色</label>
+                    <div class="color-picker">
+                        <button class="color-btn" data-color="#0a0a1a" style="background:#0a0a1a"></button>
+                        <button class="color-btn" data-color="#1a0a0a" style="background:#1a0a0a"></button>
+                        <button class="color-btn" data-color="#0a1a0a" style="background:#0a1a0a"></button>
+                        <button class="color-btn" data-color="#1a1a1a" style="background:#1a1a1a"></button>
+                        <button class="color-btn" data-color="#000000" style="background:#000000"></button>
+                    </div>
+                </div>
+                <div class="control-row">
+                    <label>自动环绕相机</label>
+                    <label class="switch">
+                        <input type="checkbox" id="autoRotate">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="btn-group">
+                    <button id="screenshotBtn">📷 截图保存</button>
+                    <button id="exportCsvBtn">📊 导出CSV</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>情感历史 (最近5次)</h3>
+                <div id="historyList" class="history-list">
+                    <div class="empty-history">暂无历史记录</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="info-item">
+                <span class="label">FPS:</span>
+                <span id="fpsCounter">60</span>
+            </div>
+            <div class="info-item">
+                <span class="label">粒子:</span>
+                <span id="particleCountDisplay">5000</span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="emotionAnalyzer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

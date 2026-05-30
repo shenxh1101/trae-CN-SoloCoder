@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI合同风险点提示工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="navbar-brand">📄 AI合同风险检测</a>
+            <div class="navbar-links">
+                <a href="{{ url_for('index') }}" class="navbar-link active">首页</a>
+                <a href="{{ url_for('custom_rules') }}" class="navbar-link">自定义规则</a>
+            </div>
+        </nav>
+
+        <div class="header">
+            <h1>AI合同风险点提示工具</h1>
+            <p>智能识别合同风险，提供专业修改建议</p>
+        </div>
+
+        <div class="card">
+            <h2>选择合同类型</h2>
+            <div class="contract-types">
+                {% for type in contract_types %}
+                <div class="type-card {% if type.id == 'general' %}selected{% endif %}" data-type="{{ type.id }}" onclick="loadTemplate('{{ type.id }}')">
+                    <div class="icon">
+                        {% if type.id == 'general' %}📋
+                        {% elif type.id == 'employment' %}💼
+                        {% elif type.id == 'lease' %}🏠
+                        {% elif type.id == 'nda' %}🔒
+                        {% elif type.id == 'service' %}⚙️
+                        {% endif %}
+                    </div>
+                    <h3>{{ type.name }}</h3>
+                    <p>{{ type.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <h2>检测模式</h2>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="single">单文件检测</button>
+                <button class="nav-tab" data-tab="batch">批量检测</button>
+                <button class="nav-tab" data-tab="template">合同模板</button>
+            </div>
+
+            <div id="single-tab" class="tab-content active">
+                <div id="upload-area" class="upload-area">
+                    <div class="upload-icon">📁</div>
+                    <p>点击或拖拽TXT文件到此处上传</p>
+                    <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">支持 .txt 格式</p>
+                </div>
+                <input type="file" id="file-input" class="hidden-input" accept=".txt">
+
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>正在分析合同...</p>
+                </div>
+
+                <div id="error" class="alert alert-error" style="display: none;"></div>
+            </div>
+
+            <div id="batch-tab" class="tab-content">
+                <div id="batch-upload-area" class="upload-area">
+                    <div class="upload-icon">🗂️</div>
+                    <p>点击或拖拽ZIP压缩包到此处批量上传</p>
+                    <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">支持 .zip 格式，包含多个 .txt 文件</p>
+                </div>
+                <input type="file" id="batch-file-input" class="hidden-input" accept=".zip">
+
+                <div id="batch-loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>正在批量分析合同...</p>
+                </div>
+
+                <div id="batch-error" class="alert alert-error" style="display: none;"></div>
+            </div>
+
+            <div id="template-tab" class="tab-content">
+                <h3>合同模板预览</h3>
+                <div class="btn-group" style="margin-bottom: 15px;">
+                    <button class="btn btn-secondary" onclick="loadTemplate('employment')">劳动合同模板</button>
+                    <button class="btn btn-secondary" onclick="loadTemplate('lease')">租赁合同模板</button>
+                    <button class="btn btn-secondary" onclick="loadTemplate('nda')">保密协议模板</button>
+                    <button class="btn btn-secondary" onclick="loadTemplate('service')">服务合同模板</button>
+                </div>
+                <div id="template-preview" class="template-preview">
+                    请选择合同类型查看模板...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTemplate('employment');
+        });
+    </script>
+</body>
+</html>

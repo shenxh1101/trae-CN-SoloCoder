@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI手写文字识别与学习系统</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">✍️</span>
+                <h1 class="logo-text">手写识别</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="recognize">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">手写识别</span>
+                </a>
+                <a href="#" class="nav-item" data-page="practice">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-text">临摹练习</span>
+                </a>
+                <a href="#" class="nav-item" data-page="batch">
+                    <span class="nav-icon">📄</span>
+                    <span class="nav-text">批量识别</span>
+                </a>
+                <a href="#" class="nav-item" data-page="analytics">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">数据分析</span>
+                </a>
+                <a href="#" class="nav-item" data-page="history">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">历史记录</span>
+                </a>
+                <a href="#" class="nav-item" data-page="export">
+                    <span class="nav-icon">💾</span>
+                    <span class="nav-text">数据导出</span>
+                </a>
+            </nav>
+            <div class="status-panel" id="statusPanel">
+                <div class="status-item">
+                    <span class="status-label">收集样本</span>
+                    <span class="status-value" id="sampleCount">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">识别历史</span>
+                    <span class="status-value" id="historyCount">0</span>
+                </div>
+                <div class="retrain-alert" id="retrainAlert" style="display: none;">
+                    <span class="alert-icon">⚠️</span>
+                    <span class="alert-text">样本已达阈值，建议训练模型</span>
+                    <button class="btn-small" id="trainBtn">开始训练</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="page-header">
+                <h2 class="page-title" id="pageTitle">手写识别</h2>
+                <p class="page-subtitle" id="pageSubtitle">在画板上书写字符，AI将自动识别</p>
+            </header>
+
+            <section class="page-section active" id="page-recognize">
+                <div class="recognize-container">
+                    <div class="canvas-section">
+                        <div class="canvas-wrapper">
+                            <canvas id="drawCanvas" width="400" height="400"></canvas>
+                            <div class="canvas-overlay" id="canvasOverlay">
+                                <span>在此处书写</span>
+                            </div>
+                        </div>
+                        <div class="canvas-controls">
+                            <div class="control-group">
+                                <label>画笔粗细</label>
+                                <input type="range" id="brushSize" min="2" max="20" value="8">
+                                <span class="value-display" id="brushSizeValue">8px</span>
+                            </div>
+                            <div class="control-group">
+                                <label>画笔颜色</label>
+                                <input type="color" id="brushColor" value="#1e3a5f">
+                            </div>
+                            <button class="btn btn-secondary" id="clearBtn">
+                                <span>🗑️</span> 清空
+                            </button>
+                            <button class="btn btn-primary" id="recognizeBtn">
+                                <span>🔍</span> 识别
+                            </button>
+                        </div>
+                    </div>
+                    <div class="result-section">
+                        <h3 class="section-title">识别结果</h3>
+                        <div class="predictions-container" id="predictionsContainer">
+                            <div class="empty-state">
+                                <span class="empty-icon">✨</span>
+                                <p>书写完成后点击识别按钮</p>
+                            </div>
+                        </div>
+                        <div class="correction-section" id="correctionSection" style="display: none;">
+                            <h4 class="section-subtitle">结果不正确？选择正确的字</h4>
+                            <div class="char-grid" id="charGrid"></div>
+                            <div class="custom-correction">
+                                <input type="text" id="customChar" placeholder="或输入正确的字符" maxlength="1">
+                                <button class="btn btn-success" id="submitCorrection">提交纠正</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-section" id="page-practice">
+                <div class="practice-container">
+                    <div class="practice-sidebar">
+                        <h3 class="section-title">选择练习字</h3>
+                        <div class="category-tabs">
+                            <button class="tab-btn active" data-category="all">全部</button>
+                            <button class="tab-btn" data-category="chinese">汉字</button>
+                            <button class="tab-btn" data-category="english">英文</button>
+                            <button class="tab-btn" data-category="number">数字</button>
+                        </div>
+                        <div class="char-search">
+                            <input type="text" id="charSearch" placeholder="搜索字符...">
+                        </div>
+                        <div class="char-list" id="charList"></div>
+                    </div>
+                    <div class="practice-main">
+                        <div class="practice-target">
+                            <h3 class="section-title">标准字体</h3>
+                            <div class="target-char" id="targetChar">
+                                <span class="tianzi-ge">
+                                    <span class="char-display" id="charDisplay">大</span>
+                                </span>
+                            </div>
+                            <button class="btn btn-outline" id="newCharBtn">换一个</button>
+                        </div>
+                        <div class="practice-canvas">
+                            <h3 class="section-title">你的临摹</h3>
+                            <div class="canvas-wrapper practice">
+                                <canvas id="practiceCanvas" width="300" height="300"></canvas>
+                            </div>
+                            <div class="canvas-controls">
+                                <button class="btn btn-secondary" id="practiceClearBtn">清空</button>
+                                <button class="btn btn-primary" id="compareBtn">评分</button>
+                            </div>
+                        </div>
+                        <div class="practice-result" id="practiceResult">
+                            <div class="score-ring">
+                                <svg class="ring-svg" viewBox="0 0 100 100">
+                                    <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="ring-progress" cx="50" cy="50" r="45" id="scoreRing"></circle>
+                                </svg>
+                                <div class="score-text">
+                                    <span class="score-number" id="scoreNumber">--</span>
+                                    <span class="score-label">分</span>
+                                </div>
+                            </div>
+                            <p class="feedback-text" id="feedbackText">完成临摹后点击评分</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-section" id="page-batch">
+                <div class="batch-container">
+                    <div class="upload-section">
+                        <div class="drop-zone" id="dropZone">
+                            <input type="file" id="batchFileInput" accept="image/*" style="display: none;">
+                            <div class="drop-content">
+                                <span class="drop-icon">📁</span>
+                                <p class="drop-text">拖拽图片到此处或点击选择</p>
+                                <p class="drop-hint">支持 PNG、JPG 格式，包含多个手写字</p>
+                            </div>
+                        </div>
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImage" alt="预览">
+                            <button class="btn btn-primary" id="batchRecognizeBtn">开始批量识别</button>
+                        </div>
+                    </div>
+                    <div class="results-section" id="batchResults" style="display: none;">
+                        <h3 class="section-title">识别结果</h3>
+                        <div class="results-summary" id="resultsSummary"></div>
+                        <div class="results-table-container">
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>图像</th>
+                                        <th>候选1</th>
+                                        <th>置信度1</th>
+                                        <th>候选2</th>
+                                        <th>置信度2</th>
+                                        <th>候选3</th>
+                                        <th>置信度3</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-section" id="page-analytics">
+                <div class="analytics-container">
+                    <div class="analytics-stats">
+                        <div class="stat-card">
+                            <span class="stat-icon">❌</span>
+                            <div class="stat-content">
+                                <span class="stat-value" id="totalErrors">0</span>
+                                <span class="stat-label">总错误数</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">📐</span>
+                            <div class="stat-content">
+                                <span class="stat-value" id="uniqueChars">0</span>
+                                <span class="stat-label">涉及字符数</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🏆</span>
+                            <div class="stat-content">
+                                <span class="stat-value" id="topError">--</span>
+                                <span class="stat-label">最常见错误</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="chart-card">
+                            <h3 class="section-title">混淆矩阵</h3>
+                            <div class="chart-container">
+                                <img id="confusionMatrixImg" alt="混淆矩阵" style="max-width: 100%;">
+                            </div>
+                            <div class="chart-controls">
+                                <label>显示字符数</label>
+                                <select id="matrixLimit">
+                                    <option value="10">10个</option>
+                                    <option value="15" selected>15个</option>
+                                    <option value="20">20个</option>
+                                </select>
+                                <button class="btn btn-outline" id="refreshMatrix">刷新</button>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3 class="section-title">常见错误统计</h3>
+                            <div class="error-list" id="errorList">
+                                <div class="empty-state">
+                                    <span class="empty-icon">📊</span>
+                                    <p>暂无错误统计数据</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-section" id="page-history">
+                <div class="history-container">
+                    <div class="history-filters">
+                        <div class="filter-group">
+                            <label>类型筛选</label>
+                            <select id="historyTypeFilter">
+                                <option value="all">全部</option>
+                                <option value="single">单次识别</option>
+                                <option value="batch">批量识别</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>每页显示</label>
+                            <select id="historyPerPage">
+                                <option value="10">10条</option>
+                                <option value="20" selected>20条</option>
+                                <option value="50">50条</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-outline" id="refreshHistory">刷新</button>
+                    </div>
+                    <div class="history-list" id="historyList"></div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </section>
+
+            <section class="page-section" id="page-export">
+                <div class="export-container">
+                    <div class="export-card">
+                        <div class="export-icon">📦</div>
+                        <h3 class="section-title">导出训练数据</h3>
+                        <p class="export-desc">将收集的纠正样本导出为CSV格式，包含图像像素数据和标签，可用于重新训练模型。</p>
+                        <div class="export-info">
+                            <div class="info-item">
+                                <span class="info-label">可用样本数</span>
+                                <span class="info-value" id="exportSampleCount">0</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-large" id="exportBtn">
+                            <span>📥</span> 导出CSV文件
+                        </button>
+                        <div class="export-result" id="exportResult" style="display: none;">
+                            <p class="success-text">✅ 导出成功！</p>
+                            <a href="#" id="downloadLink" class="btn btn-success">下载文件</a>
+                        </div>
+                    </div>
+                    <div class="export-card">
+                        <div class="export-icon">🔄</div>
+                        <h3 class="section-title">模型更新</h3>
+                        <p class="export-desc">当累积了足够的新样本后，可以运行训练脚本对模型进行增量学习，提升识别准确率。</p>
+                        <div class="export-info">
+                            <div class="info-item">
+                                <span class="info-label">当前样本数</span>
+                                <span class="info-value" id="trainSampleCount">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">训练阈值</span>
+                                <span class="info-value">50</span>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="trainProgress"></div>
+                            </div>
+                            <span class="progress-text" id="trainProgressText">0%</span>
+                        </div>
+                        <button class="btn btn-warning btn-large" id="retrainModelBtn">
+                            <span>⚡</span> 开始训练模型
+                        </button>
+                        <div class="training-status" id="trainingStatus" style="display: none;">
+                            <div class="loading-spinner"></div>
+                            <span>模型训练中，请耐心等待...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

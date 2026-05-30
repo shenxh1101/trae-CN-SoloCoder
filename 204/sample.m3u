@@ -1,0 +1,17 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="cctv1" tvg-name="CCTV-1" tvg-logo="http://example.com/logo/cctv1.png" group-title="新闻" _name="CCTV-1 综合" name="CCTV-1 综合",CCTV-1 综合
+http://example.com/live/cctv1.ts
+#EXTINF:-1 tvg-id="cctv5" tvg-name="CCTV-5" tvg-logo="http://example.com/logo/cctv5.png" group-title="体育" _name="CCTV-5 体育" name="CCTV-5 体育",CCTV-5 体育
+http://example.com/live/cctv5.ts
+#EXTINF:-1 tvg-id="cctv6" tvg-name="CCTV-6" tvg-logo="http://example.com/logo/cctv6.png" group-title="电影" _name="CCTV-6 电影" name="CCTV-6 电影",CCTV-6 电影
+http://example.com/live/cctv6.ts
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" group-title="电影" _name="HBO" name="HBO",HBO
+http://example.com/live/hbo.ts
+#EXTINF:-1 tvg-id="espn" tvg-name="ESPN" group-title="体育" _name="ESPN" name="ESPN",ESPN
+http://example.com/live/espn.ts
+#EXTINF:-1 group-title="新闻" _name="BBC News" name="BBC News",BBC News
+http://example.com/live/bbc.ts
+#EXTINF:-1 group-title="新闻" _name="CNN" name="CNN",CNN
+http://example.com/live/cnn.ts
+#EXTINF:-1 tvg-name="CCTV-1" group-title="新闻" _name="CCTV-1 综合" name="CCTV-1 综合",CCTV-1 综合
+http://example.com/live/cctv1.ts

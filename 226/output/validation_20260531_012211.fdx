@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FinalDraft DocumentType="Script" Template="No" Version="3">
+  <WordProcessing>No</WordProcessing>
+  <Content>
+    <Paragraph Type="Scene Heading">
+      <Alignment Justify="Left" />
+      <Text AdornmentStyle="0" Shadow="0" Font="Courier Final Draft" Size="12">INT. 办公室内，两人初次见面 - DAY</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">办公室内，两人初次见面。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">测试角色A</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(微笑)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">你好，很高兴认识你。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">测试角色B</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(热情)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">你好！我也很高兴认识你。</Text>
+    </Paragraph>
+  </Content>
+</FinalDraft>

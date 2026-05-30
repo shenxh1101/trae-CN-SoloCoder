@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FinalDraft DocumentType="Script" Template="No" Version="3">
+  <WordProcessing>No</WordProcessing>
+  <Content>
+    <Paragraph Type="Scene Heading">
+      <Alignment Justify="Left" />
+      <Text AdornmentStyle="0" Shadow="0" Font="Courier Final Draft" Size="12">INT. 咖啡店内相遇 - DAY</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">咖啡店内相遇。</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">小明</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(紧张)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">你好...</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">小红</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(微笑)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">你好呀！</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Alignment Justify="Center" />
+      <Text Font="Courier Final Draft" Size="12">小明</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">(放松)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Alignment Justify="Left" />
+      <Text Font="Courier Final Draft" Size="12">今天天气不错。</Text>
+    </Paragraph>
+  </Content>
+</FinalDraft>

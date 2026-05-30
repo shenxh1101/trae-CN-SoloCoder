@@ -1,0 +1,197 @@
+[
+  {
+    "id": "R001",
+    "name": "单方终止条款",
+    "description": "合同包含一方有权随时终止合同的条款，可能对另一方不利",
+    "keywords": [
+      "甲方有权随时终止",
+      "单方终止",
+      "随时解除",
+      "任意终止"
+    ],
+    "severity": "high",
+    "category": "终止条款",
+    "suggestion": "建议修改为：双方协商一致可终止合同，或一方需提前30天书面通知对方",
+    "supported_types": [
+      "all"
+    ]
+  },
+  {
+    "id": "R002",
+    "name": "无限责任条款",
+    "description": "合同包含无限责任或责任范围不明确的条款",
+    "keywords": [
+      "无限责任",
+      "全部责任",
+      "任何损失",
+      "所有损失",
+      "概不负责"
+    ],
+    "pattern": "承担.*(全部|无限).*责任",
+    "severity": "high",
+    "category": "责任条款",
+    "suggestion": "建议明确责任上限，或添加责任排除条款，如：赔偿总额不超过合同金额",
+    "supported_types": [
+      "all"
+    ]
+  },
+  {
+    "id": "R003",
+    "name": "保密期限缺失",
+    "description": "保密条款未明确保密期限",
+    "keywords": [
+      "保密"
+    ],
+    "pattern": "保密(?!.*(期限|年|月|日))",
+    "severity": "medium",
+    "category": "保密条款",
+    "suggestion": "建议添加保密期限，如：保密期限为合同终止后2年",
+    "supported_types": [
+      "nda",
+      "employment",
+      "service"
+    ]
+  },
+  {
+    "id": "R004",
+    "name": "竞业限制条款",
+    "description": "合同包含竞业限制条款，需检查补偿是否合理",
+    "keywords": [
+      "竞业限制",
+      "竞业禁止",
+      "不竞争"
+    ],
+    "severity": "medium",
+    "category": "限制条款",
+    "suggestion": "建议确认竞业限制期限不超过2年，并包含合理的经济补偿",
+    "supported_types": [
+      "employment",
+      "nda"
+    ]
+  },
+  {
+    "id": "R005",
+    "name": "违约金过高",
+    "description": "违约金比例可能过高",
+    "keywords": [
+      "违约金",
+      "赔偿金"
+    ],
+    "pattern": "违约金.*(30%|40%|50%|双倍|两倍)",
+    "severity": "medium",
+    "category": "违约条款",
+    "suggestion": "建议违约金不超过合同金额的20%，或与实际损失相当",
+    "supported_types": [
+      "all"
+    ]
+  },
+  {
+    "id": "R006",
+    "name": "自动续期条款",
+    "description": "合同包含自动续期条款，可能导致意外续约",
+    "keywords": [
+      "自动续期",
+      "自动顺延",
+      "自动续约"
+    ],
+    "severity": "medium",
+    "category": "期限条款",
+    "suggestion": "建议添加提前终止通知条款，如：任何一方可在到期前30天书面通知不续期",
+    "supported_types": [
+      "lease",
+      "service"
+    ]
+  },
+  {
+    "id": "R007",
+    "name": "试用期过长",
+    "description": "劳动合同试用期超过法定上限",
+    "keywords": [
+      "试用期"
+    ],
+    "pattern": "试用期.*(6个月|7个月|8个月|9个月|10个月|11个月|12个月)",
+    "severity": "high",
+    "category": "雇佣条款",
+    "suggestion": "根据劳动合同法，试用期最长不超过6个月（3年以上合同）",
+    "supported_types": [
+      "employment"
+    ]
+  },
+  {
+    "id": "R008",
+    "name": "押金条款",
+    "description": "租赁合同押金超过法定标准",
+    "keywords": [
+      "押金",
+      "保证金"
+    ],
+    "pattern": "(押金|保证金).*(3个月|4个月|5个月)",
+    "severity": "medium",
+    "category": "租赁条款",
+    "suggestion": "建议押金不超过2个月租金，并明确退还条件和时间",
+    "supported_types": [
+      "lease"
+    ]
+  },
+  {
+    "id": "R009",
+    "name": "争议解决地点",
+    "description": "争议解决地点对一方明显不利",
+    "keywords": [
+      "甲方所在地",
+      "原告所在地",
+      "被告所在地"
+    ],
+    "severity": "low",
+    "category": "争议解决",
+    "suggestion": "建议选择中立地点或约定仲裁，如：由合同签订地法院管辖",
+    "supported_types": [
+      "all"
+    ]
+  },
+  {
+    "id": "R010",
+    "name": "知识产权归属",
+    "description": "知识产权归属条款不明确或过于宽泛",
+    "keywords": [
+      "知识产权",
+      "著作权",
+      "专利",
+      "归属"
+    ],
+    "severity": "medium",
+    "category": "知识产权",
+    "suggestion": "建议明确知识产权归属范围和使用许可权限",
+    "supported_types": [
+      "service",
+      "nda",
+      "employment"
+    ]
+  },
+  {
+    "id": "R011",
+    "name": "不可抗力条款",
+    "description": "不可抗力条款缺失或范围不明确",
+    "keywords": [],
+    "pattern": "^(?!.*不可抗力)",
+    "severity": "low",
+    "category": "免责条款",
+    "suggestion": "建议添加不可抗力条款，明确范围和责任免除",
+    "supported_types": [
+      "all"
+    ]
+  },
+  {
+    "id": "R012",
+    "name": "通知方式条款",
+    "description": "未明确通知方式和送达地址",
+    "keywords": [],
+    "pattern": "^(?!.*(通知|送达|地址))",
+    "severity": "low",
+    "category": "通用条款",
+    "suggestion": "建议明确双方联系地址和通知方式（书面、邮件等）",
+    "supported_types": [
+      "all"
+    ]
+  }
+]

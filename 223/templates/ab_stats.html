@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}A/B测试统计 - AI新闻推荐{% endblock %}
+
+{% block content %}
+    <h2 style="color: #333; margin-bottom: 25px;">📊 A/B测试统计面板</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px;">
+        <div style="border: 2px solid #eee; border-radius: 15px; padding: 25px;">
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 20px; text-align: center;">
+                🔵 简单匹配算法
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <span style="color: #666;">展示次数</span>
+                <span style="font-weight: 600;">{{ stats.simple.views }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <span style="color: #666;">点击次数</span>
+                <span style="font-weight: 600;">{{ stats.simple.clicks }}</span>
+            </div>
+            <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="color: #666; font-weight: 500;">点击率 (CTR)</span>
+                    <span style="font-size: 24px; font-weight: bold; color: #667eea;">{{ simple_ctr|round(2) }}%</span>
+                </div>
+                <div style="width: 100%; height: 12px; background: #eee; border-radius: 6px; overflow: hidden;">
+                    <div style="width: {{ simple_ctr }}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2);"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="border: 2px solid #eee; border-radius: 15px; padding: 25px;">
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 20px; text-align: center;">
+                🟢 加权匹配算法
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <span style="color: #666;">展示次数</span>
+                <span style="font-weight: 600;">{{ stats.weighted.views }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <span style="color: #666;">点击次数</span>
+                <span style="font-weight: 600;">{{ stats.weighted.clicks }}</span>
+            </div>
+            <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="color: #666; font-weight: 500;">点击率 (CTR)</span>
+                    <span style="font-size: 24px; font-weight: bold; color: #11998e;">{{ weighted_ctr|round(2) }}%</span>
+                </div>
+                <div style="width: 100%; height: 12px; background: #eee; border-radius: 6px; overflow: hidden;">
+                    <div style="width: {{ weighted_ctr }}%; height: 100%; background: linear-gradient(90deg, #11998e, #38ef7d);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="background: #f8f9ff; padding: 25px; border-radius: 15px; border-left: 4px solid #667eea;">
+        <h3 style="color: #333; margin-bottom: 15px;">💡 关于A/B测试</h3>
+        <p style="color: #666; line-height: 1.8;">
+            系统会随机将新用户分配到两种推荐算法组中：
+        </p>
+        <ul style="color: #666; line-height: 2; margin: 10px 0 10px 25px;">
+            <li><strong>简单匹配算法</strong>：基于类别和关键词的简单计数匹配，权重均为1.0</li>
+            <li><strong>加权匹配算法</strong>：根据用户点赞/点踩行为动态调整偏好权重，实现更精准的个性化推荐</li>
+        </ul>
+        <p style="color: #666; line-height: 1.8;">
+            通过对比两组的点击率，可以评估哪种算法的推荐效果更好。
+        </p>
+    </div>
+{% endblock %}

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 物体检测演示</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI 物体检测演示</h1>
+            <p class="subtitle">基于 TensorFlow.js 和 COCO-SSD 模型的实时物体检测</p>
+        </header>
+
+        <main class="main-content">
+            <div class="detection-section">
+                <div class="video-container">
+                    <video id="video" autoplay playsinline muted></video>
+                    <canvas id="canvas"></canvas>
+                    <div id="loading" class="loading">
+                        <div class="spinner"></div>
+                        <p id="loading-text">正在加载模型...</p>
+                    </div>
+                    <div id="placeholder" class="placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <p>请开启摄像头或上传图片开始检测</p>
+                    </div>
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <span class="stat-label">检测数量</span>
+                        <span class="stat-value" id="detection-count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">检测耗时</span>
+                        <span class="stat-value" id="detection-time">0 ms</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">当前模型</span>
+                        <span class="stat-value" id="current-model">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">FPS</span>
+                        <span class="stat-value" id="fps">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h3>输入源</h3>
+                    <div class="button-group">
+                        <button id="btn-camera" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M23 7l-7 5 7 5V7z"></path>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                            </svg>
+                            开启摄像头
+                        </button>
+                        <button id="btn-stop-camera" class="btn btn-secondary" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            </svg>
+                            关闭摄像头
+                        </button>
+                    </div>
+                    <div class="file-upload">
+                        <label for="file-input" class="btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            上传图片
+                        </label>
+                        <input type="file" id="file-input" accept="image/*" hidden>
+                    </div>
+                    <div class="file-upload">
+                        <label for="custom-file-input" class="btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            自定义图片检测
+                        </label>
+                        <input type="file" id="custom-file-input" accept="image/*" hidden>
+                    </div>
+                    <button id="btn-sample" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        加载示例图片
+                    </button>
+                </div>
+
+                <div class="panel-section">
+                    <h3>检测设置</h3>
+                    <div class="form-group">
+                        <label for="threshold">置信度阈值: <span id="threshold-value">0.5</span></label>
+                        <input type="range" id="threshold" min="0.1" max="0.9" step="0.05" value="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="model-select">检测模型</label>
+                        <select id="model-select">
+                            <option value="lite_mobilenet_v2">MobileNet V2 (快速)</option>
+                            <option value="ssd_mobilenet_v2">SSD MobileNet V2 (平衡)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="max-detections">最大检测数量: <span id="max-detections-value">20</span></label>
+                        <input type="range" id="max-detections" min="1" max="50" step="1" value="20">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>性能模式</h3>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="performance-mode">
+                            <span>启用性能模式 (降低分辨率)</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="fps-limit">帧率限制: <span id="fps-limit-value">30</span> FPS</label>
+                        <input type="range" id="fps-limit" min="5" max="30" step="5" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="resolution">分辨率</label>
+                        <select id="resolution">
+                            <option value="1920x1080">1920x1080 (全高清)</option>
+                            <option value="1280x720" selected>1280x720 (高清)</option>
+                            <option value="854x480">854x480 (标清)</option>
+                            <option value="640x360">640x360 (流畅)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>操作</h3>
+                    <div class="button-group">
+                        <button id="btn-screenshot" class="btn btn-secondary" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                            </svg>
+                            截图保存
+                        </button>
+                        <button id="btn-export" class="btn btn-secondary" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            导出 JSON
+                        </button>
+                        <button id="btn-clear" class="btn btn-danger" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            清除结果
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>检测结果</h3>
+                    <div id="detection-list" class="detection-list">
+                        <p class="empty-message">暂无检测结果</p>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <footer>
+            <p>使用 TensorFlow.js COCO-SSD 模型 · 支持 80+ 类别的物体检测</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

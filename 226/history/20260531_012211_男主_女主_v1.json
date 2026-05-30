@@ -1,0 +1,70 @@
+{
+  "scene": "咖啡店相遇",
+  "characters": [
+    {
+      "name": "男主",
+      "personality": "内向",
+      "source": "",
+      "style": ""
+    },
+    {
+      "name": "女主",
+      "personality": "外向",
+      "source": "",
+      "style": ""
+    }
+  ],
+  "dialogue": [
+    {
+      "line_index": 0,
+      "speaker": "男主",
+      "text": "你好...",
+      "emotion": "紧张",
+      "sentiment": {
+        "joy": 0.0,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.0,
+        "neutral": 0.0,
+        "tension": 0.0,
+        "affection": 0.0
+      }
+    },
+    {
+      "line_index": 1,
+      "speaker": "女主角",
+      "text": "嗨，你好呀！",
+      "emotion": "开朗地笑",
+      "sentiment": {
+        "joy": 0.0,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.0,
+        "neutral": 0.0,
+        "tension": 0.0,
+        "affection": 0.0
+      }
+    },
+    {
+      "line_index": 2,
+      "speaker": "男主",
+      "text": "今天天气不错。",
+      "emotion": "放松",
+      "sentiment": {
+        "joy": 0.0,
+        "sadness": 0.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "surprise": 0.0,
+        "neutral": 0.0,
+        "tension": 0.0,
+        "affection": 0.0
+      }
+    }
+  ],
+  "version": 1,
+  "created_at": "2026-05-31T01:22:11.951818",
+  "overall_arc": ""
+}

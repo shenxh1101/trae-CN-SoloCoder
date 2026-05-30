@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 轮廓图生成器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 AI 轮廓图生成器</h1>
+            <p class="subtitle">将手绘草图转换为优雅的矢量风格轮廓图</p>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3>🎯 生成风格</h3>
+                    <div class="style-selector">
+                        <button class="style-btn active" data-style="sketch">
+                            <span class="style-icon">✏️</span>
+                            <span>素描风格</span>
+                        </button>
+                        <button class="style-btn" data-style="ink">
+                            <span class="style-icon">🖌️</span>
+                            <span>水墨风格</span>
+                        </button>
+                        <button class="style-btn" data-style="tech">
+                            <span class="style-icon">⚡</span>
+                            <span>科技线条</span>
+                        </button>
+                        <div id="custom-styles"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>⚙️ 参数调节</h3>
+                    <div class="slider-group">
+                        <label>平滑度: <span id="smoothness-value">5</span></label>
+                        <input type="range" id="smoothness" min="1" max="10" value="5">
+                        <div class="slider-labels">
+                            <span>粗糙</span>
+                            <span>平滑</span>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>细节保留: <span id="detail-value">3</span></label>
+                        <input type="range" id="detail" min="1" max="10" value="3">
+                        <div class="slider-labels">
+                            <span>简约</span>
+                            <span>详细</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>📁 图片操作</h3>
+                    <div class="btn-group">
+                        <label class="btn secondary">
+                            📷 上传图片
+                            <input type="file" id="image-upload" accept="image/*" hidden>
+                        </label>
+                        <label class="btn secondary">
+                            📦 批量转换
+                            <input type="file" id="batch-upload" accept="image/*" multiple hidden>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>💾 导出选项</h3>
+                    <div class="btn-group">
+                        <button id="export-png" class="btn primary">📄 导出 PNG</button>
+                        <button id="export-svg" class="btn secondary">📐 导出 SVG</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>🔄 视图模式</h3>
+                    <button id="toggle-compare" class="btn secondary full-width">
+                        📊 开启对比模式
+                    </button>
+                </div>
+
+                <div class="panel">
+                    <h3>🧠 训练自定义风格</h3>
+                    <button id="open-train-modal" class="btn secondary full-width">
+                        🎓 开始训练
+                    </button>
+                </div>
+
+                <div class="panel info-panel">
+                    <h3>⏱️ 处理信息</h3>
+                    <div id="processing-info">
+                        <p>状态: <span id="status">就绪</span></p>
+                        <p>耗时: <span id="processing-time">-</span></p>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="canvas-area">
+                <div class="canvas-container" id="canvas-container">
+                    <div class="canvas-wrapper" id="single-view">
+                        <div class="canvas-header">
+                            <span>绘图画布</span>
+                            <div class="canvas-tools">
+                                <button id="clear-canvas" class="tool-btn" title="清空画布">🗑️</button>
+                                <button id="undo-canvas" class="tool-btn" title="撤销">↩️</button>
+                                <button id="brush-size" class="tool-btn" title="画笔大小">●</button>
+                            </div>
+                        </div>
+                        <canvas id="draw-canvas"></canvas>
+                        <div class="canvas-footer">
+                            <span>在画布上绘制草图，或上传图片</span>
+                            <button id="generate-btn" class="btn primary generate-btn">✨ 生成轮廓图</button>
+                        </div>
+                    </div>
+
+                    <div class="compare-view" id="compare-view" style="display: none;">
+                        <div class="canvas-wrapper">
+                            <div class="canvas-header">
+                                <span>原始图片</span>
+                            </div>
+                            <canvas id="original-canvas"></canvas>
+                        </div>
+                        <div class="canvas-wrapper">
+                            <div class="canvas-header">
+                                <span>生成轮廓</span>
+                            </div>
+                            <canvas id="result-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brush-panel" id="brush-panel" style="display: none;">
+                    <div class="brush-options">
+                        <label>画笔大小: <span id="brush-size-value">5</span>px</label>
+                        <input type="range" id="brush-slider" min="1" max="50" value="5">
+                    </div>
+                    <div class="brush-options">
+                        <label>画笔颜色:</label>
+                        <input type="color" id="brush-color" value="#000000">
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal" id="train-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎓 训练自定义风格</h2>
+                <button class="close-btn" id="close-train-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">上传最多5对手绘草稿和目标轮廓图，AI将学习你的风格偏好。</p>
+                
+                <div class="style-name-input">
+                    <label>风格名称:</label>
+                    <input type="text" id="style-name" placeholder="输入风格名称...">
+                </div>
+
+                <div class="training-pairs" id="training-pairs">
+                </div>
+
+                <button id="add-pair-btn" class="btn secondary">➕ 添加训练对</button>
+            </div>
+            <div class="modal-footer">
+                <button id="start-training" class="btn primary">🚀 开始训练</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p id="loading-text">正在处理...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

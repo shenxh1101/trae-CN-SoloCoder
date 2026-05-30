@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}个性化推荐 - AI新闻推荐{% endblock %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h2 style="color: #333;">✨ 为您推荐的新闻</h2>
+        <span class="ab-badge">算法: {{ '简单匹配' if ab_group == 'simple' else '加权匹配' }}</span>
+    </div>
+    
+    {% if recommendations %}
+        {% for news, reasons in recommendations %}
+        <div class="news-card">
+            <div class="news-title">{{ news.title }}</div>
+            <div class="news-summary">{{ news.summary }}</div>
+            <div class="news-meta">
+                <span class="category-tag">{{ news.category }}</span>
+                {% for kw in news.keywords[:3] %}
+                <span class="keyword-tag">{{ kw }}</span>
+                {% endfor %}
+            </div>
+            {% if reasons %}
+            <div class="reasons">
+                <strong>💡 推荐理由：</strong>
+                <ul style="margin: 8px 0 0 20px; padding: 0;">
+                    {% for reason in reasons %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <div class="feedback-buttons">
+                <a href="{{ url_for('feedback', news_id=news.id, action='like') }}" class="btn btn-like">👍 喜欢</a>
+                <a href="{{ url_for('feedback', news_id=news.id, action='dislike') }}" class="btn btn-dislike">👎 不喜欢</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 50px; color: #666;">
+            <p style="font-size: 48px; margin-bottom: 20px;">🤔</p>
+            <p>暂无匹配的推荐新闻</p>
+            <p style="margin-top: 10px;">请尝试选择更多的兴趣类别或关键词</p>
+        </div>
+    {% endif %}
+{% endblock %}

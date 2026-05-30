@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>指令统计 - AI语音指令模拟执行器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2a2a4a;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .navbar h1 {
+            font-size: 22px;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .navbar nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 14px;
+            transition: color 0.2s;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        .navbar nav a:hover { color: #00d2ff; background: rgba(0,210,255,0.08); }
+        .navbar nav a.active { color: #00d2ff; background: rgba(0,210,255,0.08); }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .stat-card .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: #888;
+            margin-top: 4px;
+        }
+        .card {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #00d2ff;
+            margin-bottom: 16px;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #555;
+        }
+        .legend-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #ccc;
+        }
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🎙️ AI语音指令模拟执行器</h1>
+        <nav>
+            <a href="/">指令执行</a>
+            <a href="/admin">规则管理</a>
+            <a href="/stats" class="active">指令统计</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">总指令数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="categoryCount">0</div>
+                <div class="stat-label">指令类型数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="topCategory">-</div>
+                <div class="stat-label">最常见类型</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="matchRate">0%</div>
+                <div class="stat-label">匹配成功率</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="card">
+                <h3>📊 指令类型分布</h3>
+                <canvas id="categoryChart"></canvas>
+                <ul class="legend-list" id="categoryLegend"></ul>
+            </div>
+            <div class="card">
+                <h3>🔍 匹配类型分布</h3>
+                <canvas id="matchTypeChart"></canvas>
+                <ul class="legend-list" id="matchTypeLegend"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const COLORS = ['#7b2ff7', '#00d2ff', '#2ecc71', '#f1c40f', '#e74c3c', '#9b59b6', '#1abc9c', '#e67e22', '#3498db', '#e91e63'];
+
+        async function loadStats() {
+            const res = await fetch('/api/statistics');
+            const stats = await res.json();
+
+            document.getElementById('totalCount').textContent = stats.total;
+            document.getElementById('categoryCount').textContent = Object.keys(stats.categories).length;
+
+            const cats = stats.categories;
+            const topKey = Object.keys(cats).sort((a, b) => cats[b] - cats[a])[0] || '-';
+            document.getElementById('topCategory').textContent = topKey;
+
+            const matchTypes = stats.match_types;
+            const matched = (matchTypes.exact || 0) + (matchTypes.synonym || 0) + (matchTypes.fuzzy || 0) + (matchTypes.context || 0);
+            const rate = stats.total > 0 ? Math.round(matched / stats.total * 100) : 0;
+            document.getElementById('matchRate').textContent = rate + '%';
+
+            drawPieChart('categoryChart', stats.categories, 'categoryLegend');
+            drawPieChart('matchTypeChart', stats.match_types, 'matchTypeLegend');
+        }
+
+        function drawPieChart(canvasId, data, legendId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const entries = Object.entries(data);
+            if (!entries.length) {
+                ctx.fillStyle = '#555';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('暂无数据', rect.width / 2, rect.height / 2);
+                return;
+            }
+
+            const total = entries.reduce((s, [, v]) => s + v, 0);
+            const cx = rect.width / 2;
+            const cy = rect.height / 2;
+            const radius = Math.min(cx, cy) - 30;
+
+            let startAngle = -Math.PI / 2;
+            const legendEl = document.getElementById(legendId);
+            legendEl.innerHTML = '';
+
+            entries.forEach(([key, value], i) => {
+                const slice = (value / total) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, startAngle, startAngle + slice);
+                ctx.closePath();
+                ctx.fillStyle = COLORS[i % COLORS.length];
+                ctx.fill();
+
+                const midAngle = startAngle + slice / 2;
+                const labelR = radius * 0.65;
+                const lx = cx + Math.cos(midAngle) * labelR;
+                const ly = cy + Math.sin(midAngle) * labelR;
+                const pct = Math.round(value / total * 100);
+                if (pct > 5) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 12px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(pct + '%', lx, ly);
+                }
+
+                startAngle += slice;
+
+                const li = document.createElement('li');
+                li.className = 'legend-item';
+                li.innerHTML = `<span class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></span>${key} (${value})`;
+                legendEl.appendChild(li);
+            });
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.35, 0, Math.PI * 2);
+            ctx.fillStyle = '#16162a';
+            ctx.fill();
+
+            ctx.fillStyle = '#e0e0e0';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(total, cx, cy - 8);
+            ctx.fillStyle = '#888';
+            ctx.font = '11px sans-serif';
+            ctx.fillText('总计', cx, cy + 10);
+        }
+
+        loadStats();
+    </script>
+</body>
+</html>

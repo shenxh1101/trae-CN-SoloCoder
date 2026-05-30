@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - AI 闲聊机器人</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-brand">
+                <div class="admin-logo">🔐</div>
+                <h1>会话管理后台</h1>
+            </div>
+            <div class="admin-actions">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-label">总会话数</div>
+                        <div class="stat-value" id="total-sessions">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">总消息数</div>
+                        <div class="stat-value" id="total-messages">0</div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <select id="export-select" class="select-style admin-select">
+                        <option value="all">导出全部会话</option>
+                    </select>
+                    <button class="btn-export" onclick="exportCSV()">📥 导出 CSV</button>
+                    <button class="btn-refresh" onclick="loadSessions()">🔄 刷新</button>
+                    <a href="/" class="btn-back">← 返回聊天</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <aside class="session-list">
+                <h2>会话列表</h2>
+                <div class="session-list-container" id="session-list">
+                    <div class="loading">加载中...</div>
+                </div>
+            </aside>
+
+            <section class="session-detail">
+                <div class="detail-header">
+                    <h2 id="detail-title">选择一个会话查看详情</h2>
+                    <div id="detail-meta" class="detail-meta"></div>
+                </div>
+                <div class="timeline-container" id="timeline-container">
+                    <div class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <p>从左侧选择一个会话<br>查看详细对话历史</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
