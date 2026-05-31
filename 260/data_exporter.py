@@ -11,20 +11,31 @@ from diary_reader import DiaryEntry
 
 class DataExporter:
     def __init__(self, entries: List[DiaryEntry]):
-        self.entries = entries
+        self.entries = entries or []
         self.export_dir = EXPORT_DIR
-        self.export_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.export_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
 
     def export_to_json(self, filename: str = None, anonymize: bool = False) -> str:
         if filename is None:
             filename = f"diary_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
+        try:
+            self.export_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            raise RuntimeError(f"无法创建导出目录: {e}")
+
         export_path = self.export_dir / filename
 
         data = self._prepare_export_data(anonymize)
 
-        with open(export_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2, default=self._json_serializer)
+        try:
+            with open(export_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2, default=self._json_serializer)
+        except OSError as e:
+            raise RuntimeError(f"无法写入导出文件: {e}")
 
         return str(export_path)
 

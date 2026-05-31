@@ -26,8 +26,12 @@ class DiaryReader:
         self._load_all_diaries()
 
     def _load_all_diaries(self) -> None:
-        if not self.diary_dir.exists():
-            self.diary_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            if not self.diary_dir.exists():
+                self.diary_dir.mkdir(parents=True, exist_ok=True)
+                return
+        except OSError as e:
+            print(f"Warning: Cannot create diary directory: {e}")
             return
 
         for file_path in self.diary_dir.glob("*.txt"):
@@ -40,6 +44,8 @@ class DiaryReader:
     def _parse_diary_file(self, file_path: Path) -> Optional[DiaryEntry]:
         try:
             content = file_path.read_text(encoding="utf-8")
+            if not content or not content.strip():
+                return None
             diary_date = self._extract_date(file_path.stem, content)
 
             if diary_date is None:
@@ -50,8 +56,14 @@ class DiaryReader:
                 content=content.strip(),
                 filename=file_path.name
             )
+        except UnicodeDecodeError:
+            print(f"Warning: Cannot decode {file_path} (non-UTF-8 encoding)")
+            return None
+        except OSError as e:
+            print(f"Warning: Cannot read {file_path}: {e}")
+            return None
         except Exception as e:
-            print(f"Error reading {file_path}: {e}")
+            print(f"Warning: Error parsing {file_path}: {e}")
             return None
 
     def _extract_date(self, filename: str, content: str) -> Optional[date]:

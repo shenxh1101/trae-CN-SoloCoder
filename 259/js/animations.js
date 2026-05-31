@@ -97,18 +97,20 @@ class AnimationController {
 
     playTurnLeft(duration) {
         this.currentRotation -= 90;
+        this.robot.state.rotation = this.currentRotation;
         this.canvas.style.transform = `rotate(${this.currentRotation}deg) scale(${this.currentScale})`;
         this.canvas.style.transition = `transform ${duration}ms ease`;
     }
 
     playTurnRight(duration) {
         this.currentRotation += 90;
+        this.robot.state.rotation = this.currentRotation;
         this.canvas.style.transform = `rotate(${this.currentRotation}deg) scale(${this.currentScale})`;
         this.canvas.style.transition = `transform ${duration}ms ease`;
     }
 
     playDance(duration) {
-        this.canvas.style.animation = `dance ${duration}ms ease`;
+        this.wrapper.style.animation = `dance ${duration}ms ease forwards`;
     }
 
     playGrow(duration) {
@@ -126,15 +128,15 @@ class AnimationController {
     }
 
     playRotate(duration) {
-        this.canvas.style.animation = `rotate360 ${duration}ms ease forwards`;
+        this.wrapper.style.animation = `rotate360 ${duration}ms ease forwards`;
     }
 
     playJump(duration) {
-        this.canvas.style.animation = `jump ${duration}ms ease`;
+        this.wrapper.style.animation = `jump ${duration}ms ease forwards`;
     }
 
     async playWave(duration) {
-        this.canvas.style.animation = `wave ${duration}ms ease`;
+        this.wrapper.style.animation = `wave ${duration}ms ease forwards`;
         await this.robot.wave(duration);
     }
 
@@ -146,9 +148,10 @@ class AnimationController {
         this.robot.reset();
         this.currentScale = 1;
         this.currentRotation = 0;
-        this.canvas.style.transform = 'none';
-        this.canvas.style.animation = 'none';
-        this.canvas.style.transition = 'none';
+        this.robot.state.rotation = 0;
+        this.robot.state.scale = 1;
+        this.canvas.style.transition = `transform ${duration}ms ease`;
+        this.canvas.style.transform = 'rotate(0deg) scale(1)';
     }
 
     playEmotion(targetEmotion, duration) {
@@ -158,7 +161,18 @@ class AnimationController {
     }
 
     playDefault(animationName, duration) {
-        this.wrapper.classList.add(animationName);
+        const animationMap = {
+            'turn-left': 'turnLeft',
+            'turn-right': 'turnRight',
+            'grow': 'grow',
+            'shrink': 'shrink',
+            'rotate': 'rotate360',
+            'jump': 'jump',
+            'dance': 'dance',
+            'wave': 'wave'
+        };
+        const cssAnimationName = animationMap[animationName] || animationName;
+        this.wrapper.style.animation = `${cssAnimationName} ${duration}ms ease forwards`;
     }
 
     stop() {
@@ -175,6 +189,7 @@ class AnimationController {
 
     cleanup() {
         this.canvas.style.animation = '';
+        this.wrapper.style.animation = '';
         this.wrapper.classList.remove('animating');
         this.wrapper.classList.remove(
             'turn-left', 'turn-right', 'dance', 'grow', 

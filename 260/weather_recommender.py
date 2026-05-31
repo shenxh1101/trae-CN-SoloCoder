@@ -24,16 +24,21 @@ class WeatherManager:
             return {}
 
     def _save_weather_data(self) -> None:
-        with open(self.weather_file, 'w', encoding='utf-8') as f:
-            json.dump(self.weather_data, f, ensure_ascii=False, indent=2)
+        try:
+            with open(self.weather_file, 'w', encoding='utf-8') as f:
+                json.dump(self.weather_data, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            print(f"Warning: Cannot save weather data: {e}")
 
     def add_weather_record(self, date_str: str, weather: str, temperature: float = None,
                           humidity: float = None, notes: str = "") -> None:
+        if not date_str or not weather:
+            return
         self.weather_data[date_str] = {
             "weather": weather,
             "temperature": temperature,
             "humidity": humidity,
-            "notes": notes,
+            "notes": notes or "",
             "updated_at": datetime.now().isoformat()
         }
         self._save_weather_data()
@@ -96,7 +101,7 @@ class WeatherManager:
 
 class ActionRecommender:
     def __init__(self, entries: List[DiaryEntry]):
-        self.entries = entries
+        self.entries = entries or []
         self.weather_manager = WeatherManager()
 
     def get_daily_recommendation(self) -> Dict:

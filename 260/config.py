@@ -1,12 +1,21 @@
 import os
+import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent
+try:
+    BASE_DIR = Path(__file__).resolve().parent
+except Exception:
+    BASE_DIR = Path(".").resolve()
 
 DIARY_DIR = BASE_DIR / "diaries"
 EXPORT_DIR = BASE_DIR / "exports"
 WEATHER_FILE = BASE_DIR / "weather_log.json"
-CONFIG_FILE = BASE_DIR / "config.yaml"
+
+try:
+    DIARY_DIR.mkdir(parents=True, exist_ok=True)
+    EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+except OSError as e:
+    print(f"Warning: Cannot create required directories: {e}")
 
 POSITIVE_WORDS = [
     "开心", "快乐", "幸福", "满足", "成功", "进步", "成长", "感谢", "感恩",
@@ -22,13 +31,13 @@ NEGATIVE_WORDS = [
     "孤独", "寂寞", "无聊", "空虚", "迷茫", "困惑", "怀疑", "后悔", "遗憾"
 ]
 
-STOP_WORDS = [
+STOP_WORDS = list(dict.fromkeys([
     "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个",
     "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好",
     "自己", "这", "那", "他", "她", "它", "我们", "你们", "他们", "什么", "怎么",
-    "今天", "明天", "昨天", "今天", "现在", "时候", "还是", "因为", "所以", "但是",
+    "今天", "明天", "昨天", "现在", "时候", "还是", "因为", "所以", "但是",
     "觉得", "感觉", "有点", "比较", "非常", "真的", "就是", "这个", "那个", "一些"
-]
+]))
 
 EMOTION_CATEGORIES = {
     "工作压力": ["工作", "加班", "压力", "老板", "同事", "任务", "deadline", "项目", "会议", "绩效"],

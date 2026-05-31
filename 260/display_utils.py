@@ -20,44 +20,77 @@ class Color:
 class DisplayUtils:
     @staticmethod
     def highlight_keywords(text: str, custom_words: List[str] = None) -> str:
+        if not text:
+            return ""
+
         result = text
 
-        for word in POSITIVE_WORDS:
-            pattern = re.compile(re.escape(word), re.IGNORECASE)
-            result = pattern.sub(f"{Color.GREEN}\\g<0>{Color.RESET}", result)
+        try:
+            for word in POSITIVE_WORDS:
+                if word in result:
+                    pattern = re.compile(re.escape(word), re.IGNORECASE)
+                    result = pattern.sub(f"{Color.GREEN}\\g<0>{Color.RESET}", result)
 
-        for word in NEGATIVE_WORDS:
-            pattern = re.compile(re.escape(word), re.IGNORECASE)
-            result = pattern.sub(f"{Color.RED}\\g<0>{Color.RESET}", result)
+            for word in NEGATIVE_WORDS:
+                if word in result:
+                    pattern = re.compile(re.escape(word), re.IGNORECASE)
+                    result = pattern.sub(f"{Color.RED}\\g<0>{Color.RESET}", result)
 
-        if custom_words:
-            for word in custom_words:
-                pattern = re.compile(re.escape(word), re.IGNORECASE)
-                result = pattern.sub(f"{Color.YELLOW}\\g<0>{Color.RESET}", result)
+            if custom_words:
+                for word in custom_words:
+                    if word in result:
+                        pattern = re.compile(re.escape(word), re.IGNORECASE)
+                        result = pattern.sub(f"{Color.YELLOW}\\g<0>{Color.RESET}", result)
+        except Exception:
+            return text
 
         return result
 
     @staticmethod
     def highlight_search_result(text: str, query: str) -> str:
-        pattern = re.compile(re.escape(query), re.IGNORECASE)
-        return pattern.sub(f"{Color.BOLD}{Color.YELLOW}\\g<0>{Color.RESET}", text)
+        if not text or not query:
+            return text
+
+        result = text
+
+        if isinstance(query, list):
+            keywords = query
+        else:
+            keywords = [query]
+
+        try:
+            keywords_sorted = sorted(set(keywords), key=len, reverse=True)
+            for kw in keywords_sorted:
+                if not kw or not kw.strip():
+                    continue
+                pattern = re.compile(re.escape(kw), re.IGNORECASE)
+                result = pattern.sub(f"{Color.BOLD}{Color.YELLOW}\\g<0>{Color.RESET}", result)
+        except Exception:
+            return text
+
+        return result
 
     @staticmethod
     def format_sentiment_score(score: float) -> str:
-        if score >= 0.7:
-            color = Color.GREEN
-            emoji = "😊"
-        elif score >= 0.5:
-            color = Color.BLUE
-            emoji = "🙂"
-        elif score >= 0.3:
-            color = Color.YELLOW
-            emoji = "😐"
-        else:
-            color = Color.RED
-            emoji = "😢"
+        try:
+            if score is None:
+                score = 0.5
+            if score >= 0.7:
+                color = Color.GREEN
+                emoji = "😊"
+            elif score >= 0.5:
+                color = Color.BLUE
+                emoji = "🙂"
+            elif score >= 0.3:
+                color = Color.YELLOW
+                emoji = "😐"
+            else:
+                color = Color.RED
+                emoji = "😢"
 
-        return f"{color}{emoji} {score:.2f}{Color.RESET}"
+            return f"{color}{emoji} {score:.2f}{Color.RESET}"
+        except Exception:
+            return f"🙂 {0.5:.2f}"
 
     @staticmethod
     def print_diary_entry(entry: DiaryEntry, show_highlight: bool = True) -> None:
@@ -108,7 +141,7 @@ class DisplayUtils:
         print(f"  {Color.GREEN}0.{Color.RESET} 退出")
 
     @staticmethod
-    def print_search_results(results: List[Dict], query: str) -> None:
+    def print_search_results(results: List[Dict], query: str = "") -> None:
         if not results:
             print(f"\n{Color.YELLOW}没有找到相关结果{Color.RESET}\n")
             return
@@ -116,9 +149,16 @@ class DisplayUtils:
         print(f"\n{Color.BOLD}{Color.GREEN}找到 {len(results)} 条相关记录:{Color.RESET}\n")
 
         for i, result in enumerate(results[:10], 1):
-            print(f"{Color.BOLD}[{i}] {result['date']}{Color.RESET} - {result['matches']} 处匹配")
+            matched_kws = result.get("matched_keywords", [])
+            if matched_kws:
+                kw_str = f"[{', '.join(matched_kws)}]"
+            else:
+                kw_str = ""
+
+            print(f"{Color.BOLD}[{i}] {result['date']}{Color.RESET} - {result['matches']} 处匹配 {Color.CYAN}{kw_str}{Color.RESET}")
             for context in result['contexts'][:2]:
-                highlighted = DisplayUtils.highlight_search_result(context, query)
+                highlight_terms = matched_kws if matched_kws else [query]
+                highlighted = DisplayUtils.highlight_search_result(context, highlight_terms)
                 print(f"    ...{highlighted}...")
             print()
 

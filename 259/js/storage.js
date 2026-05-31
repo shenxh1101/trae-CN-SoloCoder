@@ -6,7 +6,8 @@ class StorageManager {
             voiceEnabled: true,
             language: 'zh-CN',
             continuousMode: true,
-            autoSave: true
+            autoSave: true,
+            currentEmotion: 'neutral'
         };
     }
 

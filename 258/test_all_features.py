@@ -169,10 +169,10 @@ def test_3_coverage_analysis():
     """测试3: 覆盖率报告分析"""
     console.print(Panel.fit("[bold blue]Test 3: 覆盖率报告分析[/bold blue]", border_style="blue"))
     
-    print("\n1. 测试CoverageAnalyzer类结构...")
+    print("\n1. 测试覆盖率数据类...")
     from aitestgen.coverage import (
-        CoverageAnalyzer, LineCoverage, BranchCoverage, 
-        FunctionCoverage, CoverageReport
+        RealCoverageAnalyzer, LineCoverage, BranchCoverage, 
+        FunctionCoverage, CoverageReport, EstimatedCoverageAnalyzer
     )
     
     # 测试数据类
@@ -194,7 +194,7 @@ def test_3_coverage_analysis():
     assert fc.missing_lines == [5, 6]
     print("   ✓ FunctionCoverage 正常")
     
-    print("\n2. 测试coverage.py中的JSON解析逻辑...")
+    print("\n2. 测试真实覆盖率JSON解析逻辑...")
     # 创建一个模拟的pytest-cov JSON输出
     mock_cov_json = {
         "files": {
@@ -214,7 +214,7 @@ def test_3_coverage_analysis():
         }
     }
     
-    analyzer = CoverageAnalyzer()
+    analyzer = RealCoverageAnalyzer()
     report = analyzer.parse_coverage_json(mock_cov_json, "examples/calculator.py")
     assert report is not None, "应该能解析mock数据"
     assert report.total_lines == 25
@@ -237,6 +237,16 @@ def test_3_coverage_analysis():
     text_report = analyzer._generate_text_report(report)
     assert 'Coverage Report' in text_report
     print("   ✓ Text报告生成成功")
+    
+    print("\n4. 测试预估覆盖率分析器...")
+    est_analyzer = EstimatedCoverageAnalyzer()
+    from aitestgen.parser import parse_file
+    module_info = parse_file("examples/calculator.py")
+    est_report = est_analyzer.analyze_module(module_info)
+    assert est_report is not None
+    assert len(est_report.functions) > 0
+    print(f"   ✓ 预估覆盖率分析成功，共 {len(est_report.functions)} 个函数")
+    print(f"     预估行覆盖率: {est_report.overall_line_coverage:.1f}%")
     
     print("\n[green]✓ Test 3 完成: 覆盖率分析功能正常[/green]")
     return True
@@ -272,11 +282,19 @@ def test_4_style_analysis():
     # 测试在generator中使用风格
     print("\n3. 测试生成器集成风格...")
     from aitestgen.generator import PythonTestGenerator
+    from aitestgen.style_analyzer import StyleAnalyzer
     
-    gen = PythonTestGenerator(style_template=style_file, use_ai=False)
-    assert gen.style_config is not None, "生成器应该有style_config"
-    print(f"   ✓ 生成器成功加载风格配置")
-    print(f"     断言风格: {gen.style_config.assert_style}")
+    # 先生成模板内容
+    analyzer2 = StyleAnalyzer(style_file)
+    _ = analyzer2.analyze()
+    template_content = analyzer2.generate_template()
+    
+    # 使用模板内容创建生成器
+    gen = PythonTestGenerator(style_template=template_content, use_ai=False)
+    assert gen.style_template is not None, "生成器应该有style_template"
+    assert '{%' in gen.style_template or '{{' in gen.style_template, "模板应该包含Jinja2语法"
+    print(f"   ✓ 生成器成功加载风格模板")
+    print(f"     模板长度: {len(gen.style_template)} 字符")
     
     print("\n[green]✓ Test 4 完成: 自定义测试风格功能正常[/green]")
     return True

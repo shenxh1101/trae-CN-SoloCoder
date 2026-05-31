@@ -10,15 +10,21 @@ from ascii_chart import ASCIIChart
 
 class ReportGenerator:
     def __init__(self, entries: List[DiaryEntry]):
-        self.entries = entries
+        self.entries = entries or []
         self.sentiment_analyzer = SentimentAnalyzer()
         self.trend_analyzer = TrendAnalyzer()
         self.chart = ASCIIChart()
         self._analyze_entries()
 
     def _analyze_entries(self) -> None:
-        self.sentiment_analyzer.analyze_all(self.entries)
-        self.trend_analyzer.analyze_all(self.entries)
+        try:
+            self.sentiment_analyzer.analyze_all(self.entries)
+        except Exception:
+            pass
+        try:
+            self.trend_analyzer.analyze_all(self.entries)
+        except Exception:
+            pass
 
     def generate_monthly_report(self, year: int, month: int) -> str:
         monthly_entries = [

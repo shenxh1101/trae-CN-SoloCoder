@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "aitestgen
+name = "aitestgen"
 version = "0.1.0"
 description = "AI-powered unit test generator for Python and JavaScript"
 authors = ["AI Test Generator Team"]

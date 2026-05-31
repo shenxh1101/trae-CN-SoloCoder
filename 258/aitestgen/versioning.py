@@ -7,6 +7,8 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, asdict, field
 import yaml
 
+_version_manager = None
+
 
 @dataclass
 class TestVersion:
@@ -275,7 +277,7 @@ class VersionManager:
             content1 = v1.edited_content or v1.original_content
             content2 = v2.edited_content or v2.original_content
             return self._get_diff_string(content1, content2)
-        _version_manager = None
+        return None
 
 
 def get_version_manager(storage_dir: Optional[str] = None) -> VersionManager:

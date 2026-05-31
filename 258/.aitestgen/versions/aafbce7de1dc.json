@@ -1,0 +1,13 @@
+{
+  "version_id": "aafbce7de1dc",
+  "timestamp": "2026-05-31T21:17:12.463004",
+  "original_content": "\nfrom calculator import divide\n\nimport pytest\n\n\n\n\n\n\ndef test_divide_normal_positive_numbers():\n    # Test division with positive integers\n    \n    result = divide(\n        a=10, \n        b=2\n    )\n    \n    assert result == 5.0\n    \n    \n\n\n\ndef test_divide_normal_negative_numerator():\n    # Test division with negative numerator\n    \n    result = divide(\n        a=-10, \n        b=2\n    )\n    \n    assert result == -5.0\n    \n    \n\n\n\ndef test_divide_normal_negative_denominator():\n    # Test division with negative denominator\n    \n    result = divide(\n        a=10, \n        b=-2\n    )\n    \n    assert result == -5.0\n    \n    \n\n\n\ndef test_divide_normal_both_negative():\n    # Test division with both negative numbers\n    \n    result = divide(\n        a=-10, \n        b=-2\n    )\n    \n    assert result == 5.0\n    \n    \n\n\n\ndef test_divide_normal_float_result():\n    # Test division resulting in float\n    \n    result = divide(\n        a=7, \n        b=2\n    )\n    \n    assert result == 3.5\n    \n    \n\n\n\ndef test_divide_boundary_zero_numerator():\n    # Test division with zero numerator\n    \n    result = divide(\n        a=0, \n        b=5\n    )\n    \n    assert result == 0.0\n    \n    \n\n\n\ndef test_divide_boundary_large_numbers():\n    # Test division with large numbers\n    \n    result = divide(\n        a=1000000, \n        b=1000\n    )\n    \n    assert result == 1000.0\n    \n    \n\n\n\ndef test_divide_boundary_small_numbers():\n    # Test division with small result\n    \n    result = divide(\n        a=1, \n        b=1000\n    )\n    \n    assert result == 0.001\n    \n    \n\n\n\ndef test_divide_exception_divide_by_zero():\n    # Test division by zero raises ValueError\n    \n    with pytest.raises(ValueError):\n        divide(\n            a=10, \n            b=0\n        )\n    \n\n\n\ndef test_divide_exception_zero_divided_by_zero():\n    # Test zero divided by zero raises ValueError\n    \n    with pytest.raises(ValueError):\n        divide(\n            a=0, \n            b=0\n        )\n    \n\n\n\n\n",
+  "edited_content": null,
+  "is_edited": false,
+  "function_name": "divide",
+  "file_path": "/Users/mac/code/solo coder/258/examples/calculator.py",
+  "language": "python",
+  "source_code": "    \"\"\"Divide a by b, raises ValueError if b is zero\"\"\"\n    if b == 0:\n        raise ValueError(\"Cannot divide by zero\")\n    return a / b",
+  "function_signature": "divide(a, b)",
+  "edit_reason": ""
+}

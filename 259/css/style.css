@@ -797,37 +797,7 @@ body::before {
     animation-fill-mode: forwards;
 }
 
-.robot-wrapper.turn-left #robotCanvas {
-    animation: turnLeft 1s ease forwards;
-}
-
-.robot-wrapper.turn-right #robotCanvas {
-    animation: turnRight 1s ease forwards;
-}
-
-.robot-wrapper.grow #robotCanvas {
-    animation: grow 0.8s ease forwards;
-}
-
-.robot-wrapper.shrink #robotCanvas {
-    animation: shrink 0.8s ease forwards;
-}
-
-.robot-wrapper.rotate #robotCanvas {
-    animation: rotate360 2s ease forwards;
-}
-
-.robot-wrapper.jump #robotCanvas {
-    animation: jump 0.5s ease;
-}
-
-.robot-wrapper.dance #robotCanvas {
-    animation: dance 3s ease;
-}
-
-.robot-wrapper.wave #robotCanvas {
-    animation: wave 1.5s ease;
-}
+/* 已移除通过CSS类设置canvas动画的规则，改为通过JS在wrapper上设置style.animation */
 
 ::-webkit-scrollbar {
     width: 6px;

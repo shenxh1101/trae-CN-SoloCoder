@@ -19,10 +19,19 @@ class TrendAnalyzer:
         self.use_jieba = JIEBA_AVAILABLE
 
     def extract_keywords(self, text: str, top_n: int = 20) -> List[Tuple[str, int]]:
-        words = self._split_text(text)
-        filtered_words = [w for w in words if w not in STOP_WORDS and len(w) > 1]
-        counter = Counter(filtered_words)
-        return counter.most_common(top_n)
+        if not text or not text.strip():
+            return []
+
+        try:
+            words = self._split_text(text)
+            if self.use_jieba:
+                filtered_words = [w for w in words if w not in STOP_WORDS and len(w) > 1]
+            else:
+                filtered_words = [w for w in words if w not in STOP_WORDS and w.strip()]
+            counter = Counter(filtered_words)
+            return counter.most_common(top_n)
+        except Exception:
+            return []
 
     def _split_text(self, text: str) -> List[str]:
         text = re.sub(r'[^\w\s]', '', text)
@@ -34,15 +43,25 @@ class TrendAnalyzer:
             return list(text)
 
     def analyze_entry_keywords(self, entry: DiaryEntry, top_n: int = 10) -> List[str]:
-        keywords = self.extract_keywords(entry.content, top_n)
-        entry.keywords = [kw for kw, _ in keywords]
-        return entry.keywords
+        if not entry or not entry.content:
+            entry.keywords = []
+            return []
+        try:
+            keywords = self.extract_keywords(entry.content, top_n)
+            entry.keywords = [kw for kw, _ in keywords]
+            return entry.keywords
+        except Exception:
+            entry.keywords = []
+            return []
 
     def get_monthly_keywords(self, entries: List[DiaryEntry], year: int, month: int, top_n: int = 15) -> List[Tuple[str, int]]:
         monthly_entries = [
             e for e in entries
             if e.date.year == year and e.date.month == month
         ]
+
+        if not monthly_entries:
+            return []
 
         all_text = " ".join(e.content for e in monthly_entries)
         return self.extract_keywords(all_text, top_n)
@@ -53,26 +72,37 @@ class TrendAnalyzer:
             if e.date.year == year
         ]
 
+        if not yearly_entries:
+            return []
+
         all_text = " ".join(e.content for e in yearly_entries)
         return self.extract_keywords(all_text, top_n)
 
     def analyze_categories(self, entry: DiaryEntry) -> Dict[str, float]:
-        scores = {}
-        content_lower = entry.content.lower()
+        if not entry or not entry.content:
+            entry.categories = {cat: 0.0 for cat in EMOTION_CATEGORIES}
+            return entry.categories
 
-        for category, keywords in EMOTION_CATEGORIES.items():
-            count = sum(
-                1 for kw in keywords
-                if kw.lower() in content_lower
-            )
-            scores[category] = count
+        try:
+            scores = {}
+            content_lower = entry.content.lower()
 
-        total = sum(scores.values())
-        if total > 0:
-            scores = {k: v / total for k, v in scores.items()}
+            for category, keywords in EMOTION_CATEGORIES.items():
+                count = sum(
+                    1 for kw in keywords
+                    if kw.lower() in content_lower
+                )
+                scores[category] = count
 
-        entry.categories = scores
-        return scores
+            total = sum(scores.values())
+            if total > 0:
+                scores = {k: v / total for k, v in scores.items()}
+
+            entry.categories = scores
+            return scores
+        except Exception:
+            entry.categories = {cat: 0.0 for cat in EMOTION_CATEGORIES}
+            return entry.categories
 
     def get_category_trend(self, entries: List[DiaryEntry], category: str) -> List[Tuple[str, float]]:
         sorted_entries = sorted(entries, key=lambda x: x.date)
@@ -176,5 +206,11 @@ class TrendAnalyzer:
 
     def analyze_all(self, entries: List[DiaryEntry]) -> None:
         for entry in entries:
-            self.analyze_entry_keywords(entry)
-            self.analyze_categories(entry)
+            try:
+                self.analyze_entry_keywords(entry)
+            except Exception:
+                entry.keywords = []
+            try:
+                self.analyze_categories(entry)
+            except Exception:
+                entry.categories = {cat: 0.0 for cat in EMOTION_CATEGORIES}

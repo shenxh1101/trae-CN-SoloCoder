@@ -12,42 +12,76 @@ from report_generator import ReportGenerator
 from data_exporter import DataExporter
 from display_utils import DisplayUtils, Color
 from weather_recommender import ActionRecommender, WeatherManager
+from logger_config import get_logger, log_error, log_info, log_search, log_qa
+
+logger = get_logger("main")
 
 
 class DiaryAnalyzerApp:
     def __init__(self):
-        self.diary_reader = DiaryReader()
-        self.entries = self.diary_reader.entries
+        try:
+            self.diary_reader = DiaryReader()
+            self.entries = self.diary_reader.entries
+            log_info(logger, f"加载日记: {len(self.entries)} 篇")
+        except Exception as e:
+            log_error(logger, "加载日记失败", e)
+            print(f"{Color.RED}加载日记失败: {e}{Color.RESET}")
+            self.diary_reader = DiaryReader()
+            self.entries = []
 
         DisplayUtils.print_welcome()
 
-        missing_days, should_remind = self.diary_reader.check_consecutive_missing_days()
-        if should_remind:
-            DisplayUtils.print_reminder(missing_days)
+        try:
+            missing_days, should_remind = self.diary_reader.check_consecutive_missing_days()
+            if should_remind:
+                log_info(logger, f"连续未写日记提醒: {missing_days} 天")
+                DisplayUtils.print_reminder(missing_days)
+        except Exception as e:
+            log_error(logger, "检查连续缺失天数失败", e)
 
         if not self.entries:
             DisplayUtils.print_info("没有找到日记文件，请将日记放在 diaries 目录下")
             DisplayUtils.print_info("文件命名格式: YYYY-MM-DD.txt (如: 2024-01-01.txt)")
-            self._create_sample_diaries()
-            self.entries = self.diary_reader.entries
+            try:
+                self._create_sample_diaries()
+                self.entries = self.diary_reader.entries
+            except OSError as e:
+                log_error(logger, "创建示例日记失败", e)
+                DisplayUtils.print_error(f"无法创建示例日记: {e}")
 
         self._initialize_analyzers()
 
     def _initialize_analyzers(self):
         DisplayUtils.print_info("正在分析日记内容...")
 
-        self.sentiment_analyzer = SentimentAnalyzer()
-        self.sentiment_analyzer.analyze_all(self.entries)
+        try:
+            self.sentiment_analyzer = SentimentAnalyzer()
+            self.sentiment_analyzer.analyze_all(self.entries)
+            log_info(logger, "情绪分析完成")
+        except Exception as e:
+            log_error(logger, "情绪分析初始化失败", e)
+            DisplayUtils.print_error(f"情绪分析初始化失败: {e}")
+            self.sentiment_analyzer = SentimentAnalyzer()
 
-        self.trend_analyzer = TrendAnalyzer()
-        self.trend_analyzer.analyze_all(self.entries)
+        try:
+            self.trend_analyzer = TrendAnalyzer()
+            self.trend_analyzer.analyze_all(self.entries)
+            log_info(logger, "趋势分析完成")
+        except Exception as e:
+            log_error(logger, "趋势分析初始化失败", e)
+            DisplayUtils.print_error(f"趋势分析初始化失败: {e}")
+            self.trend_analyzer = TrendAnalyzer()
 
-        self.chart = ASCIIChart()
-        self.search_engine = SearchEngine(self.entries)
-        self.report_generator = ReportGenerator(self.entries)
-        self.data_exporter = DataExporter(self.entries)
-        self.action_recommender = ActionRecommender(self.entries)
-        self.weather_manager = WeatherManager()
+        try:
+            self.chart = ASCIIChart()
+            self.search_engine = SearchEngine(self.entries)
+            self.report_generator = ReportGenerator(self.entries)
+            self.data_exporter = DataExporter(self.entries)
+            self.action_recommender = ActionRecommender(self.entries)
+            self.weather_manager = WeatherManager()
+        except Exception as e:
+            log_error(logger, "模块初始化失败", e)
+            DisplayUtils.print_error(f"部分模块初始化失败: {e}")
 
         DisplayUtils.print_success(f"成功加载 {len(self.entries)} 篇日记")
 
@@ -129,9 +163,13 @@ class DiaryAnalyzerApp:
         year = self._input_year()
         month = self._input_month()
 
-        monthly_sentiment = self.sentiment_analyzer.get_monthly_sentiment(
-            self.entries, year, month
-        )
+        try:
+            monthly_sentiment = self.sentiment_analyzer.get_monthly_sentiment(
+                self.entries, year, month
+            )
+        except Exception as e:
+            DisplayUtils.print_error(f"获取情绪数据失败: {e}")
+            return
 
         if not monthly_sentiment:
             DisplayUtils.print_error(f"{year}年{month}月没有日记记录")
@@ -151,9 +189,13 @@ class DiaryAnalyzerApp:
     def show_yearly_chart(self):
         year = self._input_year()
 
-        yearly_sentiment = self.sentiment_analyzer.get_yearly_sentiment(
-            self.entries, year
-        )
+        try:
+            yearly_sentiment = self.sentiment_analyzer.get_yearly_sentiment(
+                self.entries, year
+            )
+        except Exception as e:
+            DisplayUtils.print_error(f"获取情绪数据失败: {e}")
+            return
 
         if not yearly_sentiment:
             DisplayUtils.print_error(f"{year}年没有日记记录")
@@ -189,38 +231,74 @@ class DiaryAnalyzerApp:
             DisplayUtils.print_error("请输入有效的搜索内容")
             return
 
-        if any(q in query for q in ["？", "?", "什么", "怎么", "何时", "多少"]):
-            result = self.search_engine.answer_question(query)
-            print(f"\n{Color.BOLD}{Color.GREEN}回答: {result['answer']}{Color.RESET}\n")
+        is_question = any(q in query for q in [
+            "？", "?", "什么", "怎么", "何时", "多少",
+            "情绪", "心情", "最近", "哪天", "几次",
+            "开心", "难过", "焦虑", "压力", "比较", "对比"
+        ])
 
-            if result["results"]:
-                DisplayUtils.print_search_results(result["results"], query)
+        if is_question:
+            try:
+                result = self.search_engine.answer_question(query)
+                log_qa(logger, query, result.get("answer_type", "general"), len(result.get("results", [])))
+                print(f"\n{Color.BOLD}{Color.GREEN}回答: {result['answer']}{Color.RESET}\n")
+
+                if result.get("results"):
+                    search_term = query
+                    for kw in self.search_engine._keyword_pool:
+                        if kw in query:
+                            search_term = kw
+                            break
+                    DisplayUtils.print_search_results(result["results"], search_term)
+            except Exception as e:
+                log_error(logger, f"问答处理失败: {query}", e)
+                DisplayUtils.print_error(f"问答处理失败: {e}")
         else:
-            results = self.search_engine.search(query)
-            DisplayUtils.print_search_results(results, query)
+            try:
+                results = self.search_engine.search(query)
+                log_search(logger, query, len(results))
+                DisplayUtils.print_search_results(results, query)
+            except Exception as e:
+                log_error(logger, f"搜索失败: {query}", e)
+                DisplayUtils.print_error(f"搜索失败: {e}")
 
     def generate_growth_report(self):
-        report = self.report_generator.generate_personal_growth_report()
-        DisplayUtils.print_divider()
-        print(report)
-        DisplayUtils.print_divider()
+        try:
+            report = self.report_generator.generate_personal_growth_report()
+            log_info(logger, "生成个人成长报告")
+            DisplayUtils.print_divider()
+            print(report)
+            DisplayUtils.print_divider()
+        except Exception as e:
+            log_error(logger, "生成成长报告失败", e)
+            DisplayUtils.print_error(f"生成报告失败: {e}")
 
     def generate_monthly_report(self):
         year = self._input_year()
         month = self._input_month()
 
-        report = self.report_generator.generate_monthly_report(year, month)
-        print()
-        print(report)
-        print()
+        try:
+            report = self.report_generator.generate_monthly_report(year, month)
+            log_info(logger, f"生成月度报告: {year}年{month}月")
+            print()
+            print(report)
+            print()
+        except Exception as e:
+            log_error(logger, f"生成月度报告失败: {year}年{month}月", e)
+            DisplayUtils.print_error(f"生成报告失败: {e}")
 
     def generate_yearly_report(self):
         year = self._input_year()
 
-        report = self.report_generator.generate_yearly_report(year)
-        print()
-        print(report)
-        print()
+        try:
+            report = self.report_generator.generate_yearly_report(year)
+            log_info(logger, f"生成年度报告: {year}年")
+            print()
+            print(report)
+            print()
+        except Exception as e:
+            log_error(logger, f"生成年度报告失败: {year}年", e)
+            DisplayUtils.print_error(f"生成报告失败: {e}")
 
     def export_data(self):
         print(f"\n{Color.BOLD}数据导出选项:{Color.RESET}")
@@ -234,23 +312,34 @@ class DiaryAnalyzerApp:
         try:
             if choice == "1":
                 path = self.data_exporter.export_to_json(anonymize=False)
+                log_info(logger, f"导出所有数据: {path}")
                 DisplayUtils.print_success(f"数据已导出到: {path}")
             elif choice == "2":
                 path = self.data_exporter.export_to_json(anonymize=True)
+                log_info(logger, f"导出匿名数据: {path}")
                 DisplayUtils.print_success(f"匿名数据已导出到: {path}")
             elif choice == "3":
                 path = self.data_exporter.export_sentiment_data()
+                log_info(logger, f"导出情绪数据: {path}")
                 DisplayUtils.print_success(f"情绪数据已导出到: {path}")
             elif choice == "4":
                 path = self.data_exporter.export_keyword_frequency()
+                log_info(logger, f"导出关键词频率: {path}")
                 DisplayUtils.print_success(f"关键词频率已导出到: {path}")
             else:
                 DisplayUtils.print_error("无效选项")
         except Exception as e:
+            log_error(logger, "数据导出失败", e)
             DisplayUtils.print_error(f"导出失败: {e}")
 
     def show_daily_recommendation(self):
-        plan = self.action_recommender.generate_action_plan()
+        try:
+            plan = self.action_recommender.generate_action_plan()
+            log_info(logger, "生成每日推荐计划")
+        except Exception as e:
+            log_error(logger, "生成推荐计划失败", e)
+            DisplayUtils.print_error(f"生成推荐失败: {e}")
+            return
 
         DisplayUtils.print_divider()
         print(f"{Color.BOLD}{Color.CYAN}                    {plan['daily_actions'][0] if plan['daily_actions'] else '今日推荐行动'}{Color.RESET}")
@@ -267,11 +356,14 @@ class DiaryAnalyzerApp:
         for goal in plan["long_term_goals"]:
             print(f"  {Color.BLUE}✨{Color.RESET} {goal}")
 
-        weather_insights = self.weather_manager.analyze_weather_impact(self.entries)
-        if weather_insights:
-            print(f"\n{Color.BOLD}天气影响分析:{Color.RESET}")
-            for insight in weather_insights:
-                print(f"  {Color.MAGENTA}☁️{Color.RESET} {insight}")
+        try:
+            weather_insights = self.weather_manager.analyze_weather_impact(self.entries)
+            if weather_insights:
+                print(f"\n{Color.BOLD}天气影响分析:{Color.RESET}")
+                for insight in weather_insights:
+                    print(f"  {Color.MAGENTA}☁️{Color.RESET} {insight}")
+        except Exception as e:
+            log_error(logger, "天气影响分析失败", e)
 
         DisplayUtils.print_divider()
 
@@ -280,21 +372,25 @@ class DiaryAnalyzerApp:
             DisplayUtils.print_error("没有日记记录")
             return
 
-        DisplayUtils.print_divider()
-        print(f"{Color.BOLD}日记列表 (共 {len(self.entries)} 篇){Color.RESET}")
-        DisplayUtils.print_divider("-")
+        try:
+            DisplayUtils.print_divider()
+            print(f"{Color.BOLD}日记列表 (共 {len(self.entries)} 篇){Color.RESET}")
+            DisplayUtils.print_divider("-")
 
-        for i, entry in enumerate(sorted(self.entries, key=lambda x: x.date, reverse=True)[:30], 1):
-            sentiment_display = ""
-            if entry.sentiment_score is not None:
-                sentiment_display = f"  {DisplayUtils.format_sentiment_score(entry.sentiment_score)}"
+            for i, entry in enumerate(sorted(self.entries, key=lambda x: x.date, reverse=True)[:30], 1):
+                sentiment_display = ""
+                if entry.sentiment_score is not None:
+                    sentiment_display = f"  {DisplayUtils.format_sentiment_score(entry.sentiment_score)}"
 
-            print(f"  {i:2d}. {entry.date.strftime('%Y-%m-%d')}{sentiment_display}")
+                print(f"  {i:2d}. {entry.date.strftime('%Y-%m-%d')}{sentiment_display}")
 
-        if len(self.entries) > 30:
-            print(f"\n  ... 还有 {len(self.entries) - 30} 篇日记")
+            if len(self.entries) > 30:
+                print(f"\n  ... 还有 {len(self.entries) - 30} 篇日记")
 
-        DisplayUtils.print_divider()
+            DisplayUtils.print_divider()
+        except Exception as e:
+            log_error(logger, "显示日记列表失败", e)
+            DisplayUtils.print_error(f"显示失败: {e}")
 
     def view_diary_entry(self):
         date_str = input(f"{Color.BOLD}请输入日期 (YYYY-MM-DD): {Color.RESET}").strip()
@@ -351,6 +447,13 @@ def main():
     try:
         app = DiaryAnalyzerApp()
         app.run()
+    except KeyboardInterrupt:
+        print(f"\n{Color.GREEN}感谢使用，再见！{Color.RESET}")
+        sys.exit(0)
+    except ModuleNotFoundError as e:
+        print(f"\n{Color.RED}缺少必要依赖: {e}{Color.RESET}")
+        print(f"{Color.YELLOW}请运行: pip install -r requirements.txt{Color.RESET}")
+        sys.exit(1)
     except Exception as e:
         print(f"\n{Color.RED}程序异常退出: {e}{Color.RESET}")
         import traceback

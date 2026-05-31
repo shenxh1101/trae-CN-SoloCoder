@@ -61,6 +61,7 @@ class App {
     }
 
     loadConfig() {
+        const oldEmotion = this.config ? this.config.currentEmotion : null;
         this.config = storageManager.load();
         this.voiceEnabled = this.config.voiceEnabled;
         commandManager.setCustomCommands(this.config.customCommands || []);
@@ -73,12 +74,19 @@ class App {
         }
         
         speechManager.setContinuousMode(this.config.continuousMode);
+        
+        if (this.robot && oldEmotion !== this.config.currentEmotion) {
+            this.robot.setEmotion(this.config.currentEmotion || 'neutral');
+            this.updateEmotionDisplay();
+            this.updateEmotionButtons(this.config.currentEmotion || 'neutral');
+        }
     }
 
     saveConfig() {
         this.config.customCommands = commandManager.customCommands;
         this.config.voiceEnabled = this.voiceEnabled;
         this.config.continuousMode = speechManager.continuousMode;
+        this.config.currentEmotion = this.robot.getEmotion();
         
         const success = storageManager.save(this.config);
         if (success) {
@@ -91,6 +99,12 @@ class App {
     initRobot() {
         this.robot = new Robot('robotCanvas');
         this.animationController = new AnimationController(this.robot, this.elements.robotWrapper, this.elements.robotCanvas);
+        
+        if (this.config.currentEmotion && this.config.currentEmotion !== 'neutral') {
+            this.robot.setEmotion(this.config.currentEmotion);
+            this.updateEmotionButtons(this.config.currentEmotion);
+        }
+        
         this.updateEmotionDisplay();
     }
 
@@ -121,7 +135,7 @@ class App {
         });
 
         speechManager.onEnd(() => {
-            if (!speechManager.continuousMode) {
+            if (!speechManager.continuousMode || speechManager.manualStop) {
                 this.updateStatus('ready');
                 this.elements.statusText.textContent = '准备就绪';
                 this.elements.micButton.classList.remove('listening');
@@ -172,9 +186,6 @@ class App {
             btn.addEventListener('click', () => {
                 const emotion = btn.dataset.emotion;
                 this.setEmotion(emotion);
-                
-                this.elements.emotionButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
             });
         });
 
@@ -235,10 +246,13 @@ class App {
         const { command, parameters } = parsed;
         
         this.elements.robotStatus.textContent = command.name;
+        this.updateStatus('processing');
+        this.elements.statusText.textContent = `正在执行: ${command.name}`;
         
         if (command.emotion) {
             this.robot.setEmotion(command.emotion);
             this.updateEmotionDisplay();
+            this.updateEmotionButtons(command.emotion);
         }
         
         const options = {
@@ -257,7 +271,7 @@ class App {
             }
         }
         
-        if (!commandManager.getIsProcessing()) {
+        if (!commandManager.getIsProcessing() || commandManager.commandQueue.length === 0) {
             this.elements.robotStatus.textContent = '待机中';
             this.updateStatus('ready');
             this.elements.statusText.textContent = '准备就绪';
@@ -267,6 +281,7 @@ class App {
     setEmotion(emotion) {
         this.robot.setEmotion(emotion);
         this.updateEmotionDisplay();
+        this.updateEmotionButtons(emotion);
         
         const emotionNames = {
             happy: '开心',
@@ -291,6 +306,12 @@ class App {
             neutral: '平静'
         };
         this.elements.robotEmotion.textContent = emotionNames[emotion] || emotion;
+    }
+
+    updateEmotionButtons(emotion) {
+        this.elements.emotionButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.emotion === emotion);
+        });
     }
 
     addCustomCommand() {

@@ -12,72 +12,81 @@ class ASCIIChart:
         if not data:
             return "暂无数据可显示"
 
-        labels = list(data.keys())
-        values = list(data.values())
+        try:
+            labels = list(data.keys())
+            values = list(data.values())
 
-        if len(labels) > self.width - 10:
-            step = len(labels) // (self.width - 10) + 1
-            labels = labels[::step]
-            values = values[::step]
+            valid_pairs = [(l, v) for l, v in zip(labels, values) if isinstance(v, (int, float))]
+            if not valid_pairs:
+                return "暂无数据可显示"
+            labels, values = zip(*valid_pairs)
+            labels, values = list(labels), list(values)
 
-        min_val = min(values)
-        max_val = max(values)
+            if len(labels) > self.width - 10:
+                step = len(labels) // (self.width - 10) + 1
+                labels = labels[::step]
+                values = values[::step]
 
-        if min_val == max_val:
-            min_val = max(0, min_val - 0.1)
-            max_val = min(1, max_val + 0.1)
+            min_val = min(values)
+            max_val = max(values)
 
-        chart = []
+            if min_val == max_val:
+                min_val = max(0, min_val - 0.1)
+                max_val = min(1, max_val + 0.1)
 
-        if title:
-            chart.append(self._center_text(title, self.width))
-            chart.append("")
+            chart = []
 
-        for i in range(self.height):
-            y_val = max_val - (max_val - min_val) * (i / (self.height - 1))
-            line = [f"{y_val:.2f} | "]
+            if title:
+                chart.append(self._center_text(title, self.width))
+                chart.append("")
 
-            for j, val in enumerate(values):
-                if i == self.height - 1:
-                    line.append("─")
-                else:
-                    normalized = (val - min_val) / (max_val - min_val)
-                    row_idx = int((1 - normalized) * (self.height - 1))
+            for i in range(self.height):
+                y_val = max_val - (max_val - min_val) * (i / (self.height - 1))
+                line = [f"{y_val:.2f} | "]
 
-                    if row_idx == i:
-                        line.append("●")
-                    elif row_idx < i and j > 0:
-                        prev_normalized = (values[j-1] - min_val) / (max_val - min_val)
-                        prev_row_idx = int((1 - prev_normalized) * (self.height - 1))
-                        if prev_row_idx > i:
-                            line.append("\\")
-                        elif prev_row_idx == i:
-                            line.append("/")
+                for j, val in enumerate(values):
+                    if i == self.height - 1:
+                        line.append("─")
+                    else:
+                        normalized = (val - min_val) / (max_val - min_val)
+                        row_idx = int((1 - normalized) * (self.height - 1))
+
+                        if row_idx == i:
+                            line.append("●")
+                        elif row_idx < i and j > 0:
+                            prev_normalized = (values[j-1] - min_val) / (max_val - min_val)
+                            prev_row_idx = int((1 - prev_normalized) * (self.height - 1))
+                            if prev_row_idx > i:
+                                line.append("\\")
+                            elif prev_row_idx == i:
+                                line.append("/")
+                            else:
+                                line.append(" ")
                         else:
                             line.append(" ")
+
+                chart.append("".join(line))
+
+            x_axis = "     " + "┴" + "─" * (len(values) - 1)
+            chart.append(x_axis)
+
+            if labels:
+                label_line = "     "
+                for label in labels:
+                    if len(label) > 2:
+                        label_line += label[-2:]
                     else:
-                        line.append(" ")
+                        label_line += label.ljust(2)[:2]
+                chart.append(label_line)
 
-            chart.append("".join(line))
+            if x_label or y_label:
+                chart.append("")
+                chart.append(f"X轴: {x_label}")
+                chart.append(f"Y轴: {y_label}")
 
-        x_axis = "     " + "┴" + "─" * (len(values) - 1)
-        chart.append(x_axis)
-
-        if labels:
-            label_line = "     "
-            for label in labels:
-                if len(label) > 2:
-                    label_line += label[-2:]
-                else:
-                    label_line += label.ljust(2)[:2]
-            chart.append(label_line)
-
-        if x_label or y_label:
-            chart.append("")
-            chart.append(f"X轴: {x_label}")
-            chart.append(f"Y轴: {y_label}")
-
-        return "\n".join(chart)
+            return "\n".join(chart)
+        except Exception:
+            return "图表生成失败"
 
     def plot_bar_chart(self, data: Dict[str, int], title: str = "",
                        horizontal: bool = True) -> str:

@@ -17,13 +17,22 @@ class SentimentAnalyzer:
         self.use_snownlp = SNOWNLP_AVAILABLE
 
     def analyze_entry(self, entry: DiaryEntry) -> float:
-        if self.use_snownlp:
-            score = self._analyze_with_snownlp(entry.content)
-        else:
-            score = self._analyze_with_keywords(entry.content)
+        if not entry or not entry.content or not entry.content.strip():
+            entry.sentiment_score = 0.5
+            return 0.5
 
-        entry.sentiment_score = score
-        return score
+        try:
+            if self.use_snownlp:
+                score = self._analyze_with_snownlp(entry.content)
+            else:
+                score = self._analyze_with_keywords(entry.content)
+
+            score = max(0.0, min(1.0, score))
+            entry.sentiment_score = score
+            return score
+        except Exception:
+            entry.sentiment_score = 0.5
+            return 0.5
 
     def _analyze_with_snownlp(self, content: str) -> float:
         try:
@@ -44,8 +53,11 @@ class SentimentAnalyzer:
 
     def analyze_all(self, entries: List[DiaryEntry]) -> List[DiaryEntry]:
         for entry in entries:
-            if entry.sentiment_score is None:
-                self.analyze_entry(entry)
+            try:
+                if entry.sentiment_score is None:
+                    self.analyze_entry(entry)
+            except Exception:
+                entry.sentiment_score = 0.5
         return entries
 
     def get_monthly_sentiment(self, entries: List[DiaryEntry], year: int, month: int) -> Dict[str, float]:
@@ -116,18 +128,29 @@ class SentimentAnalyzer:
                 "total_days": 0
             }
 
-        scores = [e.sentiment_score for e in scored_entries]
+        try:
+            scores = [e.sentiment_score for e in scored_entries]
 
-        positive_days = sum(1 for s in scores if s > 0.6)
-        neutral_days = sum(1 for s in scores if 0.4 <= s <= 0.6)
-        negative_days = sum(1 for s in scores if s < 0.4)
+            positive_days = sum(1 for s in scores if s > 0.6)
+            neutral_days = sum(1 for s in scores if 0.4 <= s <= 0.6)
+            negative_days = sum(1 for s in scores if s < 0.4)
 
-        return {
-            "avg_score": sum(scores) / len(scores),
-            "min_score": min(scores),
-            "max_score": max(scores),
-            "positive_days": positive_days,
-            "neutral_days": neutral_days,
-            "negative_days": negative_days,
-            "total_days": len(scored_entries)
-        }
+            return {
+                "avg_score": sum(scores) / len(scores),
+                "min_score": min(scores),
+                "max_score": max(scores),
+                "positive_days": positive_days,
+                "neutral_days": neutral_days,
+                "negative_days": negative_days,
+                "total_days": len(scored_entries)
+            }
+        except Exception:
+            return {
+                "avg_score": 0.5,
+                "min_score": 0.5,
+                "max_score": 0.5,
+                "positive_days": 0,
+                "neutral_days": 0,
+                "negative_days": 0,
+                "total_days": 0
+            }
