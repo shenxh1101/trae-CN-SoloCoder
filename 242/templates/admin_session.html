@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}会话详情 - AI面试官管理后台{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('admin_dashboard') }}" class="text-gray-500 hover:text-gray-700 transition">
+                    ← 返回
+                </a>
+                <h1 class="font-semibold text-gray-800">面试会话详情</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('view_report', session_id=session.session_id) }}" class="px-4 py-2 text-sm text-purple-600 hover:text-purple-800 transition">
+                    查看报告
+                </a>
+                <a href="{{ url_for('admin_logout') }}" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition">退出登录</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📋 会话信息</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="text-sm text-gray-500">岗位</div>
+                    <div class="font-semibold text-gray-800">{{ session.position }}</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="text-sm text-gray-500">难度</div>
+                    <div class="font-semibold text-gray-800">{{ '高级' if session.difficulty == 'senior' else '初级' }}</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="text-sm text-gray-500">模式</div>
+                    <div class="font-semibold text-gray-800">{{ '压力面试' if session.pressure_mode else '普通' }}</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="text-sm text-gray-500">状态</div>
+                    <div class="font-semibold {{ 'text-green-600' if session.status == 'completed' else 'text-yellow-600' }}">
+                        {{ '已完成' if session.status == 'completed' else '进行中' }}
+                    </div>
+                </div>
+            </div>
+
+            {% if session.status == 'completed' %}
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                <div class="bg-purple-50 rounded-xl p-4">
+                    <div class="text-sm text-purple-600">总体评分</div>
+                    <div class="text-2xl font-bold text-purple-700">
+                        {{ '⭐' * (session.overall_score|int if session.overall_score else 0) }}
+                        {{ session.overall_score or '-' }}/5
+                    </div>
+                </div>
+                <div class="bg-green-50 rounded-xl p-4">
+                    <div class="text-sm text-green-600">情感分析</div>
+                    <div class="text-xl font-bold text-green-700">{{ session.sentiment or '-' }}</div>
+                </div>
+                <div class="bg-blue-50 rounded-xl p-4">
+                    <div class="text-sm text-blue-600">自信程度</div>
+                    <div class="text-2xl font-bold text-blue-700">
+                        {{ (session.confidence_score * 100)|int if session.confidence_score else '-' }}%
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📝 答题记录</h2>
+            <div class="space-y-4">
+                {% for answer in answers %}
+                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                        <span class="font-medium text-gray-800">问题 {{ loop.index }}</span>
+                        <span class="text-lg">
+                            {{ '⭐' * (answer.score or 0) }}{{ '☆' * (5 - (answer.score or 0)) }}
+                        </span>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div>
+                            <div class="text-xs text-gray-500 mb-1">题目</div>
+                            <p class="text-gray-800">{{ answer.question_text }}</p>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 mb-1">用户回答</div>
+                            <div class="bg-gray-50 rounded-lg p-3 text-gray-700 text-sm whitespace-pre-wrap">{{ answer.user_answer or '未作答' }}</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 mb-1">反馈</div>
+                            <div class="bg-green-50 rounded-lg p-3 text-green-800 text-sm whitespace-pre-wrap">{{ answer.feedback }}</div>
+                        </div>
+                        {% if answer.code_passed is not none %}
+                        <div class="text-sm">
+                            <span class="px-2 py-1 rounded {{ 'bg-green-100 text-green-700' if answer.code_passed else 'bg-red-100 text-red-700' }}">
+                                {{ '✅ 代码通过' if answer.code_passed else '❌ 代码未通过' }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">💬 完整对话记录</h2>
+            <div class="space-y-3 max-h-96 overflow-y-auto">
+                {% for msg in messages %}
+                <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="max-w-[80%] rounded-xl p-4 {% if msg.role == 'user' %}bg-purple-100 text-purple-800{% elif msg.role == 'system' %}bg-yellow-50 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                        <div class="text-xs opacity-60 mb-1">
+                            {% if msg.role == 'user' %}你{% elif msg.role == 'system' %}系统{% else %}面试官{% endif %}
+                            · {{ msg.timestamp.strftime('%H:%M:%S') }}
+                        </div>
+                        <div class="whitespace-pre-wrap">{{ msg.content }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

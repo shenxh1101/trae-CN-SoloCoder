@@ -1,0 +1,470 @@
+{
+    "成都": [
+        {
+            "name": "宽窄巷子",
+            "city": "成都",
+            "category": "历史文化",
+            "rating": 4.5,
+            "review_count": 52680,
+            "avg_visit_time": 2.5,
+            "ticket_price": 0,
+            "description": "成都最具代表性的历史文化街区，由宽巷子、窄巷子和井巷子三条平行排列的城市老式街道及其之间的四合院群落组成",
+            "walking_intensity": "中",
+            "reviews": [
+                "很有成都味道的老街，茶馆和小吃很棒",
+                "商业化气息较重，但建筑很有特色",
+                "建议下午去，晚上灯光很美",
+                "人很多但值得一去，有很多特色小店"
+            ],
+            "location_hint": "成都市青羊区宽窄巷子，地铁4号线宽窄巷子站",
+            "best_season": "全年",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "武侯祠",
+            "city": "成都",
+            "category": "历史文化",
+            "rating": 4.7,
+            "review_count": 38920,
+            "avg_visit_time": 2.0,
+            "ticket_price": 50,
+            "description": "中国唯一的君臣合祀祠庙，纪念诸葛亮的专祠，也是全国影响最大的三国遗迹博物馆",
+            "walking_intensity": "低",
+            "reviews": [
+                "三国迷必去，文化底蕴深厚",
+                "红墙竹影非常适合拍照",
+                "建议请导游讲解，体验更佳",
+                "与锦里古街相连，可以一起游览"
+            ],
+            "location_hint": "成都市武侯区武侯祠大街231号，地铁3号线高升桥站",
+            "best_season": "全年",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "锦里古街",
+            "city": "成都",
+            "category": "历史文化",
+            "rating": 4.4,
+            "review_count": 45230,
+            "avg_visit_time": 2.0,
+            "ticket_price": 0,
+            "description": "成都知名的商业步行街，以明末清初川西民居为外衣，汇聚三国文化和成都民俗于一体",
+            "walking_intensity": "低",
+            "reviews": [
+                "小吃很多很地道，价格略贵",
+                "晚上的灯笼很好看，适合散步",
+                "比宽窄巷子更有烟火气",
+                "有很多手工艺品可以买"
+            ],
+            "location_hint": "成都市武侯区武侯祠大街，紧邻武侯祠",
+            "best_season": "全年",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "大熊猫繁育研究基地",
+            "city": "成都",
+            "category": "自然风光",
+            "rating": 4.8,
+            "review_count": 67890,
+            "avg_visit_time": 3.5,
+            "ticket_price": 55,
+            "description": "世界著名的大熊猫迁地保护基地，可以近距离观赏大熊猫和小熊猫",
+            "walking_intensity": "高",
+            "reviews": [
+                "一定要早上8点前去，熊猫最活跃",
+                "园区很大，建议坐电瓶车",
+                "月亮产房可以看到熊猫幼崽，超级可爱",
+                "走路比较多，穿舒适的鞋子"
+            ],
+            "location_hint": "成都市成华区熊猫大道1375号，地铁3号线熊猫大道站转公交",
+            "best_season": "春秋",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "都江堰",
+            "city": "成都",
+            "category": "历史文化",
+            "rating": 4.7,
+            "review_count": 42150,
+            "avg_visit_time": 4.0,
+            "ticket_price": 80,
+            "description": "世界文化遗产，两千多年前建设的宏大水利工程，至今仍在发挥效益",
+            "walking_intensity": "高",
+            "reviews": [
+                "古人智慧令人叹服，一定要听讲解",
+                "建议和青城山一起安排一天",
+                "走完全程需要3-4小时，体力消耗大",
+                "鱼嘴分水堤和飞沙堰是精华"
+            ],
+            "location_hint": "成都市都江堰市公园路，成都北站坐城际列车约30分钟",
+            "best_season": "春夏",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "青城山",
+            "city": "成都",
+            "category": "自然风光",
+            "rating": 4.6,
+            "review_count": 35670,
+            "avg_visit_time": 5.0,
+            "ticket_price": 80,
+            "description": "中国道教发祥地之一，世界文化遗产，以幽洁取胜，有'青城天下幽'之美誉",
+            "walking_intensity": "极高",
+            "reviews": [
+                "前山道教文化浓厚，后山自然风光更美",
+                "体力一般建议只去前山，坐索道上下",
+                "穿运动鞋，台阶非常多",
+                "空气清新，负氧离子爆表"
+            ],
+            "location_hint": "成都市都江堰市青城山路，与都江堰相邻",
+            "best_season": "春夏秋",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "人民公园",
+            "city": "成都",
+            "category": "历史文化",
+            "rating": 4.5,
+            "review_count": 28900,
+            "avg_visit_time": 2.0,
+            "ticket_price": 0,
+            "description": "成都人休闲生活的缩影，可以体验最地道的成都茶馆文化和鹤鸣茶社",
+            "walking_intensity": "低",
+            "reviews": [
+                "鹤鸣茶社必去，体验最成都的生活",
+                "采耳师傅手艺很好，推荐体验",
+                "周末人特别多，建议工作日去",
+                "公园里的相亲角也很有趣"
+            ],
+            "location_hint": "成都市青羊区少城路12号，地铁2号线人民公园站",
+            "best_season": "全年",
+            "holiday_crowd_level": "中"
+        },
+        {
+            "name": "春熙路-太古里",
+            "city": "成都",
+            "category": "购物",
+            "rating": 4.3,
+            "review_count": 55600,
+            "avg_visit_time": 3.0,
+            "ticket_price": 0,
+            "description": "成都最繁华的商业中心，传统与现代交融，购物美食天堂",
+            "walking_intensity": "中",
+            "reviews": [
+                "IFS楼顶的大熊猫一定要打卡",
+                "太古里建筑很有设计感",
+                "美食选择超多，逛一天都不够",
+                "夜景很漂亮，适合晚上逛"
+            ],
+            "location_hint": "成都市锦江区中纱帽街8号，地铁2/3号线春熙路站",
+            "best_season": "全年",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "杜甫草堂",
+            "city": "成都",
+            "category": "历史文化",
+            "rating": 4.6,
+            "review_count": 31200,
+            "avg_visit_time": 2.0,
+            "ticket_price": 50,
+            "description": "唐代诗人杜甫流寓成都时的故居，现已成为中国文学史上的圣地",
+            "walking_intensity": "低",
+            "reviews": [
+                "文学爱好者必去，诗情画意",
+                "园林很美，清幽雅致",
+                "和浣花溪公园连在一起，可以一起逛",
+                "人不多，很适合静心游览"
+            ],
+            "location_hint": "成都市青羊区青华路37号，地铁4号线草堂北路站",
+            "best_season": "全年",
+            "holiday_crowd_level": "中"
+        }
+    ],
+    "北京": [
+        {
+            "name": "故宫博物院",
+            "city": "北京",
+            "category": "历史文化",
+            "rating": 4.9,
+            "review_count": 125000,
+            "avg_visit_time": 4.0,
+            "ticket_price": 60,
+            "description": "世界上现存规模最大的宫殿建筑群，明清两代皇宫，世界文化遗产",
+            "walking_intensity": "极高",
+            "reviews": [
+                "一定要提前预约，每天限流",
+                "建议从午门进神武门出，走中轴线",
+                "钟表馆和珍宝馆值得另买票",
+                "穿舒适鞋子，走路非常多"
+            ],
+            "location_hint": "北京市东城区景山前街4号，地铁1号线天安门东站",
+            "best_season": "春秋",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "长城（八达岭）",
+            "city": "北京",
+            "category": "历史文化",
+            "rating": 4.7,
+            "review_count": 89000,
+            "avg_visit_time": 4.0,
+            "ticket_price": 40,
+            "description": "世界文化遗产，中华民族的象征，八达岭段是长城最具代表性的一段",
+            "walking_intensity": "极高",
+            "reviews": [
+                "建议早出发，避开人流高峰",
+                "缆车上下可以节省体力",
+                "秋天去景色最美，层林尽染",
+                "穿运动鞋，台阶很陡"
+            ],
+            "location_hint": "北京市延庆区，877路公交或S2线列车",
+            "best_season": "春秋",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "天坛公园",
+            "city": "北京",
+            "category": "历史文化",
+            "rating": 4.6,
+            "review_count": 45600,
+            "avg_visit_time": 2.5,
+            "ticket_price": 15,
+            "description": "明清两代皇帝祭天之所，世界文化遗产，祈年殿是北京标志性建筑",
+            "walking_intensity": "中",
+            "reviews": [
+                "祈年殿非常壮观，拍照必去",
+                "回音壁很有趣",
+                "早晨可以看到很多晨练的北京人",
+                "联票更划算"
+            ],
+            "location_hint": "北京市东城区天坛内东里7号，地铁5号线天坛东门站",
+            "best_season": "全年",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "颐和园",
+            "city": "北京",
+            "category": "自然风光",
+            "rating": 4.7,
+            "review_count": 52300,
+            "avg_visit_time": 3.5,
+            "ticket_price": 30,
+            "description": "中国现存最大的皇家园林，世界文化遗产，集传统造园艺术之大成",
+            "walking_intensity": "高",
+            "reviews": [
+                "昆明湖坐船游览很惬意",
+                "长廊的彩画非常精美",
+                "建议从东宫门进，游览路线更合理",
+                "冬天可以看十七孔桥金光穿洞"
+            ],
+            "location_hint": "北京市海淀区新建宫门路19号，地铁4号线北宫门站",
+            "best_season": "春夏秋",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "南锣鼓巷",
+            "city": "北京",
+            "category": "历史文化",
+            "rating": 4.2,
+            "review_count": 38900,
+            "avg_visit_time": 2.0,
+            "ticket_price": 0,
+            "description": "北京最古老的街区之一，保留了元代胡同院落的肌理，文艺小店和特色美食聚集地",
+            "walking_intensity": "低",
+            "reviews": [
+                "胡同文化体验好，但商业化严重",
+                "有很多特色文创店",
+                "小吃选择多但价格偏贵",
+                "建议早上去人少"
+            ],
+            "location_hint": "北京市东城区南锣鼓巷，地铁6/8号线南锣鼓巷站",
+            "best_season": "全年",
+            "holiday_crowd_level": "极高"
+        }
+    ],
+    "西安": [
+        {
+            "name": "兵马俑博物馆",
+            "city": "西安",
+            "category": "历史文化",
+            "rating": 4.8,
+            "review_count": 98000,
+            "avg_visit_time": 3.5,
+            "ticket_price": 120,
+            "description": "世界第八大奇迹，秦始皇陵的陪葬坑，展示了数千个真人大小的陶俑",
+            "walking_intensity": "中",
+            "reviews": [
+                "一定要请讲解，不然看不懂",
+                "一号坑最壮观，气势磅礴",
+                "建议预留半天时间",
+                "从西安市区坐旅游专线约1小时"
+            ],
+            "location_hint": "西安市临潼区秦陵北路，旅游5号线或914路",
+            "best_season": "全年",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "大雁塔",
+            "city": "西安",
+            "category": "历史文化",
+            "rating": 4.5,
+            "review_count": 42300,
+            "avg_visit_time": 2.0,
+            "ticket_price": 25,
+            "description": "唐代高僧玄奘翻译佛经的地方，西安标志性建筑，世界文化遗产",
+            "walking_intensity": "低",
+            "reviews": [
+                "晚上的音乐喷泉很壮观",
+                "登塔可以看到西安城区全景",
+                "大悦城就在附近，可以一起逛",
+                "大唐不夜城步行可达"
+            ],
+            "location_hint": "西安市雁塔区大雁塔南广场，地铁3/4号线大雁塔站",
+            "best_season": "全年",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "回民街",
+            "city": "西安",
+            "category": "美食",
+            "rating": 4.3,
+            "review_count": 56700,
+            "avg_visit_time": 2.0,
+            "ticket_price": 0,
+            "description": "西安最著名的美食文化街区，汇聚各种西北特色小吃",
+            "walking_intensity": "低",
+            "reviews": [
+                "羊肉泡馍和肉夹馍必吃",
+                "主街商业化严重，建议走巷子深处",
+                "晚上更热闹",
+                "有些店需要排队，值得等"
+            ],
+            "location_hint": "西安市莲湖区西大街，地铁2号线钟楼站",
+            "best_season": "全年",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "华清宫",
+            "city": "西安",
+            "category": "历史文化",
+            "rating": 4.4,
+            "review_count": 34500,
+            "avg_visit_time": 2.5,
+            "ticket_price": 120,
+            "description": "唐玄宗和杨贵妃的温泉行宫，历史与自然景观兼具",
+            "walking_intensity": "中",
+            "reviews": [
+                "长恨歌演出非常震撼，必须看",
+                "可以和兵马俑安排在同一天",
+                "温泉遗址值得一看",
+                "骊山可以坐缆车上"
+            ],
+            "location_hint": "西安市临潼区华清路38号，与兵马俑同线路",
+            "best_season": "全年",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "西安城墙",
+            "city": "西安",
+            "category": "历史文化",
+            "rating": 4.6,
+            "review_count": 41200,
+            "avg_visit_time": 2.5,
+            "ticket_price": 54,
+            "description": "中国现存最完整的古代城垣，可以骑行或步行环城一周",
+            "walking_intensity": "高",
+            "reviews": [
+                "租自行车骑行体验极佳",
+                "傍晚去最美，夕阳下的城墙很壮观",
+                "南门最热闹，也是最佳拍照点",
+                "全程骑行约需2小时"
+            ],
+            "location_hint": "西安市碑林区南大街，地铁2号线永宁门站",
+            "best_season": "春秋",
+            "holiday_crowd_level": "中"
+        }
+    ],
+    "重庆": [
+        {
+            "name": "洪崖洞",
+            "city": "重庆",
+            "category": "历史文化",
+            "rating": 4.5,
+            "review_count": 78000,
+            "avg_visit_time": 2.0,
+            "ticket_price": 0,
+            "description": "重庆最具标志性的景点，依山就势沿崖而建，夜景如千与千寻",
+            "walking_intensity": "中",
+            "reviews": [
+                "必须晚上去，灯光效果超美",
+                "人超级多，注意安全",
+                "千厮门大桥上是最佳拍照点",
+                "内部商业店铺比较普通"
+            ],
+            "location_hint": "重庆市渝中区嘉陵江滨江路88号，地铁1/6号线小什字站",
+            "best_season": "全年",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "磁器口古镇",
+            "city": "重庆",
+            "category": "历史文化",
+            "rating": 4.2,
+            "review_count": 43500,
+            "avg_visit_time": 2.5,
+            "ticket_price": 0,
+            "description": "千年古镇，重庆缩影，石板路和老茶馆保留了老重庆风貌",
+            "walking_intensity": "中",
+            "reviews": [
+                "陈麻花一定要买",
+                "主街人太多，旁边小巷更有味道",
+                "火锅底料可以在这里买",
+                "建议上午去，人少一些"
+            ],
+            "location_hint": "重庆市沙坪坝区磁器口，地铁1号线磁器口站",
+            "best_season": "全年",
+            "holiday_crowd_level": "极高"
+        },
+        {
+            "name": "长江索道",
+            "city": "重庆",
+            "category": "自然风光",
+            "rating": 4.4,
+            "review_count": 39800,
+            "avg_visit_time": 0.5,
+            "ticket_price": 20,
+            "description": "横跨长江的空中走廊，体验重庆独特的山城交通，江景壮观",
+            "walking_intensity": "低",
+            "reviews": [
+                "排队时间长，建议早去",
+                "往返票更划算",
+                "夜景更美但人更多",
+                "坐一次就够了，景色确实好"
+            ],
+            "location_hint": "重庆市渝中区新华路153号，地铁1/6号线小什字站",
+            "best_season": "全年",
+            "holiday_crowd_level": "高"
+        },
+        {
+            "name": "解放碑",
+            "city": "重庆",
+            "category": "购物",
+            "rating": 4.3,
+            "review_count": 51200,
+            "avg_visit_time": 2.0,
+            "ticket_price": 0,
+            "description": "重庆的城市中心标志，周边是繁华的商业区和美食聚集地",
+            "walking_intensity": "低",
+            "reviews": [
+                "周围商场很多，购物方便",
+                "好吃的火锅店特别多",
+                "步行可达洪崖洞和十八梯",
+                "八一路好吃街就在旁边"
+            ],
+            "location_hint": "重庆市渝中区民族路，地铁1/2号线较场口站",
+            "best_season": "全年",
+            "holiday_crowd_level": "高"
+        }
+    ]
+}

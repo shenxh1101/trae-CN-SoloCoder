@@ -1,0 +1,26 @@
+{
+  "paper_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+  "methods": [
+    "Masked Language Modeling (MLM)",
+    "Next Sentence Prediction (NSP)",
+    "Transformer Encoder",
+    "Bidirectional Attention",
+    "Fine-tuning Paradigm"
+  ],
+  "datasets": [
+    "GLUE Benchmark",
+    "MultiNLI",
+    "SQuAD v1.1",
+    "SQuAD v2.0",
+    "CoNLL-2003 NER"
+  ],
+  "keywords": [
+    "BERT",
+    "Pre-training",
+    "Transformers",
+    "Natural Language Processing",
+    "Bidirectional Representations",
+    "Masked Language Model"
+  ],
+  "confidence": 0.96
+}

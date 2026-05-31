@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI简历关键词优化分析工具 - ATS友好</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 AI简历关键词优化分析工具</h1>
+            <p class="subtitle">针对ATS系统的简历智能分析与优化建议</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="single">单份简历分析</button>
+            <button class="tab-btn" data-tab="batch">批量分析排名</button>
+            <button class="tab-btn" data-tab="snippets">优秀简历片段</button>
+        </div>
+
+        <div id="single" class="tab-content active">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="job_description">📋 岗位描述（自动提取关键词）</label>
+                    <textarea id="job_description" rows="8" placeholder="请粘贴岗位描述..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>📄 简历输入</label>
+                    <div class="resume-input-options">
+                        <button type="button" class="btn-secondary" id="uploadBtn">上传简历文件 (PDF/DOCX/TXT)</button>
+                        <input type="file" id="resume_file" accept=".pdf,.docx,.txt" style="display: none;">
+                        <span class="file-name" id="fileName">未选择文件</span>
+                    </div>
+                    <p class="divider-text">或粘贴简历文本</p>
+                    <textarea id="resume_text" rows="10" placeholder="请粘贴简历文本..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="custom_weights">⚖️ 自定义关键词权重（可选，每行一个，格式：关键词:权重值）</label>
+                    <textarea id="custom_weights" rows="4" placeholder="例如：
+Python: 2
+Java: 1.5
+数据分析: 2"></textarea>
+                </div>
+
+                <button type="button" class="btn-primary" id="analyzeBtn">开始分析</button>
+            </div>
+
+            <div id="results" class="results-section" style="display: none;">
+                <div class="score-card">
+                    <div class="score-item">
+                        <div class="score-label">ATS评分</div>
+                        <div class="score-value" id="atsScore">--</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">关键词覆盖率</div>
+                        <div class="score-value" id="coverage">--</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">通过概率</div>
+                        <div class="score-value" id="passProb">--</div>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="results-column">
+                        <div class="card">
+                            <h3>🔑 关键词匹配详情</h3>
+                            <div class="keyword-list" id="keywordDetails"></div>
+                        </div>
+
+                        <div class="card">
+                            <h3>💡 优化建议</h3>
+                            <div class="suggestions-list" id="suggestions"></div>
+                        </div>
+
+                        <div class="card">
+                            <h3>⚠️ 格式问题检测</h3>
+                            <div class="format-issues" id="formatIssues"></div>
+                        </div>
+                    </div>
+
+                    <div class="results-column">
+                        <div class="card">
+                            <h3>❌ 缺失关键词及示例</h3>
+                            <div class="missing-keywords" id="missingKeywords"></div>
+                        </div>
+
+                        <div class="card">
+                            <h3>✨ 动词优化建议</h3>
+                            <div class="verb-suggestions" id="verbSuggestions"></div>
+                        </div>
+
+                        <div class="card">
+                            <h3>📊 岗位关键词云</h3>
+                            <div class="keyword-cloud" id="keywordCloud"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-secondary" id="exportReportBtn">导出分析报告</button>
+            </div>
+        </div>
+
+        <div id="batch" class="tab-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="batch_job_description">📋 岗位描述</label>
+                    <textarea id="batch_job_description" rows="6" placeholder="请粘贴岗位描述..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>📁 批量上传简历（可多选）</label>
+                    <div class="resume-input-options">
+                        <button type="button" class="btn-secondary" id="batchUploadBtn">选择多份简历文件</button>
+                        <input type="file" id="batch_resume_files" accept=".pdf,.docx,.txt" multiple style="display: none;">
+                    </div>
+                    <div class="file-list" id="batchFileList"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="batch_custom_weights">⚖️ 自定义关键词权重（可选）</label>
+                    <textarea id="batch_custom_weights" rows="3" placeholder="关键词:权重值，每行一个"></textarea>
+                </div>
+
+                <button type="button" class="btn-primary" id="batchAnalyzeBtn">开始批量分析</button>
+            </div>
+
+            <div id="batchResults" class="results-section" style="display: none;">
+                <div class="card">
+                    <h3>🏆 简历排名</h3>
+                    <div class="batch-summary" id="batchSummary"></div>
+                    <table class="ranking-table" id="rankingTable"></table>
+                    <button type="button" class="btn-secondary" id="exportCsvBtn">导出CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="snippets" class="tab-content">
+            <div class="snippets-section">
+                <div class="snippet-controls">
+                    <select id="snippetCategory">
+                        <option value="">全部分类</option>
+                    </select>
+                    <input type="text" id="snippetSearch" placeholder="搜索关键词...">
+                    <button type="button" class="btn-secondary" id="addSnippetBtn">+ 添加片段</button>
+                </div>
+
+                <div class="snippets-list" id="snippetsList"></div>
+            </div>
+
+            <div id="addSnippetModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h3>添加优秀简历片段</h3>
+                    <div class="input-group">
+                        <label>分类</label>
+                        <input type="text" id="newSnippetCategory" placeholder="例如：技术项目经验">
+                    </div>
+                    <div class="input-group">
+                        <label>内容</label>
+                        <textarea id="newSnippetContent" rows="4" placeholder="请输入优秀的简历描述片段..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>关键词（逗号分隔）</label>
+                        <input type="text" id="newSnippetKeywords" placeholder="例如：Python, 数据分析, 机器学习">
+                    </div>
+                    <button type="button" class="btn-primary" id="saveSnippetBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>分析中，请稍候...</p>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

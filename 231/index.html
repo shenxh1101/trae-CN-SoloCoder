@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>梦幻城市 - AI天际线生成器</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { overflow: hidden; font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: #000; }
+#canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+#ui-panel {
+  position: fixed; top: 12px; left: 12px; z-index: 10;
+  width: 340px; max-height: calc(100vh - 24px);
+  background: rgba(10, 12, 28, 0.88);
+  backdrop-filter: blur(16px);
+  border-radius: 14px;
+  border: 1px solid rgba(100, 120, 255, 0.18);
+  color: #e0e4f0;
+  overflow-y: auto;
+  padding: 18px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,120,255,0.3) transparent;
+}
+#ui-panel::-webkit-scrollbar { width: 5px; }
+#ui-panel::-webkit-scrollbar-thumb { background: rgba(100,120,255,0.3); border-radius: 4px; }
+.panel-title {
+  font-size: 18px; font-weight: 700; text-align: center;
+  background: linear-gradient(135deg, #7b8cff, #c084fc, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 14px; letter-spacing: 2px;
+}
+.section { margin-bottom: 14px; }
+.section-label {
+  font-size: 12px; font-weight: 600; color: #8b92b8;
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+}
+textarea {
+  width: 100%; height: 80px; resize: vertical;
+  background: rgba(30, 34, 60, 0.7); border: 1px solid rgba(100,120,255,0.2);
+  border-radius: 8px; color: #e0e4f0; padding: 10px; font-size: 13px;
+  font-family: inherit; outline: none; transition: border-color 0.3s;
+}
+textarea:focus { border-color: rgba(120,140,255,0.5); }
+.slider-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.slider-row label { font-size: 12px; color: #a0a8c8; min-width: 70px; }
+.slider-row input[type="range"] {
+  flex: 1; -webkit-appearance: none; height: 4px;
+  background: rgba(100,120,255,0.25); border-radius: 2px; outline: none;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  background: #7b8cff; border-radius: 50%; cursor: pointer;
+}
+.slider-row .val { font-size: 12px; color: #7b8cff; min-width: 28px; text-align: right; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.btn {
+  padding: 7px 12px; border: none; border-radius: 7px;
+  font-size: 12px; font-family: inherit; cursor: pointer;
+  background: rgba(100,120,255,0.15); color: #b0b8e8;
+  border: 1px solid rgba(100,120,255,0.2); transition: all 0.25s;
+}
+.btn:hover { background: rgba(100,120,255,0.3); color: #fff; }
+.btn.active { background: rgba(100,120,255,0.4); color: #fff; border-color: rgba(100,120,255,0.5); }
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff; border: none; font-weight: 600;
+}
+.btn-primary:hover { opacity: 0.9; }
+.sentiment-box {
+  background: rgba(30, 34, 60, 0.6); border-radius: 8px;
+  padding: 10px; margin-top: 6px;
+}
+.sentiment-bar {
+  height: 6px; border-radius: 3px; margin: 6px 0;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ef4444);
+  position: relative;
+}
+.sentiment-indicator {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #fff; position: absolute; top: -2px;
+  transition: left 0.5s ease;
+}
+.sentiment-labels { display: flex; justify-content: space-between; font-size: 10px; color: #6b7280; }
+.sentiment-score { font-size: 20px; font-weight: 700; text-align: center; }
+.keywords { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.keyword-tag {
+  padding: 2px 8px; border-radius: 10px; font-size: 11px;
+  background: rgba(100,120,255,0.15); color: #a5b4fc;
+}
+.text-summary {
+  font-size: 12px; color: #9ca3af; margin-top: 6px;
+  line-height: 1.5; font-style: italic;
+}
+.toggle-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.toggle-row label { font-size: 12px; color: #a0a8c8; }
+.switch {
+  position: relative; width: 36px; height: 20px;
+  background: rgba(100,120,255,0.2); border-radius: 10px;
+  cursor: pointer; transition: background 0.3s;
+}
+.switch.on { background: rgba(99,102,241,0.6); }
+.switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #e0e4f0; transition: transform 0.3s;
+}
+.switch.on::after { transform: translateX(16px); }
+.hidden { display: none; }
+#loading-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #0a0c1c; z-index: 100;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #7b8cff; font-size: 16px;
+}
+.loader {
+  width: 40px; height: 40px; border: 3px solid rgba(100,120,255,0.2);
+  border-top-color: #7b8cff; border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#audio-indicator {
+  position: fixed; bottom: 16px; right: 16px; z-index: 10;
+  background: rgba(10,12,28,0.85); border-radius: 10px;
+  padding: 8px 14px; color: #7b8cff; font-size: 11px;
+  border: 1px solid rgba(100,120,255,0.15);
+}
+#audio-indicator .bar-container { display: flex; gap: 2px; margin-top: 4px; }
+#audio-indicator .bar {
+  width: 4px; background: #7b8cff; border-radius: 2px;
+  transition: height 0.1s; height: 4px;
+}
+#help-hint {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  z-index: 10; background: rgba(10,12,28,0.7); border-radius: 8px;
+  padding: 6px 14px; color: #6b7280; font-size: 11px;
+  pointer-events: none; opacity: 0.7;
+}
+.saved-list {
+  max-height: 120px; overflow-y: auto; background: rgba(20,24,40,0.6);
+  border-radius: 6px; margin-top: 4px;
+}
+.saved-item {
+  padding: 6px 8px; font-size: 11px; cursor: pointer;
+  border-bottom: 1px solid rgba(100,120,255,0.1);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.saved-item:hover { background: rgba(100,120,255,0.1); }
+.saved-item .del { color: #ef4444; opacity: 0.7; }
+.saved-item .del:hover { opacity: 1; }
+.status-msg {
+  font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-top: 4px;
+  background: rgba(34,197,94,0.15); color: #4ade80;
+}
+.status-msg.error { background: rgba(239,68,68,0.15); color: #f87171; }
+</style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div class="loader"></div>
+  <div id="loading-text">加载中...</div>
+</div>
+
+<div id="canvas-container"></div>
+
+<div id="ui-panel">
+  <div class="panel-title">🌃 梦幻城市天际线</div>
+
+  <div class="section">
+    <div class="section-label">📝 输入歌词或诗句</div>
+    <textarea id="text-input" placeholder="在此输入文字，驱动城市风格...&#10;例如：举头望明月，低头思故乡">夜空中最亮的星，能否听清那仰望的人心底的孤独和叹息</textarea>
+    <button class="btn btn-primary" id="btn-generate" style="width:100%;margin-top:8px;">🏗️ 生成城市</button>
+  </div>
+
+  <div class="section">
+    <div class="section-label">🎭 情感分析</div>
+    <div class="sentiment-box">
+      <div class="sentiment-score" id="sentiment-value">0.00</div>
+      <div class="sentiment-bar">
+        <div class="sentiment-indicator" id="sentiment-dot" style="left:50%"></div>
+      </div>
+      <div class="sentiment-labels"><span>😢 悲伤</span><span>😐 中性</span><span>🔥 激昂</span></div>
+      <div class="keywords" id="keywords-container"></div>
+      <div class="text-summary" id="text-summary"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">🎛️ 城市参数</div>
+    <div class="slider-row">
+      <label>建筑数量</label>
+      <input type="range" id="slider-count" min="20" max="300" value="100">
+      <span class="val" id="val-count">100</span>
+    </div>
+    <div class="slider-row">
+      <label>建筑密度</label>
+      <input type="range" id="slider-density" min="1" max="10" value="5">
+      <span class="val" id="val-density">5</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">✨ 效果控制</div>
+    <div class="toggle-row">
+      <label>生长动画</label>
+      <div class="switch" id="switch-growth"></div>
+    </div>
+    <div class="toggle-row">
+      <label>粒子车流</label>
+      <div class="switch on" id="switch-traffic"></div>
+    </div>
+    <div class="toggle-row">
+      <label>漂浮云朵</label>
+      <div class="switch on" id="switch-clouds"></div>
+    </div>
+    <div class="toggle-row">
+      <label>麦克风驱动</label>
+      <div class="switch" id="switch-mic"></div>
+    </div>
+    <div class="toggle-row">
+      <label>夜晚模式</label>
+      <div class="switch" id="switch-night"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">🔧 工具</div>
+    <div class="btn-row">
+      <button class="btn" id="btn-screenshot">📸 截图</button>
+      <button class="btn" id="btn-save">💾 保存到服务器</button>
+      <button class="btn" id="btn-load">📂 加载城市</button>
+      <button class="btn" id="btn-reset">🔄 重置</button>
+    </div>
+    <div id="status-message" class="status-msg hidden"></div>
+    <div id="saved-cities-list" class="saved-list hidden"></div>
+  </div>
+</div>
+
+<div id="audio-indicator" class="hidden">
+  🎤 麦克风音量
+  <div class="bar-container" id="audio-bars"></div>
+</div>
+
+<div id="help-hint">WASD 移动 | 鼠标拖拽旋转 | 滚轮缩放</div>
+
+<script>
+window.onerror = function(msg, url, line, col, error) {
+  var overlay = document.getElementById('loading-overlay');
+  var txt = document.getElementById('loading-text');
+  if (overlay && txt) {
+    txt.innerHTML = '初始化失败: ' + msg + '<br><small style="font-size:12px;margin-top:8px;display:block;">请检查网络连接和控制台</small>';
+    txt.style.color = '#ef4444';
+  }
+  console.error('Global error:', msg, url, line, col, error);
+};
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('Unhandled promise rejection:', e.reason);
+});
+</script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const SENTIMENT_DICT = {
+  positive: {
+    high: { value: 0.9, words: ['辉煌','壮丽','磅礴','雄伟','激昂','高耸','耸立','崛起','腾飞','飞翔','翱翔','灿烂','辉煌','炽热','烈火','燃烧','怒放','绽放','盛开','荣耀','胜利','凯歌','欢腾','奔腾','驰骋','纵横','豪迈','慷慨','振奋','鼓舞','昂扬','激越','澎湃','汹涌','壮观','震撼','惊叹','奇妙','绚烂','璀璨','闪耀','光芒','万丈','凌云','冲天','破浪','乘风','扶摇','直上','鹏程','万里','远大','宏伟','浩荡','浩瀚','巍峨','挺拔','傲立','屹立'] },
+    medium: { value: 0.5, words: ['温暖','阳光','明媚','希望','梦想','美好','幸福','快乐','喜悦','欢喜','欢快','欢欣','愉悦','高兴','开心','笑','微笑','光明','亮','明亮','晴朗','清澈','清新','春天','花开','绿','翠','青','蓝','金','银','星','月','虹','彩','绚','丽','秀','雅','美','佳','善','良','优','喜','庆','贺','赞','歌','舞','乐','甜','香','芬芳','柔和','温馨','恬静','宁静','和平','安详','祥和','瑞','祥','福','禄','寿','喜'] }
+  },
+  negative: {
+    high: { value: -0.9, words: ['绝望','崩溃','毁灭','死亡','悲惨','凄惨','痛不欲生','万念俱灰','生不如死','悲痛欲绝','撕心裂肺','肝肠寸断','哀鸿遍野','家破人亡','妻离子散','颠沛流离','血泪','泣不成声','恸哭','号啕'] },
+    medium: { value: -0.5, words: ['悲伤','忧伤','凄凉','萧瑟','孤独','寂寞','落寞','凄清','冷清','荒凉','苍凉','暗淡','灰暗','阴沉','沉闷','压抑','郁闷','忧愁','忧郁','怅惘','惆怅','哀愁','哀伤','悲痛','痛苦','苦','泪','哭','叹','愁','恨','怨','悲','凉','寒','冷','冰','雪','霜','风','雨','雾','暮','夜','暗','黑','落','残','破','碎','散','离','别','逝','远','孤','独','单','零','飘','流','浪','漂','泊','沦','陷','沉','坠','跌','落','亡','消','逝','去','失','空','虚','无','荒','废','灭','寂','默','沉默','无言','失语','低落','低沉','消沉','颓废','颓丧','萎靡','不振','黯然','怅然','怆然','凄然','潸然','泫然','惘然','怅','惘','彷徨','徘徊','踌躇','犹豫','迟疑','迷茫','茫然','困惑','迷惘','迷失'] }
+  },
+  structural: {
+    high: { value: 0.7, words: ['高','耸','塔','楼','尖','峰','顶','巅','上','升','飞','扬','举','抬','挺','拔','立','竖','直','仰'] },
+    low: { value: -0.6, words: ['低','矮','平','伏','沉','落','降','下','压','弯','垂','坠','塌','倒','俯','躬','屈','跪','趴','卧'] }
+  },
+  visual: {
+    bright: { value: 0.6, words: ['闪烁','闪','亮','光','明','辉','耀','灿','炫','彩','霓','虹','灯','星','火','焰','芒','闪亮','闪耀','发光','明亮','照耀','璀璨','晶莹','透亮','金光','银光','流光','华光','荧光','磷光','星光','月光','日光','天光','曙光','晨光','霞光','极光'] },
+    dim: { value: -0.5, words: ['暗','黑','阴','幽','冥','昏','暮','夜','朦','胧','模糊','黯','淡','隐','沉','灰','浊','雾','霾','蒙','蔽','遮','掩'] }
+  }
+};
+
+function analyzeSentiment(text) {
+  if (!text || text.trim().length === 0) return { score: 0, keywords: [], summary: '未输入文字' };
+
+  let totalScore = 0;
+  let matchCount = 0;
+  const foundKeywords = [];
+
+  for (const categoryKey in SENTIMENT_DICT) {
+    const category = SENTIMENT_DICT[categoryKey];
+    for (const levelKey in category) {
+      const levelData = category[levelKey];
+      if (levelData && levelData.words) {
+        for (const word of levelData.words) {
+          if (text.indexOf(word) !== -1) {
+            totalScore += levelData.value;
+            matchCount++;
+            if (!foundKeywords.includes(word)) {
+              foundKeywords.push(word);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  let score = matchCount > 0 ? totalScore / Math.sqrt(matchCount) : 0;
+  score = Math.max(-1, Math.min(1, score));
+
+  let summary = '';
+  if (score > 0.5) summary = '文字情感激昂向上，城市将高楼林立、暖光闪耀';
+  else if (score > 0.2) summary = '文字情感温和正面，城市风格明亮温暖';
+  else if (score > -0.2) summary = '文字情感平和中性，城市风格均衡';
+  else if (score > -0.5) summary = '文字情感低沉忧郁，城市偏冷色调';
+  else summary = '文字情感悲伤沉重，建筑低矮、冷色笼罩';
+
+  return { score, keywords: foundKeywords.slice(0, 10), summary };
+}
+
+let scene, camera, renderer, controls;
+let buildingMeshes = [];
+let trafficParticles, cloudGroup;
+let groundMesh, gridHelper;
+let nightMode = false;
+let growthAnimActive = false;
+let growthProgress = 1;
+let micActive = false;
+let micAudioContext, micAnalyser, micDataArray, micStream, micSource;
+let audioFlickerIntensity = 0;
+
+const keysPressed = {};
+const moveSpeed = 0.5;
+const clock = new THREE.Clock();
+
+let cityData = {
+  text: '', sentiment: 0, keywords: [],
+  buildingCount: 100, density: 5, buildings: []
+};
+
+function init() {
+  const loadingText = document.getElementById('loading-text');
+  if (loadingText) loadingText.textContent = '初始化 Three.js...';
+
+  try {
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.position.set(60, 40, 80);
+
+    renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      preserveDrawingBuffer: true,
+      powerPreference: 'high-performance',
+      alpha: false
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    
+    const container = document.getElementById('canvas-container');
+    if (container) container.appendChild(renderer.domElement);
+
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.maxPolarAngle = Math.PI * 0.48;
+    controls.minDistance = 10;
+    controls.maxDistance = 300;
+    controls.target.set(0, 10, 0);
+
+    setDayScene();
+
+    const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+    ambientLight.name = 'ambient';
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffeedd, 1.2);
+    dirLight.name = 'dirLight';
+    dirLight.position.set(50, 80, 30);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(2048, 2048);
+    dirLight.shadow.camera.left = -100;
+    dirLight.shadow.camera.right = 100;
+    dirLight.shadow.camera.top = 100;
+    dirLight.shadow.camera.bottom = -100;
+    scene.add(dirLight);
+
+    const hemiLight = new THREE.HemisphereLight(0x8888cc, 0x444422, 0.4);
+    hemiLight.name = 'hemiLight';
+    scene.add(hemiLight);
+
+    createGround();
+    createTrafficParticles();
+    createClouds();
+
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+      overlay.style.transition = 'opacity 0.5s';
+      overlay.style.opacity = '0';
+      setTimeout(() => { overlay.style.display = 'none'; }, 500);
+    }
+
+    generateCity();
+    setupUI();
+    animate();
+
+    window.THREE = THREE;
+    window.scene = scene;
+    window.camera = camera;
+    window.renderer = renderer;
+    window.controls = controls;
+    window.buildingMeshes = buildingMeshes;
+    window.trafficParticles = trafficParticles;
+    window.cloudGroup = cloudGroup;
+    window.cityData = cityData;
+    window.nightMode = () => nightMode;
+    window.micActive = () => micActive;
+    window.__pageErrors = [];
+    window.onerror = function(msg, url, line, col, err) {
+      window.__pageErrors.push({ msg, url, line, col, err: err ? err.message : '' });
+    };
+
+  } catch (e) {
+    console.error('Init error:', e);
+    const loadingText = document.getElementById('loading-text');
+    if (loadingText) {
+      loadingText.innerHTML = '初始化错误: ' + e.message + '<br><small style="font-size:12px;margin-top:8px;display:block;">请刷新页面重试</small>';
+      loadingText.style.color = '#ef4444';
+    }
+    throw e;
+  }
+}
+
+function setDayScene() {
+  scene.background = new THREE.Color(0x87CEEB);
+  scene.fog = new THREE.FogExp2(0x87CEEB, 0.003);
+}
+
+function setNightScene() {
+  scene.background = new THREE.Color(0x0a0a1a);
+  scene.fog = new THREE.FogExp2(0x0a0a1a, 0.005);
+}
+
+function createGround() {
+  const groundGeo = new THREE.PlaneGeometry(400, 400);
+  const groundMat = new THREE.MeshStandardMaterial({
+    color: 0x2a2a3a,
+    roughness: 0.9,
+    metalness: 0.1
+  });
+  groundMesh = new THREE.Mesh(groundGeo, groundMat);
+  groundMesh.rotation.x = -Math.PI / 2;
+  groundMesh.receiveShadow = true;
+  scene.add(groundMesh);
+
+  gridHelper = new THREE.GridHelper(400, 80, 0x333355, 0x222244);
+  gridHelper.position.y = 0.05;
+  scene.add(gridHelper);
+}
+
+function getSentimentColor(score) {
+  if (score > 0.5) return new THREE.Color().setHSL(0.08 + score * 0.04, 0.7, 0.5);
+  if (score > 0.2) return new THREE.Color().setHSL(0.12, 0.5, 0.55);
+  if (score > -0.2) return new THREE.Color().setHSL(0.58, 0.4, 0.5);
+  if (score > -0.5) return new THREE.Color().setHSL(0.6, 0.5, 0.4);
+  return new THREE.Color().setHSL(0.65, 0.6, 0.3);
+}
+
+function getEmissiveColor(score) {
+  if (score > 0.5) return new THREE.Color(0xff8844);
+  if (score > 0.2) return new THREE.Color(0xffaa66);
+  if (score > -0.2) return new THREE.Color(0x6688cc);
+  if (score > -0.5) return new THREE.Color(0x4466aa);
+  return new THREE.Color(0x334488);
+}
+
+function createBuildingTexture(score, isNight) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+
+  const baseColor = getSentimentColor(score);
+  ctx.fillStyle = `rgb(${Math.floor(baseColor.r * 180)},${Math.floor(baseColor.g * 180)},${Math.floor(baseColor.b * 180)})`;
+  ctx.fillRect(0, 0, 64, 256);
+
+  const windowRows = 20;
+  const windowCols = 4;
+  const ww = 8;
+  const wh = 8;
+  const gapX = (64 - windowCols * ww) / (windowCols + 1);
+  const gapY = (256 - windowRows * wh) / (windowRows + 1);
+
+  for (let r = 0; r < windowRows; r++) {
+    for (let c = 0; c < windowCols; c++) {
+      const x = gapX + c * (ww + gapX);
+      const y = gapY + r * (wh + gapY);
+      if (isNight && Math.random() > 0.35) {
+        const warmth = Math.random();
+        const wr = Math.floor(200 + warmth * 55);
+        const wg = Math.floor(180 + warmth * 50);
+        const wb = Math.floor(80 + warmth * 40);
+        ctx.fillStyle = `rgba(${wr},${wg},${wb},${0.7 + Math.random() * 0.3})`;
+        ctx.fillRect(x, y, ww, wh);
+        ctx.fillStyle = `rgba(255,255,200,0.15)`;
+        ctx.fillRect(x - 1, y - 1, ww + 2, wh + 2);
+      } else {
+        ctx.fillStyle = `rgba(20,25,40,0.6)`;
+        ctx.fillRect(x, y, ww, wh);
+      }
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function generateCity() {
+  const text = document.getElementById('text-input').value;
+  const result = analyzeSentiment(text);
+  cityData.text = text;
+  cityData.sentiment = result.score;
+  cityData.keywords = result.keywords;
+
+  updateSentimentUI(result);
+
+  clearBuildings();
+
+  const count = parseInt(document.getElementById('slider-count').value);
+  const density = parseInt(document.getElementById('slider-density').value);
+  cityData.buildingCount = count;
+  cityData.density = density;
+
+  const spread = Math.max(40, 180 - density * 12);
+  const score = result.score;
+
+  for (let i = 0; i < count; i++) {
+    const x = (Math.random() - 0.5) * spread;
+    const z = (Math.random() - 0.5) * spread;
+
+    let baseHeight;
+    if (score > 0.5) baseHeight = 15 + Math.random() * 45;
+    else if (score > 0.2) baseHeight = 10 + Math.random() * 30;
+    else if (score > -0.2) baseHeight = 8 + Math.random() * 20;
+    else if (score > -0.5) baseHeight = 5 + Math.random() * 15;
+    else baseHeight = 3 + Math.random() * 10;
+
+    const keywordMod = getKeywordHeightMod(result.keywords);
+    baseHeight *= keywordMod;
+
+    const widthX = 3 + Math.random() * 6;
+    const widthZ = 3 + Math.random() * 6;
+    const height = Math.max(2, baseHeight);
+
+    const isNight = nightMode;
+    const texture = createBuildingTexture(score, isNight);
+    const baseColor = getSentimentColor(score);
+    const emissive = isNight ? getEmissiveColor(score) : new THREE.Color(0x000000);
+
+    const geo = new THREE.BoxGeometry(widthX, height, widthZ);
+    const mat = new THREE.MeshStandardMaterial({
+      map: texture,
+      color: baseColor,
+      emissive: emissive,
+      emissiveIntensity: isNight ? 0.3 : 0,
+      roughness: 0.7,
+      metalness: 0.3
+    });
+
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, height / 2, z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData = {
+      isBuilding: true,
+      targetHeight: height,
+      currentHeight: growthAnimActive ? 0.01 : height,
+      widthX, widthZ,
+      originalColor: baseColor.clone(),
+      originalEmissive: emissive.clone(),
+      flickerPhase: Math.random() * Math.PI * 2,
+      growthOffset: Math.random() * 0.3
+    };
+
+    if (growthAnimActive) {
+      mesh.scale.y = 0.001;
+      mesh.position.y = 0.005;
+    }
+
+    scene.add(mesh);
+    buildingMeshes.push(mesh);
+
+    cityData.buildings.push({
+      x, z, height, widthX, widthZ, score
+    });
+
+    if (score > 0.3 && Math.random() > 0.6) {
+      const antennaGeo = new THREE.CylinderGeometry(0.1, 0.15, height * 0.15, 6);
+      const antennaMat = new THREE.MeshStandardMaterial({ color: 0x888899, metalness: 0.8 });
+      const antenna = new THREE.Mesh(antennaGeo, antennaMat);
+      antenna.position.set(x, height + height * 0.075, z);
+      antenna.userData = {
+        isAntenna: true,
+        parentBuilding: mesh,
+        baseHeight: height
+      };
+      if (growthAnimActive) {
+        antenna.visible = false;
+      }
+      scene.add(antenna);
+      buildingMeshes.push(antenna);
+    }
+  }
+
+  if (growthAnimActive) {
+    growthProgress = 0;
+  }
+
+  updateLighting();
+}
+
+function getKeywordHeightMod(keywords) {
+  let mod = 1.0;
+  const upWords = ['高耸','耸立','巍峨','雄伟','壮丽','飞','翔','腾','升','崛起','高','峰','塔','楼','尖','顶','巅'];
+  const downWords = ['低','矮','沉','落','降','压','弯','垂','伏'];
+  for (const kw of keywords) {
+    if (upWords.indexOf(kw) !== -1) mod *= 1.3;
+    if (downWords.indexOf(kw) !== -1) mod *= 0.7;
+  }
+  return mod;
+}
+
+function clearBuildings() {
+  for (let i = buildingMeshes.length - 1; i >= 0; i--) {
+    const mesh = buildingMeshes[i];
+    scene.remove(mesh);
+    if (mesh.geometry) mesh.geometry.dispose();
+    if (mesh.material) {
+      if (mesh.material.map) mesh.material.map.dispose();
+      mesh.material.dispose();
+    }
+  }
+  buildingMeshes = [];
+  cityData.buildings = [];
+}
+
+function updateLighting() {
+  const ambient = scene.getObjectByName('ambient');
+  const dirLight = scene.getObjectByName('dirLight');
+  const hemiLight = scene.getObjectByName('hemiLight');
+
+  if (nightMode) {
+    if (ambient) { ambient.color.set(0x101025); ambient.intensity = 0.3; }
+    if (dirLight) { dirLight.color.set(0x334488); dirLight.intensity = 0.2; }
+    if (hemiLight) { hemiLight.color.set(0x111133); hemiLight.groundColor.set(0x080810); hemiLight.intensity = 0.2; }
+    renderer.toneMappingExposure = 0.8;
+  } else {
+    if (ambient) { ambient.color.set(0x404060); ambient.intensity = 0.6; }
+    if (dirLight) { dirLight.color.set(0xffeedd); dirLight.intensity = 1.2; }
+    if (hemiLight) { hemiLight.color.set(0x8888cc); hemiLight.groundColor.set(0x444422); hemiLight.intensity = 0.4; }
+    renderer.toneMappingExposure = 1.0;
+  }
+}
+
+function updateSentimentUI(result) {
+  const scoreEl = document.getElementById('sentiment-value');
+  const dotEl = document.getElementById('sentiment-dot');
+  const kwEl = document.getElementById('keywords-container');
+  const sumEl = document.getElementById('text-summary');
+
+  if (scoreEl) {
+    scoreEl.textContent = result.score.toFixed(2);
+    const hue = result.score > 0 ? `0, ${60 + result.score * 40}%, 55%` :
+                result.score < 0 ? `${220 - Math.abs(result.score) * 30}, 60%, 50%` : `0, 0%, 70%`;
+    scoreEl.style.color = `hsl(${hue})`;
+  }
+
+  if (dotEl) {
+    const pct = ((result.score + 1) / 2) * 100;
+    dotEl.style.left = `${Math.max(0, Math.min(92, pct - 4))}%`;
+  }
+
+  if (kwEl) {
+    kwEl.innerHTML = '';
+    result.keywords.forEach(kw => {
+      const tag = document.createElement('span');
+      tag.className = 'keyword-tag';
+      tag.textContent = kw;
+      kwEl.appendChild(tag);
+    });
+  }
+
+  if (sumEl) {
+    sumEl.textContent = result.summary;
+  }
+}
+
+function createTrafficParticles() {
+  const count = 300;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const directions = new Float32Array(count * 3);
+  const speeds = new Float32Array(count);
+
+  const lanes = [-60, -40, -20, 0, 20, 40, 60];
+
+  for (let i = 0; i < count; i++) {
+    const laneIdx = Math.floor(Math.random() * lanes.length);
+    const lane = lanes[laneIdx];
+    const isHorizontal = Math.random() > 0.5;
+
+    if (isHorizontal) {
+      positions[i * 3] = (Math.random() - 0.5) * 180;
+      positions[i * 3 + 1] = 0.4 + Math.random() * 0.3;
+      positions[i * 3 + 2] = lane + (Math.random() - 0.5) * 1.5;
+      directions[i * 3] = lane > 0 ? 1 : -1;
+      directions[i * 3 + 1] = 0;
+      directions[i * 3 + 2] = 0;
+    } else {
+      positions[i * 3] = lane + (Math.random() - 0.5) * 1.5;
+      positions[i * 3 + 1] = 0.4 + Math.random() * 0.3;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 180;
+      directions[i * 3] = 0;
+      directions[i * 3 + 1] = 0;
+      directions[i * 3 + 2] = lane > 0 ? 1 : -1;
+    }
+
+    const type = Math.random();
+    if (type < 0.5) {
+      colors[i * 3] = 1; colors[i * 3 + 1] = 0.3; colors[i * 3 + 2] = 0.2;
+    } else {
+      colors[i * 3] = 0.3; colors[i * 3 + 1] = 0.6; colors[i * 3 + 2] = 1;
+    }
+
+    speeds[i] = 8 + Math.random() * 12;
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geo.userData = { directions: directions, speeds: speeds };
+
+  const mat = new THREE.PointsMaterial({
+    size: 1.8,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.9,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true
+  });
+
+  trafficParticles = new THREE.Points(geo, mat);
+  trafficParticles.name = 'traffic';
+  scene.add(trafficParticles);
+}
+
+function createClouds() {
+  cloudGroup = new THREE.Group();
+  cloudGroup.name = 'clouds';
+  const cloudCount = 12;
+  for (let i = 0; i < cloudCount; i++) {
+    const cloud = createSingleCloud();
+    cloud.position.set(
+      (Math.random() - 0.5) * 300,
+      35 + Math.random() * 30,
+      (Math.random() - 0.5) * 300
+    );
+    cloud.userData.speed = 0.02 + Math.random() * 0.03;
+    cloud.userData.phase = Math.random() * Math.PI * 2;
+    cloud.userData.radius = 80 + Math.random() * 40;
+    cloudGroup.add(cloud);
+  }
+  scene.add(cloudGroup);
+}
+
+function createSingleCloud() {
+  const group = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: nightMode ? 0.15 : 0.7,
+    roughness: 1,
+    metalness: 0,
+    depthWrite: false
+  });
+  const puffs = 4 + Math.floor(Math.random() * 4);
+  for (let i = 0; i < puffs; i++) {
+    const r = Math.max(0.8, 1.5 + Math.random() * 2.5);
+    const geo = new THREE.SphereGeometry(r, 8, 6);
+    const puff = new THREE.Mesh(geo, mat);
+    puff.position.set(
+      (Math.random() - 0.5) * 7,
+      (Math.random() - 0.5) * 1.5,
+      (Math.random() - 0.5) * 3.5
+    );
+    puff.scale.y = 0.4 + Math.random() * 0.3;
+    group.add(puff);
+  }
+  return group;
+}
+
+function toggleTraffic(show) {
+  if (trafficParticles) trafficParticles.visible = show;
+}
+
+function toggleClouds(show) {
+  if (cloudGroup) cloudGroup.visible = show;
+}
+
+function toggleNightMode(on) {
+  nightMode = on;
+  if (on) {
+    setNightScene();
+    groundMesh.material.color.set(0x111122);
+  } else {
+    setDayScene();
+    groundMesh.material.color.set(0x2a2a3a);
+  }
+  updateLighting();
+
+  for (const mesh of buildingMeshes) {
+    if (!mesh.userData.isBuilding) continue;
+    if (mesh.material && mesh.material.map) {
+      mesh.material.map.dispose();
+    }
+    const score = cityData.sentiment;
+    const texture = createBuildingTexture(score, on);
+    mesh.material.map = texture;
+    mesh.material.emissive = on ? getEmissiveColor(score) : new THREE.Color(0x000000);
+    mesh.material.emissiveIntensity = on ? 0.3 : 0;
+    mesh.material.needsUpdate = true;
+  }
+
+  if (cloudGroup) {
+    cloudGroup.traverse(child => {
+      if (child.isMesh) {
+        child.material.opacity = on ? 0.15 : 0.7;
+      }
+    });
+  }
+}
+
+async function startMicrophone() {
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('浏览器不支持麦克风访问');
+    }
+
+    micStream = await navigator.mediaDevices.getUserMedia({ 
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      } 
+    });
+
+    micAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (micAudioContext.state === 'suspended') {
+      await micAudioContext.resume();
+    }
+
+    micSource = micAudioContext.createMediaStreamSource(micStream);
+    micAnalyser = micAudioContext.createAnalyser();
+    micAnalyser.fftSize = 128;
+    micAnalyser.smoothingTimeConstant = 0.7;
+    micSource.connect(micAnalyser);
+    micDataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+    micActive = true;
+
+    const indicator = document.getElementById('audio-indicator');
+    if (indicator) indicator.classList.remove('hidden');
+    initAudioBars();
+
+    showStatus('麦克风已启动', false);
+  } catch (e) {
+    console.warn('麦克风访问失败:', e);
+    micActive = false;
+    const sw = document.getElementById('switch-mic');
+    if (sw) sw.classList.remove('on');
+    showStatus('麦克风启动失败: ' + e.message, true);
+  }
+}
+
+function stopMicrophone() {
+  if (micStream) {
+    micStream.getTracks().forEach(t => t.stop());
+    micStream = null;
+  }
+  if (micSource) {
+    micSource.disconnect();
+    micSource = null;
+  }
+  if (micAudioContext) {
+    micAudioContext.close();
+    micAudioContext = null;
+  }
+  micActive = false;
+  micAnalyser = null;
+  audioFlickerIntensity = 0;
+  const indicator = document.getElementById('audio-indicator');
+  if (indicator) indicator.classList.add('hidden');
+}
+
+function initAudioBars() {
+  const container = document.getElementById('audio-bars');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    container.appendChild(bar);
+  }
+}
+
+function updateAudioBars() {
+  if (!micActive || !micAnalyser || !micDataArray) return;
+  
+  micAnalyser.getByteFrequencyData(micDataArray);
+  const bars = document.querySelectorAll('#audio-bars .bar');
+  const step = Math.floor(micDataArray.length / bars.length);
+  let total = 0;
+  
+  bars.forEach((bar, i) => {
+    const val = micDataArray[i * step] || 0;
+    const h = Math.max(4, (val / 255) * 30);
+    bar.style.height = h + 'px';
+    total += val;
+  });
+  
+  audioFlickerIntensity = total / (bars.length * 255);
+}
+
+function updateGrowthAnimation(delta) {
+  if (!growthAnimActive || growthProgress >= 1) return;
+
+  growthProgress = Math.min(1, growthProgress + delta * 0.8);
+
+  for (const mesh of buildingMeshes) {
+    if (mesh.userData.isBuilding) {
+      const offset = mesh.userData.growthOffset || 0;
+      const progress = Math.max(0, Math.min(1, (growthProgress - offset) / (1 - offset)));
+      const eased = 1 - Math.pow(1 - progress, 3);
+      mesh.scale.y = eased;
+      mesh.position.y = (mesh.userData.targetHeight * eased) / 2;
+    } else if (mesh.userData.isAntenna) {
+      const parent = mesh.userData.parentBuilding;
+      if (parent && parent.scale.y > 0.9) {
+        mesh.visible = true;
+        mesh.position.y = parent.position.y * 2 + mesh.userData.baseHeight * 0.075;
+      }
+    }
+  }
+}
+
+function updateTraffic(delta, time) {
+  if (!trafficParticles || !trafficParticles.visible) return;
+  const pos = trafficParticles.geometry.attributes.position;
+  const dirs = trafficParticles.geometry.userData.directions;
+  const speeds = trafficParticles.geometry.userData.speeds;
+  
+  const bound = 95;
+  
+  for (let i = 0; i < pos.count; i++) {
+    let x = pos.getX(i);
+    let y = pos.getY(i);
+    let z = pos.getZ(i);
+
+    const dx = dirs[i * 3];
+    const dz = dirs[i * 3 + 2];
+    const s = speeds[i] * delta;
+
+    x += dx * s;
+    z += dz * s;
+
+    if (x > bound) x = -bound;
+    if (x < -bound) x = bound;
+    if (z > bound) z = -bound;
+    if (z < -bound) z = bound;
+
+    pos.setXYZ(i, x, y, z);
+  }
+  pos.needsUpdate = true;
+}
+
+function updateClouds(time) {
+  if (!cloudGroup || !cloudGroup.visible) return;
+  cloudGroup.children.forEach(cloud => {
+    const t = time * cloud.userData.speed + cloud.userData.phase;
+    cloud.position.x = Math.cos(t) * cloud.userData.radius;
+    cloud.position.z = Math.sin(t * 0.7) * cloud.userData.radius * 0.6;
+  });
+}
+
+function updateBuildingFlicker(time) {
+  if (!nightMode && audioFlickerIntensity < 0.01) return;
+
+  for (const mesh of buildingMeshes) {
+    if (!mesh.userData.isBuilding || !mesh.material) continue;
+    const phase = mesh.userData.flickerPhase || 0;
+
+    if (micActive && audioFlickerIntensity > 0.05) {
+      const flicker = Math.sin(time * 8 + phase) * audioFlickerIntensity;
+      mesh.material.emissiveIntensity = nightMode
+        ? Math.max(0, 0.3 + flicker * 1.5)
+        : Math.max(0, flicker * 0.5);
+    } else if (nightMode) {
+      const gentle = Math.sin(time * 0.8 + phase) * 0.05;
+      mesh.material.emissiveIntensity = 0.3 + gentle;
+    }
+  }
+}
+
+function updateCameraMovement(delta) {
+  const speed = moveSpeed * delta * 60;
+  const forward = new THREE.Vector3();
+  camera.getWorldDirection(forward);
+  forward.y = 0;
+  forward.normalize();
+  const right = new THREE.Vector3();
+  right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+  if (keysPressed['w'] || keysPressed['arrowup']) {
+    camera.position.addScaledVector(forward, speed);
+    controls.target.addScaledVector(forward, speed);
+  }
+  if (keysPressed['s'] || keysPressed['arrowdown']) {
+    camera.position.addScaledVector(forward, -speed);
+    controls.target.addScaledVector(forward, -speed);
+  }
+  if (keysPressed['a'] || keysPressed['arrowleft']) {
+    camera.position.addScaledVector(right, -speed);
+    controls.target.addScaledVector(right, -speed);
+  }
+  if (keysPressed['d'] || keysPressed['arrowright']) {
+    camera.position.addScaledVector(right, speed);
+    controls.target.addScaledVector(right, speed);
+  }
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  
+  try {
+    const delta = Math.min(0.1, clock.getDelta());
+    const time = clock.getElapsedTime();
+
+    updateCameraMovement(delta);
+    updateGrowthAnimation(delta);
+    updateTraffic(delta, time);
+    updateClouds(time);
+    updateBuildingFlicker(time);
+
+    if (micActive) updateAudioBars();
+
+    controls.update();
+    renderer.render(scene, camera);
+  } catch (e) {
+    console.error('Animation error:', e);
+  }
+}
+
+function takeScreenshot() {
+  try {
+    renderer.render(scene, camera);
+    const dataUrl = renderer.domElement.toDataURL('image/png', 1.0);
+    const link = document.createElement('a');
+    link.download = `dreamcity_${Date.now()}.png`;
+    link.href = dataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showStatus('截图已保存', false);
+  } catch (e) {
+    console.error('Screenshot error:', e);
+    showStatus('截图失败: ' + e.message, true);
+  }
+}
+
+async function saveCityToServer() {
+  const data = {
+    version: 1,
+    text: cityData.text,
+    sentiment: cityData.sentiment,
+    keywords: cityData.keywords,
+    buildingCount: cityData.buildingCount,
+    density: cityData.density,
+    nightMode: nightMode,
+    buildings: cityData.buildings,
+    camera: {
+      position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+      target: { x: controls.target.x, y: controls.target.y, z: controls.target.z }
+    }
+  };
+
+  try {
+    const response = await fetch('/api/cities', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const result = await response.json();
+    showStatus(`保存成功! ID: ${result.id}`, false);
+  } catch (e) {
+    console.error('Save error:', e);
+    showStatus('保存失败: ' + e.message, true);
+  }
+}
+
+async function loadCitiesList() {
+  const listEl = document.getElementById('saved-cities-list');
+  if (!listEl) return;
+
+  try {
+    const response = await fetch('/api/cities');
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const cities = await response.json();
+
+    listEl.innerHTML = '';
+    if (cities.length === 0) {
+      listEl.innerHTML = '<div class="saved-item" style="justify-content:center;color:#6b7280;">暂无保存的城市</div>';
+    } else {
+      cities.forEach(city => {
+        const item = document.createElement('div');
+        item.className = 'saved-item';
+        item.innerHTML = `
+          <span>${city.text.substring(0, 15)}${city.text.length > 15 ? '...' : ''} (${city.buildingCount}栋)</span>
+          <span class="del" data-id="${city.id}">×</span>
+        `;
+        item.onclick = (e) => {
+          if (e.target.classList.contains('del')) {
+            e.stopPropagation();
+            deleteCity(city.id);
+          } else {
+            loadCity(city.id);
+          }
+        };
+        listEl.appendChild(item);
+      });
+    }
+    listEl.classList.toggle('hidden', listEl.classList.contains('hidden') ? false : cities.length === 0);
+  } catch (e) {
+    console.error('Load list error:', e);
+    showStatus('加载列表失败: ' + e.message, true);
+  }
+}
+
+async function loadCity(id) {
+  try {
+    const response = await fetch(`/api/cities/${id}`);
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+
+    document.getElementById('text-input').value = data.text || '';
+    document.getElementById('slider-count').value = data.buildingCount || 100;
+    document.getElementById('val-count').textContent = data.buildingCount || 100;
+    document.getElementById('slider-density').value = data.density || 5;
+    document.getElementById('val-density').textContent = data.density || 5;
+
+    if (data.nightMode !== nightMode) {
+      nightMode = data.nightMode;
+      const sw = document.getElementById('switch-night');
+      if (nightMode) sw.classList.add('on');
+      else sw.classList.remove('on');
+      toggleNightMode(nightMode);
+    }
+
+    if (data.camera) {
+      camera.position.set(data.camera.position.x, data.camera.position.y, data.camera.position.z);
+      controls.target.set(data.camera.target.x, data.camera.target.y, data.camera.target.z);
+    }
+
+    generateCity();
+    showStatus(`城市已加载: ${data.text.substring(0, 20)}`, false);
+    document.getElementById('saved-cities-list').classList.add('hidden');
+  } catch (e) {
+    console.error('Load city error:', e);
+    showStatus('加载失败: ' + e.message, true);
+  }
+}
+
+async function deleteCity(id) {
+  try {
+    const response = await fetch(`/api/cities/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    loadCitiesList();
+    showStatus('已删除', false);
+  } catch (e) {
+    showStatus('删除失败: ' + e.message, true);
+  }
+}
+
+function showStatus(msg, isError) {
+  const el = document.getElementById('status-message');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'status-msg' + (isError ? ' error' : '');
+  el.classList.remove('hidden');
+  setTimeout(() => { el.classList.add('hidden'); }, 3000);
+}
+
+function setupUI() {
+  const btnGenerate = document.getElementById('btn-generate');
+  if (btnGenerate) {
+    btnGenerate.addEventListener('click', () => {
+      if (growthAnimActive) growthProgress = 0;
+      generateCity();
+    });
+  }
+
+  const sliderCount = document.getElementById('slider-count');
+  if (sliderCount) {
+    sliderCount.addEventListener('input', (e) => {
+      document.getElementById('val-count').textContent = e.target.value;
+    });
+  }
+
+  const sliderDensity = document.getElementById('slider-density');
+  if (sliderDensity) {
+    sliderDensity.addEventListener('input', (e) => {
+      document.getElementById('val-density').textContent = e.target.value;
+    });
+  }
+
+  const swGrowth = document.getElementById('switch-growth');
+  if (swGrowth) {
+    swGrowth.addEventListener('click', function() {
+      this.classList.toggle('on');
+      growthAnimActive = this.classList.contains('on');
+    });
+  }
+
+  const swTraffic = document.getElementById('switch-traffic');
+  if (swTraffic) {
+    swTraffic.addEventListener('click', function() {
+      this.classList.toggle('on');
+      toggleTraffic(this.classList.contains('on'));
+    });
+  }
+
+  const swClouds = document.getElementById('switch-clouds');
+  if (swClouds) {
+    swClouds.addEventListener('click', function() {
+      this.classList.toggle('on');
+      toggleClouds(this.classList.contains('on'));
+    });
+  }
+
+  const swMic = document.getElementById('switch-mic');
+  if (swMic) {
+    swMic.addEventListener('click', function() {
+      this.classList.toggle('on');
+      if (this.classList.contains('on')) {
+        startMicrophone();
+      } else {
+        stopMicrophone();
+      }
+    });
+  }
+
+  const swNight = document.getElementById('switch-night');
+  if (swNight) {
+    swNight.addEventListener('click', function() {
+      this.classList.toggle('on');
+      toggleNightMode(this.classList.contains('on'));
+    });
+  }
+
+  const btnScreenshot = document.getElementById('btn-screenshot');
+  if (btnScreenshot) btnScreenshot.addEventListener('click', takeScreenshot);
+
+  const btnSave = document.getElementById('btn-save');
+  if (btnSave) btnSave.addEventListener('click', saveCityToServer);
+
+  const btnLoad = document.getElementById('btn-load');
+  if (btnLoad) btnLoad.addEventListener('click', loadCitiesList);
+
+  const btnReset = document.getElementById('btn-reset');
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      document.getElementById('text-input').value = '';
+      document.getElementById('slider-count').value = 100;
+      document.getElementById('val-count').textContent = '100';
+      document.getElementById('slider-density').value = 5;
+      document.getElementById('val-density').textContent = '5';
+      if (nightMode) {
+        nightMode = false;
+        document.getElementById('switch-night').classList.remove('on');
+        toggleNightMode(false);
+      }
+      camera.position.set(60, 40, 80);
+      controls.target.set(0, 10, 0);
+      generateCity();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+    keysPressed[e.key.toLowerCase()] = true;
+  });
+  document.addEventListener('keyup', (e) => {
+    keysPressed[e.key.toLowerCase()] = false;
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  setTimeout(() => {
+    const hint = document.getElementById('help-hint');
+    if (hint) {
+      hint.style.transition = 'opacity 2s';
+      hint.style.opacity = '0';
+      setTimeout(() => { if (hint) hint.style.display = 'none'; }, 2500);
+    }
+  }, 5000);
+}
+
+init();
+</script>
+</body>
+</html>

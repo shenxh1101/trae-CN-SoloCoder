@@ -1,0 +1,9 @@
+{
+  "className": "orangebutton",
+  "backgroundColor": "#f97316",
+  "size": "medium",
+  "hasIcon": false,
+  "iconType": "none",
+  "interactive": "no",
+  "features": "none"
+}

@@ -1,0 +1,23 @@
+{
+  "default_style": "detailed",
+  "preference": {
+    "tone": "professional",
+    "detail_level": "detailed",
+    "format": "markdown"
+  },
+  "time_categories": [
+    "开发",
+    "会议",
+    "设计",
+    "测试",
+    "沟通",
+    "学习",
+    "其他"
+  ],
+  "report_sections": [
+    "本周完成",
+    "进行中工作",
+    "遇到的问题",
+    "下周计划"
+  ]
+}

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI产品说明书生成工具</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a6fd6;
+            --secondary: #764ba2;
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --success: #48bb78;
+            --error: #f56565;
+            --info: #4299e1;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+        }
+        .header h1 { font-size: 1.5rem; font-weight: 700; }
+        .header .subtitle { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+        .header .status-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .main {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 24px;
+            padding: 24px 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1024px) {
+            .main { grid-template-columns: 1fr; padding: 16px; }
+        }
+        .panel {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-header .icon { font-size: 1.1rem; }
+        .panel-body { padding: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--card);
+            color: var(--text);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        }
+        .form-group textarea { resize: vertical; min-height: 72px; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(102,126,234,0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+        .btn-outline:hover:not(:disabled) { background: rgba(102,126,234,0.06); }
+        .btn-ghost {
+            background: var(--bg);
+            color: var(--text);
+        }
+        .btn-ghost:hover:not(:disabled) { background: #e2e8f0; }
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 20px 0;
+        }
+        .section-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .section-tab {
+            padding: 5px 12px;
+            border: 1.5px solid var(--border);
+            background: var(--card);
+            color: var(--text-light);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .section-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .section-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .slogan-bar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .slogan-bar .label { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .slogan-bar .text { font-size: 1.05rem; font-weight: 600; margin-top: 4px; }
+        .preview-frame {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 24px 28px;
+            line-height: 1.7;
+        }
+        .preview-frame h1 { font-size: 1.4rem; color: var(--text); margin: 20px 0 10px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; }
+        .preview-frame h2 { font-size: 1.15rem; color: var(--primary-dark); margin: 16px 0 8px; }
+        .preview-frame h3 { font-size: 1rem; color: var(--text); margin: 12px 0 6px; }
+        .preview-frame p { margin: 8px 0; color: var(--text-light); }
+        .preview-frame ul, .preview-frame ol { margin: 8px 0; padding-left: 24px; }
+        .preview-frame li { margin: 4px 0; color: var(--text-light); }
+        .preview-frame table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .preview-frame th, .preview-frame td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+        .preview-frame th { background: #f7fafc; font-weight: 600; color: var(--text); }
+        .preview-frame blockquote { border-left: 4px solid var(--primary); margin: 12px 0; padding-left: 16px; color: var(--text-light); font-style: italic; }
+        .preview-frame img { max-width: 100%; border-radius: 8px; }
+        .download-bar {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .download-bar .btn { width: auto; flex: 1; font-size: 0.8rem; padding: 8px 12px; }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+        .toast.info { background: var(--info); }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }
+        .empty-state p { font-size: 0.95rem; }
+        .meta-info {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .meta-tag {
+            background: #ebf4ff;
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>📄 AI 产品说明书生成工具</h1>
+            <div class="subtitle">智能生成 · 在线预览 · 交互修改 · 多格式导出</div>
+        </div>
+        <div class="status-badge" id="statusBadge">就绪</div>
+    </div>
+
+    <div class="main">
+        <!-- 左侧面板 -->
+        <div class="left-col">
+            <div class="panel">
+                <div class="panel-header"><span class="icon">🎯</span> 产品信息</div>
+                <div class="panel-body">
+                    <form id="generateForm">
+                        <div class="form-group">
+                            <label>产品名称</label>
+                            <input type="text" id="productName" value="智能旗舰手机" placeholder="输入产品名称" required>
+                        </div>
+                        <div class="form-group">
+                            <label>核心功能点（分号分隔）</label>
+                            <textarea id="features" placeholder="如：无线充电;IP68防水;夜景拍照">无线充电;IP68防水;夜景拍照</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>产品定位</label>
+                            <input type="text" id="positioning" value="商务旗舰手机" placeholder="如：商务旗舰手机">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>写作风格</label>
+                                <select id="style">
+                                    <option value="professional">专业严谨</option>
+                                    <option value="simple">通俗易懂</option>
+                                    <option value="marketing" selected>营销导向</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>语言</label>
+                                <select id="language">
+                                    <option value="zh" selected>中文</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="generateBtn">
+                            ✨ 生成产品说明书
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel" id="revisePanel" style="display:none; margin-top:16px;">
+                <div class="panel-header"><span class="icon">✏️</span> 修改意见</div>
+                <div class="panel-body">
+                    <label style="font-size:0.8rem;color:var(--text-light);margin-bottom:8px;display:block;">选择要修改的章节：</label>
+                    <div class="section-tabs" id="sectionTabs">
+                        <div class="section-tab active" data-section="all" onclick="selectSection('all', this)">全部</div>
+                        <div class="section-tab" data-section="overview" onclick="selectSection('overview', this)">产品概述</div>
+                        <div class="section-tab" data-section="specifications" onclick="selectSection('specifications', this)">规格参数</div>
+                        <div class="section-tab" data-section="features" onclick="selectSection('features', this)">功能详解</div>
+                        <div class="section-tab" data-section="precautions" onclick="selectSection('precautions', this)">注意事项</div>
+                        <div class="section-tab" data-section="packing_list" onclick="selectSection('packing_list', this)">包装清单</div>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="revisionSuggestions" rows="3" placeholder="输入修改意见，如：增加更多技术细节、语气更活泼、补充参数说明等"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-outline" id="reviseBtn" onclick="reviseContent()">
+                        🔄 根据意见重新生成
+                    </button>
+                    <div class="divider"></div>
+                    <button type="button" class="btn btn-ghost" onclick="regenerateSlogan()">
+                        🎯 重新生成广告语
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧面板 -->
+        <div class="right-col">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="icon">📖</span> 预览
+                    <span id="previewTitle" style="margin-left:auto;font-size:0.8rem;color:var(--text-light);"></span>
+                </div>
+                <div class="panel-body">
+                    <div id="sloganBar" class="slogan-bar" style="display:none;">
+                        <div class="label">产品广告语</div>
+                        <div class="text" id="sloganText"></div>
+                    </div>
+                    <div id="metaInfo" class="meta-info" style="display:none;"></div>
+                    <div class="preview-frame" id="previewContent">
+                        <div class="empty-state">
+                            <div class="icon">📋</div>
+                            <p>填写左侧产品信息<br>点击「生成产品说明书」开始</p>
+                        </div>
+                    </div>
+                    <div class="download-bar" id="downloadBar" style="display:none;">
+                        <button class="btn btn-ghost" onclick="downloadFile('markdown')">📝 Markdown</button>
+                        <button class="btn btn-ghost" onclick="downloadFile('html')">🌐 HTML</button>
+                        <button class="btn btn-ghost" onclick="downloadFile('text')">📄 纯文本</button>
+                        <button class="btn btn-ghost" onclick="downloadFile('json')">💾 JSON</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentManualId = null;
+        let selectedSection = 'all';
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(() => { t.classList.remove('show'); }, 3000);
+        }
+
+        function selectSection(section, el) {
+            selectedSection = section;
+            document.querySelectorAll('.section-tab').forEach(tab => tab.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function setBadge(text) {
+            document.getElementById('statusBadge').textContent = text;
+        }
+
+        function renderMeta(manual) {
+            const metaEl = document.getElementById('metaInfo');
+            const styleNames = { professional: '专业严谨', simple: '通俗易懂', marketing: '营销导向' };
+            const langNames = { zh: '中文', en: 'English' };
+            metaEl.innerHTML =
+                '<span class="meta-tag">' + (styleNames[manual.style] || manual.style) + '</span>' +
+                '<span class="meta-tag">' + (langNames[manual.language] || manual.language) + '</span>' +
+                '<span class="meta-tag">' + manual.positioning + '</span>';
+            metaEl.style.display = 'flex';
+        }
+
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> 生成中...';
+            setBadge('生成中');
+
+            const data = {
+                product_name: document.getElementById('productName').value.trim(),
+                features: document.getElementById('features').value.split(';').map(f => f.trim()).filter(f => f),
+                positioning: document.getElementById('positioning').value.trim(),
+                style: document.getElementById('style').value,
+                language: document.getElementById('language').value
+            };
+
+            try {
+                const resp = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    currentManualId = result.manual_id;
+                    document.getElementById('previewContent').innerHTML = result.html;
+                    document.getElementById('sloganText').textContent = result.slogan;
+                    document.getElementById('sloganBar').style.display = 'block';
+                    document.getElementById('previewTitle').textContent = data.product_name;
+                    document.getElementById('revisePanel').style.display = 'block';
+                    document.getElementById('downloadBar').style.display = 'flex';
+                    if (result.meta) renderMeta(result.meta);
+                    showToast('说明书生成成功！', 'success');
+                    setBadge('已生成');
+                } else {
+                    showToast('生成失败: ' + result.error, 'error');
+                    setBadge('失败');
+                }
+            } catch (err) {
+                showToast('请求失败: ' + err.message, 'error');
+                setBadge('错误');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '✨ 生成产品说明书';
+        });
+
+        async function reviseContent() {
+            if (!currentManualId) { showToast('请先生成说明书', 'error'); return; }
+            const suggestions = document.getElementById('revisionSuggestions').value.trim();
+            if (!suggestions) { showToast('请输入修改意见', 'error'); return; }
+
+            const btn = document.getElementById('reviseBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> 修改中...';
+            setBadge('修改中');
+
+            try {
+                const resp = await fetch('/api/revise', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        manual_id: currentManualId,
+                        suggestions: suggestions,
+                        section: selectedSection === 'all' ? null : selectedSection
+                    })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    document.getElementById('previewContent').innerHTML = result.html;
+                    document.getElementById('revisionSuggestions').value = '';
+                    showToast('修改完成！', 'success');
+                    setBadge('已修改');
+                } else {
+                    showToast('修改失败: ' + result.error, 'error');
+                    setBadge('失败');
+                }
+            } catch (err) {
+                showToast('请求失败: ' + err.message, 'error');
+                setBadge('错误');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '🔄 根据意见重新生成';
+        }
+
+        async function regenerateSlogan() {
+            if (!currentManualId) { showToast('请先生成说明书', 'error'); return; }
+            try {
+                const resp = await fetch('/api/slogan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ manual_id: currentManualId })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    document.getElementById('sloganText').textContent = result.slogan;
+                    showToast('广告语已重新生成', 'success');
+                }
+            } catch (err) {
+                showToast('请求失败: ' + err.message, 'error');
+            }
+        }
+
+        async function downloadFile(format) {
+            if (!currentManualId) return;
+            try {
+                const resp = await fetch('/api/download/' + currentManualId + '/' + format);
+                if (resp.ok) {
+                    const blob = await resp.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const name = document.getElementById('productName').value.trim() || 'manual';
+                    const ext = { markdown: 'md', html: 'html', text: 'txt', json: 'json' }[format];
+                    a.download = name + '_说明书.' + ext;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    showToast('下载失败', 'error');
+                }
+            } catch (err) {
+                showToast('下载失败: ' + err.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

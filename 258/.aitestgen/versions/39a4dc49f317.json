@@ -1,0 +1,13 @@
+{
+  "version_id": "39a4dc49f317",
+  "timestamp": "2026-05-31T20:46:33.413445",
+  "original_content": "\nfrom calculator import is_prime\n\ndef test_is_prime_normal():\n    assert is_prime(7) == True\n\ndef test_is_prime_boundary():\n    assert is_prime(2) == True\n",
+  "edited_content": null,
+  "is_edited": false,
+  "function_name": "is_prime",
+  "file_path": "/Users/mac/code/solo coder/258/examples/calculator.py",
+  "language": "python",
+  "source_code": "def is_prime(n: int) -> bool:...",
+  "function_signature": "is_prime(n: int) -> bool",
+  "edit_reason": ""
+}

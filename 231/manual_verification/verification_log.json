@@ -1,0 +1,272 @@
+[
+  {
+    "step": "1",
+    "message": "正在访问 http://localhost:8080/",
+    "status": "INFO",
+    "time": "15:23:59"
+  },
+  {
+    "step": "1",
+    "message": "截图已保存: manual_verification/step01_page_loaded.png",
+    "status": "PASS",
+    "time": "15:24:06"
+  },
+  {
+    "step": "1",
+    "message": "页面标题: 梦幻城市 - AI天际线生成器",
+    "status": "PASS",
+    "time": "15:24:06"
+  },
+  {
+    "step": "1",
+    "message": "Canvas 元素存在: true",
+    "status": "PASS",
+    "time": "15:24:06"
+  },
+  {
+    "step": "1",
+    "message": "UI 面板存在: true",
+    "status": "PASS",
+    "time": "15:24:06"
+  },
+  {
+    "step": "2",
+    "message": "麦克风激活前截图: manual_verification/step02_mic_before.png",
+    "status": "PASS",
+    "time": "15:24:06"
+  },
+  {
+    "step": "2",
+    "message": "点击麦克风开关按钮",
+    "status": "INFO",
+    "time": "15:24:06"
+  },
+  {
+    "step": "2",
+    "message": "麦克风开关状态: true",
+    "status": "PASS",
+    "time": "15:24:08"
+  },
+  {
+    "step": "2",
+    "message": "音量指示器可见: true",
+    "status": "PASS",
+    "time": "15:24:08"
+  },
+  {
+    "step": "2",
+    "message": "音量条数量: 16",
+    "status": "PASS",
+    "time": "15:24:08"
+  },
+  {
+    "step": "2",
+    "message": "麦克风激活后截图: manual_verification/step02_mic_active.png",
+    "status": "PASS",
+    "time": "15:24:09"
+  },
+  {
+    "step": "2",
+    "message": "音量条高度 - 平均: 4.6px, 最高: 14px",
+    "status": "PASS",
+    "time": "15:24:09"
+  },
+  {
+    "step": "3",
+    "message": "下载目录PNG数量(前): 0",
+    "status": "PASS",
+    "time": "15:24:10"
+  },
+  {
+    "step": "3",
+    "message": "点击截图按钮",
+    "status": "INFO",
+    "time": "15:24:10"
+  },
+  {
+    "step": "3",
+    "message": "下载目录PNG数量(后): 1",
+    "status": "PASS",
+    "time": "15:24:12"
+  },
+  {
+    "step": "3",
+    "message": "已下载文件: verification_screenshot.png",
+    "status": "PASS",
+    "time": "15:24:12"
+  },
+  {
+    "step": "3",
+    "message": "文件 verification_screenshot.png: 683.2 KB",
+    "status": "PASS",
+    "time": "15:24:12"
+  },
+  {
+    "step": "3",
+    "message": "下载完成后页面截图: manual_verification/step03_download_list.png",
+    "status": "PASS",
+    "time": "15:24:12"
+  },
+  {
+    "step": "4",
+    "message": "清理了 0 条历史数据",
+    "status": "PASS",
+    "time": "15:24:12"
+  },
+  {
+    "step": "4",
+    "message": "点击\"保存到服务器\"按钮",
+    "status": "INFO",
+    "time": "15:24:12"
+  },
+  {
+    "step": "API",
+    "message": "请求: POST http://localhost:8080/api/cities → 201",
+    "status": "INFO",
+    "time": "15:24:12"
+  },
+  {
+    "step": "4",
+    "message": "前端发起 POST /api/cities 请求",
+    "status": "PASS",
+    "time": "15:24:14"
+  },
+  {
+    "step": "4",
+    "message": "请求内容: text=夜空中最亮的星，能否听清那仰望的人心底的孤独和叹息..., buildingCount=100",
+    "status": "PASS",
+    "time": "15:24:14"
+  },
+  {
+    "step": "4",
+    "message": "后端响应: {\"id\":\"106db7b9\",\"status\":\"saved\"}",
+    "status": "PASS",
+    "time": "15:24:14"
+  },
+  {
+    "step": "4",
+    "message": "保存城市后截图: manual_verification/step04_save_city.png",
+    "status": "PASS",
+    "time": "15:24:14"
+  },
+  {
+    "step": "4",
+    "message": "点击\"加载城市\"按钮",
+    "status": "INFO",
+    "time": "15:24:14"
+  },
+  {
+    "step": "API",
+    "message": "请求: GET http://localhost:8080/api/cities → 200",
+    "status": "INFO",
+    "time": "15:24:14"
+  },
+  {
+    "step": "4",
+    "message": "已保存列表可见: true, 条目数: 1",
+    "status": "PASS",
+    "time": "15:24:16"
+  },
+  {
+    "step": "4",
+    "message": "加载城市列表截图: manual_verification/step04_load_list.png",
+    "status": "PASS",
+    "time": "15:24:16"
+  },
+  {
+    "step": "4",
+    "message": "通过 API 删除城市: 106db7b9",
+    "status": "INFO",
+    "time": "15:24:16"
+  },
+  {
+    "step": "4",
+    "message": "DELETE 响应: HTTP 200, {\"status\": \"deleted\"}",
+    "status": "PASS",
+    "time": "15:24:16"
+  },
+  {
+    "step": "4",
+    "message": "删除后验证 GET: HTTP 404",
+    "status": "PASS",
+    "time": "15:24:16"
+  },
+  {
+    "step": "5",
+    "message": "开启生长动画，重新生成城市",
+    "status": "INFO",
+    "time": "15:24:16"
+  },
+  {
+    "step": "5",
+    "message": "生长动画开始截图: manual_verification/step05_growth_start.png",
+    "status": "PASS",
+    "time": "15:24:16"
+  },
+  {
+    "step": "5",
+    "message": "生长动画进行中截图: manual_verification/step05_growth_mid.png",
+    "status": "PASS",
+    "time": "15:24:18"
+  },
+  {
+    "step": "5",
+    "message": "生长动画完成截图: manual_verification/step05_growth_done.png",
+    "status": "PASS",
+    "time": "15:24:20"
+  },
+  {
+    "step": "5",
+    "message": "验证粒子车流运动",
+    "status": "INFO",
+    "time": "15:24:20"
+  },
+  {
+    "step": "5",
+    "message": "粒子系统存在，数量: 300",
+    "status": "PASS",
+    "time": "15:24:20"
+  },
+  {
+    "step": "5",
+    "message": "粒子0初始位置: x=77.51, z=39.94",
+    "status": "PASS",
+    "time": "15:24:20"
+  },
+  {
+    "step": "5",
+    "message": "1秒后粒子0位置: x=89.68, z=39.94",
+    "status": "PASS",
+    "time": "15:24:21"
+  },
+  {
+    "step": "5",
+    "message": "移动距离: 12.16 单位",
+    "status": "PASS",
+    "time": "15:24:21"
+  },
+  {
+    "step": "5",
+    "message": "车流连续帧截图: step05_traffic_1.png, step05_traffic_2.png",
+    "status": "PASS",
+    "time": "15:24:22"
+  },
+  {
+    "step": "5",
+    "message": "切换夜晚模式观察灯光和车流",
+    "status": "INFO",
+    "time": "15:24:22"
+  },
+  {
+    "step": "5",
+    "message": "夜晚模式车流截图: step05_night_traffic.png",
+    "status": "PASS",
+    "time": "15:24:24"
+  },
+  {
+    "step": "5",
+    "message": "FPS测量: 60.5 (2秒内121帧)",
+    "status": "PASS",
+    "time": "15:24:26"
+  }
+]

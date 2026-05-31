@@ -1,0 +1,63 @@
+[
+  {
+    "position": "前端工程师",
+    "difficulty": "junior",
+    "question_type": "technical",
+    "question": "请解释CSS中的盒模型，标准盒模型和IE盒模型有什么区别？",
+    "keywords": ["盒模型", "box model", "content", "padding", "border", "margin", "box-sizing", "content-box", "border-box"],
+    "answer_points": "1. 盒模型由content、padding、border、margin组成；2. 标准盒模型：width/height只包含content；3. IE盒模型：width/height包含content+padding+border；4. 通过box-sizing属性切换。",
+    "hint": "想想width属性是否包含边框和内边距。",
+    "code_question": false
+  },
+  {
+    "position": "前端工程师",
+    "difficulty": "junior",
+    "question_type": "technical",
+    "question": "什么是闭包（Closure）？请举例说明其应用场景。",
+    "keywords": ["闭包", "closure", "作用域", "scope", "函数", "外部变量", "封装", "模块化"],
+    "answer_points": "1. 闭包是函数和其词法环境的组合；2. 内部函数可以访问外部函数的变量，即使外部函数已返回；3. 应用场景：数据封装、函数柯里化、模块化、防抖节流。",
+    "hint": "考虑函数嵌套时的变量访问规则。",
+    "code_question": false
+  },
+  {
+    "position": "前端工程师",
+    "difficulty": "junior",
+    "question_type": "technical",
+    "question": "请解释事件冒泡和事件捕获，以及如何阻止事件冒泡。",
+    "keywords": ["事件冒泡", "事件捕获", "event bubbling", "event capturing", "stopPropagation", "preventDefault", "addEventListener"],
+    "answer_points": "1. 事件冒泡：从目标元素向上传播到document；2. 事件捕获：从document向下传播到目标元素；3. addEventListener第三个参数true为捕获，false为冒泡；4. stopPropagation()阻止冒泡，preventDefault()阻止默认行为。",
+    "hint": "想想水中的气泡是向上还是向下。",
+    "code_question": false
+  },
+  {
+    "position": "前端工程师",
+    "difficulty": "junior",
+    "question_type": "code",
+    "question": "用JavaScript实现一个防抖函数（debounce）。",
+    "keywords": ["防抖", "debounce", "setTimeout", "clearTimeout", "闭包", "this", "arguments"],
+    "answer_points": "1. 使用闭包保存定时器ID；2. 每次调用清除之前的定时器；3. 设置新的定时器延迟执行；4. 正确处理this指向和参数传递。",
+    "hint": "防抖是等待用户停止操作n毫秒后才执行。",
+    "code_question": true,
+    "test_cases": "[0]"
+  },
+  {
+    "position": "前端工程师",
+    "difficulty": "junior",
+    "question_type": "technical",
+    "question": "请解释HTTP请求中的GET和POST方法的区别。",
+    "keywords": ["GET", "POST", "HTTP", "参数", "URL", "body", "幂等", "安全", "缓存"],
+    "answer_points": "1. GET参数在URL中，POST在request body中；2. GET有长度限制，POST没有；3. GET可缓存可收藏，POST不行；4. GET是幂等安全的，POST不是。",
+    "hint": "考虑两者的语义：一个是获取数据，一个是提交数据。",
+    "code_question": false
+  },
+  {
+    "position": "前端工程师",
+    "difficulty": "junior",
+    "question_type": "technical",
+    "question": "Vue和React的核心区别是什么？它们的数据流有什么不同？",
+    "keywords": ["Vue", "React", "双向绑定", "单向数据流", "模板", "JSX", "响应式", "虚拟DOM"],
+    "answer_points": "1. Vue使用模板语法，React使用JSX；2. Vue默认双向绑定，React单向数据流；3. Vue响应式基于Proxy/Object.defineProperty，React基于setState；4. 学习曲线Vue相对平缓。",
+    "hint": "想想v-model和setState的区别。",
+    "code_question": false
+  }
+]

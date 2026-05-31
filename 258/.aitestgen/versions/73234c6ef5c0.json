@@ -1,0 +1,13 @@
+{
+  "version_id": "73234c6ef5c0",
+  "timestamp": "2026-05-31T20:43:04.418311",
+  "original_content": "\nfrom calculator import divide\n\nimport pytest\n\n\n\n\n\n\ndef test_divide_normal_a_0():\n    # Test divide with a = 0\n    \n    result = divide(\n        a=0, \n        b=0\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_normal_a_1():\n    # Test divide with a = 1\n    \n    result = divide(\n        a=1, \n        b=0\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_boundary_a_0():\n    # Test divide boundary with a = -1\n    \n    result = divide(\n        a=-1, \n        b=0\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_boundary_a_1():\n    # Test divide boundary with a = 0\n    \n    result = divide(\n        a=0, \n        b=0\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_exception_a_0():\n    # Test divide raises TypeError with a = not_an_int\n    \n    with pytest.raises(TypeError):\n        divide(\n            a='not_an_int', \n            b=0\n        )\n    \n\n\n\ndef test_divide_normal_b_2():\n    # Test divide with b = 0\n    \n    result = divide(\n        a=0, \n        b=0\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_normal_b_3():\n    # Test divide with b = 1\n    \n    result = divide(\n        a=0, \n        b=1\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_boundary_b_2():\n    # Test divide boundary with b = -1\n    \n    result = divide(\n        a=0, \n        b=-1\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_boundary_b_3():\n    # Test divide boundary with b = 0\n    \n    result = divide(\n        a=0, \n        b=0\n    )\n    \n    assert result is not None\n    \n    \n\n\n\ndef test_divide_exception_b_1():\n    # Test divide raises TypeError with b = not_an_int\n    \n    with pytest.raises(TypeError):\n        divide(\n            a=0, \n            b='not_an_int'\n        )\n    \n\n\n\n\n",
+  "edited_content": null,
+  "is_edited": false,
+  "function_name": "divide",
+  "file_path": "/Users/mac/code/solo coder/258/examples/calculator.py",
+  "language": "python",
+  "source_code": "    \"\"\"Divide a by b, raises ValueError if b is zero\"\"\"\n    if b == 0:\n        raise ValueError(\"Cannot divide by zero\")\n    return a / b",
+  "function_signature": "divide(a, b)",
+  "edit_reason": ""
+}

@@ -1,0 +1,42 @@
+<!-- PurpleButton Component -->
+<style>
+  .purplebutton {
+    padding: 12px 24px; font-size: 16px;
+    background-color: #a855f7;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    
+  }
+  .purplebutton:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .purplebutton:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  .purplebutton:focus {
+    outline: 2px solid #a855f7;
+    outline-offset: 2px;
+  }
+  .purplebutton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .purplebutton-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+</style>
+
+<button class="purplebutton"  aria-label="Click Me">
+  
+  <span class="purplebutton-text">Click Me</span>
+</button>

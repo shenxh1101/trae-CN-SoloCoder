@@ -1,0 +1,39 @@
+<!-- GeneratedComponent Component -->
+<style>
+  .generatedcomponent {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+  }
+  .generatedcomponent:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px rgba(59, 130, 246, 0.3);
+  }
+  .generatedcomponent:active {
+    transform: translateY(0);
+  }
+  .generatedcomponent:focus {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+  }
+  .generatedcomponent:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
+
+<button class="generatedcomponent" aria-label="Click Me" onclick="alert('Button clicked!')">
+  <span>Click Me</span>
+</button>

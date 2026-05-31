@@ -1,0 +1,40 @@
+{
+  "missed_questions": [
+    {
+      "id": "missed_367f7399",
+      "question": "我被公司暴力辞退了，还被威胁不许报警",
+      "count": 2,
+      "last_asked_at": "2026-05-31T10:33:15.177163+00:00"
+    },
+    {
+      "id": "missed_0e758d39",
+      "question": "我被暴力辞退威胁不许报警",
+      "count": 4,
+      "last_asked_at": "2026-05-31T10:43:53.562069+00:00"
+    },
+    {
+      "id": "missed_265c9728",
+      "question": "年假怎么算？",
+      "count": 5,
+      "last_asked_at": "2026-05-31T10:43:40.174348+00:00"
+    },
+    {
+      "id": "missed_51d2778e",
+      "question": "试用期被辞退有赔偿吗？",
+      "count": 2,
+      "last_asked_at": "2026-05-31T10:43:11.192742+00:00"
+    },
+    {
+      "id": "missed_76e1574f",
+      "question": "需要工作满多久？",
+      "count": 1,
+      "last_asked_at": "2026-05-31T10:43:02.044294+00:00"
+    },
+    {
+      "id": "missed_4ff96cf7",
+      "question": "赔偿标准是什么？",
+      "count": 1,
+      "last_asked_at": "2026-05-31T10:43:02.051947+00:00"
+    }
+  ]
+}

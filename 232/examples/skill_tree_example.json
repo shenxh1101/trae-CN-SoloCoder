@@ -1,0 +1,49 @@
+{
+  "name": "计算机科学",
+  "mastered": true,
+  "children": [
+    {
+      "name": "编程语言",
+      "mastered": true,
+      "children": [
+        {
+          "name": "Python",
+          "mastered": true,
+          "children": [
+            {
+              "name": "Python基础",
+              "mastered": true,
+              "children": []
+            },
+            {
+              "name": "Python面向对象",
+              "mastered": true,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "JavaScript",
+          "mastered": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "数据结构与算法",
+      "mastered": true,
+      "children": []
+    },
+    {
+      "name": "前端开发",
+      "mastered": false,
+      "children": [
+        {
+          "name": "HTML/CSS",
+          "mastered": true,
+          "children": []
+        }
+      ]
+    }
+  ]
+}

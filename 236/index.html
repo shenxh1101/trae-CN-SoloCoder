@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>梦幻粒子星系 - AI Audio Galaxy</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#000;font-family:'Segoe UI',system-ui,sans-serif;color:#fff}
+#canvas3d{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+#spectrumCanvas{position:fixed;bottom:0;left:0;width:100%;height:120px;z-index:5;pointer-events:none;opacity:.85}
+#ui-panel{position:fixed;top:16px;right:16px;z-index:10;width:300px;max-height:calc(100vh - 32px);overflow-y:auto;background:rgba(10,10,30,.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+#ui-panel::-webkit-scrollbar{width:4px}
+#ui-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+.panel-title{font-size:16px;font-weight:700;letter-spacing:1px;text-align:center;background:linear-gradient(90deg,#f0f,#0ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.section{background:rgba(255,255,255,.05);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.5);margin-bottom:2px}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{flex:1;min-width:60px;padding:8px 6px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.06);color:#fff;font-size:12px;cursor:pointer;transition:all .2s;text-align:center;user-select:none}
+.btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+.btn.active{background:rgba(100,140,255,.3);border-color:rgba(100,140,255,.6)}
+.btn.danger{border-color:rgba(255,80,80,.4)}
+.btn.danger:hover{background:rgba(255,80,80,.2)}
+.btn.recording{animation:pulse-red 1s infinite;border-color:#f44;background:rgba(244,68,68,.25)}
+@keyframes pulse-red{0%,100%{opacity:1}50%{opacity:.5}}
+.slider-row{display:flex;align-items:center;gap:8px}
+.slider-row label{font-size:12px;min-width:50px;color:rgba(255,255,255,.7)}
+.slider-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,.15);outline:none}
+.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#6af;cursor:pointer}
+.slider-row .val{font-size:11px;min-width:36px;text-align:right;color:rgba(255,255,255,.5)}
+.mode-btn{padding:10px 8px;font-size:13px;font-weight:600}
+.mode-btn.flame.active{background:rgba(255,80,20,.35);border-color:rgba(255,80,20,.7)}
+.mode-btn.ice.active{background:rgba(80,180,255,.3);border-color:rgba(80,180,255,.6)}
+.mode-btn.neon.active{background:rgba(200,80,255,.3);border-color:rgba(200,80,255,.6)}
+.status-bar{font-size:11px;color:rgba(255,255,255,.4);text-align:center}
+.hidden-input{display:none}
+#toast{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);z-index:100;padding:10px 24px;border-radius:10px;background:rgba(0,0,0,.8);color:#fff;font-size:13px;pointer-events:none;opacity:0;transition:opacity .3s}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<canvas id="canvas3d"></canvas>
+<canvas id="spectrumCanvas"></canvas>
+
+<div id="ui-panel">
+  <div class="panel-title">✦ 梦幻粒子星系 ✦</div>
+
+  <div class="section">
+    <div class="section-label">音频源</div>
+    <div class="btn-row">
+      <button class="btn" id="btnMic" onclick="toggleMic()">🎤 麦克风</button>
+      <button class="btn" id="btnDemo" onclick="toggleDemoMusic()">🎵 示例音乐</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">视觉模式</div>
+    <div class="btn-row">
+      <button class="btn mode-btn flame" id="modeFlame" onclick="setMode('flame')">🔥 火焰</button>
+      <button class="btn mode-btn ice" id="modeIce" onclick="setMode('ice')">❄️ 冰雪</button>
+      <button class="btn mode-btn neon" id="modeNeon" onclick="setMode('neon')">💜 霓虹</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">粒子数量</div>
+    <div class="slider-row">
+      <label>数量</label>
+      <input type="range" id="particleSlider" min="500" max="5000" step="100" value="2000" oninput="updateParticleCount(this.value)">
+      <span class="val" id="particleVal">2000</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">相机</div>
+    <div class="btn-row">
+      <button class="btn" id="btnOrbit" onclick="toggleAutoOrbit()">🔄 自动环绕</button>
+      <button class="btn" onclick="resetCamera()">⟲ 重置视角</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">导出</div>
+    <div class="btn-row">
+      <button class="btn" onclick="takeScreenshot()">📷 截图</button>
+      <button class="btn" id="btnRecord" onclick="toggleRecording()">🎬 录制</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="saveState()">💾 保存状态</button>
+      <button class="btn" onclick="document.getElementById('loadInput').click()">📂 加载状态</button>
+    </div>
+    <input type="file" id="loadInput" class="hidden-input" accept=".json" onchange="loadState(event)">
+  </div>
+
+  <div class="status-bar" id="statusBar">就绪 | 粒子: 2000</div>
+</div>
+
+<div id="toast"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const MODES = {
+  flame: {
+    name: '火焰',
+    lowColor: [1.0, 0.2, 0.0],
+    midColor: [1.0, 0.6, 0.0],
+    highColor: [1.0, 1.0, 0.3],
+    coreColor: 0xff4400,
+    coreEmissive: 0xff2200,
+    bgTint: 0x0a0200,
+    spreadMul: 1.2,
+    speedMul: 1.5,
+    turbulence: 0.8
+  },
+  ice: {
+    name: '冰雪',
+    lowColor: [0.2, 0.5, 1.0],
+    midColor: [0.6, 0.85, 1.0],
+    highColor: [1.0, 1.0, 1.0],
+    coreColor: 0x44aaff,
+    coreEmissive: 0x2266ff,
+    bgTint: 0x020510,
+    spreadMul: 0.8,
+    speedMul: 0.6,
+    turbulence: 0.3
+  },
+  neon: {
+    name: '霓虹',
+    lowColor: [0.9, 0.0, 0.8],
+    midColor: [0.3, 0.0, 1.0],
+    highColor: [0.0, 1.0, 0.8],
+    coreColor: 0xcc00ff,
+    coreEmissive: 0x8800ff,
+    bgTint: 0x050008,
+    spreadMul: 1.0,
+    speedMul: 1.0,
+    turbulence: 0.5
+  }
+};
+
+let currentMode = 'neon';
+let particleCount = 2000;
+let audioContext = null;
+let analyser = null;
+let frequencyData = null;
+let micStream = null;
+let micSource = null;
+let isMicOn = false;
+let isDemoOn = false;
+let demoNodes = [];
+let autoOrbit = true;
+let isRecording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let audioDest = null;
+let audioStream = null;
+
+const canvas3d = document.getElementById('canvas3d');
+const spectrumCanvas = document.getElementById('spectrumCanvas');
+const specCtx = spectrumCanvas.getContext('2d');
+
+const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000008, 0.008);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 15, 40);
+
+const controls = new OrbitControls(camera, canvas3d);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 10;
+controls.maxDistance = 120;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.8;
+
+scene.add(new THREE.AmbientLight(0x222244, 0.5));
+
+const pointLight = new THREE.PointLight(0xffffff, 2, 100);
+pointLight.position.set(0, 0, 0);
+scene.add(pointLight);
+
+const coreGeometry = new THREE.SphereGeometry(1.5, 64, 64);
+const coreMaterial = new THREE.MeshStandardMaterial({
+  color: MODES[currentMode].coreColor,
+  emissive: MODES[currentMode].coreEmissive,
+  emissiveIntensity: 2,
+  roughness: 0.2,
+  metalness: 0.8
+});
+const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
+scene.add(coreMesh);
+
+const coreGlowGeo = new THREE.SphereGeometry(2.2, 32, 32);
+const coreGlowMat = new THREE.MeshBasicMaterial({
+  color: MODES[currentMode].coreColor,
+  transparent: true,
+  opacity: 0.15
+});
+const coreGlow = new THREE.Mesh(coreGlowGeo, coreGlowMat);
+scene.add(coreGlow);
+
+let particleGeometry, particleMaterial, particleSystem;
+let particlePositions, particleVelocities, particleBaseAngles, particleRadii, particleYOffsets;
+
+function createParticles(count) {
+  if (particleSystem) {
+    scene.remove(particleSystem);
+    particleGeometry.dispose();
+    particleMaterial.dispose();
+  }
+
+  particleCount = count;
+  particlePositions = new Float32Array(count * 3);
+  particleVelocities = new Float32Array(count * 3);
+  particleBaseAngles = new Float32Array(count);
+  particleRadii = new Float32Array(count);
+  particleYOffsets = new Float32Array(count);
+  const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const armOffset = Math.floor(Math.random() * 3) * (Math.PI * 2 / 3);
+    const radius = 2 + Math.random() * 25;
+    const spiralFactor = radius * 0.15;
+    const finalAngle = angle + armOffset + spiralFactor;
+    const ySpread = (Math.random() - 0.5) * (3 + radius * 0.1);
+
+    particlePositions[i * 3] = Math.cos(finalAngle) * radius;
+    particlePositions[i * 3 + 1] = ySpread;
+    particlePositions[i * 3 + 2] = Math.sin(finalAngle) * radius;
+
+    particleBaseAngles[i] = finalAngle;
+    particleRadii[i] = radius;
+    particleYOffsets[i] = ySpread;
+
+    particleVelocities[i * 3] = (Math.random() - 0.5) * 0.02;
+    particleVelocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
+    particleVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
+
+    const mode = MODES[currentMode];
+    const t = Math.random();
+    colors[i * 3] = mode.lowColor[0] * (1 - t) + mode.highColor[0] * t;
+    colors[i * 3 + 1] = mode.lowColor[1] * (1 - t) + mode.highColor[1] * t;
+    colors[i * 3 + 2] = mode.lowColor[2] * (1 - t) + mode.highColor[2] * t;
+
+    sizes[i] = 0.3 + Math.random() * 0.7;
+  }
+
+  particleGeometry = new THREE.BufferGeometry();
+  particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  particleGeometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+  particleGeometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+
+  particleMaterial = new THREE.ShaderMaterial({
+    vertexShader: `
+      attribute vec3 aColor;
+      attribute float aSize;
+      varying vec3 vColor;
+      varying float vDist;
+      void main() {
+        vColor = aColor;
+        vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+        vDist = -mvPos.z;
+        gl_PointSize = aSize * (200.0 / -mvPos.z);
+        gl_PointSize = clamp(gl_PointSize, 1.0, 30.0);
+        gl_Position = projectionMatrix * mvPos;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      varying float vDist;
+      void main() {
+        float d = length(gl_PointCoord - vec2(0.5));
+        if (d > 0.5) discard;
+        float alpha = smoothstep(0.5, 0.1, d);
+        float glow = exp(-d * 4.0) * 0.6;
+        vec3 col = vColor + vColor * glow;
+        gl_FragColor = vec4(col, alpha * 0.85);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+
+  particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+  scene.add(particleSystem);
+}
+
+createParticles(particleCount);
+
+const starCount = 800;
+const starGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(starCount * 3);
+for (let i = 0; i < starCount; i++) {
+  starPos[i * 3] = (Math.random() - 0.5) * 200;
+  starPos[i * 3 + 1] = (Math.random() - 0.5) * 200;
+  starPos[i * 3 + 2] = (Math.random() - 0.5) * 200;
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+const starMat = new THREE.PointsMaterial({ color: 0x888899, size: 0.3, transparent: true, opacity: 0.6 });
+scene.add(new THREE.Points(starGeo, starMat));
+
+function initAudio() {
+  if (audioContext) return;
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.8;
+    frequencyData = new Uint8Array(analyser.frequencyBinCount);
+    
+    audioDest = audioContext.createMediaStreamDestination();
+    audioStream = audioDest.stream;
+    analyser.connect(audioDest);
+  } catch (e) {
+    showToast('Web Audio API 初始化失败');
+    console.error('Audio init error:', e);
+  }
+}
+
+function getAudioData() {
+  if (!analyser || !frequencyData) return null;
+  analyser.getByteFrequencyData(frequencyData);
+  return frequencyData;
+}
+
+function getAudioStats(data) {
+  if (!data) return { bass: 0, mid: 0, high: 0, avg: 0 };
+  const len = data.length;
+  const third = Math.floor(len / 3);
+  let bass = 0, mid = 0, high = 0;
+  for (let i = 0; i < third; i++) bass += data[i];
+  for (let i = third; i < third * 2; i++) mid += data[i];
+  for (let i = third * 2; i < len; i++) high += data[i];
+  bass /= third;
+  mid /= third;
+  high /= (len - third * 2);
+  const avg = (bass + mid + high) / 3;
+  return { bass: bass / 255, mid: mid / 255, high: high / 255, avg: avg / 255 };
+}
+
+window.toggleMic = async function() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('当前浏览器不支持麦克风功能');
+    return;
+  }
+
+  initAudio();
+  if (audioContext.state === 'suspended') await audioContext.resume();
+
+  if (isMicOn) {
+    if (micStream) {
+      micStream.getTracks().forEach(t => t.stop());
+      micStream = null;
+    }
+    if (micSource) {
+      try { micSource.disconnect(); } catch(e) {}
+      micSource = null;
+    }
+    isMicOn = false;
+    document.getElementById('btnMic').classList.remove('active');
+    showToast('麦克风已关闭');
+  } else {
+    try {
+      if (isDemoOn) toggleDemoMusic();
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micSource = audioContext.createMediaStreamSource(micStream);
+      micSource.connect(analyser);
+      isMicOn = true;
+      document.getElementById('btnMic').classList.add('active');
+      showToast('麦克风已开启，请哼唱或播放音乐');
+    } catch (e) {
+      if (e.name === 'NotAllowedError') {
+        showToast('麦克风权限被拒绝，请在浏览器设置中允许');
+      } else if (e.name === 'NotFoundError') {
+        showToast('未检测到可用的麦克风设备');
+      } else if (e.name === 'NotReadableError') {
+        showToast('麦克风被其他应用占用');
+      } else {
+        showToast('无法访问麦克风: ' + e.message);
+      }
+    }
+  }
+};
+
+let demoScheduleId = null;
+let demoGainNode = null;
+let demoOscillators = [];
+let particleUpdateDebounce = null;
+
+function checkBrowserSupport() {
+  const warnings = [];
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    warnings.push('麦克风功能不支持');
+  }
+  if (!window.MediaRecorder) {
+    warnings.push('视频录制功能不支持');
+  }
+  if (!HTMLCanvasElement.prototype.captureStream) {
+    warnings.push('画布录制功能不支持');
+  }
+  if (!window.AudioContext && !window.webkitAudioContext) {
+    warnings.push('Web Audio API 不支持');
+  }
+  return warnings;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const warnings = checkBrowserSupport();
+  if (warnings.length > 0) {
+    console.warn('浏览器功能警告:', warnings);
+    document.getElementById('statusBar').textContent = warnings.join(' | ');
+    document.getElementById('statusBar').style.color = 'rgba(255,180,80,0.7)';
+  }
+});
+
+window.toggleDemoMusic = async function() {
+  initAudio();
+  if (isDemoOn) {
+    stopDemoMusic();
+    isDemoOn = false;
+    document.getElementById('btnDemo').classList.remove('active');
+    showToast('示例音乐已停止');
+  } else {
+    if (isMicOn) toggleMic();
+    await startDemoMusic();
+    isDemoOn = true;
+    document.getElementById('btnDemo').classList.add('active');
+    showToast('示例音乐播放中');
+  }
+};
+
+async function startDemoMusic() {
+  if (audioContext.state === 'suspended') await audioContext.resume();
+  demoGainNode = audioContext.createGain();
+  demoGainNode.gain.value = 0.15;
+  demoGainNode.connect(analyser);
+  if (!isMicOn) {
+    try { analyser.connect(audioContext.destination); } catch(e) {}
+  }
+
+  playDemoSequence();
+  demoScheduleId = setInterval(playDemoSequence, 8000);
+}
+
+function playDemoSequence() {
+  demoOscillators.forEach(o => { try { o.stop(); } catch(e) {} });
+  demoOscillators = [];
+
+  const scales = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+  const bassNotes = [65.41, 73.42, 82.41, 87.31, 98.00, 110.00, 123.47, 130.81];
+
+  const now = audioContext.currentTime;
+  for (let bar = 0; bar < 4; bar++) {
+    const noteIdx = Math.floor(Math.random() * scales.length);
+    const freq = scales[noteIdx];
+    const bassFreq = bassNotes[noteIdx];
+
+    const osc = audioContext.createOscillator();
+    const oscGain = audioContext.createGain();
+    osc.type = ['sine', 'triangle', 'sawtooth'][Math.floor(Math.random() * 3)];
+    osc.frequency.setValueAtTime(freq, now + bar * 2);
+    oscGain.gain.setValueAtTime(0, now + bar * 2);
+    oscGain.gain.linearRampToValueAtTime(0.3, now + bar * 2 + 0.1);
+    oscGain.gain.linearRampToValueAtTime(0, now + bar * 2 + 1.8);
+    osc.connect(oscGain);
+    oscGain.connect(demoGainNode);
+    osc.start(now + bar * 2);
+    osc.stop(now + bar * 2 + 2);
+    demoOscillators.push(osc);
+
+    const bassOsc = audioContext.createOscillator();
+    const bassGain = audioContext.createGain();
+    bassOsc.type = 'sine';
+    bassOsc.frequency.setValueAtTime(bassFreq, now + bar * 2);
+    bassGain.gain.setValueAtTime(0, now + bar * 2);
+    bassGain.gain.linearRampToValueAtTime(0.4, now + bar * 2 + 0.05);
+    bassGain.gain.linearRampToValueAtTime(0, now + bar * 2 + 1.5);
+    bassOsc.connect(bassGain);
+    bassGain.connect(demoGainNode);
+    bassOsc.start(now + bar * 2);
+    bassOsc.stop(now + bar * 2 + 2);
+    demoOscillators.push(bassOsc);
+  }
+
+  const lfo = audioContext.createOscillator();
+  const lfoGain = audioContext.createGain();
+  lfo.type = 'sine';
+  lfo.frequency.value = 2 + Math.random() * 4;
+  lfoGain.gain.value = 50;
+  lfo.connect(lfoGain);
+  const padOsc = audioContext.createOscillator();
+  const padGain = audioContext.createGain();
+  padOsc.type = 'sine';
+  padOsc.frequency.value = scales[Math.floor(Math.random() * scales.length)] * 2;
+  lfoGain.connect(padOsc.frequency);
+  padGain.gain.setValueAtTime(0, now);
+  padGain.gain.linearRampToValueAtTime(0.1, now + 1);
+  padGain.gain.linearRampToValueAtTime(0, now + 8);
+  padOsc.connect(padGain);
+  padGain.connect(demoGainNode);
+  lfo.start(now);
+  padOsc.start(now);
+  lfo.stop(now + 8);
+  padOsc.stop(now + 8);
+  demoOscillators.push(lfo, padOsc);
+}
+
+function stopDemoMusic() {
+  if (demoScheduleId) { clearInterval(demoScheduleId); demoScheduleId = null; }
+  demoOscillators.forEach(o => { try { o.stop(); } catch(e) {} });
+  demoOscillators = [];
+  if (demoGainNode) { 
+    try { demoGainNode.disconnect(); } catch(e) {}
+    demoGainNode = null; 
+  }
+  try { analyser.disconnect(audioContext.destination); } catch(e) {}
+}
+
+window.setMode = function(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+
+  const m = MODES[mode];
+  coreMaterial.color.setHex(m.coreColor);
+  coreMaterial.emissive.setHex(m.coreEmissive);
+  coreGlowMat.color.setHex(m.coreColor);
+  scene.fog.color.setHex(m.bgTint);
+  pointLight.color.setHex(m.coreColor);
+
+  updateParticleColors();
+  showToast('已切换到' + m.name + '模式');
+};
+
+function updateParticleColors() {
+  if (!particleGeometry) return;
+  const colors = particleGeometry.getAttribute('aColor');
+  const positions = particleGeometry.getAttribute('position');
+  const m = MODES[currentMode];
+
+  for (let i = 0; i < particleCount; i++) {
+    const x = positions.getX(i);
+    const z = positions.getZ(i);
+    const dist = Math.sqrt(x * x + z * z);
+    const t = Math.min(dist / 25, 1);
+
+    colors.setXYZ(i,
+      m.lowColor[0] * (1 - t) + m.highColor[0] * t,
+      m.lowColor[1] * (1 - t) + m.highColor[1] * t,
+      m.lowColor[2] * (1 - t) + m.highColor[2] * t
+    );
+  }
+  colors.needsUpdate = true;
+}
+
+window.updateParticleCount = function(val) {
+  val = parseInt(val);
+  document.getElementById('particleVal').textContent = val;
+  
+  if (particleUpdateDebounce) clearTimeout(particleUpdateDebounce);
+  particleUpdateDebounce = setTimeout(() => {
+    createParticles(val);
+    document.getElementById('statusBar').textContent = `就绪 | 粒子: ${val}`;
+  }, 150);
+};
+
+window.toggleAutoOrbit = function() {
+  autoOrbit = !autoOrbit;
+  controls.autoRotate = autoOrbit;
+  document.getElementById('btnOrbit').classList.toggle('active', autoOrbit);
+};
+
+window.resetCamera = function() {
+  camera.position.set(0, 15, 40);
+  controls.target.set(0, 0, 0);
+  controls.update();
+};
+
+window.takeScreenshot = function() {
+  renderer.render(scene, camera);
+  canvas3d.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `galaxy_${Date.now()}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('截图已保存');
+  }, 'image/png');
+};
+
+window.toggleRecording = async function() {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    await startRecording();
+  }
+};
+
+async function startRecording() {
+  if (!window.MediaRecorder) {
+    showToast('当前浏览器不支持视频录制功能');
+    return;
+  }
+  if (!HTMLCanvasElement.prototype.captureStream) {
+    showToast('当前浏览器不支持画布录制功能');
+    return;
+  }
+
+  initAudio();
+  if (!audioStream) {
+    showToast('音频系统未就绪，无法录制音频');
+  }
+
+  try {
+    recordedChunks = [];
+    const videoStream = canvas3d.captureStream(30);
+    
+    const combinedStream = new MediaStream();
+    videoStream.getVideoTracks().forEach(t => combinedStream.addTrack(t));
+    if (audioStream) {
+      audioStream.getAudioTracks().forEach(t => combinedStream.addTrack(t));
+    }
+
+    let mimeType = '';
+    const candidates = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    for (const candidate of candidates) {
+      if (MediaRecorder.isTypeSupported(candidate)) {
+        mimeType = candidate;
+        break;
+      }
+    }
+
+    mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `galaxy_${Date.now()}.webm`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('录制视频已保存');
+    };
+    mediaRecorder.onerror = (e) => {
+      console.error('Recording error:', e);
+      showToast('录制过程中发生错误');
+      stopRecording();
+    };
+    mediaRecorder.start(1000);
+    isRecording = true;
+    document.getElementById('btnRecord').classList.add('recording');
+    document.getElementById('btnRecord').textContent = '⏹ 停止';
+    showToast('开始录制（含音频）...');
+  } catch (e) {
+    console.error('Start recording error:', e);
+    showToast('录制启动失败: ' + e.message);
+  }
+}
+
+function stopRecording() {
+  try {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+    }
+  } catch (e) {
+    console.error('Stop recording error:', e);
+  }
+  isRecording = false;
+  document.getElementById('btnRecord').classList.remove('recording');
+  document.getElementById('btnRecord').textContent = '🎬 录制';
+}
+
+window.saveState = function() {
+  const positions = particleGeometry.getAttribute('position');
+  const colors = particleGeometry.getAttribute('aColor');
+  const sizes = particleGeometry.getAttribute('aSize');
+  const state = {
+    mode: currentMode,
+    particleCount,
+    cameraPosition: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+    cameraTarget: { x: controls.target.x, y: controls.target.y, z: controls.target.z },
+    autoOrbit,
+    positions: Array.from(positions.array),
+    colors: Array.from(colors.array),
+    sizes: Array.from(sizes.array),
+    baseAngles: Array.from(particleBaseAngles),
+    radii: Array.from(particleRadii),
+    yOffsets: Array.from(particleYOffsets)
+  };
+  const blob = new Blob([JSON.stringify(state)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `galaxy_state_${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('状态已保存为JSON');
+};
+
+window.loadState = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const state = JSON.parse(e.target.result);
+      currentMode = state.mode || 'neon';
+      
+      if (state.particleCount) {
+        createParticles(state.particleCount);
+        document.getElementById('particleSlider').value = state.particleCount;
+        document.getElementById('particleVal').textContent = state.particleCount;
+      }
+
+      const m = MODES[currentMode];
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('mode' + currentMode.charAt(0).toUpperCase() + currentMode.slice(1)).classList.add('active');
+      coreMaterial.color.setHex(m.coreColor);
+      coreMaterial.emissive.setHex(m.coreEmissive);
+      coreGlowMat.color.setHex(m.coreColor);
+      scene.fog.color.setHex(m.bgTint);
+      pointLight.color.setHex(m.coreColor);
+
+      if (state.positions) {
+        const posAttr = particleGeometry.getAttribute('position');
+        for (let i = 0; i < Math.min(state.positions.length, posAttr.array.length); i++) {
+          posAttr.array[i] = state.positions[i];
+        }
+        posAttr.needsUpdate = true;
+      }
+
+      if (state.colors) {
+        const colAttr = particleGeometry.getAttribute('aColor');
+        for (let i = 0; i < Math.min(state.colors.length, colAttr.array.length); i++) {
+          colAttr.array[i] = state.colors[i];
+        }
+        colAttr.needsUpdate = true;
+      }
+
+      if (state.sizes) {
+        const sizeAttr = particleGeometry.getAttribute('aSize');
+        for (let i = 0; i < Math.min(state.sizes.length, sizeAttr.array.length); i++) {
+          sizeAttr.array[i] = state.sizes[i];
+        }
+        sizeAttr.needsUpdate = true;
+      }
+
+      if (state.baseAngles) particleBaseAngles = new Float32Array(state.baseAngles);
+      if (state.radii) particleRadii = new Float32Array(state.radii);
+      if (state.yOffsets) particleYOffsets = new Float32Array(state.yOffsets);
+
+      if (state.cameraPosition) {
+        camera.position.set(state.cameraPosition.x, state.cameraPosition.y, state.cameraPosition.z);
+      }
+      if (state.cameraTarget) {
+        controls.target.set(state.cameraTarget.x, state.cameraTarget.y, state.cameraTarget.z);
+      }
+      if (typeof state.autoOrbit === 'boolean') {
+        autoOrbit = state.autoOrbit;
+        controls.autoRotate = autoOrbit;
+        document.getElementById('btnOrbit').classList.toggle('active', autoOrbit);
+      }
+
+      controls.update();
+      showToast('状态已加载并复现');
+    } catch (err) {
+      console.error('Load state error:', err);
+      showToast('加载失败: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+};
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function drawSpectrum(data) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = spectrumCanvas.clientWidth;
+  const cssH = spectrumCanvas.clientHeight;
+  const pixelW = spectrumCanvas.width;
+  const pixelH = spectrumCanvas.height;
+
+  specCtx.setTransform(1, 0, 0, 1, 0, 0);
+  specCtx.clearRect(0, 0, pixelW, pixelH);
+
+  specCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (!data) {
+    specCtx.fillStyle = 'rgba(255,255,255,0.03)';
+    specCtx.fillRect(0, 0, cssW, cssH);
+    specCtx.fillStyle = 'rgba(255,255,255,0.15)';
+    specCtx.font = '12px sans-serif';
+    specCtx.textAlign = 'center';
+    specCtx.textBaseline = 'middle';
+    specCtx.fillText('等待音频输入...', cssW / 2, cssH / 2);
+    return;
+  }
+
+  specCtx.fillStyle = 'rgba(0,0,0,0.6)';
+  specCtx.fillRect(0, 0, cssW, cssH);
+
+  const barCount = Math.min(data.length, 128);
+  const barW = cssW / barCount;
+  const m = MODES[currentMode];
+
+  for (let i = 0; i < barCount; i++) {
+    const val = data[i] / 255;
+    const barH = val * cssH * 0.9;
+    const t = i / barCount;
+    const r = Math.floor((m.lowColor[0] * (1 - t) + m.highColor[0] * t) * 255);
+    const g = Math.floor((m.lowColor[1] * (1 - t) + m.highColor[1] * t) * 255);
+    const b = Math.floor((m.lowColor[2] * (1 - t) + m.highColor[2] * t) * 255);
+
+    const gradient = specCtx.createLinearGradient(0, cssH - barH, 0, cssH);
+    gradient.addColorStop(0, `rgba(${r},${g},${b},0.9)`);
+    gradient.addColorStop(1, `rgba(${r},${g},${b},0.15)`);
+    specCtx.fillStyle = gradient;
+    specCtx.fillRect(i * barW, cssH - barH, barW - 1, barH);
+  }
+}
+
+let time = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.016;
+
+  const audioData = getAudioData();
+  const stats = getAudioStats(audioData);
+  const m = MODES[currentMode];
+
+  const bassForce = stats.bass;
+  const midForce = stats.mid;
+  const highForce = stats.high;
+  const avgForce = stats.avg;
+
+  const positions = particleGeometry.getAttribute('position');
+  const colors = particleGeometry.getAttribute('aColor');
+  const posArr = positions.array;
+  const colArr = colors.array;
+
+  const speedMul = m.speedMul;
+  const spreadMul = m.spreadMul;
+  const turbulence = m.turbulence;
+
+  for (let i = 0; i < particleCount; i++) {
+    const i3 = i * 3;
+
+    let angle = particleBaseAngles[i];
+    const radius = particleRadii[i];
+    const yOffset = particleYOffsets[i];
+
+    const orbitSpeed = (0.05 + avgForce * 0.3) * speedMul / (1 + radius * 0.05);
+    angle += orbitSpeed;
+    particleBaseAngles[i] = angle;
+
+    const spread = 1 + bassForce * 3 * spreadMul;
+    const targetX = Math.cos(angle) * radius * spread;
+    const targetZ = Math.sin(angle) * radius * spread;
+    const targetY = yOffset + Math.sin(time * 0.5 + radius * 0.2) * (0.5 + midForce * 2);
+
+    const turbulenceX = (Math.random() - 0.5) * turbulence * avgForce * 2;
+    const turbulenceY = (Math.random() - 0.5) * turbulence * avgForce * 2;
+    const turbulenceZ = (Math.random() - 0.5) * turbulence * avgForce * 2;
+
+    posArr[i3] += (targetX + turbulenceX - posArr[i3]) * 0.03;
+    posArr[i3 + 1] += (targetY + turbulenceY - posArr[i3 + 1]) * 0.03;
+    posArr[i3 + 2] += (targetZ + turbulenceZ - posArr[i3 + 2]) * 0.03;
+
+    const dist = Math.sqrt(posArr[i3] * posArr[i3] + posArr[i3 + 2] * posArr[i3 + 2]);
+    const distT = Math.min(dist / 25, 1);
+    const freqT = highForce * distT + (1 - highForce) * (1 - distT);
+
+    colArr[i3] = m.lowColor[0] * (1 - freqT) + m.highColor[0] * freqT + bassForce * m.lowColor[0] * 0.3;
+    colArr[i3 + 1] = m.lowColor[1] * (1 - freqT) + m.highColor[1] * freqT + midForce * 0.2;
+    colArr[i3 + 2] = m.lowColor[2] * (1 - freqT) + m.highColor[2] * freqT + highForce * m.highColor[2] * 0.3;
+
+    const maxC = Math.max(colArr[i3], colArr[i3 + 1], colArr[i3 + 2], 1);
+    colArr[i3] = Math.min(colArr[i3] / maxC, 1);
+    colArr[i3 + 1] = Math.min(colArr[i3 + 1] / maxC, 1);
+    colArr[i3 + 2] = Math.min(colArr[i3 + 2] / maxC, 1);
+  }
+
+  positions.needsUpdate = true;
+  colors.needsUpdate = true;
+
+  const coreScale = 1 + bassForce * 0.5;
+  coreMesh.scale.setScalar(coreScale);
+  coreGlow.scale.setScalar(coreScale * 1.5);
+  coreGlowMat.opacity = 0.1 + avgForce * 0.25;
+  coreMaterial.emissiveIntensity = 1.5 + avgForce * 3;
+
+  pointLight.intensity = 1.5 + avgForce * 4;
+
+  controls.update();
+  renderer.render(scene, camera);
+  drawSpectrum(audioData);
+}
+
+function resizeSpectrumCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  spectrumCanvas.width = spectrumCanvas.clientWidth * dpr;
+  spectrumCanvas.height = spectrumCanvas.clientHeight * dpr;
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  resizeSpectrumCanvas();
+});
+
+document.getElementById('btnOrbit').classList.add('active');
+setMode('neon');
+resizeSpectrumCanvas();
+animate();
+</script>
+</body>
+</html>

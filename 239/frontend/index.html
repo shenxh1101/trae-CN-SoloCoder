@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI老照片修复模拟器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">📷</span>
+                    <h1 class="logo-text">时光修复师</h1>
+                </div>
+                <nav class="header-nav">
+                    <button class="nav-btn active" data-view="single">单张修复</button>
+                    <button class="nav-btn" data-view="batch">批量处理</button>
+                    <button class="nav-btn" data-view="history">历史记录</button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <section id="single-view" class="view active">
+                <aside class="tool-panel">
+                    <div class="panel-section">
+                        <h3 class="panel-title">
+                            <span class="title-icon">📤</span>
+                            上传照片
+                        </h3>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">🖼️</div>
+                                <p class="upload-text">拖拽照片到此处</p>
+                                <p class="upload-subtext">或点击选择文件</p>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3 class="panel-title">
+                            <span class="title-icon">💥</span>
+                            模拟破损
+                        </h3>
+                        <div class="damage-controls">
+                            <div class="control-group">
+                                <label>破损程度</label>
+                                <input type="range" id="damageLevel" min="0" max="100" value="30">
+                                <span class="range-value" id="damageLevelValue">30%</span>
+                            </div>
+                            <div class="control-group">
+                                <label>划痕数量</label>
+                                <input type="range" id="scratchCount" min="0" max="50" value="10">
+                                <span class="range-value" id="scratchCountValue">10</span>
+                            </div>
+                            <button class="btn btn-secondary btn-full" id="simulateDamageBtn">
+                                🎨 应用破损效果
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3 class="panel-title">
+                            <span class="title-icon">🖌️</span>
+                            修复区域
+                        </h3>
+                        <div class="brush-controls">
+                            <div class="brush-modes">
+                                <button id="brushModeAll" class="brush-mode-btn active" data-mode="all">全部修复</button>
+                                <button id="brushModeBrush" class="brush-mode-btn" data-mode="brush">画笔选择</button>
+                            </div>
+                            <div class="control-group brush-settings" id="brushSettings" style="display: none;">
+                                <label>画笔大小</label>
+                                <input type="range" id="brushSize" min="5" max="100" value="30">
+                                <span class="range-value" id="brushSizeValue">30px</span>
+                            </div>
+                            <div class="brush-actions">
+                                <button class="btn btn-small" id="clearMaskBtn">清除选区</button>
+                                <button class="btn btn-small" id="invertMaskBtn">反选选区</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3 class="panel-title">
+                            <span class="title-icon">⚙️</span>
+                            修复设置
+                        </h3>
+                        <div class="repair-controls">
+                            <div class="control-group">
+                                <label>修复强度</label>
+                                <div class="intensity-buttons">
+                                    <button id="intensityWeak" class="intensity-btn" data-intensity="weak">弱</button>
+                                    <button id="intensityMedium" class="intensity-btn active" data-intensity="medium">中</button>
+                                    <button id="intensityStrong" class="intensity-btn" data-intensity="strong">强</button>
+                                </div>
+                            </div>
+                            <div class="repair-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="optDenoise" checked>
+                                    <span class="checkmark"></span>
+                                    去噪处理
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="optSharpen" checked>
+                                    <span class="checkmark"></span>
+                                    锐化增强
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="optContrast" checked>
+                                    <span class="checkmark"></span>
+                                    对比度增强
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="optColorize">
+                                    <span class="checkmark"></span>
+                                    智能上色
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="optScratches">
+                                    <span class="checkmark"></span>
+                                    划痕去除
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <button class="btn btn-primary btn-full btn-large" id="repairBtn">
+                            🔧 开始修复
+                        </button>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3 class="panel-title">
+                            <span class="title-icon">💾</span>
+                            导出选项
+                        </h3>
+                        <div class="export-controls">
+                            <button class="btn btn-secondary btn-full" id="exportRepairedBtn" disabled>
+                                📥 下载修复图片
+                            </button>
+                            <button class="btn btn-secondary btn-full" id="exportStepsBtn" disabled>
+                                📊 导出步骤图
+                            </button>
+                            <button class="btn btn-secondary btn-full" id="exportGifBtn" disabled>
+                                🎬 生成对比GIF
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <section class="canvas-area">
+                    <div class="view-tabs">
+                        <button class="view-tab active" data-canvas-view="edit">编辑视图</button>
+                        <button class="view-tab" data-canvas-view="compare">对比预览</button>
+                        <button class="view-tab" data-canvas-view="overlay">叠加查看</button>
+                    </div>
+
+                    <div class="canvas-container" id="editView">
+                        <div class="canvas-frame">
+                            <canvas id="mainCanvas"></canvas>
+                            <canvas id="maskCanvas" class="mask-canvas"></canvas>
+                            <div class="canvas-placeholder" id="canvasPlaceholder">
+                                <div class="placeholder-content">
+                                    <div class="placeholder-icon">🖼️</div>
+                                    <p>请上传一张老照片开始修复</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container" id="compareView" style="display: none;">
+                        <div class="canvas-frame compare-frame">
+                            <div class="compare-container" id="compareContainer">
+                                <canvas id="compareOriginalCanvas" class="compare-canvas"></canvas>
+                                <div class="compare-slider" id="compareSlider">
+                                    <div class="compare-handle">
+                                        <span>◀</span>
+                                        <span>▶</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="compare-labels">
+                                <span class="compare-label left">修复前</span>
+                                <span class="compare-label right">修复后</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container" id="overlayView" style="display: none;">
+                        <div class="canvas-frame">
+                            <div class="overlay-container">
+                                <canvas id="overlayOriginalCanvas"></canvas>
+                                <canvas id="overlayRepairedCanvas" class="overlay-canvas"></canvas>
+                            </div>
+                            <div class="overlay-control">
+                                <label>透明度调节</label>
+                                <input type="range" id="overlayOpacity" min="0" max="100" value="50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="steps-preview" id="stepsPreview" style="display: none;">
+                        <h4 class="steps-title">修复步骤预览</h4>
+                        <div class="steps-grid">
+                            <div class="step-item">
+                                <span class="step-label">原图</span>
+                                <canvas id="stepOriginal"></canvas>
+                            </div>
+                            <div class="step-item" id="stepDenoisedItem" style="display: none;">
+                                <span class="step-label">去噪后</span>
+                                <canvas id="stepDenoised"></canvas>
+                            </div>
+                            <div class="step-item" id="stepSharpenedItem" style="display: none;">
+                                <span class="step-label">锐化后</span>
+                                <canvas id="stepSharpened"></canvas>
+                            </div>
+                            <div class="step-item" id="stepContrastItem" style="display: none;">
+                                <span class="step-label">对比度</span>
+                                <canvas id="stepContrast"></canvas>
+                            </div>
+                            <div class="step-item" id="stepColorizedItem" style="display: none;">
+                                <span class="step-label">上色后</span>
+                                <canvas id="stepColorized"></canvas>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-label">最终</span>
+                                <canvas id="stepFinal"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section id="batch-view" class="view">
+                <div class="batch-container">
+                    <div class="batch-upload-area" id="batchUploadArea">
+                        <div class="batch-upload-content">
+                            <div class="batch-upload-icon">📁</div>
+                            <p class="batch-upload-text">拖拽文件夹到此处</p>
+                            <p class="batch-upload-subtext">或点击选择多个文件</p>
+                            <input type="file" id="batchFileInput" accept="image/*" multiple hidden>
+                        </div>
+                    </div>
+
+                    <div class="batch-settings">
+                        <h3>批量修复设置</h3>
+                        <div class="batch-settings-grid">
+                            <div class="control-group">
+                                <label>修复强度</label>
+                                <select id="batchIntensity">
+                                    <option value="weak">弱</option>
+                                    <option value="medium" selected>中</option>
+                                    <option value="strong">强</option>
+                                </select>
+                            </div>
+                            <div class="batch-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="batchOptDenoise" checked> 去噪
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="batchOptSharpen" checked> 锐化
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="batchOptContrast" checked> 对比度
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="batchOptColorize"> 上色
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="batchOptScratches"> 去划痕
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="batch-file-list" id="batchFileList">
+                        <h3>待处理文件</h3>
+                        <div class="file-list-container" id="fileListContainer">
+                            <p class="empty-list-text">暂无文件，请上传照片</p>
+                        </div>
+                    </div>
+
+                    <div class="batch-actions">
+                        <button class="btn btn-primary btn-large" id="batchRepairBtn" disabled>
+                            🔧 开始批量修复
+                        </button>
+                        <button class="btn btn-secondary btn-large" id="batchDownloadBtn" disabled>
+                            📦 打包下载ZIP
+                        </button>
+                    </div>
+
+                    <div class="batch-progress" id="batchProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="progress-text" id="progressText">处理中...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="history-view" class="view">
+                <div class="history-container">
+                    <div class="history-header">
+                        <h2>修复历史</h2>
+                        <button class="btn btn-secondary" id="clearHistoryBtn">
+                            🗑️ 清空历史
+                        </button>
+                    </div>
+                    <div class="history-grid" id="historyGrid">
+                        <p class="empty-history-text">暂无修复记录</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" id="loadingText">正在处理...</p>
+        </div>
+    </div>
+
+    <script src="lib/jszip.min.js"></script>
+    <script src="lib/gif.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/self-test.js"></script>
+    <script src="js/browser-manual-test.js"></script>
+</body>
+</html>

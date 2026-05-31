@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模板管理 - AI合同条款智能比对工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">📄 AI合同条款智能比对工具</div>
+        <div class="nav-menu">
+            <a href="/">两两比对</a>
+            <a href="/batch">批量比对</a>
+            <a href="/templates" class="active">模板管理</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>📋 快速模板比对</h2>
+            <p class="subtitle">选择两个模板或上传文件进行快速比对</p>
+            
+            <form id="quickCompareForm" class="upload-form">
+                <div class="upload-grid">
+                    <div class="upload-area">
+                        <div class="template-select-large">
+                            <label>选择模板A:</label>
+                            <select id="quick_template_a" name="template_a" class="large-select">
+                                <option value="">-- 请选择模板 --</option>
+                            </select>
+                        </div>
+                        <div style="text-align: center; margin: 0.5rem 0; color: #888;">或上传文件:</div>
+                        <label class="file-label" style="padding: 1rem;">
+                            <span class="file-icon" style="font-size: 2rem;">📄</span>
+                            <span class="file-text" style="font-size: 0.9rem;">上传合同A</span>
+                            <input type="file" id="quick_file_a" name="contract_a" accept=".txt,.docx">
+                        </label>
+                        <div class="file-info" id="quickFileInfoA"></div>
+                    </div>
+                    
+                    <div class="vs-badge">VS</div>
+                    
+                    <div class="upload-area">
+                        <div class="template-select-large">
+                            <label>选择模板B:</label>
+                            <select id="quick_template_b" name="template_b" class="large-select">
+                                <option value="">-- 请选择模板 --</option>
+                            </select>
+                        </div>
+                        <div style="text-align: center; margin: 0.5rem 0; color: #888;">或上传文件:</div>
+                        <label class="file-label" style="padding: 1rem;">
+                            <span class="file-icon" style="font-size: 2rem;">📄</span>
+                            <span class="file-text" style="font-size: 0.9rem;">上传合同B</span>
+                            <input type="file" id="quick_file_b" name="contract_b" accept=".txt,.docx">
+                        </label>
+                        <div class="file-info" id="quickFileInfoB"></div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="quickCompareBtn">
+                        <span class="btn-text">🔍 开始比对</span>
+                        <span class="btn-loading" style="display:none;">比对中...</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearQuickForm()">清空</button>
+                    <a href="/" class="btn btn-info">➡️ 前往完整比对页面</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>保存新模板</h2>
+            <p class="subtitle">保存标准合同模板，后续可快速与其他合同比对</p>
+            
+            <form id="templateForm" class="upload-form">
+                <div class="upload-area">
+                    <label class="file-label">
+                        <span class="file-icon">📄</span>
+                        <span class="file-text">模板文件</span>
+                        <input type="file" id="template_file" name="file" accept=".txt,.docx" required>
+                    </label>
+                </div>
+                
+                <div class="input-group">
+                    <label>模板名称:</label>
+                    <input type="text" id="template_name" name="name" required placeholder="例如：标准销售合同模板">
+                </div>
+                
+                <div class="input-group">
+                    <label>描述:</label>
+                    <textarea id="template_description" name="description" rows="2" placeholder="可选：模板说明"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 保存模板</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="result-header">
+                <h2>已有模板</h2>
+                <button class="btn btn-secondary btn-sm" onclick="loadTemplates()">🔄 刷新</button>
+            </div>
+            
+            <div id="templatesList" class="templates-grid"></div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p>处理中...</p>
+    </div>
+
+    <script>
+        let templates = [];
+
+        async function loadTemplates() {
+            try {
+                const response = await fetch('/api/templates');
+                const data = await response.json();
+                
+                if (data.success) {
+                    templates = data.templates;
+                    displayTemplates(data.templates);
+                    updateTemplateSelects();
+                }
+            } catch (error) {
+                console.error('加载模板失败:', error);
+            }
+        }
+
+        function updateTemplateSelects() {
+            const selectA = document.getElementById('quick_template_a');
+            const selectB = document.getElementById('quick_template_b');
+            
+            selectA.innerHTML = '<option value="">-- 请选择模板 --</option>';
+            selectB.innerHTML = '<option value="">-- 请选择模板 --</option>';
+            
+            templates.forEach(t => {
+                selectA.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                selectB.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+            });
+        }
+
+        function displayTemplates(templates) {
+            const container = document.getElementById('templatesList');
+            
+            if (templates.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无模板，请先上传保存</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            templates.forEach(template => {
+                const card = document.createElement('div');
+                card.className = 'template-card';
+                card.innerHTML = `
+                    <div class="template-icon">📄</div>
+                    <h3>${template.name}</h3>
+                    <p class="template-desc">${template.description || '暂无描述'}</p>
+                    <p class="template-meta">原始文件: ${template.original_filename}</p>
+                    <p class="template-meta">创建时间: ${new Date(template.created_at).toLocaleString()}</p>
+                    <div class="template-actions">
+                        <button class="btn btn-primary btn-sm" onclick="useAsContractA('${template.id}', '${template.name}')">📎 作为合同A</button>
+                        <button class="btn btn-primary btn-sm" onclick="useAsContractB('${template.id}', '${template.name}')">📎 作为合同B</button>
+                        <button class="btn btn-success btn-sm" onclick="compareWithThis('${template.id}')">🔍 用此模板比对</button>
+                    </div>
+                    <div class="template-actions" style="margin-top: 0.5rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="updateTemplate('${template.id}')">✏️ 编辑</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTemplate('${template.id}')">🗑️ 删除</button>
+                    </div>
+                    <div class="template-preview">
+                        <strong>内容预览:</strong>
+                        <p>${template.content_preview}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function useAsContractA(templateId, templateName) {
+            const confirmUse = confirm(`确定要将"${templateName}"作为合同A，前往比对页面吗?`);
+            if (!confirmUse) return;
+            window.location.href = `/?template_a=${templateId}`;
+        }
+
+        function useAsContractB(templateId, templateName) {
+            const confirmUse = confirm(`确定要将"${templateName}"作为合同B，前往比对页面吗?`);
+            if (!confirmUse) return;
+            window.location.href = `/?template_b=${templateId}`;
+        }
+
+        function compareWithThis(templateId) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.txt,.docx';
+            
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('contract', file);
+                
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                
+                fetch(`/api/compare/template/${templateId}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        const resultJson = encodeURIComponent(JSON.stringify(data));
+                        sessionStorage.setItem('compareResult', JSON.stringify(data));
+                        window.location.href = '/?result=1';
+                    } else {
+                        alert('比对失败: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('请求失败: ' + error.message);
+                })
+                .finally(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                });
+            };
+            
+            fileInput.click();
+        }
+
+        function clearQuickForm() {
+            document.getElementById('quickCompareForm').reset();
+            document.getElementById('quickFileInfoA').textContent = '';
+            document.getElementById('quickFileInfoB').textContent = '';
+        }
+
+        document.getElementById('quick_file_a').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                document.getElementById('quick_template_a').value = '';
+                document.getElementById('quickFileInfoA').textContent = e.target.files[0].name;
+                document.getElementById('quickFileInfoA').style.color = '#27ae60';
+            }
+        });
+
+        document.getElementById('quick_file_b').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                document.getElementById('quick_template_b').value = '';
+                document.getElementById('quickFileInfoB').textContent = e.target.files[0].name;
+                document.getElementById('quickFileInfoB').style.color = '#27ae60';
+            }
+        });
+
+        document.getElementById('quick_template_a').addEventListener('change', function(e) {
+            if (e.target.value) {
+                document.getElementById('quick_file_a').value = '';
+                const t = templates.find(x => x.id === e.target.value);
+                document.getElementById('quickFileInfoA').textContent = t ? `📋 ${t.name}` : '';
+                document.getElementById('quickFileInfoA').style.color = '#667eea';
+            }
+        });
+
+        document.getElementById('quick_template_b').addEventListener('change', function(e) {
+            if (e.target.value) {
+                document.getElementById('quick_file_b').value = '';
+                const t = templates.find(x => x.id === e.target.value);
+                document.getElementById('quickFileInfoB').textContent = t ? `📋 ${t.name}` : '';
+                document.getElementById('quickFileInfoB').style.color = '#667eea';
+            }
+        });
+
+        document.getElementById('quickCompareForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const templateA = document.getElementById('quick_template_a').value;
+            const templateB = document.getElementById('quick_template_b').value;
+            const fileA = document.getElementById('quick_file_a').files[0];
+            const fileB = document.getElementById('quick_file_b').files[0];
+            
+            if (!templateA && !fileA) {
+                alert('请选择模板A或上传合同A');
+                return;
+            }
+            if (!templateB && !fileB) {
+                alert('请选择模板B或上传合同B');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('quickCompareBtn').disabled = true;
+            
+            try {
+                const response = await fetch('/api/compare/templates', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    sessionStorage.setItem('compareResult', JSON.stringify(data));
+                    window.location.href = '/?result=1';
+                } else {
+                    alert('比对失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('quickCompareBtn').disabled = false;
+            }
+        });
+
+        document.getElementById('templateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            try {
+                const response = await fetch('/api/templates', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ 模板保存成功!');
+                    this.reset();
+                    loadTemplates();
+                } else {
+                    alert('保存失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+
+        async function updateTemplate(templateId) {
+            const newName = prompt('输入新的模板名称:');
+            if (!newName) return;
+            
+            const newDesc = prompt('输入新的描述:');
+            
+            try {
+                const response = await fetch(`/api/templates/${templateId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: newName,
+                        description: newDesc
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ 更新成功!');
+                    loadTemplates();
+                } else {
+                    alert('更新失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('更新失败: ' + error.message);
+            }
+        }
+
+        async function deleteTemplate(templateId) {
+            if (!confirm('确定要删除此模板吗? 此操作不可恢复。')) return;
+            
+            try {
+                const response = await fetch(`/api/templates/${templateId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ 删除成功!');
+                    loadTemplates();
+                } else {
+                    alert('删除失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('删除失败: ' + error.message);
+            }
+        }
+
+        loadTemplates();
+    </script>
+
+    <style>
+        .template-select-large {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .template-select-large label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .large-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .large-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .template-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+    </style>
+</body>
+</html>

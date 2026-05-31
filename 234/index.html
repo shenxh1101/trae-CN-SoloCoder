@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI手势控制幻灯片演示系统</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="slides-container" id="slidesContainer"></div>
+
+        <div class="gesture-debug-panel" id="gestureDebug">
+            <div class="gesture-icon" id="gestureIcon">✋</div>
+            <div class="gesture-info">
+                <span class="gesture-name" id="gestureName">等待手势...</span>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="gesture-confidence" id="gestureConfidence">0%</div>
+        </div>
+
+        <div class="toolbar" id="toolbar">
+            <button class="tool-btn" id="prevBtn" title="上一页">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            
+            <div class="page-indicator">
+                <span id="currentPage">1</span>
+                <span class="separator">/</span>
+                <span id="totalPages">5</span>
+            </div>
+
+            <button class="tool-btn" id="nextBtn" title="下一页">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="toolbar-divider"></div>
+
+            <button class="tool-btn" id="pauseBtn" title="暂停">
+                <svg id="pauseIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+                <svg id="playIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+            </button>
+
+            <button class="tool-btn" id="uploadBtn" title="上传幻灯片">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </button>
+
+            <button class="tool-btn" id="statsBtn" title="统计数据">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </button>
+
+            <button class="tool-btn" id="settingsBtn" title="设置">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+
+            <button class="tool-btn" id="exportPdfBtn" title="导出PDF">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </button>
+        </div>
+
+        <div class="settings-panel" id="settingsPanel">
+            <div class="panel-header">
+                <h2>设置</h2>
+                <button class="close-btn" id="closeSettings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="settings-content">
+                <div class="setting-group">
+                    <h3>手势映射方案</h3>
+                    <select class="setting-select" id="gestureScheme">
+                        <option value="default">默认方案</option>
+                        <option value="alternative">左手模式</option>
+                        <option value="presentation">演讲模式</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <h3>手势校准</h3>
+                    <button class="calibrate-btn" id="calibrateBtn">开始校准</button>
+                    <p class="setting-desc">做一次标准手势以适配摄像头角度</p>
+                </div>
+
+                <div class="setting-group">
+                    <h3>识别灵敏度</h3>
+                    <input type="range" class="setting-range" id="sensitivity" min="0.3" max="0.95" step="0.05" value="0.7">
+                    <span class="range-value" id="sensitivityValue">0.7</span>
+                </div>
+
+                <div class="setting-group">
+                    <label class="toggle-label">
+                        <span>显示手势调试</span>
+                        <input type="checkbox" id="debugMode" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-group">
+                    <label class="toggle-label">
+                        <span>翻页音效</span>
+                        <input type="checkbox" id="soundEnabled" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-group">
+                    <label class="toggle-label">
+                        <span>背景音乐</span>
+                        <input type="checkbox" id="bgmEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-group">
+                    <label class="toggle-label">
+                        <span>语音播报页码</span>
+                        <input type="checkbox" id="voiceEnabled" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-modal" id="uploadModal">
+            <div class="modal-content">
+                <div class="panel-header">
+                    <h2>上传幻灯片</h2>
+                    <button class="close-btn" id="closeUpload">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="upload-area" id="uploadArea">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>拖拽图片到这里或点击上传</p>
+                    <p class="upload-hint">请按顺序命名文件（如：1.jpg, 2.jpg...）</p>
+                    <input type="file" id="fileInput" multiple accept="image/*" hidden>
+                </div>
+                <div class="upload-preview" id="uploadPreview"></div>
+                <button class="confirm-btn" id="confirmUpload" disabled>确认上传</button>
+            </div>
+        </div>
+
+        <div class="stats-modal" id="statsModal">
+            <div class="modal-content">
+                <div class="panel-header">
+                    <h2>演示统计</h2>
+                    <button class="close-btn" id="closeStats">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="stats-content">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statDuration">00:00</div>
+                        <div class="stat-label">观看时长</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statSwipes">0</div>
+                        <div class="stat-label">总翻页次数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statGestures">0</div>
+                        <div class="stat-label">手势识别成功</div>
+                    </div>
+                </div>
+                <button class="confirm-btn" id="exportStats">导出统计数据</button>
+            </div>
+        </div>
+
+        <div class="video-container" id="videoContainer">
+            <video id="videoInput" autoplay playsinline muted></video>
+            <canvas id="handCanvas"></canvas>
+        </div>
+
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <h2>AI手势控制演示系统</h2>
+                <p id="loadingStatus">正在初始化...</p>
+                <div class="loading-progress">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="camera-permission" id="cameraPermission">
+            <div class="permission-content">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <h2>需要摄像头权限</h2>
+                <p>请允许访问摄像头以启用手势控制功能</p>
+                <button class="confirm-btn" id="allowCamera">允许访问</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script src="js/slides.js"></script>
+    <script src="js/gesture.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

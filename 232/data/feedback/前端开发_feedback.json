@@ -1,0 +1,11 @@
+{
+  "skill": "前端开发",
+  "feedback": [
+    {
+      "phase_id": "phase-1",
+      "resource_name": "test",
+      "type": "downvote",
+      "timestamp": "2026-05-31T14:46:51.261925"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "type": "button",
+  "children": [
+    "text"
+  ],
+  "events": [
+    "click",
+    "mouseEnter",
+    "mouseLeave",
+    "focus",
+    "blur"
+  ],
+  "states": [
+    "hover",
+    "active",
+    "focus",
+    "disabled"
+  ],
+  "dimensions": {
+    "width": "auto",
+    "height": "48px",
+    "padding": "12px 24px"
+  }
+}

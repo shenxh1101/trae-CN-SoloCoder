@@ -1,0 +1,84 @@
+[
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "technical",
+    "question": "请深入解释Python的内存管理机制，包括引用计数、垃圾回收和内存池。",
+    "keywords": ["引用计数", "reference count", "垃圾回收", "garbage collection", "内存池", "memory pool", "循环引用", "mark and sweep", "分代回收"],
+    "answer_points": "1. 引用计数：每个对象维护引用计数，引用加1，解引用减1，计数为0时释放；2. 垃圾回收：解决循环引用问题，使用标记-清除算法；3. 分代回收：将对象分为年轻代、中年代、老年代，不同频率回收；4. 内存池：管理小内存块（256KB以下），避免频繁malloc/free。",
+    "hint": "从三个层面思考：对象生命周期追踪、循环引用处理、内存分配优化。",
+    "code_question": false
+  },
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "technical",
+    "question": "什么是协程？Python中的async/await是如何工作的？请对比与多线程、多进程的适用场景。",
+    "keywords": ["协程", "coroutine", "async", "await", "事件循环", "event loop", "多线程", "多进程", "IO密集型", "CPU密集型"],
+    "answer_points": "1. 协程是用户态的轻量级线程，由程序自身控制切换；2. async定义协程函数，await挂起协程等待IO；3. 事件循环调度协程执行；4. 协程适合高并发IO密集型场景，线程适合阻塞任务，进程适合CPU密集型。",
+    "hint": "考虑'协作式 multitasking' vs '抢占式 multitasking'。",
+    "code_question": false
+  },
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "technical",
+    "question": "请设计一个高可用的分布式缓存方案，如何处理缓存穿透、缓存击穿和缓存雪崩？",
+    "keywords": ["缓存穿透", "缓存击穿", "缓存雪崩", "布隆过滤器", "互斥锁", "永不过期", "随机过期", "高可用", "Redis", "集群"],
+    "answer_points": "1. 缓存穿透：查询不存在数据，用布隆过滤器或缓存空值；2. 缓存击穿：热点key失效，用互斥锁或永不过期逻辑过期；3. 缓存雪崩：大量key同时失效，随机过期时间或多级缓存；4. 高可用：Redis哨兵或集群模式，持久化，主从复制。",
+    "hint": "三种问题分别对应：不存在的key、单个热点key、大量key同时失效。",
+    "code_question": false
+  },
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "code",
+    "question": "实现一个线程安全的单例模式，至少用两种不同的方法。",
+    "keywords": ["单例", "singleton", "线程安全", "thread safe", "元类", "metaclass", "装饰器", "锁", "lock"],
+    "answer_points": "1. 使用元类控制实例创建；2. 使用装饰器加锁；3. 使用模块导入（Python模块天然单例）；4. 必须考虑多线程场景下的竞态条件。",
+    "hint": "思考Python中哪些机制可以控制类的实例化过程。",
+    "code_question": true,
+    "test_cases": "[0]"
+  },
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "technical",
+    "question": "数据库索引的底层实现是什么？B+树和B树有什么区别？什么情况下索引会失效？",
+    "keywords": ["B+树", "B树", "索引", "index", "最左前缀", "回表", "覆盖索引", "索引失效", "like", "or", "函数"],
+    "answer_points": "1. InnoDB使用B+树，叶子节点包含数据和指针，形成有序链表；2. B+树非叶子节点不存数据，查询更稳定，范围查询更高效；3. 索引失效场景：不遵循最左前缀、like左模糊、or两边无索引、列上用函数、类型隐式转换。",
+    "hint": "从磁盘IO优化角度思考为什么B+树更适合数据库索引。",
+    "code_question": false
+  },
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "technical",
+    "question": "请解释分布式系统中的CAP理论，以及BASE理论如何对CAP进行权衡。",
+    "keywords": ["CAP", "一致性", "可用性", "分区容错", "BASE", "基本可用", "软状态", "最终一致性"],
+    "answer_points": "1. CAP：一致性、可用性、分区容错三者不可兼得；2. 网络分区不可避免，通常在CP和AP之间选择；3. BASE：基本可用、软状态、最终一致性；4. BASE是对CAP的权衡，牺牲强一致性获得高可用。",
+    "hint": "思考银行转账和社交网络动态分别适合哪种模型。",
+    "code_question": false
+  },
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "code",
+    "question": "实现一个LRU缓存类，要求get和put操作时间复杂度都是O(1)。",
+    "keywords": ["LRU", "最近最少使用", "OrderedDict", "双向链表", "哈希表", "get", "put", "O(1)"],
+    "answer_points": "1. 使用OrderedDict或哈希表+双向链表实现；2. get时将元素移到头部；3. put时若存在更新值并移到头部，不存在则插入头部；4. 容量满时删除尾部元素。",
+    "hint": "需要一种数据结构既能O(1)查找，又能O(1)维护访问顺序。",
+    "code_question": true,
+    "test_cases": "[0]"
+  },
+  {
+    "position": "Python后端工程师",
+    "difficulty": "senior",
+    "question_type": "technical",
+    "question": "如何设计一个消息队列的消费幂等性保证？请说明至少三种实现方案。",
+    "keywords": ["幂等性", "idempotent", "消息队列", "MQ", "去重表", "乐观锁", "唯一ID", "Redis", "token"],
+    "answer_points": "1. 唯一ID+去重表：消费前查去重表，不存在则处理并插入；2. 乐观锁：版本号机制，更新时判断版本；3. Redis原子操作：SETNX判断是否已处理；4. Token机制：处理前获取token，处理时校验并删除。",
+    "hint": "核心思想是'如何判断这条消息已经被处理过'。",
+    "code_question": false
+  }
+]

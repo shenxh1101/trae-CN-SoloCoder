@@ -1,0 +1,225 @@
+{
+  "title": "会议纪要",
+  "meeting_type": "review",
+  "date": "2024-01-15",
+  "participants": [
+    "张三",
+    "我们已经",
+    "李四",
+    "王五",
+    "赵六",
+    "赵六你",
+    "这边已经",
+    "那王五你",
+    "问题可能",
+    "面设计还"
+  ],
+  "duration_minutes": null,
+  "main_topic": "项目周会 - 2024年1月15日",
+  "key_discussion_points": [
+    {
+      "topic": "我这边已经完成了基本功能的测试，发现了两个bug。一个是密码重置功能在某些情况下",
+      "summary": "我这边已经完成了基本功能的测试，发现了两个bug。一个是密码重置功能在某些情况下会失败，另一个是登录页面在移动端显示有问题。我已经把这些bug指派给了王五，他需要在本周五之前修复完成。",
+      "participants": [
+        "李四"
+      ]
+    },
+    {
+      "topic": "好的，日志系统的问题确实很重要。那王五你负责评估一下升级方案，下周一之前给出报告",
+      "summary": "好的，日志系统的问题确实很重要。那王五你负责评估一下升级方案，下周一之前给出报告。赵六你那边的前端工作进展如何？",
+      "participants": [
+        "张三"
+      ]
+    },
+    {
+      "topic": "好的，那今天的会议就到这里。我们来总结一下今天的行动项：",
+      "summary": "好的，那今天的会议就到这里。我们来总结一下今天的行动项：",
+      "participants": [
+        "张三"
+      ]
+    }
+  ],
+  "controversial_issues": [
+    {
+      "topic": "没问题，我已经开始修复了。密码重置的问题应该明天就能解决，移动端的问题可能需要多一点时间，但周五之前",
+      "opposing_views": [
+        "没问题，我已经开始修复了。密码重置的问题应该明天就能解决，移动端的问题可能需要多一点时间，但周五之前应该可以完成。另外，我发现我们的日志系统有些问题，建议我们升级一下日志库。这个比较紧急，因为现在排错很困难。"
+      ],
+      "resolution": null
+    },
+    {
+      "topic": "我这边主要在做用户管理页面。目前基本的CRUD功能已经完成了，但是我觉得界面设计还需要优化。另外，权",
+      "opposing_views": [
+        "我这边主要在做用户管理页面。目前基本的CRUD功能已经完成了，但是我觉得界面设计还需要优化。另外，权限控制部分还需要和后端对接。我建议我们请UI团队帮忙看一下设计，这个可以安排在下周。"
+      ],
+      "resolution": null
+    },
+    {
+      "topic": "还有一件事，我们原定下周三上线第一个版本，但根据目前的进度，我觉得可能会有风险。大家觉得我们要不要推",
+      "opposing_views": [
+        "还有一件事，我们原定下周三上线第一个版本，但根据目前的进度，我觉得可能会有风险。大家觉得我们要不要推迟到下周五？"
+      ],
+      "resolution": null
+    }
+  ],
+  "decisions": [
+    "同意。赵六你负责联系UI团队，看看他们下周什么时候有空。关于权限控制，李四你这边能不能先提供一下API文档？",
+    "还有一件事，我们原定下周三上线第一个版本，但根据目前的进度，我觉得可能会有风险。大家觉得我们要不要推迟到下周五？",
+    "我觉得推迟两天比较好，这样我们有更充分的测试时间。",
+    "我同意，下周五上线更稳妥。",
+    "好的，那我们决定将上线时间推迟到2024年1月26日。大家还有其他问题吗？",
+    "5. 上线时间推迟到2024年1月26日"
+  ],
+  "action_items": [
+    {
+      "id": "524a5dc6",
+      "task": "我已经开始修复了。密码重置的问题应该明天就能解决，移动端的问题可能需要多一点时间，但周五之前应该可以完成。另外，我发现我们的日志系统有些问题，建议我们升级一下日志库。这个比较紧急，因为现在排错很困难。",
+      "assignee": "团队",
+      "due_date": "2026-06-01",
+      "priority": "high",
+      "description": null,
+      "related_topics": [
+        "我这边已经完成了基本功能的测试，发现了两个bug。一个是密码重置功能在某些情况下"
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 10
+    },
+    {
+      "id": "49e20f8a",
+      "task": "日志系统的问题确实很重要。那王五你负责评估一下升级方案，下周一之前给出报告。赵六你那边的前端工作进展如何？",
+      "assignee": "王五",
+      "due_date": "2026-06-08",
+      "priority": "high",
+      "description": null,
+      "related_topics": [
+        "我这边已经完成了基本功能的测试，发现了两个bug。一个是密码重置功能在某些情况下"
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 12
+    },
+    {
+      "id": "142a533a",
+      "task": "上线时间推迟到2024年1月26日",
+      "assignee": null,
+      "due_date": "2024-01-26",
+      "priority": "medium",
+      "description": null,
+      "related_topics": [
+        "好的，那今天的会议就到这里。我们来总结一下今天的行动项："
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 42
+    },
+    {
+      "id": "6a45dfb6",
+      "task": "同意。赵六你负责联系UI团队，看看他们下周什么时候有空。关于权限控制，李四你这边能不能先提供一下API文档？",
+      "assignee": "赵六",
+      "due_date": "2026-06-07",
+      "priority": "medium",
+      "description": null,
+      "related_topics": [
+        "好的，日志系统的问题确实很重要。那王五你负责评估一下升级方案，下周一之前给出报告"
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 16
+    },
+    {
+      "id": "0cc888b1",
+      "task": "大家好，今天我们来开这周的项目周会。首先我来汇报一下上周的进展。我们已经完成了用户登录模块的开发，李四你那边测试怎么样？",
+      "assignee": "团队",
+      "due_date": null,
+      "priority": "medium",
+      "description": null,
+      "related_topics": [],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 4
+    },
+    {
+      "id": "75513bd2",
+      "task": "我这边主要在做用户管理页面。目前基本的CRUD功能已经完成了，但是我觉得界面设计还需要优化。另外，权限控制部分还需要和后端对接。我建议我们请UI团队帮忙看一下设计，这个可以安排在下周。",
+      "assignee": "赵六",
+      "due_date": "2026-06-07",
+      "priority": "medium",
+      "description": null,
+      "related_topics": [
+        "好的，日志系统的问题确实很重要。那王五你负责评估一下升级方案，下周一之前给出报告"
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 14
+    },
+    {
+      "id": "45442214",
+      "task": "我这边已经完成了基本功能的测试，发现了两个bug。一个是密码重置功能在某些情况下会失败，另一个是登录页面在移动端显示有问题。我已经把这些bug指派给了王五，他需要在本周五之前修复完成。",
+      "assignee": "李四",
+      "due_date": "2026-06-05",
+      "priority": "medium",
+      "description": null,
+      "related_topics": [],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 6
+    },
+    {
+      "id": "f4c6a066",
+      "task": "李四今天下班前提供权限控制的API文档",
+      "assignee": null,
+      "due_date": null,
+      "priority": "medium",
+      "description": null,
+      "related_topics": [
+        "好的，那今天的会议就到这里。我们来总结一下今天的行动项："
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 41
+    },
+    {
+      "id": "0caaea88",
+      "task": "王五负责评估日志系统升级方案，下周一（2024年1月22日）之前给出报告",
+      "assignee": "王五",
+      "due_date": "2024-01-22",
+      "priority": "medium",
+      "description": null,
+      "related_topics": [
+        "好的，那今天的会议就到这里。我们来总结一下今天的行动项："
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 39
+    },
+    {
+      "id": "9dcaf1f5",
+      "task": "王五需要在本周五（2024年1月19日）之前修复登录模块的两个bug",
+      "assignee": "王五",
+      "due_date": "2024-01-19",
+      "priority": "medium",
+      "description": null,
+      "related_topics": [
+        "好的，那今天的会议就到这里。我们来总结一下今天的行动项："
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 38
+    },
+    {
+      "id": "2512ad09",
+      "task": "赵六负责联系UI团队优化用户管理页面设计",
+      "assignee": "赵六",
+      "due_date": null,
+      "priority": "medium",
+      "description": null,
+      "related_topics": [
+        "好的，那今天的会议就到这里。我们来总结一下今天的行动项："
+      ],
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "source_line": 40
+    }
+  ]
+}

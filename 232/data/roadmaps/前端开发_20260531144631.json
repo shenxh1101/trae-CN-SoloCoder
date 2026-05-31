@@ -1,0 +1,243 @@
+{
+  "skill": "前端开发",
+  "version": "1.0",
+  "created_at": "2026-05-31T14:46:31.484297",
+  "updated_at": "2026-05-31T14:46:31.484306",
+  "total_hours": 180.0,
+  "difficulty": 4,
+  "time_budget": {
+    "daily_hours": 2,
+    "total_days": 90
+  },
+  "skill_tree": null,
+  "completion_percentage": 0.0,
+  "remaining_hours": 180.0,
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "HTML/CSS基础",
+      "description": "掌握网页结构和样式设计",
+      "objectives": [
+        "掌握HTML标签和语义化",
+        "精通CSS布局和定位",
+        "理解响应式设计",
+        "学会使用CSS动画"
+      ],
+      "resources": [
+        {
+          "name": "《HTML与CSS设计与构建网站》",
+          "type": "book",
+          "url": "https://example.com/html-css-book",
+          "description": "前端入门经典",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "freeCodeCamp响应式网页设计",
+          "type": "course",
+          "url": "https://freecodecamp.org",
+          "description": "免费系统的前端课程",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "MDN Web文档",
+          "type": "documentation",
+          "url": "https://developer.mozilla.org",
+          "description": "Web开发权威文档",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "个人作品集网站",
+          "type": "project",
+          "url": "https://example.com/portfolio-project",
+          "description": "创建个人展示网站",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 40.0,
+      "difficulty": 2,
+      "dependencies": [],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    },
+    {
+      "id": "phase-2",
+      "name": "JavaScript核心",
+      "description": "掌握JavaScript编程语言",
+      "objectives": [
+        "掌握ES6+新特性",
+        "理解异步编程",
+        "学会DOM操作",
+        "掌握事件处理"
+      ],
+      "resources": [
+        {
+          "name": "《JavaScript高级程序设计》",
+          "type": "book",
+          "url": "https://example.com/js-book",
+          "description": "JavaScript红宝书",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "JavaScript.info教程",
+          "type": "course",
+          "url": "https://javascript.info",
+          "description": "现代JavaScript教程",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "ES6标准入门",
+          "type": "documentation",
+          "url": "https://es6.ruanyifeng.com",
+          "description": "ES6特性详解",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "TodoList应用",
+          "type": "project",
+          "url": "https://example.com/todo-project",
+          "description": "原生JS实现待办事项",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 48.0,
+      "difficulty": 3,
+      "dependencies": [
+        "phase-1"
+      ],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    },
+    {
+      "id": "phase-3",
+      "name": "前端框架",
+      "description": "学习React/Vue现代前端框架",
+      "objectives": [
+        "掌握组件化开发",
+        "理解状态管理",
+        "学会路由配置",
+        "掌握框架生态"
+      ],
+      "resources": [
+        {
+          "name": "《React设计模式与最佳实践》",
+          "type": "book",
+          "url": "https://example.com/react-book",
+          "description": "React进阶书籍",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "React官方教程",
+          "type": "course",
+          "url": "https://react.dev",
+          "description": "React官方学习路径",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Vue.js文档",
+          "type": "documentation",
+          "url": "https://vuejs.org",
+          "description": "Vue官方文档",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "电商平台前端",
+          "type": "project",
+          "url": "https://example.com/ecommerce-project",
+          "description": "完整前端项目实战",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 56.0,
+      "difficulty": 4,
+      "dependencies": [
+        "phase-2"
+      ],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    },
+    {
+      "id": "phase-4",
+      "name": "工程化与性能优化",
+      "description": "掌握前端工程化和性能优化",
+      "objectives": [
+        "掌握Webpack/Vite构建工具",
+        "理解代码分割和懒加载",
+        "学会性能监测和优化",
+        "掌握测试方法"
+      ],
+      "resources": [
+        {
+          "name": "《Web性能权威指南》",
+          "type": "book",
+          "url": "https://example.com/performance-book",
+          "description": "性能优化圣经",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Vite官方文档",
+          "type": "documentation",
+          "url": "https://vitejs.dev",
+          "description": "下一代前端构建工具",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "前端性能优化实战",
+          "type": "course",
+          "url": "https://example.com/perf-course",
+          "description": "性能优化技巧课程",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "构建工具配置项目",
+          "type": "project",
+          "url": "https://example.com/build-project",
+          "description": "从0配置构建工具",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 36.0,
+      "difficulty": 4,
+      "dependencies": [
+        "phase-3"
+      ],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    }
+  ]
+}

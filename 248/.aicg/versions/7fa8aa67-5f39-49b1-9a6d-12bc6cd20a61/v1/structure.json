@@ -1,0 +1,18 @@
+{
+  "type": "button",
+  "children": [
+    "text"
+  ],
+  "events": [],
+  "states": [
+    "hover",
+    "active",
+    "focus",
+    "disabled"
+  ],
+  "dimensions": {
+    "width": "auto",
+    "height": "48px",
+    "padding": "12px 24px"
+  }
+}

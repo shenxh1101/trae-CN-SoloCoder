@@ -1,0 +1,9 @@
+{
+  "className": "bluebutton",
+  "backgroundColor": "#3b82f6",
+  "size": "medium",
+  "hasIcon": true,
+  "iconType": "search",
+  "interactive": "no",
+  "features": "none"
+}

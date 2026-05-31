@@ -1,0 +1,4 @@
+{
+  "onClick": "handleClick",
+  "aria-label": "Search"
+}

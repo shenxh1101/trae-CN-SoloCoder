@@ -1,0 +1,427 @@
+{% extends "base.html" %}
+
+{% block title %}AI面试官 - 面试进行中{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 flex flex-col">
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <span class="text-xl">🤖</span>
+                </div>
+                <div>
+                    <h1 class="font-semibold text-gray-800" id="positionName">AI面试官</h1>
+                    <p class="text-xs text-gray-500" id="difficultyLabel">初级难度</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div id="timerContainer" class="hidden">
+                    <div id="timer" class="text-lg font-mono font-bold text-gray-700">02:00</div>
+                    <div class="w-24 h-1 bg-gray-200 rounded-full mt-1">
+                        <div id="timerBar" class="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full progress-bar" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">进度</div>
+                    <div class="text-lg font-semibold text-purple-600" id="progressText">1/5</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-4xl mx-auto w-full px-4 py-6 flex flex-col">
+        <div id="chatContainer" class="flex-1 overflow-y-auto space-y-4 mb-4">
+        </div>
+
+        <div id="inputArea" class="bg-white rounded-2xl shadow-lg p-4">
+            <div id="codeEditorContainer" class="hidden mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">💻 代码答题区</label>
+                <textarea id="codeEditor" rows="10"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent code-editor resize-none"
+                    placeholder="在此输入你的代码..."></textarea>
+                <button type="button" id="runCodeBtn" class="mt-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
+                    ▶️ 运行测试
+                </button>
+                <div id="codeOutput" class="mt-2 p-3 bg-gray-900 text-green-400 rounded-lg text-sm font-mono hidden"></div>
+            </div>
+
+            <div id="textInputContainer">
+                <label class="block text-sm font-medium text-gray-700 mb-2">✍️ 你的回答</label>
+                <textarea id="answerInput" rows="4"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                    placeholder="请输入你的回答..."></textarea>
+            </div>
+
+            <div class="flex items-center justify-between mt-4">
+                <div class="flex space-x-2">
+                    <button type="button" id="hintBtn" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition text-sm">
+                        💡 获取提示
+                    </button>
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" id="downloadHistoryBtn" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
+                        📥 下载记录
+                    </button>
+                    <button type="button" id="submitBtn" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-indigo-700 transition">
+                        提交答案 →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="finishArea" class="hidden bg-white rounded-2xl shadow-lg p-6 text-center">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">面试完成！</h2>
+            <div class="space-y-2 mb-6">
+                <p class="text-gray-600">总体评分: <span id="finalScore" class="text-2xl font-bold text-purple-600"></span></p>
+                <p class="text-gray-600">情感分析: <span id="finalSentiment" class="font-medium"></span></p>
+                <p class="text-gray-600">自信程度: <span id="finalConfidence" class="font-medium"></span></p>
+            </div>
+            <div class="flex justify-center space-x-4">
+                <button type="button" id="viewReportBtn" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-indigo-700 transition">
+                    📊 查看详细报告
+                </button>
+                <button type="button" id="newInterviewBtn" class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">
+                    🔄 再来一次
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let interviewData = JSON.parse(localStorage.getItem('interviewData') || '{}');
+    let sessionId = interviewData.session_id;
+    let currentQuestion = interviewData.question;
+    let totalQuestions = interviewData.total_questions;
+    let pressureMode = interviewData.pressure_mode;
+    let timePerQuestion = interviewData.time_per_question;
+    let currentQuestionIndex = 0;
+    let timerInterval = null;
+    let timeRemaining = timePerQuestion;
+    let questionStartTime = Date.now();
+    let interviewFinished = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!sessionId) {
+            window.location.href = '/';
+            return;
+        }
+
+        document.getElementById('positionName').textContent = interviewData.position;
+        document.getElementById('difficultyLabel').textContent = interviewData.difficulty === 'senior' ? '高级难度' : '初级难度';
+        
+        updateProgress();
+        setupInputArea();
+        loadMessages();
+        
+        if (pressureMode) {
+            startTimer();
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', submitAnswer);
+        document.getElementById('hintBtn').addEventListener('click', getHint);
+        document.getElementById('runCodeBtn').addEventListener('click', runCode);
+        document.getElementById('downloadHistoryBtn').addEventListener('click', downloadHistory);
+        document.getElementById('viewReportBtn').addEventListener('click', viewReport);
+        document.getElementById('newInterviewBtn').addEventListener('click', () => window.location.href = '/');
+
+        document.getElementById('answerInput').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+    });
+
+    function updateProgress() {
+        document.getElementById('progressText').textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+    }
+
+    function setupInputArea() {
+        const isCode = currentQuestion && currentQuestion.is_code;
+        document.getElementById('codeEditorContainer').classList.toggle('hidden', !isCode);
+        document.getElementById('textInputContainer').classList.toggle('hidden', isCode);
+        
+        if (isCode) {
+            document.getElementById('codeEditor').focus();
+        } else {
+            document.getElementById('answerInput').focus();
+        }
+    }
+
+    function startTimer() {
+        document.getElementById('timerContainer').classList.remove('hidden');
+        timeRemaining = timePerQuestion;
+        updateTimerDisplay();
+        
+        if (timerInterval) clearInterval(timerInterval);
+        
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateTimerDisplay();
+            
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                handleTimeout();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        document.getElementById('timer').textContent = formatTime(timeRemaining);
+        
+        const percentage = (timeRemaining / timePerQuestion) * 100;
+        const timerBar = document.getElementById('timerBar');
+        timerBar.style.width = percentage + '%';
+        
+        const timerEl = document.getElementById('timer');
+        if (timeRemaining <= 30) {
+            timerEl.classList.add('text-red-600', 'timer-warning');
+            timerEl.classList.remove('text-gray-700');
+            timerBar.className = 'h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full progress-bar';
+        } else if (timeRemaining <= 60) {
+            timerEl.classList.add('text-orange-600');
+            timerEl.classList.remove('text-gray-700', 'timer-warning');
+            timerBar.className = 'h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full progress-bar';
+        } else {
+            timerEl.classList.remove('text-red-600', 'text-orange-600', 'timer-warning');
+            timerEl.classList.add('text-gray-700');
+            timerBar.className = 'h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full progress-bar';
+        }
+    }
+
+    async function handleTimeout() {
+        try {
+            const response = await fetch('/api/timeout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId })
+            });
+            const data = await response.json();
+            
+            addMessage('system', '⏰ 时间到！本题答题时间已用完，将自动进入下一题。');
+            
+            if (data.is_last) {
+                finishInterview();
+            } else {
+                currentQuestion = data.next_question;
+                currentQuestionIndex++;
+                updateProgress();
+                setupInputArea();
+                loadMessages();
+                resetTimer();
+            }
+        } catch (error) {
+            console.error('Timeout error:', error);
+        }
+    }
+
+    function resetTimer() {
+        if (pressureMode) {
+            timeRemaining = timePerQuestion;
+            questionStartTime = Date.now();
+            startTimer();
+        }
+    }
+
+    async function loadMessages() {
+        try {
+            const response = await fetch(`/api/messages/${sessionId}`);
+            const data = await response.json();
+            
+            document.getElementById('chatContainer').innerHTML = '';
+            data.messages.forEach(msg => {
+                addMessage(msg.role, msg.content, false);
+            });
+            
+            scrollToBottom();
+        } catch (error) {
+            console.error('Load messages error:', error);
+        }
+    }
+
+    function addMessage(role, content, animate = true) {
+        const container = document.getElementById('chatContainer');
+        const div = document.createElement('div');
+        div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+        
+        let bubbleClass = 'interviewer-bubble';
+        if (role === 'user') bubbleClass = 'user-bubble';
+        if (role === 'system') bubbleClass = 'system-bubble';
+        
+        div.innerHTML = `
+            <div class="chat-bubble ${bubbleClass} p-4 ${animate ? 'animate-fadeIn' : ''}">
+                <div class="whitespace-pre-wrap">${escapeHtml(content)}</div>
+            </div>
+        `;
+        
+        container.appendChild(div);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const container = document.getElementById('chatContainer');
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function submitAnswer() {
+        if (interviewFinished) return;
+        
+        const isCode = currentQuestion && currentQuestion.is_code;
+        const answer = isCode ? document.getElementById('codeEditor').value : document.getElementById('answerInput').value;
+        
+        if (!answer.trim()) {
+            alert('请输入你的回答');
+            return;
+        }
+
+        if (timerInterval) clearInterval(timerInterval);
+        
+        const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
+        
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').innerHTML = '⏳ 正在评估...';
+
+        try {
+            const response = await fetch('/api/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    answer: answer,
+                    time_spent: timeSpent
+                })
+            });
+
+            const data = await response.json();
+            
+            if (isCode) {
+                document.getElementById('codeEditor').value = '';
+            } else {
+                document.getElementById('answerInput').value = '';
+            }
+            
+            await loadMessages();
+            
+            if (data.is_last) {
+                finishInterview();
+            } else {
+                currentQuestion = data.next_question;
+                currentQuestionIndex++;
+                updateProgress();
+                setupInputArea();
+                resetTimer();
+                
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').innerHTML = '提交答案 →';
+            }
+        } catch (error) {
+            console.error('Submit error:', error);
+            alert('提交失败，请重试');
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').innerHTML = '提交答案 →';
+        }
+    }
+
+    async function getHint() {
+        try {
+            const response = await fetch('/api/hint', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                await loadMessages();
+                document.getElementById('hintBtn').disabled = true;
+                document.getElementById('hintBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                alert(data.error || '获取提示失败');
+            }
+        } catch (error) {
+            console.error('Hint error:', error);
+        }
+    }
+
+    async function runCode() {
+        const code = document.getElementById('codeEditor').value;
+        if (!code.trim()) {
+            alert('请输入代码');
+            return;
+        }
+
+        const outputEl = document.getElementById('codeOutput');
+        outputEl.classList.remove('hidden');
+        outputEl.textContent = '⏳ 正在运行...';
+
+        try {
+            const response = await fetch('/api/run-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code })
+            });
+
+            const data = await response.json();
+            
+            let output = '';
+            if (data.test_results && data.test_results.length > 0) {
+                data.test_results.forEach((result, i) => {
+                    const status = result.passed ? '✅ 通过' : '❌ 失败';
+                    output += `测试用例 ${result.test_case}: ${status}\n`;
+                    if (result.output) output += `  输出: ${result.output}\n`;
+                    if (result.error) output += `  错误: ${result.error}\n`;
+                });
+            } else if (data.error) {
+                output = `错误: ${data.error}`;
+            } else {
+                output = data.output || '运行完成';
+            }
+            
+            outputEl.textContent = output;
+        } catch (error) {
+            outputEl.textContent = '运行失败: ' + error.message;
+        }
+    }
+
+    async function finishInterview() {
+        interviewFinished = true;
+        
+        try {
+            const response = await fetch('/api/finish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId })
+            });
+
+            const data = await response.json();
+            
+            await loadMessages();
+            
+            document.getElementById('inputArea').classList.add('hidden');
+            document.getElementById('finishArea').classList.remove('hidden');
+            document.getElementById('timerContainer').classList.add('hidden');
+            
+            document.getElementById('finalScore').textContent = renderStars(Math.round(data.overall_score)) + ` (${data.overall_score}/5)`;
+            document.getElementById('finalSentiment').textContent = data.sentiment;
+            document.getElementById('finalConfidence').textContent = `${data.confidence_score * 100:.0f}%`;
+            
+            localStorage.setItem('finalReportData', JSON.stringify(data));
+        } catch (error) {
+            console.error('Finish error:', error);
+        }
+    }
+
+    function viewReport() {
+        window.location.href = `/report/${sessionId}`;
+    }
+
+    function downloadHistory() {
+        window.open(`/api/history/download/${sessionId}`, '_blank');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,301 @@
+{
+  "skill": "Python数据分析",
+  "version": "1.0",
+  "created_at": "2026-05-31T13:50:07.850093",
+  "updated_at": "2026-05-31T13:50:07.850108",
+  "total_hours": 180.0,
+  "difficulty": 4,
+  "time_budget": {
+    "daily_hours": 2,
+    "total_days": 90
+  },
+  "skill_tree": null,
+  "completion_percentage": 0.0,
+  "remaining_hours": 180.0,
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Python基础",
+      "description": "掌握Python编程语言的核心概念和语法",
+      "objectives": [
+        "掌握Python基础语法和数据类型",
+        "理解函数、模块和包的概念",
+        "学会使用面向对象编程",
+        "掌握异常处理和文件操作"
+      ],
+      "resources": [
+        {
+          "name": "《Python编程：从入门到实践》",
+          "type": "book",
+          "url": "https://example.com/python-book",
+          "description": "经典Python入门书籍",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Codecademy Python课程",
+          "type": "course",
+          "url": "https://codecademy.com",
+          "description": "交互式Python学习平台",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Python官方教程",
+          "type": "documentation",
+          "url": "https://docs.python.org",
+          "description": "最权威的Python学习资源",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "LeetCode Python练习题",
+          "type": "project",
+          "url": "https://leetcode.com",
+          "description": "通过刷题巩固Python基础",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 31.3,
+      "difficulty": 2,
+      "dependencies": [],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    },
+    {
+      "id": "phase-2",
+      "name": "数据处理库",
+      "description": "学习使用NumPy和Pandas进行数据处理",
+      "objectives": [
+        "掌握NumPy数组操作",
+        "精通Pandas数据处理",
+        "学会数据清洗和转换",
+        "掌握时间序列处理"
+      ],
+      "resources": [
+        {
+          "name": "《利用Python进行数据分析》",
+          "type": "book",
+          "url": "https://example.com/pydata-book",
+          "description": "Wes McKinney经典著作",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Kaggle Pandas教程",
+          "type": "course",
+          "url": "https://kaggle.com/learn",
+          "description": "实战导向的Pandas学习",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "NumPy官方文档",
+          "type": "documentation",
+          "url": "https://numpy.org/doc",
+          "description": "NumPy权威参考",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "泰坦尼克号数据分析项目",
+          "type": "project",
+          "url": "https://kaggle.com/c/titanic",
+          "description": "经典数据分析入门项目",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 39.1,
+      "difficulty": 3,
+      "dependencies": [
+        "phase-1"
+      ],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    },
+    {
+      "id": "phase-3",
+      "name": "数据可视化",
+      "description": "使用Matplotlib和Seaborn创建专业图表",
+      "objectives": [
+        "掌握Matplotlib基础绘图",
+        "学会使用Seaborn高级图表",
+        "理解数据可视化原则",
+        "创建交互式可视化"
+      ],
+      "resources": [
+        {
+          "name": "《Python数据可视化手册》",
+          "type": "book",
+          "url": "https://example.com/viz-book",
+          "description": "全面的数据可视化指南",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "DataCamp可视化课程",
+          "type": "course",
+          "url": "https://datacamp.com",
+          "description": "系统学习数据可视化",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Matplotlib画廊",
+          "type": "documentation",
+          "url": "https://matplotlib.org/gallery",
+          "description": "丰富的图表示例",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "全球疫情数据可视化",
+          "type": "project",
+          "url": "https://example.com/covid-project",
+          "description": "综合可视化项目",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 27.4,
+      "difficulty": 3,
+      "dependencies": [
+        "phase-2"
+      ],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    },
+    {
+      "id": "phase-4",
+      "name": "统计分析",
+      "description": "掌握统计学基础和假设检验",
+      "objectives": [
+        "理解描述性统计和推断性统计",
+        "掌握假设检验方法",
+        "学会相关性和回归分析",
+        "掌握A/B测试方法"
+      ],
+      "resources": [
+        {
+          "name": "《统计学》",
+          "type": "book",
+          "url": "https://example.com/stats-book",
+          "description": "经典统计学教材",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Coursera统计学专项",
+          "type": "course",
+          "url": "https://coursera.org",
+          "description": "系统学习统计学",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "SciPy统计文档",
+          "type": "documentation",
+          "url": "https://docs.scipy.org/doc/scipy/reference/stats.html",
+          "description": "Python统计函数参考",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "用户行为A/B测试分析",
+          "type": "project",
+          "url": "https://example.com/ab-test-project",
+          "description": "应用统计方法的实战项目",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 35.2,
+      "difficulty": 4,
+      "dependencies": [
+        "phase-2"
+      ],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    },
+    {
+      "id": "phase-5",
+      "name": "机器学习基础",
+      "description": "使用Scikit-learn进行机器学习建模",
+      "objectives": [
+        "理解监督学习和无监督学习",
+        "掌握常用分类和回归算法",
+        "学会模型评估和调优",
+        "掌握特征工程方法"
+      ],
+      "resources": [
+        {
+          "name": "《机器学习实战》",
+          "type": "book",
+          "url": "https://example.com/ml-book",
+          "description": "Python机器学习入门",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Andrew Ng机器学习课程",
+          "type": "course",
+          "url": "https://coursera.org",
+          "description": "经典机器学习课程",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "Scikit-learn文档",
+          "type": "documentation",
+          "url": "https://scikit-learn.org",
+          "description": "机器学习库权威参考",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        },
+        {
+          "name": "房价预测机器学习项目",
+          "type": "project",
+          "url": "https://kaggle.com/c/house-prices-advanced-regression-techniques",
+          "description": "综合机器学习实战",
+          "rating": 0,
+          "upvotes": 0,
+          "downvotes": 0
+        }
+      ],
+      "estimated_hours": 47.0,
+      "difficulty": 5,
+      "dependencies": [
+        "phase-3",
+        "phase-4"
+      ],
+      "completed": false,
+      "completed_at": null,
+      "notes": "根据时间预算（每天2小时，共90天）调整"
+    }
+  ]
+}

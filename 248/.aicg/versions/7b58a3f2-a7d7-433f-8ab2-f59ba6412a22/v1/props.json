@@ -1,0 +1,6 @@
+{
+  "children": "node - Button content (text, elements, or components)",
+  "onClick": "function - Click event handler",
+  "variant": "string - Button variant (primary, secondary, etc.)",
+  "disabled": "boolean - Disabled state"
+}

@@ -1,0 +1,37 @@
+<!-- RedButton Component -->
+<style>
+  .redbutton {
+    padding: 12px 24px; font-size: 16px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    
+  }
+  .redbutton:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .redbutton:active {
+    transform: translateY(0);
+  }
+  .redbutton-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+</style>
+
+<button class="redbutton" onclick="alert('Button clicked!')">
+  <span class="redbutton-icon"><svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg></span>
+  <span class="redbutton-text">Click Me</span>
+</button>

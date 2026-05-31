@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>代码异味检测报告</title>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.header { background: linear-gradient(135deg, #1a237e, #283593); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; }
+.header h1 { font-size: 28px; margin-bottom: 10px; }
+.header .meta { opacity: 0.9; font-size: 14px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+.stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+.stat-card .number { font-size: 32px; font-weight: bold; }
+.stat-card .label { font-size: 13px; color: #666; margin-top: 5px; }
+.debt-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+.debt-card .grade { font-size: 64px; font-weight: bold; }
+.debt-card .score { font-size: 18px; color: #666; }
+.heatmap-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; }
+.heatmap-section h2 { margin-bottom: 15px; font-size: 20px; }
+.heatmap-bar { display: flex; align-items: center; margin-bottom: 8px; }
+.heatmap-bar .fname { width: 300px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.heatmap-bar .bar-container { flex: 1; height: 24px; background: #eee; border-radius: 4px; overflow: hidden; }
+.heatmap-bar .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; display: flex; align-items: center; padding-left: 8px; color: white; font-size: 12px; font-weight: bold; min-width: 30px; }
+.file-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+.file-section h2 { font-size: 18px; margin-bottom: 15px; color: #1a237e; word-break: break-all; }
+.smell-card { border-left: 4px solid; padding: 15px; margin-bottom: 15px; border-radius: 4px; background: #fafafa; }
+.smell-card .smell-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.smell-card .smell-type { font-weight: bold; font-size: 16px; }
+.smell-card .severity-badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; color: white; font-weight: bold; }
+.smell-card .location { font-size: 13px; color: #666; margin-bottom: 8px; }
+.smell-card .description { margin-bottom: 8px; }
+.smell-card .code-block { background: #263238; color: #eeffff; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: "Fira Code", "Consolas", monospace; font-size: 13px; line-height: 1.5; margin-bottom: 10px; white-space: pre-wrap; }
+.smell-card .section-label { font-weight: bold; color: #555; margin-bottom: 4px; font-size: 13px; }
+.smell-card .suggestion { background: #E3F2FD; padding: 10px; border-radius: 4px; font-size: 14px; margin-top: 8px; }
+.smell-card .issue { background: #FFF3E0; padding: 10px; border-radius: 4px; font-size: 14px; margin-top: 8px; }
+.footer { text-align: center; padding: 20px; color: #999; font-size: 13px; }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="header">
+    <h1>🔍 代码异味检测报告</h1>
+    <div class="meta">项目: demo_project | 生成时间: 2026-05-31 15:54:22</div>
+</div>
+
+<div class="stats">
+    <div class="stat-card"><div class="number" style="color:#F44336">45</div><div class="label">异味总数</div></div>
+    <div class="stat-card"><div class="number" style="color:#9C27B0">0</div><div class="label">严重</div></div>
+    <div class="stat-card"><div class="number" style="color:#F44336">3</div><div class="label">高</div></div>
+    <div class="stat-card"><div class="number" style="color:#FF9800">42</div><div class="label">中</div></div>
+    <div class="stat-card"><div class="number" style="color:#4CAF50">0</div><div class="label">低</div></div>
+</div>
+
+<div class="debt-card">
+    <div class="grade" style="color:#9C27B0">F</div>
+    <div class="score">技术债务评分: 100.0 / 100</div>
+</div>
+
+<div class="heatmap-section">
+    <h2>📊 异味热力图</h2>
+    
+<div class="heatmap-bar">
+    <div class="fname" title="demo_project/backend/order_system.py">order_system.py <span style="color:#999">(demo_project/backend/order_system.py)</span></div>
+    <div class="bar-container">
+        <div class="bar-fill" style="width:100.0%;background:#B71C1C">15</div>
+    </div>
+</div>
+<div class="heatmap-bar">
+    <div class="fname" title="demo_project/backend/auth.py">auth.py <span style="color:#999">(demo_project/backend/auth.py)</span></div>
+    <div class="bar-container">
+        <div class="bar-fill" style="width:86.7%;background:#F44336">13</div>
+    </div>
+</div>
+<div class="heatmap-bar">
+    <div class="fname" title="demo_project/frontend/user_manager.js">user_manager.js <span style="color:#999">(demo_project/frontend/user_manager.js)</span></div>
+    <div class="bar-container">
+        <div class="bar-fill" style="width:66.7%;background:#FF8F00">10</div>
+    </div>
+</div>
+<div class="heatmap-bar">
+    <div class="fname" title="demo_project/frontend/api_client.js">api_client.js <span style="color:#999">(demo_project/frontend/api_client.js)</span></div>
+    <div class="bar-container">
+        <div class="bar-fill" style="width:33.3%;background:#66BB6A">5</div>
+    </div>
+</div>
+<div class="heatmap-bar">
+    <div class="fname" title="demo_project/tests/test_helpers.py">test_helpers.py <span style="color:#999">(demo_project/tests/test_helpers.py)</span></div>
+    <div class="bar-container">
+        <div class="bar-fill" style="width:6.7%;background:#E8F5E9">1</div>
+    </div>
+</div>
+<div class="heatmap-bar">
+    <div class="fname" title="demo_project/utils/data_processor.py">data_processor.py <span style="color:#999">(demo_project/utils/data_processor.py)</span></div>
+    <div class="bar-container">
+        <div class="bar-fill" style="width:6.7%;background:#E8F5E9">1</div>
+    </div>
+</div>
+</div>
+
+<div class="file-section">
+    <h2>📄 demo_project/backend/auth.py (13 个异味)</h2>
+    
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:4-4</div>
+    <div class="description">临时字段 &#x27;self.sessions&#x27; 仅在 2 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   4 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.sessions = {}</span>
+<span style="color:#546E7A;user-select:none">   5 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.sessions&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:5-5</div>
+    <div class="description">临时字段 &#x27;self.tokens&#x27; 仅在 2 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   5 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.tokens = {}</span>
+<span style="color:#546E7A;user-select:none">   6 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.tokens&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:6-6</div>
+    <div class="description">临时字段 &#x27;self.blacklist&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   6 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.blacklist = set()</span>
+<span style="color:#546E7A;user-select:none">   7 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.blacklist&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:7-7</div>
+    <div class="description">临时字段 &#x27;self.permissions&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   7 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.permissions = {}</span>
+<span style="color:#546E7A;user-select:none">   8 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.permissions&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:8-8</div>
+    <div class="description">临时字段 &#x27;self.roles&#x27; 仅在 2 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   8 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.roles = {}</span>
+<span style="color:#546E7A;user-select:none">   9 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.roles&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:12-12</div>
+    <div class="description">临时字段 &#x27;self.cache&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  12 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.cache = {}</span>
+<span style="color:#546E7A;user-select:none">  13 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.cache&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:13-13</div>
+    <div class="description">临时字段 &#x27;self.rate_limits&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  13 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.rate_limits = {}</span>
+<span style="color:#546E7A;user-select:none">  14 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.rate_limits&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:15-15</div>
+    <div class="description">临时字段 &#x27;self.config&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  15 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.config = {}</span>
+<span style="color:#546E7A;user-select:none">  16 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.config&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:16-16</div>
+    <div class="description">临时字段 &#x27;self.logger&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  16 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.logger = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  17 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.logger&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:17-17</div>
+    <div class="description">临时字段 &#x27;self.encryption_key&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  17 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.encryption_key = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  18 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.encryption_key&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:19-39</div>
+    <div class="description">方法 &#x27;register_user&#x27; 在条件分支中赋值实例属性，可能导致临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  19 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">def</span> register_user(<span style="color:#C792EA;font-weight:bold">self</span>, username, password, email, role=<span style="color:#C3E88D">&quot;user&quot;</span>):</span>
+<span style="color:#546E7A;user-select:none">  20 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user = {<span style="color:#C3E88D">&quot;username&quot;</span>: username, <span style="color:#C3E88D">&quot;email&quot;</span>: email, <span style="color:#C3E88D">&quot;role&quot;</span>: role}</span>
+<span style="color:#546E7A;user-select:none">  21 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_data = <span style="color:#C792EA;font-weight:bold">self</span>._hash_password(password)</span>
+<span style="color:#546E7A;user-select:none">  22 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user[<span style="color:#C3E88D">&quot;password_hash&quot;</span>] = <span style="color:#C792EA;font-weight:bold">self</span>.temp_data</span>
+<span style="color:#546E7A;user-select:none">  23 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user[<span style="color:#C3E88D">&quot;id&quot;</span>] = f<span style="color:#C3E88D">&quot;user_{len(<span style="color:#C792EA;font-weight:bold">self</span>.users) + <span style="color:#F78C6C">1</span>}&quot;</span></span>
+<span style="color:#546E7A;user-select:none">  24 │ </span>
+<span style="color:#546E7A;user-select:none">  25 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> role <span style="color:#C792EA;font-weight:bold">in</span> <span style="color:#C792EA;font-weight:bold">self</span>.roles:</span>
+<span style="color:#546E7A;user-select:none">  26 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user[<span style="color:#C3E88D">&quot;permissions&quot;</span>] = <span style="color:#C792EA;font-weight:bold">self</span>.roles[role]</span>
+<span style="color:#546E7A;user-select:none">  27 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">else</span>:</span>
+<span style="color:#546E7A;user-select:none">  28 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user[<span style="color:#C3E88D">&quot;permissions&quot;</span>] = [<span style="color:#C3E88D">&quot;read&quot;</span>]</span>
+<span style="color:#546E7A;user-select:none">  29 │ </span>
+<span style="color:#546E7A;user-select:none">  30 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">条件性赋值的属性在对象其他地方可能为 None/undefined，增加空值检查负担和运行时错误风险。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 考虑引入 Null Object 模式或将条件逻辑封装到独立的策略对象中。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:41-66</div>
+    <div class="description">方法 &#x27;login&#x27; 在条件分支中赋值实例属性，可能导致临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  41 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">def</span> login(<span style="color:#C792EA;font-weight:bold">self</span>, username, password):</span>
+<span style="color:#546E7A;user-select:none">  42 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user = <span style="color:#C792EA;font-weight:bold">self</span>.users.get(username)</span>
+<span style="color:#546E7A;user-select:none">  43 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> <span style="color:#C792EA;font-weight:bold">not</span> <span style="color:#C792EA;font-weight:bold">self</span>.temp_user:</span>
+<span style="color:#546E7A;user-select:none">  44 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.audit_log.append(f<span style="color:#C3E88D">&quot;Login failed: {username} (<span style="color:#C792EA;font-weight:bold">not</span> found)&quot;</span>)</span>
+<span style="color:#546E7A;user-select:none">  45 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  46 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">return</span> <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  47 │ </span>
+<span style="color:#546E7A;user-select:none">  48 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> <span style="color:#C792EA;font-weight:bold">self</span>.temp_user[<span style="color:#C3E88D">&quot;status&quot;</span>] != <span style="color:#C3E88D">&quot;active&quot;</span>:</span>
+<span style="color:#546E7A;user-select:none">  49 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.audit_log.append(f<span style="color:#C3E88D">&quot;Login failed: {username} (inactive)&quot;</span>)</span>
+<span style="color:#546E7A;user-select:none">  50 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  51 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">return</span> <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  52 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">条件性赋值的属性在对象其他地方可能为 None/undefined，增加空值检查负担和运行时错误风险。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 考虑引入 Null Object 模式或将条件逻辑封装到独立的策略对象中。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/auth.py:68-75</div>
+    <div class="description">方法 &#x27;check_permission&#x27; 在条件分支中赋值实例属性，可能导致临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  68 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">def</span> check_permission(<span style="color:#C792EA;font-weight:bold">self</span>, username, permission):</span>
+<span style="color:#546E7A;user-select:none">  69 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user = <span style="color:#C792EA;font-weight:bold">self</span>.users.get(username)</span>
+<span style="color:#546E7A;user-select:none">  70 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> <span style="color:#C792EA;font-weight:bold">not</span> <span style="color:#C792EA;font-weight:bold">self</span>.temp_user:</span>
+<span style="color:#546E7A;user-select:none">  71 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  72 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">return</span> <span style="color:#C792EA;font-weight:bold">False</span></span>
+<span style="color:#546E7A;user-select:none">  73 │ </span>        has_perm = permission <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">in</span> <span style="color:#C792EA;font-weight:bold">self</span>.temp_user.get(<span style="color:#C3E88D">&quot;permissions&quot;</span>, [])</span>
+<span style="color:#546E7A;user-select:none">  74 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.temp_user = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  75 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">return</span> has_perm</span>
+<span style="color:#546E7A;user-select:none">  76 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">条件性赋值的属性在对象其他地方可能为 None/undefined，增加空值检查负担和运行时错误风险。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 考虑引入 Null Object 模式或将条件逻辑封装到独立的策略对象中。</div>
+</div>
+
+</div>
+
+<div class="file-section">
+    <h2>📄 demo_project/backend/order_system.py (15 个异味)</h2>
+    
+<div class="smell-card" style="border-left-color:#F44336; background:#FFEBEE">
+    <div class="smell-header">
+        <span class="smell-type">god_object (耦合)</span>
+        <span class="severity-badge" style="background:#F44336">高</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:1-133</div>
+    <div class="description">类 &#x27;OrderProcessor&#x27; 是上帝对象: 19 个属性（阈值 15）。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   1 │ </span><span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">class</span> OrderProcessor:</span>
+<span style="color:#546E7A;user-select:none">   2 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">def</span> __init__(<span style="color:#C792EA;font-weight:bold">self</span>):</span>
+<span style="color:#546E7A;user-select:none">   3 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.orders = []</span>
+<span style="color:#546E7A;user-select:none">   4 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.customers = []</span>
+<span style="color:#546E7A;user-select:none">   5 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.products = []</span>
+<span style="color:#546E7A;user-select:none">   6 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.inventory = {}</span>
+<span style="color:#546E7A;user-select:none">   7 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.shipping = []</span>
+<span style="color:#546E7A;user-select:none">   8 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.payments = []</span>
+<span style="color:#546E7A;user-select:none">   9 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.refunds = []</span>
+<span style="color:#546E7A;user-select:none">  10 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.coupons = {}</span>
+<span style="color:#546E7A;user-select:none">  11 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.taxes = {}</span>
+<span style="color:#546E7A;user-select:none">  12 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.discounts = []</span>
+<span style="color:#546E7A;user-select:none">  13 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.notifications = []</span>
+<span style="color:#546E7A;user-select:none">  14 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.audit = []</span>
+<span style="color:#546E7A;user-select:none">  15 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.session = {}</span>
+<span style="color:#546E7A;user-select:none">  16 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.cache = {}</span>
+<span style="color:#546E7A;user-select:none">  17 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">上帝对象承担了过多职责，违反单一职责原则，使得修改任何一个功能都可能影响其他功能，增加测试和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将类 &#x27;OrderProcessor&#x27; 按职责拆分为多个小类。 当前有 19 个属性，建议将相关属性组合为值对象或独立类。 可考虑使用组合模式代替继承，让每个类只负责一个明确的功能领域。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:4-4</div>
+    <div class="description">临时字段 &#x27;self.customers&#x27; 仅在 2 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   4 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.customers = []</span>
+<span style="color:#546E7A;user-select:none">   5 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.customers&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:5-5</div>
+    <div class="description">临时字段 &#x27;self.products&#x27; 仅在 2 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   5 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.products = []</span>
+<span style="color:#546E7A;user-select:none">   6 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.products&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:7-7</div>
+    <div class="description">临时字段 &#x27;self.shipping&#x27; 仅在 2 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   7 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.shipping = []</span>
+<span style="color:#546E7A;user-select:none">   8 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.shipping&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:10-10</div>
+    <div class="description">临时字段 &#x27;self.coupons&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  10 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.coupons = {}</span>
+<span style="color:#546E7A;user-select:none">  11 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.coupons&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:11-11</div>
+    <div class="description">临时字段 &#x27;self.taxes&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  11 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.taxes = {}</span>
+<span style="color:#546E7A;user-select:none">  12 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.taxes&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:12-12</div>
+    <div class="description">临时字段 &#x27;self.discounts&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  12 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.discounts = []</span>
+<span style="color:#546E7A;user-select:none">  13 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.discounts&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:13-13</div>
+    <div class="description">临时字段 &#x27;self.notifications&#x27; 仅在 2 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  13 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.notifications = []</span>
+<span style="color:#546E7A;user-select:none">  14 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.notifications&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:15-15</div>
+    <div class="description">临时字段 &#x27;self.session&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  15 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.session = {}</span>
+<span style="color:#546E7A;user-select:none">  16 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.session&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:16-16</div>
+    <div class="description">临时字段 &#x27;self.cache&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  16 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.cache = {}</span>
+<span style="color:#546E7A;user-select:none">  17 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.cache&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:17-17</div>
+    <div class="description">临时字段 &#x27;self.config&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  17 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.config = {}</span>
+<span style="color:#546E7A;user-select:none">  18 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.config&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:18-18</div>
+    <div class="description">临时字段 &#x27;self.logger&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  18 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.logger = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  19 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.logger&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:19-19</div>
+    <div class="description">临时字段 &#x27;self.queue&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  19 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.queue = <span style="color:#C792EA;font-weight:bold">None</span></span>
+<span style="color:#546E7A;user-select:none">  20 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.queue&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:20-20</div>
+    <div class="description">临时字段 &#x27;self.metrics&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  20 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.metrics = {}</span>
+<span style="color:#546E7A;user-select:none">  21 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.metrics&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/backend/order_system.py:21-21</div>
+    <div class="description">临时字段 &#x27;self.alerts&#x27; 仅在 1 个方法中使用，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  21 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">self</span>.alerts = []</span>
+<span style="color:#546E7A;user-select:none">  22 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，其他时候为 None 或未定义，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;self.alerts&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递而非存储为实例属性。</div>
+</div>
+
+</div>
+
+<div class="file-section">
+    <h2>📄 demo_project/frontend/api_client.js (5 个异味)</h2>
+    
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/api_client.js:3-3</div>
+    <div class="description">临时字段 &#x27;this.baseUrl&#x27; 仅使用 2 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   3 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.baseUrl = baseUrl;</span>
+<span style="color:#546E7A;user-select:none">   4 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.baseUrl&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/api_client.js:4-4</div>
+    <div class="description">临时字段 &#x27;this.apiKey&#x27; 仅使用 2 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   4 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.apiKey = apiKey;</span>
+<span style="color:#546E7A;user-select:none">   5 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.apiKey&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/api_client.js:5-5</div>
+    <div class="description">临时字段 &#x27;this.cache&#x27; 仅使用 2 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   5 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.cache = {};</span>
+<span style="color:#546E7A;user-select:none">   6 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.cache&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/api_client.js:11-11</div>
+    <div class="description">临时字段 &#x27;this.timeout&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  11 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.timeout = <span style="color:#F78C6C">30000</span>;</span>
+<span style="color:#546E7A;user-select:none">  12 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.timeout&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/api_client.js:12-12</div>
+    <div class="description">临时字段 &#x27;this.headers&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  12 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.headers = {};</span>
+<span style="color:#546E7A;user-select:none">  13 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.headers&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+</div>
+
+<div class="file-section">
+    <h2>📄 demo_project/frontend/user_manager.js (10 个异味)</h2>
+    
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:5-5</div>
+    <div class="description">临时字段 &#x27;this.permissions&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   5 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.permissions = {};</span>
+<span style="color:#546E7A;user-select:none">   6 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.permissions&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:6-6</div>
+    <div class="description">临时字段 &#x27;this.sessions&#x27; 仅使用 2 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   6 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.sessions = {};</span>
+<span style="color:#546E7A;user-select:none">   7 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.sessions&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:8-8</div>
+    <div class="description">临时字段 &#x27;this.tokens&#x27; 仅使用 2 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   8 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.tokens = {};</span>
+<span style="color:#546E7A;user-select:none">   9 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.tokens&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:9-9</div>
+    <div class="description">临时字段 &#x27;this.pendingRequests&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   9 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.pendingRequests = [];</span>
+<span style="color:#546E7A;user-select:none">  10 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.pendingRequests&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:10-10</div>
+    <div class="description">临时字段 &#x27;this.emailQueue&#x27; 仅使用 2 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  10 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.emailQueue = [];</span>
+<span style="color:#546E7A;user-select:none">  11 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.emailQueue&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:11-11</div>
+    <div class="description">临时字段 &#x27;this.notifications&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  11 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.notifications = [];</span>
+<span style="color:#546E7A;user-select:none">  12 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.notifications&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:13-13</div>
+    <div class="description">临时字段 &#x27;this.tempRole&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  13 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.tempRole = <span style="color:#C792EA;font-weight:bold">null</span>;</span>
+<span style="color:#546E7A;user-select:none">  14 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.tempRole&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:15-15</div>
+    <div class="description">临时字段 &#x27;this.cache&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  15 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.cache = {};</span>
+<span style="color:#546E7A;user-select:none">  16 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.cache&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:16-16</div>
+    <div class="description">临时字段 &#x27;this.config&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  16 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.config = {};</span>
+<span style="color:#546E7A;user-select:none">  17 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.config&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+<div class="smell-card" style="border-left-color:#FF9800; background:#FFF3E0">
+    <div class="smell-header">
+        <span class="smell-type">temporary_field (可维护性)</span>
+        <span class="severity-badge" style="background:#FF9800">中</span>
+    </div>
+    <div class="location">📍 demo_project/frontend/user_manager.js:17-17</div>
+    <div class="description">临时字段 &#x27;this.logger&#x27; 仅使用 1 次，可能是临时字段异味。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">  17 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">this</span>.logger = <span style="color:#C792EA;font-weight:bold">null</span>;</span>
+<span style="color:#546E7A;user-select:none">  18 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">临时字段使得对象的状态不可预测，某些属性只在特定场景下有值，增加理解和调试难度。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将 &#x27;this.logger&#x27; 及其相关方法提取为独立类，或将该字段作为方法参数传递。</div>
+</div>
+
+</div>
+
+<div class="file-section">
+    <h2>📄 demo_project/tests/test_helpers.py (1 个异味)</h2>
+    
+<div class="smell-card" style="border-left-color:#F44336; background:#FFEBEE">
+    <div class="smell-header">
+        <span class="smell-type">long_function (复杂度)</span>
+        <span class="severity-badge" style="background:#F44336">高</span>
+    </div>
+    <div class="location">📍 demo_project/tests/test_helpers.py:4-59</div>
+    <div class="description">函数 &#x27;long_test_function_1&#x27; 有 56 行（超过阈值 50 行）。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   4 │ </span><span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">def</span> long_test_function_1(test_cases, config, options):</span>
+<span style="color:#546E7A;user-select:none">   5 │ </span>    results = []
+<span style="color:#546E7A;user-select:none">   6 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">for</span> <span style="color:#C792EA;font-weight:bold">case</span> <span style="color:#C792EA;font-weight:bold">in</span> test_cases:</span>
+<span style="color:#546E7A;user-select:none">   7 │ </span>        result = {}
+<span style="color:#546E7A;user-select:none">   8 │ </span>        result[<span style="color:#C3E88D">&quot;name&quot;</span>] = <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">case</span>[<span style="color:#C3E88D">&quot;name&quot;</span>]</span>
+<span style="color:#546E7A;user-select:none">   9 │ </span>        result[<span style="color:#C3E88D">&quot;input&quot;</span>] = <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">case</span>[<span style="color:#C3E88D">&quot;input&quot;</span>]</span>
+<span style="color:#546E7A;user-select:none">  10 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> options.get(<span style="color:#C3E88D">&quot;expected&quot;</span>) <span style="color:#C792EA;font-weight:bold">and</span> <span style="color:#C3E88D">&quot;expected&quot;</span> <span style="color:#C792EA;font-weight:bold">in</span> <span style="color:#C792EA;font-weight:bold">case</span>:</span>
+<span style="color:#546E7A;user-select:none">  11 │ </span>            result[<span style="color:#C3E88D">&quot;expected&quot;</span>] = <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">case</span>[<span style="color:#C3E88D">&quot;expected&quot;</span>]</span>
+<span style="color:#546E7A;user-select:none">  12 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> <span style="color:#C792EA;font-weight:bold">case</span>[<span style="color:#C3E88D">&quot;type&quot;</span>] == <span style="color:#C3E88D">&quot;unit&quot;</span>:</span>
+<span style="color:#546E7A;user-select:none">  13 │ </span>            result[<span style="color:#C3E88D">&quot;category&quot;</span>] = <span style="color:#C3E88D">&quot;unit&quot;</span>
+<span style="color:#546E7A;user-select:none">  14 │ </span>  ... (<span style="color:#F78C6C">36</span> lines omitted) ...
+<span style="color:#546E7A;user-select:none">  15 │ </span>
+<span style="color:#546E7A;user-select:none">  16 │ </span>    filtered = []
+<span style="color:#546E7A;user-select:none">  17 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">for</span> result <span style="color:#C792EA;font-weight:bold">in</span> validated:</span>
+<span style="color:#546E7A;user-select:none">  18 │ </span>        keep = <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">True</span></span>
+<span style="color:#546E7A;user-select:none">  19 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> options.get(<span style="color:#C3E88D">&quot;filter_tags&quot;</span>):</span>
+<span style="color:#546E7A;user-select:none">  20 │ </span>            keep = any(t <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">in</span> result.get(<span style="color:#C3E88D">&quot;tags&quot;</span>, []) <span style="color:#C792EA;font-weight:bold">for</span> t <span style="color:#C792EA;font-weight:bold">in</span> options[<span style="color:#C3E88D">&quot;filter_tags&quot;</span>])</span>
+<span style="color:#546E7A;user-select:none">  21 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> keep:</span>
+<span style="color:#546E7A;user-select:none">  22 │ </span>            filtered.append(result)
+<span style="color:#546E7A;user-select:none">  23 │ </span>
+<span style="color:#546E7A;user-select:none">  24 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">return</span> filtered</span>
+<span style="color:#546E7A;user-select:none">  25 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">过长的函数难以理解、测试和维护。单个函数承担过多职责会增加修改风险。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将函数 &#x27;long_test_function_1&#x27; 拆分为多个较小的函数，每个函数只做一件事。 可使用 --autofix 尝试自动拆分此函数。</div>
+</div>
+
+</div>
+
+<div class="file-section">
+    <h2>📄 demo_project/utils/data_processor.py (1 个异味)</h2>
+    
+<div class="smell-card" style="border-left-color:#F44336; background:#FFEBEE">
+    <div class="smell-header">
+        <span class="smell-type">long_function (复杂度)</span>
+        <span class="severity-badge" style="background:#F44336">高</span>
+    </div>
+    <div class="location">📍 demo_project/utils/data_processor.py:1-94</div>
+    <div class="description">函数 &#x27;very_long_data_processing_function&#x27; 有 94 行（超过阈值 50 行）。</div>
+    <div class="section-label">代码片段:</div>
+    <div class="code-block"><span style="color:#546E7A;user-select:none">   1 │ </span><span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">def</span> very_long_data_processing_function(raw_data, config, options, user_context, preferences):</span>
+<span style="color:#546E7A;user-select:none">   2 │ </span>    result = []
+<span style="color:#546E7A;user-select:none">   3 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">for</span> item <span style="color:#C792EA;font-weight:bold">in</span> raw_data:</span>
+<span style="color:#546E7A;user-select:none">   4 │ </span>        processed = {}
+<span style="color:#546E7A;user-select:none">   5 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> isinstance(item, dict):</span>
+<span style="color:#546E7A;user-select:none">   6 │ </span>            <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">for</span> key, value <span style="color:#C792EA;font-weight:bold">in</span> item.items():</span>
+<span style="color:#546E7A;user-select:none">   7 │ </span>                <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> key <span style="color:#C792EA;font-weight:bold">in</span> config.get(<span style="color:#C3E88D">&quot;include_fields&quot;</span>, []):</span>
+<span style="color:#546E7A;user-select:none">   8 │ </span>                    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> isinstance(value, str):</span>
+<span style="color:#546E7A;user-select:none">   9 │ </span>                        processed[key] = value.strip().upper()
+<span style="color:#546E7A;user-select:none">  10 │ </span>                        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> len(processed[key]) &gt; config.get(<span style="color:#C3E88D">&quot;max_length&quot;</span>, <span style="color:#F78C6C">100</span>):</span>
+<span style="color:#546E7A;user-select:none">  11 │ </span>  ... (<span style="color:#F78C6C">74</span> lines omitted) ...
+<span style="color:#546E7A;user-select:none">  12 │ </span>            filtered.append(item)
+<span style="color:#546E7A;user-select:none">  13 │ </span>
+<span style="color:#546E7A;user-select:none">  14 │ </span>    final_output = []
+<span style="color:#546E7A;user-select:none">  15 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">for</span> item <span style="color:#C792EA;font-weight:bold">in</span> filtered:</span>
+<span style="color:#546E7A;user-select:none">  16 │ </span>        <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">if</span> options.get(<span style="color:#C3E88D">&quot;add_metadata&quot;</span>):</span>
+<span style="color:#546E7A;user-select:none">  17 │ </span>            item[<span style="color:#C3E88D">&quot;_timestamp&quot;</span>] = options.get(<span style="color:#C3E88D">&quot;timestamp&quot;</span>, <span style="color:#F78C6C">0</span>)
+<span style="color:#546E7A;user-select:none">  18 │ </span>            item[<span style="color:#C3E88D">&quot;_source&quot;</span>] = options.get(<span style="color:#C3E88D">&quot;source&quot;</span>, <span style="color:#C3E88D">&quot;unknown&quot;</span>)
+<span style="color:#546E7A;user-select:none">  19 │ </span>        final_output.append(item)
+<span style="color:#546E7A;user-select:none">  20 │ </span>
+<span style="color:#546E7A;user-select:none">  21 │ </span>    <span style="color:<span style="color:#546E7A">#C792EA;font-weight:bold">return</span> final_output</span>
+<span style="color:#546E7A;user-select:none">  22 │ </span></div>
+    <div class="section-label">维护问题:</div>
+    <div class="issue">过长的函数难以理解、测试和维护。单个函数承担过多职责会增加修改风险。</div>
+    <div class="section-label">重构建议:</div>
+    <div class="suggestion">💡 将函数 &#x27;very_long_data_processing_function&#x27; 拆分为多个较小的函数，每个函数只做一件事。 可使用 --autofix 尝试自动拆分此函数。</div>
+</div>
+
+</div>
+
+<div class="footer">
+    代码异味检测报告 | 由 smell_detector 生成 | 2026-05-31
+</div>
+</div>
+
+</body>
+</html>

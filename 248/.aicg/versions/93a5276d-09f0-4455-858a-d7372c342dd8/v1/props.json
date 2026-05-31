@@ -1,0 +1,9 @@
+{
+  "className": "yellowbutton",
+  "backgroundColor": "#eab308",
+  "size": "medium",
+  "hasIcon": true,
+  "iconType": "search",
+  "interactive": "no",
+  "features": "none"
+}

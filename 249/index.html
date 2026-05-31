@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI情绪识别表情镜</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">🎭 AI情绪识别表情镜</h1>
+            <div class="status-bar">
+                <span id="modelStatus" class="status-item status-loading">
+                    <span class="status-dot"></span>
+                    模型加载中...
+                </span>
+                <span id="cameraStatus" class="status-item status-off">
+                    <span class="status-dot"></span>
+                    摄像头未启动
+                </span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="camera-section">
+                <div class="camera-wrapper">
+                    <video id="video" class="camera-video" autoplay muted playsinline></video>
+                    <canvas id="effectCanvas" class="effect-canvas"></canvas>
+                    <div id="lowConfidenceWarning" class="low-confidence-warning hidden">
+                        ⚠️ 置信度较低，请调整光线或角度
+                    </div>
+                    <div id="loadingOverlay" class="loading-overlay">
+                        <div class="loading-spinner"></div>
+                        <p>正在加载AI模型，请稍候...</p>
+                    </div>
+                </div>
+
+                <div class="emotion-display">
+                    <div class="dominant-emotion">
+                        <span class="emotion-label">当前情绪</span>
+                        <span id="dominantEmoji" class="emotion-emoji">😐</span>
+                        <span id="dominantEmotion" class="emotion-name">中性</span>
+                        <span id="dominantConfidence" class="emotion-confidence">0%</span>
+                    </div>
+                </div>
+
+                <div class="emotion-bars">
+                    <div class="emotion-bar-item" data-emotion="happy">
+                        <span class="bar-label">😊 高兴</span>
+                        <div class="bar-container">
+                            <div class="bar-fill happy"></div>
+                        </div>
+                        <span class="bar-value">0%</span>
+                    </div>
+                    <div class="emotion-bar-item" data-emotion="sad">
+                        <span class="bar-label">😢 悲伤</span>
+                        <div class="bar-container">
+                            <div class="bar-fill sad"></div>
+                        </div>
+                        <span class="bar-value">0%</span>
+                    </div>
+                    <div class="emotion-bar-item" data-emotion="surprised">
+                        <span class="bar-label">😮 惊讶</span>
+                        <div class="bar-container">
+                            <div class="bar-fill surprised"></div>
+                        </div>
+                        <span class="bar-value">0%</span>
+                    </div>
+                    <div class="emotion-bar-item" data-emotion="angry">
+                        <span class="bar-label">😠 愤怒</span>
+                        <div class="bar-container">
+                            <div class="bar-fill angry"></div>
+                        </div>
+                        <span class="bar-value">0%</span>
+                    </div>
+                    <div class="emotion-bar-item" data-emotion="fearful">
+                        <span class="bar-label">😨 恐惧</span>
+                        <div class="bar-container">
+                            <div class="bar-fill fearful"></div>
+                        </div>
+                        <span class="bar-value">0%</span>
+                    </div>
+                    <div class="emotion-bar-item" data-emotion="disgusted">
+                        <span class="bar-label">😖 厌恶</span>
+                        <div class="bar-container">
+                            <div class="bar-fill disgusted"></div>
+                        </div>
+                        <span class="bar-value">0%</span>
+                    </div>
+                    <div class="emotion-bar-item" data-emotion="neutral">
+                        <span class="bar-label">😐 中性</span>
+                        <div class="bar-container">
+                            <div class="bar-fill neutral"></div>
+                        </div>
+                        <span class="bar-value">0%</span>
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button id="photoBtn" class="control-btn photo-btn" title="拍照">
+                        📷 拍照
+                    </button>
+                    <button id="recordBtn" class="control-btn record-btn" title="录制视频">
+                        ⏺️ 录制
+                    </button>
+                    <button id="reportBtn" class="control-btn report-btn" title="情绪报告">
+                        📊 报告
+                    </button>
+                </div>
+            </div>
+
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h3 class="section-title">⚙️ 特效设置</h3>
+                    <div class="setting-item">
+                        <label>特效强度</label>
+                        <input type="range" id="effectIntensity" min="0" max="100" value="50" class="slider">
+                        <span id="intensityValue">50%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>粒子数量</label>
+                        <input type="range" id="particleCount" min="10" max="200" value="50" class="slider">
+                        <span id="particleValue">50</span>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="section-title">🎛️ 功能开关</h3>
+                    <div class="toggle-item">
+                        <label>
+                            <input type="checkbox" id="voiceToggle" checked>
+                            <span class="toggle-slider"></span>
+                            语音反馈
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <label>
+                            <input type="checkbox" id="privacyToggle">
+                            <span class="toggle-slider"></span>
+                            隐私模式
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <label>
+                            <input type="checkbox" id="stickerToggle" checked>
+                            <span class="toggle-slider"></span>
+                            显示贴纸
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <label>
+                            <input type="checkbox" id="mirrorToggle" checked>
+                            <span class="toggle-slider"></span>
+                            镜像模式
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="section-title">🔊 语音设置</h3>
+                    <div class="setting-item">
+                        <label>语速</label>
+                        <input type="range" id="voiceRate" min="0.5" max="2" step="0.1" value="1" class="slider">
+                        <span id="rateValue">1.0x</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>语调</label>
+                        <input type="range" id="voicePitch" min="0.5" max="2" step="0.1" value="1" class="slider">
+                        <span id="pitchValue">1.0</span>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="section-title">ℹ️ 运行状态</h3>
+                    <div class="info-item">
+                        <span>FPS:</span>
+                        <span id="fpsDisplay">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span>检测帧数:</span>
+                        <span id="frameCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span>录制时长:</span>
+                        <span id="recordTime">00:00</span>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <div id="photoModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📸 情绪快照</h2>
+                    <button class="close-btn" id="closePhotoModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="photo-canvas-wrapper">
+                        <canvas id="photoCanvas" class="photo-preview"></canvas>
+                    </div>
+                    <div class="sticker-panel">
+                        <div class="sticker-panel-header">
+                            <span class="sticker-label">🎨 添加情绪贴纸</span>
+                            <button id="clearStickersBtn" class="sticker-clear-btn">清除贴纸</button>
+                        </div>
+                        <div class="sticker-options">
+                            <button class="sticker-btn" data-sticker="happy" data-type="image" title="高兴">
+                                <img src="stickers/happy.png" alt="高兴" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">高兴</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="sad" data-type="image" title="悲伤">
+                                <img src="stickers/sad.png" alt="悲伤" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">悲伤</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="surprised" data-type="image" title="惊讶">
+                                <img src="stickers/surprised.png" alt="惊讶" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">惊讶</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="angry" data-type="image" title="愤怒">
+                                <img src="stickers/angry.png" alt="愤怒" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">愤怒</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="fearful" data-type="image" title="恐惧">
+                                <img src="stickers/fearful.png" alt="恐惧" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">恐惧</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="disgusted" data-type="image" title="厌恶">
+                                <img src="stickers/disgusted.png" alt="厌恶" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">厌恶</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="neutral" data-type="image" title="中性">
+                                <img src="stickers/neutral.png" alt="中性" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">中性</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="heart" data-type="image" title="爱心">
+                                <img src="stickers/heart.png" alt="爱心" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">爱心</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="star" data-type="image" title="星星">
+                                <img src="stickers/star.png" alt="星星" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">星星</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="fire" data-type="image" title="火焰">
+                                <img src="stickers/fire.png" alt="火焰" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">火焰</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="drop" data-type="image" title="水滴">
+                                <img src="stickers/drop.png" alt="水滴" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">水滴</span>
+                            </button>
+                            <button class="sticker-btn" data-sticker="sparkle" data-type="image" title="闪光">
+                                <img src="stickers/sparkle.png" alt="闪光" class="sticker-img" onload="this.parentElement.classList.add('loaded')" onerror="this.parentElement.classList.add('load-error')">
+                                <span class="sticker-name">闪光</span>
+                            </button>
+                        </div>
+                        <div class="sticker-status" id="stickerStatus">
+                            ✅ 12款贴纸已加载就绪
+                        </div>
+                        <p class="sticker-hint">💡 点击上方贴纸，然后点击照片选择放置位置</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn secondary" id="retakeBtn">重新拍摄</button>
+                    <button class="modal-btn primary" id="savePhotoBtn">💾 保存图片</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="reportModal" class="modal hidden">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h2>📊 情绪报告</h2>
+                    <button class="close-btn" id="closeReportModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="report-section">
+                        <h3>情绪变化曲线</h3>
+                        <canvas id="reportChart" class="report-chart"></canvas>
+                    </div>
+                    <div class="report-stats">
+                        <div class="stat-card">
+                            <span class="stat-label">记录时长</span>
+                            <span class="stat-value" id="statDuration">00:00</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">检测帧数</span>
+                            <span class="stat-value" id="statFrames">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">主导情绪</span>
+                            <span class="stat-value" id="statDominant">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">平均置信度</span>
+                            <span class="stat-value" id="statConfidence">0%</span>
+                        </div>
+                    </div>
+                    <div class="emotion-breakdown">
+                        <h3>情绪占比分析</h3>
+                        <div id="emotionBreakdown" class="breakdown-list"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn secondary" id="clearDataBtn">清除数据</button>
+                    <button class="modal-btn primary" id="exportReportBtn">导出报告</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confidenceAlert" class="modal hidden">
+            <div class="modal-content alert-modal">
+                <div class="modal-header alert-header">
+                    <h2>⚠️ 检测提示</h2>
+                </div>
+                <div class="modal-body alert-body">
+                    <div class="alert-icon">💡</div>
+                    <p class="alert-message">情绪置信度较低，可能影响识别准确度。</p>
+                    <div class="alert-tips">
+                        <div class="tip-item">🔦 确保光线充足，避免逆光</div>
+                        <div class="tip-item">👤 正面面对摄像头</div>
+                        <div class="tip-item">📏 保持适当距离（30-60cm）</div>
+                        <div class="tip-item">😊 尝试做出更明显的表情</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn primary" id="closeConfidenceAlert">我知道了</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="recordingResultModal" class="modal hidden">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h2>🎬 录制分析结果</h2>
+                    <button class="close-btn" id="closeRecordingResult">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="report-section">
+                        <h3>录制期间情绪变化曲线</h3>
+                        <canvas id="recordingChart" class="report-chart"></canvas>
+                    </div>
+                    <div class="report-stats" id="recordingStats"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn secondary" id="downloadAnalysisBtn">导出分析数据</button>
+                    <button class="modal-btn primary" id="downloadVideoBtn">下载视频</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/emotion.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/speech.js"></script>
+    <script src="js/recorder.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

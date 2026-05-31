@@ -1,0 +1,13 @@
+[
+  {
+    "id": "5a1b3091-fb09-4baa-bb44-d484d1d90fce",
+    "email_id": "test_123",
+    "email_content": "测试反馈邮件内容",
+    "original_category": "咨询",
+    "corrected_category": "投诉",
+    "original_priority": "低",
+    "corrected_priority": "高",
+    "note": "这个应该是投诉",
+    "created_at": "2026-05-31T20:15:32.077933"
+  }
+]

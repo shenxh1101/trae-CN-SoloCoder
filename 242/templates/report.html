@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}面试报告 - AI面试官{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+            <div class="gradient-bg p-8 text-white text-center">
+                <div class="text-5xl mb-4">📊</div>
+                <h1 class="text-3xl font-bold mb-2">面试报告</h1>
+                <p class="opacity-90">{{ session.position }} - {{ '高级' if session.difficulty == 'senior' else '初级' }}难度</p>
+            </div>
+
+            <div class="p-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-4 text-center">
+                        <div class="text-3xl font-bold text-purple-600">
+                            {% if session.overall_score %}
+                            {{ '⭐' * session.overall_score|int }}{{ '☆' * (5 - session.overall_score|int) }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">总体评分</div>
+                        <div class="text-xl font-semibold text-gray-800">{{ session.overall_score or '-' }}/5</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 text-center">
+                        <div class="text-3xl font-bold text-green-600">
+                            {% if session.confidence_score >= 0.7 %}😊
+                            {% elif session.confidence_score >= 0.4 %}😐
+                            {% else %}😟
+                            {% endif %}
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">情感分析</div>
+                        <div class="text-lg font-semibold text-gray-800">{{ session.sentiment or '-' }}</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-4 text-center">
+                        <div class="text-3xl font-bold text-blue-600">💪</div>
+                        <div class="text-sm text-gray-500 mt-1">自信程度</div>
+                        <div class="text-xl font-semibold text-gray-800">{{ (session.confidence_score * 100)|int if session.confidence_score else '-' }}%</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-4 text-center">
+                        <div class="text-3xl font-bold text-orange-600">⏱️</div>
+                        <div class="text-sm text-gray-500 mt-1">面试时长</div>
+                        <div class="text-lg font-semibold text-gray-800">
+                            {% if session.completed_at and session.started_at %}
+                            {{ ((session.completed_at - session.started_at).total_seconds() / 60)|int }}分钟
+                            {% else %}
+                            -
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-red-800 mb-3">⚠️ 薄弱环节</h3>
+                    {% if session.weaknesses %}
+                    {% set weaknesses = session.weaknesses|from_json %}
+                    {% if weaknesses %}
+                    <div class="flex flex-wrap gap-2">
+                        {% for w in weaknesses %}
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">{{ w }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-green-600">✅ 表现优秀，没有明显薄弱环节！</p>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-gray-500">暂无数据</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex justify-center space-x-4 mb-8">
+                    <button onclick="downloadPDF()" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-indigo-700 transition flex items-center space-x-2">
+                        <span>📄</span>
+                        <span>下载PDF报告</span>
+                    </button>
+                    <button onclick="downloadHistory()" class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition flex items-center space-x-2">
+                        <span>📥</span>
+                        <span>下载对话记录</span>
+                    </button>
+                    <button onclick="location.href='/'" class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition flex items-center space-x-2">
+                        <span>🔄</span>
+                        <span>再来一次</span>
+                    </button>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mb-6">📝 详细答题记录</h3>
+                
+                <div class="space-y-6">
+                    {% for answer in answers %}
+                    <div class="border border-gray-200 rounded-2xl overflow-hidden">
+                        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-800">问题 {{ loop.index }}</h4>
+                                <div class="flex items-center space-x-4">
+                                    {% if answer.code_passed is not none %}
+                                    <span class="px-3 py-1 rounded-full text-sm {{ 'bg-green-100 text-green-700' if answer.code_passed else 'bg-red-100 text-red-700' }}">
+                                        {{ '✅ 代码通过' if answer.code_passed else '❌ 代码未通过' }}
+                                    </span>
+                                    {% endif %}
+                                    <span class="text-xl">
+                                        {{ '⭐' * (answer.score or 0) }}{{ '☆' * (5 - (answer.score or 0)) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 space-y-4">
+                            <div>
+                                <div class="text-sm font-medium text-gray-500 mb-1">题目</div>
+                                <p class="text-gray-800">{{ answer.question_text }}</p>
+                            </div>
+                            
+                            <div>
+                                <div class="text-sm font-medium text-gray-500 mb-1">你的回答</div>
+                                <div class="bg-gray-50 rounded-xl p-4 text-gray-700 whitespace-pre-wrap">{{ answer.user_answer or '未作答' }}</div>
+                            </div>
+                            
+                            {% if answer.time_spent or answer.hint_used %}
+                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                {% if answer.time_spent %}
+                                <span>⏱️ 用时: {{ answer.time_spent }}秒</span>
+                                {% endif %}
+                                {% if answer.hint_used %}
+                                <span>💡 已使用提示</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <div>
+                                <div class="text-sm font-medium text-gray-500 mb-1">面试官反馈</div>
+                                <div class="bg-green-50 rounded-xl p-4 text-green-800 whitespace-pre-wrap">{{ answer.feedback }}</div>
+                            </div>
+                            
+                            {% if answer.keywords_matched or answer.keywords_missing %}
+                            <div class="grid grid-cols-2 gap-4">
+                                {% if answer.keywords_matched %}
+                                {% set matched = answer.keywords_matched|from_json %}
+                                {% if matched %}
+                                <div>
+                                    <div class="text-sm font-medium text-green-600 mb-1">✅ 已掌握知识点</div>
+                                    <div class="flex flex-wrap gap-1">
+                                        {% for kw in matched %}
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">{{ kw }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                                
+                                {% if answer.keywords_missing %}
+                                {% set missing = answer.keywords_missing|from_json %}
+                                {% if missing %}
+                                <div>
+                                    <div class="text-sm font-medium text-red-600 mb-1">❌ 需加强知识点</div>
+                                    <div class="flex flex-wrap gap-1">
+                                        {% for kw in missing %}
+                                        <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">{{ kw }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if answers %}
+                <div class="mt-8 bg-gray-50 rounded-2xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 得分统计</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600">{{ score_stats.avg }}/5</div>
+                            <div class="text-sm text-gray-500">平均得分</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600">{{ score_stats.max }}/5</div>
+                            <div class="text-sm text-gray-500">最高得分</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-orange-600">{{ score_stats.min }}/5</div>
+                            <div class="text-sm text-gray-500">最低得分</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">{{ score_stats.count }}</div>
+                            <div class="text-sm text-gray-500">总题数</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const sessionId = "{{ session.session_id }}";
+    
+    function downloadPDF() {
+        window.open(`/api/report/pdf/${sessionId}`, '_blank');
+    }
+    
+    function downloadHistory() {
+        window.open(`/api/history/download/${sessionId}`, '_blank');
+    }
+</script>
+{% endblock %}

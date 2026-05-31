@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI语音控制机器人</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">
+                <span class="title-icon">🤖</span>
+                <span class="title-text">AI语音控制机器人</span>
+            </h1>
+            <p class="app-subtitle">Voice-Controlled Robot Assistant</p>
+        </header>
+
+        <main class="main-content">
+            <section class="left-panel">
+                <div class="control-panel card">
+                    <h2 class="panel-title">🎤 语音控制</h2>
+                    <div class="voice-controls">
+                        <button id="micButton" class="mic-button" aria-label="开始语音识别">
+                            <span class="mic-icon">🎙️</span>
+                            <span class="mic-pulse"></span>
+                        </button>
+                        <div class="status-display">
+                            <div class="status-indicator" id="statusIndicator"></div>
+                            <span class="status-text" id="statusText">准备就绪</span>
+                        </div>
+                    </div>
+                    <div class="recognized-text-container">
+                        <label>识别到的指令：</label>
+                        <div class="recognized-text" id="recognizedText">等待语音输入...</div>
+                    </div>
+                    <div class="toggle-controls">
+                        <label class="toggle-item">
+                            <input type="checkbox" id="voiceFeedbackToggle" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">语音反馈</span>
+                        </label>
+                        <label class="toggle-item">
+                            <input type="checkbox" id="continuousModeToggle" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">连续模式</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="quick-actions card">
+                    <h2 class="panel-title">⚡ 快捷指令</h2>
+                    <div class="action-buttons">
+                        <button class="action-btn" data-command="向左转">
+                            <span class="btn-icon">⬅️</span>
+                            <span class="btn-text">向左转</span>
+                        </button>
+                        <button class="action-btn" data-command="向右转">
+                            <span class="btn-icon">➡️</span>
+                            <span class="btn-text">向右转</span>
+                        </button>
+                        <button class="action-btn" data-command="跳舞">
+                            <span class="btn-icon">💃</span>
+                            <span class="btn-text">跳舞</span>
+                        </button>
+                        <button class="action-btn" data-command="变大">
+                            <span class="btn-icon">🔼</span>
+                            <span class="btn-text">变大</span>
+                        </button>
+                        <button class="action-btn" data-command="变小">
+                            <span class="btn-icon">🔽</span>
+                            <span class="btn-text">变小</span>
+                        </button>
+                        <button class="action-btn" data-command="旋转">
+                            <span class="btn-icon">🔄</span>
+                            <span class="btn-text">旋转</span>
+                        </button>
+                        <button class="action-btn" data-command="跳跃">
+                            <span class="btn-icon">⬆️</span>
+                            <span class="btn-text">跳跃</span>
+                        </button>
+                        <button class="action-btn" data-command="挥手">
+                            <span class="btn-icon">👋</span>
+                            <span class="btn-text">挥手</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="emotion-panel card">
+                    <h2 class="panel-title">😊 情绪状态</h2>
+                    <div class="emotion-buttons">
+                        <button class="emotion-btn" data-emotion="happy" title="开心">😄</button>
+                        <button class="emotion-btn" data-emotion="sad" title="难过">😢</button>
+                        <button class="emotion-btn" data-emotion="surprised" title="惊讶">😮</button>
+                        <button class="emotion-btn" data-emotion="angry" title="生气">😠</button>
+                        <button class="emotion-btn active" data-emotion="neutral" title="平静">😐</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="center-panel">
+                <div class="robot-container card">
+                    <div class="robot-wrapper" id="robotWrapper">
+                        <canvas id="robotCanvas" width="300" height="400"></canvas>
+                        <div class="robot-glow"></div>
+                    </div>
+                    <div class="robot-info">
+                        <div class="info-item">
+                            <span class="info-label">状态：</span>
+                            <span class="info-value" id="robotStatus">待机中</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">情绪：</span>
+                            <span class="info-value" id="robotEmotion">平静</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="right-panel">
+                <div class="custom-commands card">
+                    <h2 class="panel-title">📝 自定义指令</h2>
+                    <form id="addCommandForm" class="add-command-form">
+                        <div class="form-group">
+                            <label>指令名称</label>
+                            <input type="text" id="cmdName" placeholder="例如：打招呼" required>
+                        </div>
+                        <div class="form-group">
+                            <label>触发关键词（用逗号分隔）</label>
+                            <input type="text" id="cmdKeywords" placeholder="例如：你好,打招呼,嗨" required>
+                        </div>
+                        <div class="form-group">
+                            <label>关联动画</label>
+                            <select id="cmdAnimation" required>
+                                <option value="wave">挥手</option>
+                                <option value="dance">跳舞</option>
+                                <option value="jump">跳跃</option>
+                                <option value="rotate">旋转</option>
+                                <option value="turnLeft">左转</option>
+                                <option value="turnRight">右转</option>
+                                <option value="grow">变大</option>
+                                <option value="shrink">变小</option>
+                                <option value="blink">眨眼</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>语音回应</label>
+                            <input type="text" id="cmdResponse" placeholder="例如：你好呀！">
+                        </div>
+                        <button type="submit" class="add-btn">➕ 添加指令</button>
+                    </form>
+                    <div class="commands-list-container">
+                        <h3>已定义指令</h3>
+                        <div class="commands-list" id="commandsList"></div>
+                    </div>
+                    <div class="storage-controls">
+                        <button id="saveConfigBtn" class="storage-btn">💾 保存配置</button>
+                        <button id="loadConfigBtn" class="storage-btn">📂 加载配置</button>
+                        <button id="resetConfigBtn" class="storage-btn danger">🔄 重置</button>
+                    </div>
+                </div>
+
+                <div class="command-history card">
+                    <h2 class="panel-title">📜 指令历史</h2>
+                    <div class="history-list" id="historyList">
+                        <div class="history-empty">暂无指令记录</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/robot.js"></script>
+    <script src="js/speech.js"></script>
+    <script src="js/commands.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

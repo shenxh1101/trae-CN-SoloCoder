@@ -1,0 +1,42 @@
+<!-- OrangeButton Component -->
+<style>
+  .orangebutton {
+    padding: 12px 24px; font-size: 16px;
+    background-color: #f97316;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    
+  }
+  .orangebutton:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .orangebutton:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  .orangebutton:focus {
+    outline: 2px solid #f97316;
+    outline-offset: 2px;
+  }
+  .orangebutton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .orangebutton-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+</style>
+
+<button class="orangebutton"  aria-label="Click Me">
+  
+  <span class="orangebutton-text">Click Me</span>
+</button>

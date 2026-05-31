@@ -1,0 +1,10 @@
+{
+  "user_id": "default",
+  "skill": "前端开发",
+  "completed_phases": [
+    "phase-2",
+    "phase-3",
+    "phase-1"
+  ],
+  "updated_at": "2026-05-31T14:46:17.156608"
+}

@@ -1,0 +1,20 @@
+{
+  "ai": {
+    "provider": "ollama",
+    "apiKey": "ollama",
+    "baseUrl": "http://127.0.0.1:11434/v1/chat/completions",
+    "model": "qwen2.5-coder:1.5b",
+    "temperature": 0.7,
+    "maxTokens": 2048,
+    "timeout": 120000
+  },
+  "output": {
+    "defaultDir": "./output",
+    "versionsDir": "./.aicg/versions"
+  },
+  "features": {
+    "enableASCII": true,
+    "enableWCAG": true,
+    "enableVersionControl": true
+  }
+}

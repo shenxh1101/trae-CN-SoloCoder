@@ -1,0 +1,21 @@
+{
+  "paper_title": "Attention Is All You Need",
+  "methods": [
+    "Transformer Architecture",
+    "Multi-Head Self-Attention",
+    "Position-Wise Feed-Forward Networks",
+    "Residual Connections"
+  ],
+  "datasets": [
+    "WMT 2014 English-to-German",
+    "WMT 2014 English-to-French"
+  ],
+  "keywords": [
+    "Transformer",
+    "Self-Attention",
+    "Machine Translation",
+    "Multi-Head Attention",
+    "Sequence Modeling"
+  ],
+  "confidence": 0.94
+}

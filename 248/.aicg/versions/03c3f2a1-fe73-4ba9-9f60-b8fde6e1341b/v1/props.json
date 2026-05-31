@@ -1,0 +1,5 @@
+{
+  "children": "node - Button content",
+  "onClick": "function - Click handler",
+  "disabled": "boolean - Disabled state"
+}

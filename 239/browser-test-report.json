@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-05-31T09:10:16.131Z",
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "passRate": 100
+  },
+  "results": [
+    {
+      "name": "页面加载",
+      "status": "PASS",
+      "msg": "标题: \"AI老照片修复模拟器\""
+    },
+    {
+      "name": "图片上传",
+      "status": "PASS",
+      "msg": "图片已加载到Canvas"
+    },
+    {
+      "name": "涂抹画笔",
+      "status": "PASS",
+      "msg": "有蒙版: true, 模式: brush"
+    },
+    {
+      "name": "蒙版输出格式",
+      "status": "PASS",
+      "msg": "显示RGB: 255,183,78,128, 输出RGB: 255,255,255,255"
+    },
+    {
+      "name": "修复选项和强度",
+      "status": "PASS",
+      "msg": "设置正确: {\"intensity\":\"medium\",\"denoise\":true,\"sharpen\":true,\"contrast\":true,\"colorize\":true,\"scratches\":false}"
+    },
+    {
+      "name": "图片修复（后端API）",
+      "status": "PASS",
+      "msg": "步骤: colorized, contrast, denoised, sharpened, 蒙版保留: true, API调用: true"
+    },
+    {
+      "name": "对比滑块",
+      "status": "PASS",
+      "msg": "30%: left=30%, 70%: left=70%"
+    },
+    {
+      "name": "叠加视图透明度",
+      "status": "PASS",
+      "msg": "所有值正确: 0.00→0, 0.25→0.25, 0.50→0.5, 0.75→0.75, 1.00→1"
+    },
+    {
+      "name": "导出中间步骤图",
+      "status": "PASS",
+      "msg": "文件: repair-steps.zip, 大小: 264855字节, 内容: 01-original.jpg, 02-denoised.jpg, 03-sharpened.jpg, 04-contrast.jpg, 05-colorized.jpg, 06-final.jpg"
+    },
+    {
+      "name": "导出GIF动画",
+      "status": "PASS",
+      "msg": "已下载: repair-comparison.gif, 2502814字节"
+    },
+    {
+      "name": "批量修复和ZIP下载",
+      "status": "PASS",
+      "msg": "上传: 3张, 文件: batch-repaired-photos.zip, 大小: 161729字节"
+    },
+    {
+      "name": "控制台和网络错误",
+      "status": "PASS",
+      "msg": "无控制台错误，无404/500网络错误"
+    }
+  ],
+  "consoleErrors": [],
+  "networkErrors": []
+}

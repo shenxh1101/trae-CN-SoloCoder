@@ -1,0 +1,16 @@
+{
+  "name": "239",
+  "version": "1.0.0",
+  "description": "一个基于HTML、CSS和原生JavaScript的AI老照片修复模拟器，支持前端Canvas图像处理和后端Flask服务。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "playwright": "^1.60.0"
+  }
+}

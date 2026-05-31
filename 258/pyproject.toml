@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "aitestgen
+version = "0.1.0"
+description = "AI-powered unit test generator for Python and JavaScript"
+authors = ["AI Test Generator Team"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+click = "^8.0.0"
+rich = "^13.0.0"
+jinja2 = "^3.0.0"
+pyyaml = "^6.0.0"
+esprima = "^4.0.0"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.scripts]
+aitestgen = "aitestgen.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

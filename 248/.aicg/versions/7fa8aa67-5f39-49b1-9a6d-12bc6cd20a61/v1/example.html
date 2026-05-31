@@ -1,0 +1,57 @@
+<!-- Usage Example -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PinkButton Demo</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 40px; background: #f5f5f5; }
+    .container { display: flex; gap: 10px; align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- PinkButton Component -->
+<style>
+  .pinkbutton {
+    padding: 12px 24px; font-size: 16px;
+    background-color: #ec4899;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    
+  }
+  .pinkbutton:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .pinkbutton:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  .pinkbutton:focus {
+    outline: 2px solid #ec4899;
+    outline-offset: 2px;
+  }
+  .pinkbutton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .pinkbutton-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+</style>
+
+<button class="pinkbutton"  aria-label="Click Me">
+  
+  <span class="pinkbutton-text">Click Me</span>
+</button>
+  </div>
+</body>
+</html>

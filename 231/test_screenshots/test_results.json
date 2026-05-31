@@ -1,0 +1,368 @@
+[
+  {
+    "step": "1",
+    "message": "启动浏览器，访问 http://localhost:8080/",
+    "status": "INFO",
+    "time": "2026-05-31T07:12:36.044Z"
+  },
+  {
+    "step": "*",
+    "message": "浏览器控制台错误: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "status": "WARN",
+    "time": "2026-05-31T07:12:42.591Z"
+  },
+  {
+    "step": "1",
+    "message": "页面加载完成，耗时 6061ms",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:43.385Z"
+  },
+  {
+    "step": "1",
+    "message": "截图保存: test_screenshots/01_page_loaded.png (证明无白屏)",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:46.514Z"
+  },
+  {
+    "step": "1",
+    "message": "页面标题: 梦幻城市 - AI天际线生成器",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:46.515Z"
+  },
+  {
+    "step": "1",
+    "message": "Canvas渲染正常: 1400x900, PNG数据大小 945.9KB",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:46.535Z"
+  },
+  {
+    "step": "2",
+    "message": "检查UI面板元素",
+    "status": "INFO",
+    "time": "2026-05-31T07:12:46.535Z"
+  },
+  {
+    "step": "2",
+    "message": "所有UI元素均存在",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:46.536Z"
+  },
+  {
+    "step": "2",
+    "message": "UI面板截图: test_screenshots/02_ui_panel.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:46.579Z"
+  },
+  {
+    "step": "3",
+    "message": "测试城市生成功能",
+    "status": "INFO",
+    "time": "2026-05-31T07:12:46.579Z"
+  },
+  {
+    "step": "3",
+    "message": "情感得分: -0.00",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:49.661Z"
+  },
+  {
+    "step": "3",
+    "message": "关键词数量: 10",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:49.661Z"
+  },
+  {
+    "step": "3",
+    "message": "摘要: 文字情感平和中性，城市风格均衡",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:49.661Z"
+  },
+  {
+    "step": "3",
+    "message": "城市生成截图: test_screenshots/03_city_generated.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:49.790Z"
+  },
+  {
+    "step": "4",
+    "message": "测试生长动画",
+    "status": "INFO",
+    "time": "2026-05-31T07:12:49.791Z"
+  },
+  {
+    "step": "4",
+    "message": "生长动画开始截图: test_screenshots/04_growth_animation_start.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:50.507Z"
+  },
+  {
+    "step": "4",
+    "message": "生长动画进行中截图: test_screenshots/04_growth_animation_mid.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:52.628Z"
+  },
+  {
+    "step": "4",
+    "message": "生长动画完成截图: test_screenshots/04_growth_animation_done.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:54.747Z"
+  },
+  {
+    "step": "5",
+    "message": "测试夜晚模式切换",
+    "status": "INFO",
+    "time": "2026-05-31T07:12:54.748Z"
+  },
+  {
+    "step": "5",
+    "message": "夜晚模式截图: test_screenshots/05_night_mode.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:56.832Z"
+  },
+  {
+    "step": "5",
+    "message": "夜晚模式Canvas数据: PNG=true, 大小=305.0KB",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:56.843Z"
+  },
+  {
+    "step": "6",
+    "message": "测试麦克风授权和音量检测",
+    "status": "INFO",
+    "time": "2026-05-31T07:12:56.843Z"
+  },
+  {
+    "step": "6",
+    "message": "麦克风初始状态: 开关=false, 指示器可见=false",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:56.845Z"
+  },
+  {
+    "step": "6",
+    "message": "麦克风激活状态: 开关=true, 指示器可见=true, 音量条=16个",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:58.868Z"
+  },
+  {
+    "step": "6",
+    "message": "音量条高度: 平均=4.9px, 最高=17px",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:59.871Z"
+  },
+  {
+    "step": "6",
+    "message": "麦克风激活截图: test_screenshots/06_microphone_active.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:12:59.904Z"
+  },
+  {
+    "step": "7",
+    "message": "测试截图功能 (canvas转PNG)",
+    "status": "INFO",
+    "time": "2026-05-31T07:12:59.908Z"
+  },
+  {
+    "step": "7",
+    "message": "触发截图按钮: 链接点击=true",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:00.427Z"
+  },
+  {
+    "step": "7",
+    "message": "文件名格式: dreamcity_1780211579921.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:00.427Z"
+  },
+  {
+    "step": "7",
+    "message": "Data URL格式正确: true",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:00.427Z"
+  },
+  {
+    "step": "7",
+    "message": "Data URL前缀: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABXgA...",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:00.427Z"
+  },
+  {
+    "step": "7",
+    "message": "Canvas直接toDataURL验证: 格式=true, 长度=314506字节",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:00.438Z"
+  },
+  {
+    "step": "7",
+    "message": "下载目录PNG文件数量: 之前=0, 之后=2",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:02.554Z"
+  },
+  {
+    "step": "7",
+    "message": "已下载文件: dreamcity_1780211579921.png, manual_test_screenshot.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:02.554Z"
+  },
+  {
+    "step": "7",
+    "message": "文件 \"manual_test_screenshot.png\" 大小: 241434 字节",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:02.555Z"
+  },
+  {
+    "step": "8",
+    "message": "测试HTTP接口前后端联调 (保存/加载/删除)",
+    "status": "INFO",
+    "time": "2026-05-31T07:13:02.555Z"
+  },
+  {
+    "step": "8",
+    "message": "清理了 0 条历史数据",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:02.565Z"
+  },
+  {
+    "step": "8",
+    "message": "点击\"保存到服务器\"按钮",
+    "status": "INFO",
+    "time": "2026-05-31T07:13:02.565Z"
+  },
+  {
+    "step": "8",
+    "message": "前端发起POST请求: /api/cities",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:04.570Z"
+  },
+  {
+    "step": "8",
+    "message": "请求体包含: text=君不见黄河之水天上来，奔流到海不复回。高堂明镜悲白发，朝如青..., buildingCount=120",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:04.570Z"
+  },
+  {
+    "step": "8",
+    "message": "后端响应: {\"id\":\"006925da\",\"status\":\"saved\"}",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:04.570Z"
+  },
+  {
+    "step": "8",
+    "message": "直接API GET /api/cities/006925da: HTTP 200",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:04.578Z"
+  },
+  {
+    "step": "8",
+    "message": "后端数据验证: text=君不见黄河之水天上来，奔流到海不复回。高..., count=120",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:04.578Z"
+  },
+  {
+    "step": "8",
+    "message": "点击\"加载城市\"按钮，显示已保存列表",
+    "status": "INFO",
+    "time": "2026-05-31T07:13:04.578Z"
+  },
+  {
+    "step": "8",
+    "message": "列表API返回 1 条记录",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:06.081Z"
+  },
+  {
+    "step": "8",
+    "message": "列表UI可见: true, 条目数: 1",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:06.081Z"
+  },
+  {
+    "step": "8",
+    "message": "已保存城市列表截图: test_screenshots/07_saved_cities_list.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:06.122Z"
+  },
+  {
+    "step": "8",
+    "message": "DELETE /api/cities/006925da: HTTP 200, {\"status\": \"deleted\"}",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:06.125Z"
+  },
+  {
+    "step": "8",
+    "message": "验证删除后GET: HTTP 404",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:06.126Z"
+  },
+  {
+    "step": "9",
+    "message": "测试动画流畅度和粒子车流",
+    "status": "INFO",
+    "time": "2026-05-31T07:13:06.126Z"
+  },
+  {
+    "step": "9",
+    "message": "FPS测量: 61, 60, 60, 平均 60.3 FPS",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:09.146Z"
+  },
+  {
+    "step": "9",
+    "message": "粒子系统存在，粒子数量: 300",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:09.147Z"
+  },
+  {
+    "step": "9",
+    "message": "粒子0初始位置: x=-11.22, z=-0.75",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:09.147Z"
+  },
+  {
+    "step": "9",
+    "message": "1秒后粒子0位置: x=-19.84, z=-0.75, 移动距离=8.62",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:10.148Z"
+  },
+  {
+    "step": "9",
+    "message": "动画截图已保存: 08_traffic_animation_1.png, 08_traffic_animation_2.png",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:11.294Z"
+  },
+  {
+    "step": "9",
+    "message": "两帧截图大小差异: 3062 字节 (证明动画在运行)",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:11.294Z"
+  },
+  {
+    "step": "10",
+    "message": "检查浏览器控制台错误",
+    "status": "INFO",
+    "time": "2026-05-31T07:13:11.294Z"
+  },
+  {
+    "step": "10",
+    "message": "Three.js核心对象均已正确初始化",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:11.296Z"
+  },
+  {
+    "step": "10",
+    "message": "场景网格数量: 100, 其中建筑: 100",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:11.297Z"
+  },
+  {
+    "step": "10",
+    "message": "控制台无致命错误",
+    "status": "PASS",
+    "time": "2026-05-31T07:13:11.297Z"
+  },
+  {
+    "step": "*",
+    "message": "测试异常: saveResult is not a function",
+    "status": "FAIL",
+    "time": "2026-05-31T07:13:11.298Z"
+  }
+]

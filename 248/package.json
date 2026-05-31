@@ -1,0 +1,31 @@
+{
+  "name": "ai-component-generator",
+  "version": "1.0.0",
+  "description": "AI-powered frontend component code generator CLI tool",
+  "main": "src/index.js",
+  "bin": {
+    "aicg": "bin/aicg.js"
+  },
+  "scripts": {
+    "start": "node bin/aicg.js",
+    "test": "node tests/run-tests.js"
+  },
+  "keywords": [
+    "ai",
+    "component",
+    "generator",
+    "cli",
+    "react",
+    "vue",
+    "frontend"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "inquirer": "^8.2.6",
+    "chalk": "^4.1.2",
+    "boxen": "^5.1.2",
+    "figlet": "^1.7.0"
+  }
+}

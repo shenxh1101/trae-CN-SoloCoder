@@ -1,0 +1,13 @@
+{
+  "version_id": "105f6b189199",
+  "timestamp": "2026-05-31T20:46:31.253754",
+  "original_content": "\ndef test_add():\n    assert add(1, 2) == 3\n",
+  "edited_content": null,
+  "is_edited": false,
+  "function_name": "add",
+  "file_path": "/Users/mac/code/solo coder/258/examples/calculator.py",
+  "language": "python",
+  "source_code": "def add(a: int, b: int) -> int:\\n    return a + b",
+  "function_signature": "add(a: int, b: int) -> int",
+  "edit_reason": ""
+}

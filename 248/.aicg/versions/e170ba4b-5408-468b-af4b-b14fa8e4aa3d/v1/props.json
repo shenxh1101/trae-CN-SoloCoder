@@ -1,0 +1,9 @@
+{
+  "className": "pinkbutton",
+  "backgroundColor": "#ec4899",
+  "size": "medium",
+  "hasIcon": false,
+  "iconType": "none",
+  "interactive": "no",
+  "features": "none"
+}

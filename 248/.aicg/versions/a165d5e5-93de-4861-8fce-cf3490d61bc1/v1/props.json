@@ -1,0 +1,9 @@
+{
+  "className": "purplebutton",
+  "backgroundColor": "#a855f7",
+  "size": "medium",
+  "hasIcon": false,
+  "iconType": "none",
+  "interactive": "no",
+  "features": "none"
+}

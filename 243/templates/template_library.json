@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "product": "破壁机",
+    "selling_points": [
+      "静音"
+    ],
+    "platform": "小红书",
+    "tone": "亲切",
+    "copy": "测试文案",
+    "rating": 5,
+    "rated_at": "2026-05-31T16:49:53.520547",
+    "source": "template"
+  }
+]

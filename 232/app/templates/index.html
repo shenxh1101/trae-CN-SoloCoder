@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 学习路线图生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            padding: 30px 0;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .time-budget {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #edf2f7;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .content-area {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+        
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #718096;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #718096;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: #a0aec0;
+        }
+        
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .roadmap-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            border-radius: 12px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-item .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .summary-item .label {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 4px;
+        }
+        
+        .progress-bar-container {
+            margin-bottom: 24px;
+        }
+        
+        .progress-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .progress-bar-bg {
+            width: 100%;
+            height: 24px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .phase-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #667eea;
+            transition: all 0.2s;
+        }
+        
+        .phase-card.completed {
+            border-left-color: #48bb78;
+            opacity: 0.8;
+        }
+        
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .phase-title {
+            font-size: 1.3rem;
+            color: #2d3748;
+        }
+        
+        .phase-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .phase-status.completed {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .phase-status.pending {
+            background: #fefcbf;
+            color: #744210;
+        }
+        
+        .phase-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        
+        .phase-section {
+            margin-bottom: 12px;
+        }
+        
+        .phase-section h4 {
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
+        .objectives-list {
+            list-style: none;
+        }
+        
+        .objectives-list li {
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            background: white;
+            border-radius: 4px;
+            border-left: 2px solid #667eea;
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+        
+        .resource-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .resource-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        
+        .resource-type.book { background: #fed7d7; color: #742a2a; }
+        .resource-type.course { background: #bee3f8; color: #2a4365; }
+        .resource-type.documentation { background: #c6f6d5; color: #22543d; }
+        .resource-type.project { background: #e9d8fd; color: #44337a; }
+        
+        .resource-name {
+            color: #2b6cb0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .resource-desc {
+            color: #718096;
+            font-size: 0.8rem;
+            margin: 4px 0;
+        }
+        
+        .resource-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .vote-btn {
+            padding: 4px 10px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.15s;
+        }
+        
+        .vote-btn:hover {
+            background: #f7fafc;
+        }
+        
+        .vote-btn.active-up {
+            background: #c6f6d5;
+            border-color: #48bb78;
+            color: #22543d;
+        }
+        
+        .vote-btn.active-down {
+            background: #fed7d7;
+            border-color: #f56565;
+            color: #742a2a;
+        }
+        
+        .dag-container {
+            width: 100%;
+            height: 560px;
+            background: #f7fafc;
+            border-radius: 12px;
+            overflow: auto;
+            position: relative;
+        }
+        
+        #dagCanvas {
+            display: block;
+        }
+        
+        .dag-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 16px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .dag-tooltip {
+            position: absolute;
+            background: rgba(45, 55, 72, 0.95);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 10;
+            max-width: 250px;
+            line-height: 1.5;
+        }
+        
+        .dag-tooltip.show {
+            opacity: 1;
+        }
+        
+        .dag-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .dag-controls button {
+            padding: 6px 14px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.15s;
+        }
+        
+        .dag-controls button:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+        }
+        
+        .dag-controls button.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .comparison-table th {
+            background: #f7fafc;
+            font-weight: 600;
+        }
+        
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: #2d3748;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.success {
+            background: #48bb78;
+        }
+        
+        .toast.error {
+            background: #f56565;
+        }
+        
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 AI 学习路线图生成器</h1>
+            <p>智能生成个性化学习路径，让技能提升更高效</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <form id="roadmapForm">
+                    <div class="form-group">
+                        <label for="skill">学习技能</label>
+                        <input type="text" id="skill" name="skill" placeholder="如：Python数据分析、前端开发" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>时间预算</label>
+                        <div class="time-budget">
+                            <div>
+                                <label style="font-size: 0.85rem; font-weight: normal; color: #718096;">每天学习（小时）</label>
+                                <input type="number" id="dailyHours" name="dailyHours" value="2" min="0.5" step="0.5">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; font-weight: normal; color: #718096;">总天数</label>
+                                <input type="number" id="totalDays" name="totalDays" value="90" min="7">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userId">用户ID（可选）</label>
+                        <input type="text" id="userId" name="userId" placeholder="用于加载技能树和进度">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>批量生成（用逗号分隔）</label>
+                        <textarea id="batchSkills" name="batchSkills" rows="3" placeholder="Python数据分析, 前端开发, 机器学习"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>技能树上传</label>
+                        <label class="file-upload">
+                            <input type="file" id="skillTreeFile" accept=".json">
+                            <div>
+                                <div style="font-size: 2rem;">📁</div>
+                                <div>点击上传技能树JSON文件</div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">✨ 生成路线图</button>
+                    <button type="button" id="batchBtn" class="btn btn-secondary">📊 批量生成并比较</button>
+                </form>
+            </div>
+            
+            <div class="content-area">
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="roadmap">📚 路线图</button>
+                    <button class="tab-btn" data-tab="dag">🔗 依赖关系图</button>
+                    <button class="tab-btn" data-tab="comparison">📈 比较</button>
+                    <button class="tab-btn" data-tab="export">💾 导出</button>
+                </div>
+                
+                <div id="roadmap-tab" class="tab-content active">
+                    <div id="roadmapContent">
+                        <div class="empty-state">
+                            <div class="icon">📖</div>
+                            <h3>还没有路线图</h3>
+                            <p>在左侧输入你想学习的技能，点击生成按钮开始</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="dag-tab" class="tab-content">
+                    <div id="dagContent">
+                        <div class="empty-state">
+                            <div class="icon">🔗</div>
+                            <h3>生成路线图后可查看依赖关系</h3>
+                            <p>DAG图将展示各学习阶段之间的前置依赖关系</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="comparison-tab" class="tab-content">
+                    <div id="comparisonContent">
+                        <div class="empty-state">
+                            <div class="icon">📊</div>
+                            <h3>批量生成后可查看比较</h3>
+                            <p>输入多个技能，点击"批量生成并比较"查看详细对比</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="export-tab" class="tab-content">
+                    <div id="exportContent">
+                        <div class="empty-state">
+                            <div class="icon">💾</div>
+                            <h3>生成路线图后可导出</h3>
+                            <p>支持导出为 Markdown、HTML、JSON、PDF 格式</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+    
+    <script>
+        let currentRoadmap = null;
+        let currentComparison = null;
+        let currentDag = null;
+        let dagHoveredNode = null;
+        let dagSelectedNode = null;
+        let dagNodePositions = {};
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+                
+                if (btn.dataset.tab === 'dag' && currentDag) {
+                    setTimeout(() => renderDag(currentDag), 50);
+                }
+            });
+        });
+        
+        document.getElementById('roadmapForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const skill = document.getElementById('skill').value.trim();
+            if (!skill) {
+                showToast('请输入要学习的技能', 'error');
+                return;
+            }
+            
+            const dailyHours = parseFloat(document.getElementById('dailyHours').value);
+            const totalDays = parseInt(document.getElementById('totalDays').value);
+            const userId = document.getElementById('userId').value.trim();
+            
+            showLoading('roadmapContent');
+            
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        skill,
+                        time_budget: { daily_hours: dailyHours, total_days: totalDays },
+                        user_id: userId || undefined
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentRoadmap = data.roadmap;
+                    currentDag = data.dag;
+                    renderRoadmap(currentRoadmap);
+                    renderDag(currentDag);
+                    renderExport(currentRoadmap.skill);
+                    showToast('路线图生成成功！', 'success');
+                } else {
+                    showError('roadmapContent', data.error || '生成失败');
+                }
+            } catch (err) {
+                showError('roadmapContent', '网络错误，请稍后重试');
+            }
+        });
+        
+        document.getElementById('batchBtn').addEventListener('click', async () => {
+            const batchText = document.getElementById('batchSkills').value.trim();
+            if (!batchText) {
+                showToast('请输入要批量生成的技能列表', 'error');
+                return;
+            }
+            
+            const skills = batchText.split(',').map(s => s.trim()).filter(s => s);
+            if (skills.length < 2) {
+                showToast('请至少输入2个技能进行比较', 'error');
+                return;
+            }
+            
+            const dailyHours = parseFloat(document.getElementById('dailyHours').value);
+            const totalDays = parseInt(document.getElementById('totalDays').value);
+            const userId = document.getElementById('userId').value.trim();
+            
+            showLoading('comparisonContent');
+            
+            try {
+                const response = await fetch('/api/generate/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        skills,
+                        time_budget: { daily_hours: dailyHours, total_days: totalDays },
+                        user_id: userId || undefined
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentComparison = data.comparison;
+                    if (data.roadmaps.length > 0) {
+                        currentRoadmap = data.roadmaps[0].roadmap;
+                        renderRoadmap(currentRoadmap);
+                        renderExport(currentRoadmap.skill);
+                    }
+                    renderComparison(data.comparison);
+                    showToast('批量生成成功！', 'success');
+                    
+                    document.querySelector('[data-tab="comparison"]').click();
+                } else {
+                    showError('comparisonContent', data.error || '生成失败');
+                }
+            } catch (err) {
+                showError('comparisonContent', '网络错误，请稍后重试');
+            }
+        });
+        
+        document.getElementById('skillTreeFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const userId = document.getElementById('userId').value.trim() || 'default';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch(`/api/skill-tree/upload?user_id=${userId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast(`技能树上传成功！已掌握 ${data.mastered_skills.length} 项技能`, 'success');
+                } else {
+                    showToast(data.error || '上传失败', 'error');
+                }
+            } catch (err) {
+                showToast('上传失败', 'error');
+            }
+        });
+        
+        function showLoading(elementId) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>正在生成学习路线图...</p>
+                </div>
+            `;
+        }
+        
+        function showError(elementId, message) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">❌</div>
+                    <h3>出错了</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        function renderRoadmap(roadmap) {
+            const completed = roadmap.phases.filter(p => p.completed).length;
+            const total = roadmap.phases.length;
+            const percentage = total > 0 ? (completed / total * 100) : 0;
+            
+            let html = `
+                <h2 style="margin-bottom: 20px; color: #2d3748;">🎯 ${roadmap.skill} 学习路线图</h2>
+                
+                <div class="roadmap-summary">
+                    <div class="summary-item">
+                        <div class="value">${roadmap.total_hours}h</div>
+                        <div class="label">总预估时间</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${'⭐'.repeat(roadmap.difficulty)}</div>
+                        <div class="label">难度等级</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${total}</div>
+                        <div class="label">学习阶段</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${roadmap.remaining_hours}h</div>
+                        <div class="label">剩余时间</div>
+                    </div>
+                </div>
+                
+                ${roadmap.time_budget ? `
+                    <div style="padding: 12px; background: #e8f4fd; border-radius: 8px; margin-bottom: 20px; color: #2c5282; display: flex; justify-content: space-between; align-items: center;">
+                        <span>📅 时间预算: 每天 ${roadmap.time_budget.daily_hours} 小时，共 ${roadmap.time_budget.total_days} 天</span>
+                        <button class="btn btn-secondary" style="width: auto; padding: 6px 14px; margin: 0; font-size: 0.85rem;" onclick="showTimeBudgetAdjust()">⚙️ 调整预算</button>
+                    </div>
+                    <div id="timeBudgetPanel" style="display: none; padding: 16px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 12px; color: #2d3748;">⏱️ 调整时间预算</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end;">
+                            <div>
+                                <label style="font-size: 0.85rem; color: #718096;">每天学习（小时）</label>
+                                <input type="number" id="adjustDailyHours" value="${roadmap.time_budget.daily_hours}" min="0.5" step="0.5" style="width: 100%; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; color: #718096;">总天数</label>
+                                <input type="number" id="adjustTotalDays" value="${roadmap.time_budget.total_days}" min="7" style="width: 100%; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
+                            </div>
+                            <button class="btn btn-primary" style="width: auto; padding: 8px 20px; font-size: 0.9rem;" onclick="adjustTimeBudget()">应用调整</button>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>整体进度</span>
+                        <span>${completed}/${total} 阶段</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${percentage}%">
+                            ${percentage.toFixed(1)}%
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 24px 0 16px; color: #2d3748;">📚 学习阶段</h3>
+            `;
+            
+            roadmap.phases.forEach((phase, index) => {
+                const statusClass = phase.completed ? 'completed' : 'pending';
+                const statusText = phase.completed ? '✅ 已完成' : '⏳ 待学习';
+                const userVoteKey = `vote_${roadmap.skill}_${phase.id}`;
+                const userVotes = JSON.parse(localStorage.getItem('roadmap_votes') || '{}');
+                const phaseUserVotes = {};
+                phase.resources.forEach(res => {
+                    const vk = `${userVoteKey}_${res.name}`;
+                    if (userVotes[vk]) phaseUserVotes[res.name] = userVotes[vk];
+                });
+                
+                html += `
+                    <div class="phase-card ${statusClass}" data-phase-id="${phase.id}">
+                        <div class="phase-header">
+                            <h3 class="phase-title">阶段 ${index + 1}: ${phase.name}</h3>
+                            <span class="phase-status ${statusClass}">${statusText}</span>
+                        </div>
+                        
+                        <div class="phase-meta">
+                            <span>⏱️ ${phase.estimated_hours} 小时</span>
+                            <span>${'⭐'.repeat(phase.difficulty)}</span>
+                            ${phase.dependencies && phase.dependencies.length > 0 ? `
+                                <span>🔗 前置: ${phase.dependencies.map(depId => {
+                                    const dep = roadmap.phases.find(p => p.id === depId);
+                                    return dep ? dep.name : depId;
+                                }).join(', ')}</span>
+                            ` : ''}
+                        </div>
+                        
+                        ${phase.notes ? `<div style="background: #fff3cd; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; color: #856404; font-size: 0.9rem;">📝 ${phase.notes}</div>` : ''}
+                        
+                        <div class="phase-section">
+                            <h4>🎯 学习目标</h4>
+                            <ul class="objectives-list">
+                                ${phase.objectives.map(obj => `<li>${obj}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="phase-section">
+                            <h4>📚 推荐资源</h4>
+                            <div class="resources-grid">
+                                ${phase.resources.map(res => {
+                                    const myVote = phaseUserVotes[res.name] || null;
+                                    const upActive = myVote === 'upvote' ? 'active-up' : '';
+                                    const downActive = myVote === 'downvote' ? 'active-down' : '';
+                                    return `
+                                    <div class="resource-card">
+                                        <span class="resource-type ${res.type}">${getResourceTypeName(res.type)}</span>
+                                        <a href="${res.url || '#'}" class="resource-name" target="_blank">${res.name}</a>
+                                        ${res.description ? `<div class="resource-desc">${res.description}</div>` : ''}
+                                        <div class="resource-actions">
+                                            <button class="vote-btn ${upActive}" 
+                                                    onclick="submitFeedback('${roadmap.skill}', '${phase.id}', '${res.name.replace(/'/g, "\\'")}', 'upvote', this)">
+                                                👍 ${res.upvotes}
+                                            </button>
+                                            <button class="vote-btn ${downActive}" 
+                                                    onclick="submitFeedback('${roadmap.skill}', '${phase.id}', '${res.name.replace(/'/g, "\\'")}', 'downvote', this)">
+                                                👎 ${res.downvotes}
+                                            </button>
+                                        </div>
+                                    </div>
+                                `}).join('')}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 12px;">
+                            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" 
+                                    onclick="markPhaseComplete('${roadmap.skill}', '${phase.id}')"
+                                    ${phase.completed ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                                ${phase.completed ? '✓ 已完成' : '标记完成'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('roadmapContent').innerHTML = html;
+        }
+        
+        function getResourceTypeName(type) {
+            const names = {
+                book: '📚 书籍',
+                course: '🎓 课程',
+                documentation: '📖 文档',
+                project: '💻 项目'
+            };
+            return names[type] || '📌 资源';
+        }
+        
+        function showTimeBudgetAdjust() {
+            const panel = document.getElementById('timeBudgetPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        async function adjustTimeBudget() {
+            if (!currentRoadmap) return;
+            
+            const dailyHours = parseFloat(document.getElementById('adjustDailyHours').value);
+            const totalDays = parseInt(document.getElementById('adjustTotalDays').value);
+            
+            if (!dailyHours || !totalDays || dailyHours < 0.5 || totalDays < 7) {
+                showToast('请输入有效的时间预算', 'error');
+                return;
+            }
+            
+            showLoading('roadmapContent');
+            
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        skill: currentRoadmap.skill,
+                        time_budget: { daily_hours: dailyHours, total_days: totalDays },
+                        user_id: document.getElementById('userId').value.trim() || undefined,
+                        existing_roadmap: currentRoadmap,
+                        adjust_only: true
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    currentRoadmap = data.roadmap;
+                    currentDag = data.dag;
+                    renderRoadmap(currentRoadmap);
+                    renderDag(currentDag);
+                    showToast(`时间预算已调整为每天 ${dailyHours} 小时，共 ${totalDays} 天（未重新生成内容）`, 'success');
+                    document.getElementById('timeBudgetPanel').style.display = 'none';
+                } else {
+                    showToast(data.error || '调整失败', 'error');
+                    renderRoadmap(currentRoadmap);
+                }
+            } catch (err) {
+                showToast('调整失败', 'error');
+                renderRoadmap(currentRoadmap);
+            }
+        }
+        
+        async function submitFeedback(skill, phaseId, resourceName, type, btn) {
+            const voteKey = `vote_${skill}_${phaseId}_${resourceName}`;
+            const userVotes = JSON.parse(localStorage.getItem('roadmap_votes') || '{}');
+            const previousVote = userVotes[voteKey] || null;
+            
+            const isCancel = previousVote === type;
+            
+            try {
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        skill, 
+                        phase_id: phaseId, 
+                        resource_name: resourceName, 
+                        type: isCancel ? null : type,
+                        previous_vote: previousVote,
+                        is_cancel: isCancel
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    if (isCancel) {
+                        delete userVotes[voteKey];
+                    } else {
+                        userVotes[voteKey] = type;
+                    }
+                    localStorage.setItem('roadmap_votes', JSON.stringify(userVotes));
+                    
+                    const actions = btn.parentElement;
+                    const upBtn = actions.querySelector('.vote-btn:nth-child(1)');
+                    const downBtn = actions.querySelector('.vote-btn:nth-child(2)');
+                    
+                    upBtn.classList.remove('active-up');
+                    downBtn.classList.remove('active-down');
+                    
+                    if (!isCancel && type === 'upvote') {
+                        upBtn.classList.add('active-up');
+                    } else if (!isCancel && type === 'downvote') {
+                        downBtn.classList.add('active-down');
+                    }
+                    
+                    upBtn.innerHTML = `👍 ${data.rating.upvotes}`;
+                    downBtn.innerHTML = `👎 ${data.rating.downvotes}`;
+                    
+                    if (isCancel) {
+                        showToast('已取消投票', 'success');
+                    } else {
+                        showToast('反馈已保存', 'success');
+                    }
+                }
+            } catch (err) {
+                showToast('反馈保存失败', 'error');
+            }
+        }
+        
+        async function markPhaseComplete(skill, phaseId) {
+            const userId = document.getElementById('userId').value.trim() || 'default';
+            
+            const card = document.querySelector(`[data-phase-id="${phaseId}"]`);
+            const currentCompleted = Array.from(document.querySelectorAll('.phase-card.completed'))
+                .map(c => c.dataset.phaseId);
+            
+            if (!currentCompleted.includes(phaseId)) {
+                currentCompleted.push(phaseId);
+            }
+            
+            try {
+                const response = await fetch('/api/progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        skill,
+                        completed_phases: currentCompleted
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    currentRoadmap = data.roadmap;
+                    renderRoadmap(currentRoadmap);
+                    
+                    if (currentDag) {
+                        currentDag.nodes.forEach(n => {
+                            n.completed = currentRoadmap.phases.find(p => p.id === n.id)?.completed || false;
+                        });
+                        renderDag(currentDag);
+                    }
+                    
+                    showToast('进度已更新，剩余计划已调整', 'success');
+                }
+            } catch (err) {
+                showToast('更新失败', 'error');
+            }
+        }
+        
+        function renderDag(dag) {
+            if (!dag || !dag.nodes || dag.nodes.length === 0) {
+                document.getElementById('dagContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🔗</div>
+                        <h3>暂无依赖关系数据</h3>
+                    </div>
+                `;
+                return;
+            }
+            
+            document.getElementById('dagContent').innerHTML = `
+                <h2 style="margin-bottom: 16px; color: #2d3748;">🔗 学习阶段依赖关系图</h2>
+                <div class="dag-controls">
+                    <button id="dagZoomIn" title="放大">🔍+ 放大</button>
+                    <button id="dagZoomOut" title="缩小">🔍- 缩小</button>
+                    <button id="dagReset" title="重置视图">↺ 重置</button>
+                    <button id="dagHighlightPending" title="高亮待学习阶段">⏳ 待学习</button>
+                    <button id="dagHighlightCompleted" title="高亮已完成阶段">✅ 已完成</button>
+                </div>
+                <div class="dag-container">
+                    <canvas id="dagCanvas"></canvas>
+                    <div id="dagTooltip" class="dag-tooltip"></div>
+                </div>
+                <div class="dag-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #48bb78;"></div>
+                        <span>已完成</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #667eea;"></div>
+                        <span>待学习（中等难度）</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f6ad55;"></div>
+                        <span>高难度</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #90cdf4;"></div>
+                        <span>入门级</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e53e3e; border-radius: 50%;"></div>
+                        <span>当前选中</span>
+                    </div>
+                    <div class="legend-item" style="margin-left: auto; color: #718096; font-size: 0.8rem;">
+                        💡 悬停查看详情，点击高亮依赖链
+                    </div>
+                </div>
+            `;
+            
+            drawDagCanvas(dag);
+            
+            document.getElementById('dagZoomIn').addEventListener('click', () => dagZoom(1.2));
+            document.getElementById('dagZoomOut').addEventListener('click', () => dagZoom(0.8));
+            document.getElementById('dagReset').addEventListener('click', () => { dagScale = 1; dagOffsetX = 0; dagOffsetY = 0; drawDagCanvas(currentDag); });
+            document.getElementById('dagHighlightPending').addEventListener('click', (e) => {
+                dagHighlightMode = dagHighlightMode === 'pending' ? null : 'pending';
+                e.target.classList.toggle('active', dagHighlightMode === 'pending');
+                document.getElementById('dagHighlightCompleted').classList.remove('active');
+                drawDagCanvas(currentDag);
+            });
+            document.getElementById('dagHighlightCompleted').addEventListener('click', (e) => {
+                dagHighlightMode = dagHighlightMode === 'completed' ? null : 'completed';
+                e.target.classList.toggle('active', dagHighlightMode === 'completed');
+                document.getElementById('dagHighlightPending').classList.remove('active');
+                drawDagCanvas(currentDag);
+            });
+        }
+        
+        let dagScale = 1;
+        let dagOffsetX = 0;
+        let dagOffsetY = 0;
+        let dagHighlightMode = null;
+        
+        function dagZoom(factor) {
+            dagScale *= factor;
+            dagScale = Math.max(0.3, Math.min(3, dagScale));
+            drawDagCanvas(currentDag);
+        }
+        
+        function topoSortLayers(nodes, edges) {
+            const adj = {};
+            const inDeg = {};
+            nodes.forEach(n => { adj[n.id] = []; inDeg[n.id] = 0; });
+            edges.forEach(e => {
+                if (adj[e.source]) adj[e.source].push(e.target);
+                if (inDeg[e.target] !== undefined) inDeg[e.target]++;
+            });
+            
+            const layers = [];
+            const assigned = new Set();
+            let remaining = [...nodes];
+            
+            while (remaining.length > 0) {
+                const layer = remaining.filter(n => inDeg[n.id] === 0);
+                if (layer.length === 0) {
+                    layer.push(remaining[0]);
+                }
+                layers.push(layer);
+                layer.forEach(n => {
+                    assigned.add(n.id);
+                    (adj[n.id] || []).forEach(target => {
+                        if (inDeg[target] !== undefined) inDeg[target]--;
+                    });
+                });
+                remaining = remaining.filter(n => !assigned.has(n.id));
+            }
+            
+            return layers;
+        }
+        
+        function drawDagCanvas(dag) {
+            const canvas = document.getElementById('dagCanvas');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            
+            const layers = topoSortLayers(dag.nodes, dag.edges);
+            const maxLayerWidth = Math.max(...layers.map(l => l.length));
+            
+            const nodeWidth = 170;
+            const nodeHeight = 72;
+            const layerGap = 100;
+            const nodeGap = 20;
+            const padding = 60;
+            
+            const minWidth = padding * 2 + maxLayerWidth * (nodeWidth + nodeGap);
+            const minHeight = padding * 2 + layers.length * (nodeHeight + layerGap);
+            
+            canvas.width = Math.max(container.clientWidth, minWidth) * dagScale;
+            canvas.height = Math.max(container.clientHeight - 10, minHeight) * dagScale;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dagScale, 0, 0, dagScale, dagOffsetX, dagOffsetY);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            dagNodePositions = {};
+            
+            const nodeMap = {};
+            dag.nodes.forEach(n => nodeMap[n.id] = n);
+            
+            layers.forEach((layer, layerIdx) => {
+                const layerWidth = layer.length * (nodeWidth + nodeGap) - nodeGap;
+                const startX = (Math.max(container.clientWidth, minWidth) - layerWidth) / 2;
+                const y = padding + layerIdx * (nodeHeight + layerGap);
+                
+                layer.forEach((node, nodeIdx) => {
+                    const x = startX + nodeIdx * (nodeWidth + nodeGap);
+                    node._x = x;
+                    node._y = y;
+                    dagNodePositions[node.id] = { x, y, w: nodeWidth, h: nodeHeight };
+                });
+            });
+            
+            const getDepChain = (nodeId, visited = new Set()) => {
+                const chain = new Set();
+                chain.add(nodeId);
+                visited.add(nodeId);
+                dag.edges.forEach(e => {
+                    if (e.source === nodeId && !visited.has(e.target)) {
+                        getDepChain(e.target, visited).forEach(id => chain.add(id));
+                    }
+                    if (e.target === nodeId && !visited.has(e.source)) {
+                        getDepChain(e.source, visited).forEach(id => chain.add(id));
+                    }
+                });
+                return chain;
+            };
+            
+            const highlightedNodes = dagSelectedNode ? getDepChain(dagSelectedNode) : null;
+            
+            dag.edges.forEach(edge => {
+                const source = nodeMap[edge.source];
+                const target = nodeMap[edge.target];
+                if (!source || !target || source._x === undefined || target._x === undefined) return;
+                
+                let opacity = 1;
+                let lineWidth = 2.5;
+                let color = '#a0aec0';
+                
+                if (dagHighlightMode === 'pending' && (source.completed || target.completed)) opacity = 0.2;
+                if (dagHighlightMode === 'completed' && (!source.completed || !target.completed)) opacity = 0.2;
+                if (highlightedNodes && !highlightedNodes.has(edge.source) && !highlightedNodes.has(edge.target)) opacity = 0.15;
+                if (highlightedNodes && highlightedNodes.has(edge.source) && highlightedNodes.has(edge.target)) {
+                    color = '#e53e3e';
+                    lineWidth = 3;
+                }
+                if (dagHoveredNode && (edge.source === dagHoveredNode || edge.target === dagHoveredNode)) {
+                    color = '#667eea';
+                    lineWidth = 3.5;
+                    opacity = 1;
+                }
+                
+                const fromX = source._x + nodeWidth / 2;
+                const fromY = source._y + nodeHeight;
+                const toX = target._x + nodeWidth / 2;
+                const toY = target._y;
+                
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+                
+                const midY = (fromY + toY) / 2;
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                ctx.bezierCurveTo(fromX, midY, toX, midY, toX, toY);
+                ctx.stroke();
+                
+                const arrowSize = 8;
+                const t = 0.95;
+                const t1 = t - 0.05;
+                const bx = Math.pow(1-t,3)*fromX + 3*Math.pow(1-t,2)*t*fromX + 3*(1-t)*t*t*toX + Math.pow(t,3)*toX;
+                const by = Math.pow(1-t,3)*fromY + 3*Math.pow(1-t,2)*t*midY + 3*(1-t)*t*t*midY + Math.pow(t,3)*toY;
+                const bx2 = Math.pow(1-t1,3)*fromX + 3*Math.pow(1-t1,2)*t1*fromX + 3*(1-t1)*t1*t1*toX + Math.pow(t1,3)*toX;
+                const by2 = Math.pow(1-t1,3)*fromY + 3*Math.pow(1-t1,2)*t1*midY + 3*(1-t1)*t1*t1*midY + Math.pow(t1,3)*toY;
+                const angle = Math.atan2(by - by2, bx - bx2);
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(toX, toY);
+                ctx.lineTo(toX - arrowSize * Math.cos(angle - Math.PI / 6), toY - arrowSize * Math.sin(angle - Math.PI / 6));
+                ctx.lineTo(toX - arrowSize * Math.cos(angle + Math.PI / 6), toY - arrowSize * Math.sin(angle + Math.PI / 6));
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            });
+            
+            dag.nodes.forEach(node => {
+                if (node._x === undefined) return;
+                const difficulty = node.difficulty || 3;
+                let bgColor, borderColor;
+                
+                if (node.completed) {
+                    bgColor = '#48bb78';
+                    borderColor = '#38a169';
+                } else if (difficulty >= 4) {
+                    bgColor = '#f6ad55';
+                    borderColor = '#dd6b20';
+                } else if (difficulty <= 2) {
+                    bgColor = '#90cdf4';
+                    borderColor = '#4299e1';
+                } else {
+                    bgColor = '#667eea';
+                    borderColor = '#5a67d8';
+                }
+                
+                let opacity = 1;
+                if (dagHighlightMode === 'pending' && node.completed) opacity = 0.25;
+                if (dagHighlightMode === 'completed' && !node.completed) opacity = 0.25;
+                if (highlightedNodes && !highlightedNodes.has(node.id)) opacity = 0.2;
+                if (dagHoveredNode === node.id) opacity = 1;
+                
+                const isHovered = dagHoveredNode === node.id;
+                const isSelected = dagSelectedNode === node.id;
+                
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                
+                if (isHovered || isSelected) {
+                    ctx.shadowColor = isSelected ? '#e53e3e' : bgColor;
+                    ctx.shadowBlur = 12;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 4;
+                }
+                
+                const radius = 10;
+                ctx.fillStyle = bgColor;
+                ctx.beginPath();
+                ctx.roundRect(node._x, node._y, nodeWidth, nodeHeight, radius);
+                ctx.fill();
+                
+                ctx.strokeStyle = isSelected ? '#e53e3e' : borderColor;
+                ctx.lineWidth = isSelected ? 3 : (isHovered ? 2.5 : 1.5);
+                ctx.stroke();
+                
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 13px -apple-system, "PingFang SC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const name = node.name.length > 12 ? node.name.slice(0, 11) + '…' : node.name;
+                ctx.fillText(name, node._x + nodeWidth / 2, node._y + 24);
+                
+                ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
+                const statusIcon = node.completed ? '✅' : '⏳';
+                ctx.fillText(`${statusIcon} ${node.hours}h · ${'⭐'.repeat(Math.min(difficulty, 5))}`, node._x + nodeWidth / 2, node._y + 50);
+                
+                ctx.restore();
+            });
+            
+            setupDagInteraction(canvas, dag, nodeMap);
+        }
+        
+        let dagInteractionSetup = false;
+        
+        function setupDagInteraction(canvas, dag, nodeMap) {
+            if (dagInteractionSetup) return;
+            dagInteractionSetup = true;
+            
+            const tooltip = document.getElementById('dagTooltip');
+            const container = canvas.parentElement;
+            
+            let isDragging = false;
+            let dragStartX, dragStartY;
+            
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mx = (e.clientX - rect.left) / dagScale - dagOffsetX;
+                const my = (e.clientY - rect.top) / dagScale - dagOffsetY;
+                
+                let found = null;
+                for (const node of dag.nodes) {
+                    const pos = dagNodePositions[node.id];
+                    if (pos && mx >= pos.x && mx <= pos.x + pos.w && my >= pos.y && my <= pos.y + pos.h) {
+                        found = node.id;
+                        break;
+                    }
+                }
+                
+                if (found !== dagHoveredNode) {
+                    dagHoveredNode = found;
+                    canvas.style.cursor = found ? 'pointer' : (isDragging ? 'grabbing' : 'default');
+                    drawDagCanvas(dag);
+                }
+                
+                if (found) {
+                    const node = nodeMap[found];
+                    const deps = dag.edges.filter(e => e.target === found).map(e => nodeMap[e.source]?.name).filter(Boolean);
+                    const depsText = deps.length > 0 ? deps.join(', ') : '无';
+                    tooltip.innerHTML = `<strong>${node.name}</strong><br>⏱️ ${node.hours}h · ${'⭐'.repeat(node.difficulty)}<br>状态: ${node.completed ? '✅ 已完成' : '⏳ 待学习'}<br>前置依赖: ${depsText}`;
+                    tooltip.classList.add('show');
+                    const containerRect = container.getBoundingClientRect();
+                    tooltip.style.left = (e.clientX - containerRect.left + 15) + 'px';
+                    tooltip.style.top = (e.clientY - containerRect.top - 10) + 'px';
+                } else {
+                    tooltip.classList.remove('show');
+                }
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                dagHoveredNode = null;
+                tooltip.classList.remove('show');
+                drawDagCanvas(dag);
+            });
+            
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mx = (e.clientX - rect.left) / dagScale - dagOffsetX;
+                const my = (e.clientY - rect.top) / dagScale - dagOffsetY;
+                
+                let found = null;
+                for (const node of dag.nodes) {
+                    const pos = dagNodePositions[node.id];
+                    if (pos && mx >= pos.x && mx <= pos.x + pos.w && my >= pos.y && my <= pos.y + pos.h) {
+                        found = node.id;
+                        break;
+                    }
+                }
+                
+                if (found) {
+                    dagSelectedNode = dagSelectedNode === found ? null : found;
+                } else {
+                    dagSelectedNode = null;
+                }
+                drawDagCanvas(dag);
+            });
+            
+            canvas.addEventListener('mousedown', (e) => {
+                if (!dagHoveredNode) {
+                    isDragging = true;
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                    canvas.style.cursor = 'grabbing';
+                }
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    dagOffsetX += (e.clientX - dragStartX) / dagScale;
+                    dagOffsetY += (e.clientY - dragStartY) / dagScale;
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                    drawDagCanvas(dag);
+                }
+            });
+            
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const factor = e.deltaY > 0 ? 0.9 : 1.1;
+                dagScale *= factor;
+                dagScale = Math.max(0.3, Math.min(3, dagScale));
+                drawDagCanvas(dag);
+            }, { passive: false });
+        }
+        
+        function renderComparison(comparison) {
+            if (!comparison || !comparison.roadmaps) {
+                document.getElementById('comparisonContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📊</div>
+                        <h3>暂无比较数据</h3>
+                    </div>
+                `;
+                return;
+            }
+            
+            const s = comparison.summary;
+            
+            let html = `
+                <h2 style="margin-bottom: 20px; color: #2d3748;">📊 路线图比较</h2>
+                
+                <div class="roadmap-summary">
+                    <div class="summary-item">
+                        <div class="value">${s.min_hours}h</div>
+                        <div class="label">最少耗时</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${s.max_hours}h</div>
+                        <div class="label">最多耗时</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${s.avg_hours}h</div>
+                        <div class="label">平均耗时</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${'⭐'.repeat(s.min_difficulty)}</div>
+                        <div class="label">最低难度</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${'⭐'.repeat(s.max_difficulty)}</div>
+                        <div class="label">最高难度</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="value">${s.avg_difficulty}</div>
+                        <div class="label">平均难度</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 24px 0 16px; color: #2d3748;">📋 详细对比</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>技能名称</th>
+                            <th>总耗时</th>
+                            <th>难度</th>
+                            <th>阶段数</th>
+                            <th>完成度</th>
+                            <th>剩余时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            comparison.roadmaps.forEach(rm => {
+                html += `
+                    <tr>
+                        <td><strong>${rm.skill}</strong></td>
+                        <td>${rm.total_hours}h</td>
+                        <td>${'⭐'.repeat(rm.difficulty)}</td>
+                        <td>${rm.phases_count}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 100px; height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden;">
+                                    <div style="width: ${rm.completion_percentage}%; height: 100%; background: linear-gradient(90deg, #48bb78, #38a169);"></div>
+                                </div>
+                                <span>${rm.completion_percentage.toFixed(1)}%</span>
+                            </div>
+                        </td>
+                        <td>${rm.remaining_hours}h</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('comparisonContent').innerHTML = html;
+        }
+        
+        function renderExport(skill) {
+            document.getElementById('exportContent').innerHTML = `
+                <h2 style="margin-bottom: 20px; color: #2d3748;">💾 导出路线图</h2>
+                <p style="margin-bottom: 20px; color: #718096;">选择导出格式下载 ${skill} 学习路线图</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <button class="btn" style="background: #f7fafc; color: #2d3748;" onclick="exportRoadmap('${skill}', 'json')">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">📄</div>
+                        <div style="font-weight: 600;">JSON</div>
+                        <div style="font-size: 0.85rem; color: #718096; margin-top: 4px;">数据格式，便于二次开发</div>
+                    </button>
+                    
+                    <button class="btn" style="background: #f7fafc; color: #2d3748;" onclick="exportRoadmap('${skill}', 'md')">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">📝</div>
+                        <div style="font-weight: 600;">Markdown</div>
+                        <div style="font-size: 0.85rem; color: #718096; margin-top: 4px;">适合 GitHub 等平台</div>
+                    </button>
+                    
+                    <button class="btn" style="background: #f7fafc; color: #2d3748;" onclick="exportRoadmap('${skill}', 'html')">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">🌐</div>
+                        <div style="font-weight: 600;">HTML</div>
+                        <div style="font-size: 0.85rem; color: #718096; margin-top: 4px;">带样式的网页，可打印</div>
+                    </button>
+                    
+                    <button class="btn" style="background: #f7fafc; color: #2d3748;" onclick="exportRoadmap('${skill}', 'pdf')">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">📑</div>
+                        <div style="font-weight: 600;">PDF</div>
+                        <div style="font-size: 0.85rem; color: #718096; margin-top: 4px;">适合打印和分享</div>
+                    </button>
+                </div>
+            `;
+        }
+        
+        function exportRoadmap(skill, format) {
+            window.open(`/api/roadmap/${encodeURIComponent(skill)}/export/${format}`, '_blank');
+            showToast(`正在导出 ${format.toUpperCase()} 格式...`, 'success');
+        }
+        
+        window.addEventListener('resize', () => {
+            if (currentDag) {
+                dagScale = 1;
+                dagOffsetX = 0;
+                dagOffsetY = 0;
+                renderDag(currentDag);
+            }
+        });
+    </script>
+</body>
+</html>

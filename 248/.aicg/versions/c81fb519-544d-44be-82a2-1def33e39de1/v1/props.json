@@ -1,0 +1,35 @@
+{
+  "propName": "description including type and default value",
+  "type": "button type (button, input)",
+  "children": [
+    "array of child elements"
+  ],
+  "events": [
+    {
+      "eventType": "click"
+    },
+    {
+      "eventType": "hover",
+      "value": "#3b82f6",
+      "name": "search icon",
+      "properties": {
+        "width": 150,
+        "height": 40,
+        "activeState": "button.color"
+      }
+    },
+    {
+      "eventType": "hover",
+      "value": "#3b82f6",
+      "name": "search icon",
+      "properties": {
+        "width": 150,
+        "height": 40,
+        "activeState": "button.color"
+      }
+    },
+    {
+      "eventType": "focus"
+    }
+  ]
+}

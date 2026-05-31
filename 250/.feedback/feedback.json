@@ -1,0 +1,16 @@
+{
+  "corrections": [],
+  "preferences": {
+    "priority_keywords": {},
+    "name_aliases": {
+      "那王五你": "王五",
+      "赵六你": "赵六",
+      "我们已经": "团队",
+      "问题可能": "团队",
+      "这边已经": "李四",
+      "面设计还": "赵六"
+    },
+    "action_keywords": []
+  },
+  "accuracy_scores": []
+}

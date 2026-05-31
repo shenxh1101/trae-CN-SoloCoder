@@ -1,0 +1,15 @@
+{
+  "type": "button",
+  "children": [
+    "text"
+  ],
+  "events": [
+    "click"
+  ],
+  "states": [
+    "hover",
+    "active",
+    "focus",
+    "disabled"
+  ]
+}

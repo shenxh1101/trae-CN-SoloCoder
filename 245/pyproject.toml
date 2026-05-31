@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "paper-abs-gen"
+version = "1.0.0"
+description = "AI-powered academic paper abstract and keyword generator"
+requires-python = ">=3.9"
+dependencies = [
+    "openai>=1.0.0",
+    "pdfplumber>=0.9.0",
+]
+
+[project.scripts]
+paper-abs-gen = "paper_abs_gen.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["paper_abs_gen*"]

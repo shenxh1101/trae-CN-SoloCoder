@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI合同条款智能比对工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">📄 AI合同条款智能比对工具</div>
+        <div class="nav-menu">
+            <a href="/" class="active">两两比对</a>
+            <a href="/batch">批量比对</a>
+            <a href="/templates">模板管理</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>上传合同文件</h2>
+            <p class="subtitle">支持 .txt 和 .docx 格式文件</p>
+            
+            <form id="compareForm" class="upload-form">
+                <div class="upload-grid">
+                    <div class="upload-area">
+                        <label class="file-label">
+                            <span class="file-icon">📄</span>
+                            <span class="file-text">合同A (原始)</span>
+                            <input type="file" id="contract_a" name="contract_a" accept=".txt,.docx">
+                        </label>
+                        <div class="file-info" id="fileInfoA"></div>
+                        <div class="template-select">
+                            <label>或选择模板:</label>
+                            <select id="template_a" name="template_a" onchange="onTemplateSelect('a')">
+                                <option value="">-- 不使用模板 --</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="vs-badge">VS</div>
+                    
+                    <div class="upload-area">
+                        <label class="file-label">
+                            <span class="file-icon">📄</span>
+                            <span class="file-text">合同B (对比)</span>
+                            <input type="file" id="contract_b" name="contract_b" accept=".txt,.docx">
+                        </label>
+                        <div class="file-info" id="fileInfoB"></div>
+                        <div class="template-select">
+                            <label>或选择模板:</label>
+                            <select id="template_b" name="template_b" onchange="onTemplateSelect('b')">
+                                <option value="">-- 不使用模板 --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="help-text" style="text-align: center; margin-top: 1rem;">
+                    💡 可以上传文件或选择已保存的合同模板进行比对
+                </p>
+
+                <div class="options-section">
+                    <div class="option-group">
+                        <h3>⚙️ 比对选项</h3>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="use_transformer" name="use_transformer">
+                                使用AI模型提升比对精度 (Sentence Transformer)
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <label>相似度阈值:</label>
+                            <input type="range" id="threshold" name="threshold" min="0.5" max="0.95" step="0.05" value="0.7">
+                            <span id="thresholdValue">0.7</span>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <h3>🎯 重点关注条款类别</h3>
+                        <div class="category-grid">
+                            {% for category in categories %}
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="{{ category }}">
+                                {{ category }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <h3>🚫 自定义忽略规则 (正则表达式)</h3>
+                        <p class="help-text">每行一个正则表达式，匹配到的内容将被忽略比对</p>
+                        <textarea id="ignore_patterns" name="ignore_patterns" rows="4" placeholder="例如：&#10;\d{4}-\d{2}-\d{2}&#10;￥\s?\d+"></textarea>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="loadDefaultPatterns()">使用默认规则</button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="btn-text">开始比对</span>
+                        <span class="btn-loading" style="display:none;">比对中...</span>
+                    </button>
+                    <button type="reset" class="btn btn-secondary">重置</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="resultSection" style="display:none;">
+            <div class="card">
+                <div class="result-header">
+                    <h2>比对结果</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="exportResult('html')">导出 HTML</button>
+                        <button class="btn btn-success" onclick="exportResult('excel')">导出 Excel</button>
+                        <button class="btn btn-success" onclick="exportResult('json')">导出 JSON</button>
+                        <button class="btn btn-info" onclick="generateRevised()">生成修订版合同</button>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-header">
+                        <h3>比对概览</h3>
+                    </div>
+                    <div class="contract-names">
+                        <span><strong>合同A:</strong> <span id="contractAName"></span></span>
+                        <span><strong>合同B:</strong> <span id="contractBName"></span></span>
+                    </div>
+                    
+                    <div class="similarity-section">
+                        <div class="similarity-label">
+                            整体相似度: <span id="similarityValue"></span>
+                        </div>
+                        <div class="similarity-bar">
+                            <div class="similarity-fill" id="similarityFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">合同A条款数</div>
+                            <div class="stat-value" id="statClausesA">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">合同B条款数</div>
+                            <div class="stat-value" id="statClausesB">0</div>
+                        </div>
+                        <div class="stat-card stat-added">
+                            <div class="stat-label">新增条款</div>
+                            <div class="stat-value" id="statAdded">0</div>
+                        </div>
+                        <div class="stat-card stat-deleted">
+                            <div class="stat-label">删除条款</div>
+                            <div class="stat-value" id="statDeleted">0</div>
+                        </div>
+                        <div class="stat-card stat-modified">
+                            <div class="stat-label">修改条款</div>
+                            <div class="stat-value" id="statModified">0</div>
+                        </div>
+                        <div class="stat-card stat-unchanged">
+                            <div class="stat-label">未变化条款</div>
+                            <div class="stat-value" id="statUnchanged">0</div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <span class="legend-item"><span class="legend-color added"></span>新增</span>
+                        <span class="legend-item"><span class="legend-color deleted"></span>删除</span>
+                        <span class="legend-item"><span class="legend-color modified"></span>修改</span>
+                        <span class="legend-item"><span class="legend-color unchanged"></span>未变化</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="diff-header-row">
+                    <h3>差异详情</h3>
+                    <div class="filter-group">
+                        <label>筛选:</label>
+                        <select id="typeFilter" onchange="filterDiffs()">
+                            <option value="all">全部</option>
+                            <option value="added">新增</option>
+                            <option value="deleted">删除</option>
+                            <option value="modified">修改</option>
+                            <option value="unchanged">未变化</option>
+                        </select>
+                        <select id="categoryFilter" onchange="filterDiffs()">
+                            <option value="all">所有类别</option>
+                        </select>
+                        <label class="show-unchanged">
+                            <input type="checkbox" id="showUnchanged" onchange="filterDiffs()">
+                            显示未变化条款
+                        </label>
+                    </div>
+                </div>
+                <div id="diffResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p>正在比对合同，请稍候...</p>
+    </div>
+
+    <div id="revisedModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3>修订版合同</h3>
+                <div>
+                    <button class="btn btn-success btn-sm" onclick="downloadRevised()">📥 下载文档</button>
+                    <button class="btn btn-secondary btn-sm" onclick="closeRevisedModal()">✕ 关闭</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="revisedContent" style="white-space: pre-wrap; line-height: 1.8; padding: 1rem; background: #fafafa; border-radius: 8px; max-height: 60vh; overflow-y: auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentResult = null;
+        let currentContractAName = '';
+        let currentContractBName = '';
+        let currentTextA = '';
+        let currentRevisedDownloadUrl = '';
+        let allCategories = [];
+        let templates = [];
+
+        async function loadTemplates() {
+            try {
+                const response = await fetch('/api/templates');
+                const data = await response.json();
+                if (data.success) {
+                    templates = data.templates;
+                    const selectA = document.getElementById('template_a');
+                    const selectB = document.getElementById('template_b');
+                    selectA.innerHTML = '<option value="">-- 不使用模板 --</option>';
+                    selectB.innerHTML = '<option value="">-- 不使用模板 --</option>';
+                    templates.forEach(t => {
+                        selectA.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                        selectB.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                    });
+                }
+            } catch (e) {
+                console.error('加载模板失败:', e);
+            }
+        }
+
+        function onTemplateSelect(which) {
+            const fileInput = document.getElementById('contract_' + which);
+            const infoDiv = document.getElementById('fileInfo' + which.toUpperCase());
+            const templateId = document.getElementById('template_' + which).value;
+            
+            if (templateId) {
+                const template = templates.find(t => t.id === templateId);
+                if (template) {
+                    fileInput.value = '';
+                    infoDiv.textContent = `📋 使用模板: ${template.name}`;
+                    infoDiv.style.color = '#667eea';
+                }
+            } else {
+                if (fileInput.files[0]) {
+                    infoDiv.textContent = fileInput.files[0].name;
+                    infoDiv.style.color = '#27ae60';
+                } else {
+                    infoDiv.textContent = '';
+                }
+            }
+        }
+
+        document.getElementById('threshold').addEventListener('input', function(e) {
+            document.getElementById('thresholdValue').textContent = e.target.value;
+        });
+
+        document.getElementById('contract_a').addEventListener('change', function(e) {
+            const fileInfo = e.target.files[0] ? e.target.files[0].name : '';
+            document.getElementById('fileInfoA').textContent = fileInfo;
+            document.getElementById('fileInfoA').style.color = fileInfo ? '#27ae60' : '';
+            if (fileInfo) {
+                document.getElementById('template_a').value = '';
+            }
+        });
+
+        document.getElementById('contract_b').addEventListener('change', function(e) {
+            const fileInfo = e.target.files[0] ? e.target.files[0].name : '';
+            document.getElementById('fileInfoB').textContent = fileInfo;
+            document.getElementById('fileInfoB').style.color = fileInfo ? '#27ae60' : '';
+            if (fileInfo) {
+                document.getElementById('template_b').value = '';
+            }
+        });
+
+        function loadDefaultPatterns() {
+            const patterns = {{ default_ignore_patterns | tojson }};
+            document.getElementById('ignore_patterns').value = patterns.join('\n');
+        }
+
+        function addIgnorePattern(pattern) {
+            const textarea = document.getElementById('ignore_patterns');
+            const current = textarea.value.trim();
+            if (current) {
+                textarea.value = current + '\n' + pattern;
+            } else {
+                textarea.value = pattern;
+            }
+        }
+
+        document.getElementById('compareForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const templateA = document.getElementById('template_a').value;
+            const templateB = document.getElementById('template_b').value;
+            const fileA = document.getElementById('contract_a').files[0];
+            const fileB = document.getElementById('contract_b').files[0];
+            
+            if (!fileA && !templateA) {
+                alert('请上传合同A或选择模板');
+                return;
+            }
+            if (!fileB && !templateB) {
+                alert('请上传合同B或选择模板');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            
+            const ignorePatterns = document.getElementById('ignore_patterns').value.trim();
+            formData.delete('ignore_patterns');
+            if (ignorePatterns) {
+                formData.append('ignore_patterns', ignorePatterns);
+            }
+            
+            if (templateA && !fileA) {
+                formData.delete('contract_a');
+                formData.append('template_a', templateA);
+            }
+            if (templateB && !fileB) {
+                formData.delete('contract_b');
+                formData.append('template_b', templateB);
+            }
+            
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('submitBtn').disabled = true;
+            document.querySelector('.btn-text').style.display = 'none';
+            document.querySelector('.btn-loading').style.display = 'inline';
+            
+            try {
+                let url = '/api/compare';
+                if (templateA || templateB) {
+                    url = '/api/compare/templates';
+                }
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentResult = data.result;
+                    currentContractAName = data.contract_a_name;
+                    currentContractBName = data.contract_b_name;
+                    if (data.text_a) {
+                        currentTextA = data.text_a;
+                    }
+                    displayResult(data);
+                } else {
+                    alert('比对失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+                document.querySelector('.btn-text').style.display = 'inline';
+                document.querySelector('.btn-loading').style.display = 'none';
+            }
+        });
+        
+        loadTemplates();
+        
+        function checkForStoredResult() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('result') === '1') {
+                const stored = sessionStorage.getItem('compareResult');
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        if (data.success) {
+                            currentResult = data.result;
+                            currentContractAName = data.contract_a_name;
+                            currentContractBName = data.contract_b_name;
+                            if (data.text_a) {
+                                currentTextA = data.text_a;
+                            }
+                            displayResult(data);
+                            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } catch (e) {
+                        console.error('解析存储的结果失败:', e);
+                    } finally {
+                        sessionStorage.removeItem('compareResult');
+                    }
+                }
+            }
+        }
+        
+        function checkForTemplateParams() {
+            const params = new URLSearchParams(window.location.search);
+            const templateA = params.get('template_a');
+            const templateB = params.get('template_b');
+            
+            if (templateA || templateB) {
+                const checkAndSelect = () => {
+                    if (templateA) {
+                        const selectA = document.getElementById('template_a');
+                        const optionA = selectA.querySelector(`option[value="${templateA}"]`);
+                        if (optionA) {
+                            selectA.value = templateA;
+                            onTemplateSelect('a');
+                        }
+                    }
+                    if (templateB) {
+                        const selectB = document.getElementById('template_b');
+                        const optionB = selectB.querySelector(`option[value="${templateB}"]`);
+                        if (optionB) {
+                            selectB.value = templateB;
+                            onTemplateSelect('b');
+                        }
+                    }
+                    if (templateA || templateB) {
+                        document.querySelector('.upload-form').scrollIntoView({ behavior: 'smooth' });
+                    }
+                };
+                
+                if (templates.length > 0) {
+                    checkAndSelect();
+                } else {
+                    const originalLoadTemplates = loadTemplates;
+                    const interval = setInterval(() => {
+                        if (templates.length > 0) {
+                            clearInterval(interval);
+                            checkAndSelect();
+                        }
+                    }, 100);
+                }
+            }
+        }
+        
+        checkForStoredResult();
+        checkForTemplateParams();
+
+        function displayResult(data) {
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('contractAName').textContent = data.contract_a_name;
+            document.getElementById('contractBName').textContent = data.contract_b_name;
+            
+            const sim = data.result.overall_similarity;
+            document.getElementById('similarityValue').textContent = (sim * 100).toFixed(1) + '%';
+            document.getElementById('similarityFill').style.width = (sim * 100) + '%';
+            
+            document.getElementById('statClausesA').textContent = data.result.total_clauses_a;
+            document.getElementById('statClausesB').textContent = data.result.total_clauses_b;
+            document.getElementById('statAdded').textContent = data.result.stats.added;
+            document.getElementById('statDeleted').textContent = data.result.stats.deleted;
+            document.getElementById('statModified').textContent = data.result.stats.modified;
+            document.getElementById('statUnchanged').textContent = data.result.stats.unchanged;
+            
+            allCategories = [...new Set(data.result.diff_results.map(d => d.category))];
+            const categorySelect = document.getElementById('categoryFilter');
+            categorySelect.innerHTML = '<option value="all">所有类别</option>';
+            allCategories.forEach(cat => {
+                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+            
+            renderDiffResults(data.result.diff_results);
+        }
+
+        function renderDiffResults(diffs) {
+            const container = document.getElementById('diffResults');
+            container.innerHTML = '';
+            
+            diffs.forEach((diff, index) => {
+                const card = document.createElement('div');
+                card.className = `diff-card type-${diff.type} category-${diff.category.replace(/\s/g, '-')}`;
+                card.dataset.type = diff.type;
+                card.dataset.category = diff.category;
+                
+                const typeLabels = {
+                    'added': '新增',
+                    'deleted': '删除',
+                    'modified': '修改',
+                    'unchanged': '未变化'
+                };
+                
+                const focusFlag = {{ categories | tojson }};
+                const isFocus = focusFlag.includes(diff.category) && document.querySelector(`input[name="focus_categories"][value="${diff.category}"]`)?.checked;
+                
+                card.innerHTML = `
+                    <div class="diff-card-header">
+                        <div>
+                            <span class="diff-badge type-${diff.type}">${typeLabels[diff.type]}</span>
+                            <span class="category-badge">${diff.category}</span>
+                            ${isFocus ? '<span class="focus-badge">⭐ 重点关注</span>' : ''}
+                        </div>
+                        <div class="diff-similarity">相似度: ${(diff.similarity * 100).toFixed(1)}%</div>
+                    </div>
+                    <div class="diff-card-body">
+                        <div class="diff-pane">
+                            <div class="diff-pane-title">合同A (原始)</div>
+                            <div class="diff-pane-content">${diff.old_highlighted || '<span class="no-content">- 无内容 -</span>'}</div>
+                        </div>
+                        <div class="diff-pane">
+                            <div class="diff-pane-title">合同B (对比)</div>
+                            <div class="diff-pane-content">${diff.new_highlighted || '<span class="no-content">- 无内容 -</span>'}</div>
+                        </div>
+                    </div>
+                `;
+                
+                if (diff.type === 'unchanged') {
+                    card.style.display = 'none';
+                }
+                
+                container.appendChild(card);
+            });
+        }
+
+        function filterDiffs() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const showUnchanged = document.getElementById('showUnchanged').checked;
+            
+            document.querySelectorAll('.diff-card').forEach(card => {
+                const type = card.dataset.type;
+                const category = card.dataset.category;
+                
+                let visible = true;
+                
+                if (!showUnchanged && type === 'unchanged') {
+                    visible = false;
+                }
+                
+                if (typeFilter !== 'all' && type !== typeFilter) {
+                    visible = false;
+                }
+                
+                if (categoryFilter !== 'all' && category !== categoryFilter) {
+                    visible = false;
+                }
+                
+                card.style.display = visible ? 'block' : 'none';
+            });
+        }
+
+        async function exportResult(format) {
+            if (!currentResult) return;
+            
+            const data = {
+                result: currentResult,
+                contract_a_name: currentContractAName,
+                contract_b_name: currentContractBName,
+                focus_categories: Array.from(document.querySelectorAll('input[name="focus_categories"]:checked')).map(cb => cb.value)
+            };
+            
+            try {
+                const response = await fetch(`/api/export/${format}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    window.open(result.download_url, '_blank');
+                } else {
+                    alert('导出失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('导出失败: ' + error.message);
+            }
+        }
+
+        async function generateRevised() {
+            if (!currentResult) return;
+            
+            const mergeStrategy = prompt('请选择合并策略:\n\nprefer_new - 优先使用合同B内容\nprefer_old - 优先使用合同A内容\nkeep_old - 仅保留合同A内容（不合并新增）', 'prefer_new');
+            if (!mergeStrategy) return;
+            
+            const format = confirm('是否生成Word文档(.docx)?\n\n取消则生成纯文本(.txt)') ? 'docx' : 'txt';
+            
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            try {
+                let textA = currentTextA;
+                
+                if (!textA) {
+                    const templateA = document.getElementById('template_a').value;
+                    const fileA = document.getElementById('contract_a').files[0];
+                    
+                    if (templateA) {
+                        textA = await fetchTemplateContent(templateA);
+                    }
+                }
+                
+                if (!textA) {
+                    alert('无法获取合同A的内容，请重新上传合同并比对');
+                    return;
+                }
+                
+                currentTextA = textA;
+                
+                const response = await fetch('/api/generate-revised', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text_a: textA,
+                        diff_results: currentResult.diff_results,
+                        merge_strategy: mergeStrategy,
+                        format: format
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentRevisedDownloadUrl = result.download_url;
+                    document.getElementById('revisedContent').textContent = result.revised_text;
+                    document.getElementById('revisedModal').style.display = 'flex';
+                } else {
+                    alert('生成失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('生成失败: ' + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+        
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+        
+        async function fetchTemplateContent(templateId) {
+            try {
+                const response = await fetch(`/api/templates/${templateId}/content`);
+                const data = await response.json();
+                if (data.success) {
+                    return data.content;
+                }
+            } catch (e) {
+                console.error('获取模板内容失败:', e);
+            }
+            return '';
+        }
+        
+        function downloadRevised() {
+            if (currentRevisedDownloadUrl) {
+                window.open(currentRevisedDownloadUrl, '_blank');
+            }
+        }
+        
+        function closeRevisedModal() {
+            document.getElementById('revisedModal').style.display = 'none';
+        }
+        
+        document.getElementById('revisedModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRevisedModal();
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRevisedModal();
+            }
+        });
+    </script>
+    
+    <style>
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+        
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .template-select {
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .template-select label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .template-select select {
+            padding: 0.3rem 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 180px;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,154 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2026-05-31T19:00:30.280030",
+    "job_description": "Python developer with Django, MySQL, Redis, Docker skills...",
+    "resume_name": "粘贴文本",
+    "score": 22.142857142857142,
+    "coverage": 0.42857142857142855
+  },
+  {
+    "id": 2,
+    "timestamp": "2026-05-31T19:04:26.404040",
+    "job_description": "Python developer with Django skills. Need MySQL experience....",
+    "resume_name": "粘贴文本",
+    "score": 22.142857142857142,
+    "coverage": 0.42857142857142855
+  },
+  {
+    "id": 3,
+    "timestamp": "2026-05-31T19:04:26.409271",
+    "job_description": "Python developer with Django skills. Need MySQL experience....",
+    "resume_name": "粘贴文本",
+    "score": 22.142857142857142,
+    "coverage": 0.42857142857142855
+  },
+  {
+    "id": 4,
+    "timestamp": "2026-05-31T19:06:05.581701",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 25.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 5,
+    "timestamp": "2026-05-31T19:06:05.622836",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 22.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 6,
+    "timestamp": "2026-05-31T19:06:05.655605",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 20.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 7,
+    "timestamp": "2026-05-31T19:06:05.659385",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 24.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 8,
+    "timestamp": "2026-05-31T19:31:51.898963",
+    "job_description": "Python developer with Django, MySQL, Redis skills....",
+    "resume_name": "test_upload.docx",
+    "score": 38.333333333333336,
+    "coverage": 0.8333333333333334
+  },
+  {
+    "id": 9,
+    "timestamp": "2026-05-31T19:31:51.908662",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 25.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 10,
+    "timestamp": "2026-05-31T19:31:51.915444",
+    "job_description": "We are hiring a Python Developer. \nRequirements: Python, Django, MySQL, Redis, Docker, Kubernetes, \n...",
+    "resume_name": "粘贴文本",
+    "score": 27.142857142857142,
+    "coverage": 0.42857142857142855
+  },
+  {
+    "id": 11,
+    "timestamp": "2026-05-31T19:31:51.952324",
+    "job_description": "Python developer with Django and MySQL skills....",
+    "resume_name": "粘贴文本",
+    "score": 24.0,
+    "coverage": 0.6
+  },
+  {
+    "id": 12,
+    "timestamp": "2026-05-31T19:31:51.954532",
+    "job_description": "Python developer with Django and MySQL skills....",
+    "resume_name": "粘贴文本",
+    "score": 24.0,
+    "coverage": 0.6
+  },
+  {
+    "id": 13,
+    "timestamp": "2026-05-31T19:31:51.962241",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 25.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 14,
+    "timestamp": "2026-05-31T19:31:51.964273",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 20.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 15,
+    "timestamp": "2026-05-31T19:39:45.062479",
+    "job_description": "Python developer with Django, MySQL, Redis, Docker, Kubernetes skills. Need team management....",
+    "resume_name": "test_resume.pdf",
+    "score": 48.72727272727273,
+    "coverage": 0.8181818181818182
+  },
+  {
+    "id": 16,
+    "timestamp": "2026-05-31T19:39:45.068410",
+    "job_description": "Python developer with Django skills...",
+    "resume_name": "粘贴文本",
+    "score": 25.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 17,
+    "timestamp": "2026-05-31T19:39:45.121234",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 25.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 18,
+    "timestamp": "2026-05-31T19:39:45.124697",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 20.0,
+    "coverage": 0.5
+  },
+  {
+    "id": 19,
+    "timestamp": "2026-05-31T19:39:45.126708",
+    "job_description": "Python developer...",
+    "resume_name": "粘贴文本",
+    "score": 20.0,
+    "coverage": 0.5
+  }
+]

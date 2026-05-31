@@ -1,0 +1,42 @@
+{
+  "export_time": "2026-05-31 13:42:46",
+  "total_count": 3,
+  "results": [
+    {
+      "title": "为什么年轻人开始拒绝加班？",
+      "topic": "拒绝加班",
+      "platform": "wechat",
+      "prediction": {
+        "ctr": 6.93,
+        "share_rate": 5.26,
+        "interaction_rate": 3.59,
+        "composite_score": 5.43
+      },
+      "user_rating": null
+    },
+    {
+      "title": "996正在毁掉这一代年轻人",
+      "topic": "拒绝加班",
+      "platform": "wechat",
+      "prediction": {
+        "ctr": 6.75,
+        "share_rate": 6.61,
+        "interaction_rate": 2.46,
+        "composite_score": 5.42
+      },
+      "user_rating": null
+    },
+    {
+      "title": "加班文化为何如此盛行？",
+      "topic": "拒绝加班",
+      "platform": "wechat",
+      "prediction": {
+        "ctr": 7.78,
+        "share_rate": 6.3,
+        "interaction_rate": 3.95,
+        "composite_score": 6.19
+      },
+      "user_rating": null
+    }
+  ]
+}

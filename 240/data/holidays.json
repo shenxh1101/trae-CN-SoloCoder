@@ -1,0 +1,39 @@
+{
+    "holidays": [
+        {"name": "元旦", "date": "01-01", "duration_days": 3, "crowd_level": "高", "tip": "新年假期，热门景点人流量大"},
+        {"name": "春节", "date": "01-28~02-04", "duration_days": 7, "crowd_level": "极高", "tip": "全年最拥挤的假期，部分景点需提前一周预约，住宿价格翻倍"},
+        {"name": "清明节", "date": "04-04~04-06", "duration_days": 3, "crowd_level": "高", "tip": "春季踏青季，自然风光类景点人流高峰"},
+        {"name": "劳动节", "date": "05-01~05-05", "duration_days": 5, "crowd_level": "极高", "tip": "五一小长假，各大景区限流严重，酒店需提前预订"},
+        {"name": "端午节", "date": "05-31~06-02", "duration_days": 3, "crowd_level": "高", "tip": "夏季旅游旺季开始，南方城市炎热"},
+        {"name": "中秋节", "date": "10-06", "duration_days": 3, "crowd_level": "高", "tip": "与国庆相近，注意连休安排"},
+        {"name": "国庆节", "date": "10-01~10-07", "duration_days": 7, "crowd_level": "极高", "tip": "黄金周，所有景区人满为患，强烈建议错峰出行"},
+        {"name": "暑假", "date": "07-01~08-31", "duration_days": 62, "crowd_level": "高", "tip": "学生放假，亲子游高峰，主题乐园和自然景区人流大"}
+    ],
+    "city_specific": {
+        "成都": {
+            "peak_months": ["7", "8", "10"],
+            "special_events": [
+                {"name": "成都国际美食节", "month": 10, "tip": "美食节期间餐厅需提前预约"}
+            ]
+        },
+        "北京": {
+            "peak_months": ["7", "8", "10"],
+            "special_events": [
+                {"name": "十一国庆", "month": 10, "tip": "天安门广场升旗仪式人流极多"},
+                {"name": "香山红叶季", "month": 11, "tip": "周末人流极大，建议工作日前往"}
+            ]
+        },
+        "西安": {
+            "peak_months": ["7", "8", "10"],
+            "special_events": [
+                {"name": "大唐不夜城春节灯会", "month": 2, "tip": "灯会期间人流管控，建议傍晚前到达"}
+            ]
+        },
+        "重庆": {
+            "peak_months": ["7", "8", "10"],
+            "special_events": [
+                {"name": "重庆国际火锅节", "month": 10, "tip": "火锅节期间知名火锅店排队时间超长"}
+            ]
+        }
+    }
+}

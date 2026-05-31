@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-05-31T08:53:41.994Z",
+  "summary": {
+    "total": 3,
+    "passed": 1,
+    "failed": 2,
+    "elapsed": 21214,
+    "passRate": 33.33333333333333
+  },
+  "results": [
+    {
+      "name": "页面加载测试",
+      "status": "PASS",
+      "message": "页面标题: \"AI老照片修复模拟器\", 已加载核心元素",
+      "screenshot": "1780217604734-page-loaded.png"
+    },
+    {
+      "name": "图片上传测试",
+      "status": "FAIL",
+      "message": "page.waitForSelector: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#fileInput') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <input hidden=\"\" type=\"file\" id=\"fileInput\" accept=\"image/*\"/>\u001b[22m\n",
+      "screenshot": "1780217609945-upload-error.png"
+    },
+    {
+      "name": "测试运行",
+      "status": "FAIL",
+      "message": "page.screenshot: Target page, context or browser has been closed",
+      "screenshot": null
+    }
+  ],
+  "consoleErrors": [],
+  "networkErrors": []
+}

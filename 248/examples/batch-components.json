@@ -1,0 +1,29 @@
+{
+  "components": [
+    {
+      "name": "YellowSearchButton",
+      "description": "a yellow button with search icon that shows alert on click, rounded corners",
+      "framework": "react"
+    },
+    {
+      "name": "GreenSubmitButton",
+      "description": "a large green submit button with shadow effects",
+      "framework": "react"
+    },
+    {
+      "name": "BlueCard",
+      "description": "a blue card component with rounded corners and shadow",
+      "framework": "vue"
+    },
+    {
+      "name": "RedAlert",
+      "description": "a red alert button with close icon",
+      "framework": "native"
+    },
+    {
+      "name": "PurpleNavbar",
+      "description": "a purple navigation bar with menu icon",
+      "framework": "vue"
+    }
+  ]
+}

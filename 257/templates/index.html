@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI邮件自动分类与优先级标记系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+        .nav button {
+            padding: 15px 25px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #495057;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .nav button:hover { color: #667eea; }
+        .nav button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+        .content { padding: 30px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group textarea,
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group textarea:focus,
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group textarea { min-height: 150px; resize: vertical; }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        .btn-secondary:hover { background: #e9ecef; }
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-label { font-weight: 600; color: #666; }
+        .result-value { font-size: 16px; font-weight: 600; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-high { background: #fee; color: #dc3545; }
+        .badge-medium { background: #fff3cd; color: #d39e00; }
+        .badge-low { background: #d4edda; color: #28a745; }
+        .badge-positive { background: #d1e7dd; color: #198754; }
+        .badge-negative { background: #f8d7da; color: #dc3545; }
+        .badge-neutral { background: #cfe2ff; color: #0d6efd; }
+        .badge-category { background: #e8daef; color: #6c3483; }
+        .explanation {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            border: 1px solid #eee;
+        }
+        .feedback-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #dee2e6;
+        }
+        .feedback-section h4 { margin-bottom: 15px; color: #333; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-card h3 { font-size: 32px; margin-bottom: 5px; }
+        .stat-card p { opacity: 0.9; font-size: 13px; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        .data-table th, .data-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+        }
+        .data-table th {
+            background: #f1f3f5;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .data-table tbody tr:hover { background: #f8f9fa; }
+        .table-wrap { overflow-x: auto; }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 18px; height: 18px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 250px; }
+        .file-upload {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-upload:hover { border-color: #667eea; background: #f8f9fa; }
+        .file-upload input { display: none; }
+        .email-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #e9ecef;
+            transition: box-shadow 0.2s;
+        }
+        .email-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .email-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .email-card-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .email-card-body {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .email-card-content {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #667eea;
+            word-break: break-all;
+        }
+        .email-card-explain {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
+        .email-card-explain span { white-space: nowrap; }
+        .detail-toggle {
+            color: #667eea;
+            cursor: pointer;
+            font-size: 12px;
+            user-select: none;
+        }
+        .detail-toggle:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 AI邮件自动分类与优先级标记系统</h1>
+            <p>智能分类 · 情绪分析 · 优先级判断 · 批量处理 · 统计报告</p>
+        </div>
+        <div class="nav">
+            <button class="active" onclick="showTab('single',this)">单封处理</button>
+            <button onclick="showTab('batch',this)">批量处理</button>
+            <button onclick="showTab('logs',this)">分类日志</button>
+            <button onclick="showTab('stats',this)">统计报告</button>
+            <button onclick="showTab('train',this)">分类训练</button>
+            <button onclick="showTab('feedback',this)">反馈管理</button>
+            <button onclick="showTab('settings',this)">系统设置</button>
+        </div>
+        <div class="content">
+            <div id="single" class="tab-content active">
+                <h2 style="margin-bottom:20px">单封邮件处理</h2>
+                <div id="singleAlert"></div>
+                <div class="form-group">
+                    <label>邮件内容</label>
+                    <textarea id="emailContent" placeholder="请输入客户邮件内容..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="classifySingle()">开始分类</button>
+                    <button class="btn btn-secondary" onclick="clearSingle()">清空</button>
+                </div>
+                <div id="singleLoading" class="loading">正在分析中</div>
+                <div id="singleResult"></div>
+            </div>
+
+            <div id="batch" class="tab-content">
+                <h2 style="margin-bottom:20px">批量邮件处理</h2>
+                <div id="batchAlert"></div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>上传CSV文件</label>
+                            <label class="file-upload">
+                                <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
+                                <div>📁 点击选择CSV文件
+                                    <p style="font-size:12px;color:#666;margin-top:8px">每行一封邮件，第一列为邮件内容</p>
+                                </div>
+                            </label>
+                            <div id="fileName" style="margin-top:10px;font-size:13px;color:#666"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>或批量输入邮件内容</label>
+                            <textarea id="batchEmails" placeholder="每行一封邮件内容..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="downloadTemplate()">下载模板</button>
+                    <button class="btn btn-primary" onclick="classifyBatch()">批量分类</button>
+                    <button class="btn btn-primary" onclick="classifyCSV()">上传并分类</button>
+                </div>
+                <div id="batchLoading" class="loading">正在批量处理中</div>
+                <div id="batchResult"></div>
+            </div>
+
+            <div id="logs" class="tab-content">
+                <h2 style="margin-bottom:20px">分类日志</h2>
+                <div class="row">
+                    <div class="col"><div class="form-group"><label>开始日期</label><input type="date" id="logStartDate"></div></div>
+                    <div class="col"><div class="form-group"><label>结束日期</label><input type="date" id="logEndDate"></div></div>
+                    <div class="col"><div class="form-group"><label>分类筛选</label><select id="logCategory"><option value="">全部</option></select></div></div>
+                    <div class="col"><div class="form-group"><label>优先级筛选</label><select id="logPriority"><option value="">全部</option><option value="高">高</option><option value="中">中</option><option value="低">低</option></select></div></div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="loadLogs()">查询</button>
+                    <button class="btn btn-secondary" onclick="exportLogs()">导出CSV</button>
+                </div>
+                <div id="logsLoading" class="loading">加载中</div>
+                <div id="logsResult"></div>
+            </div>
+
+            <div id="stats" class="tab-content">
+                <h2 style="margin-bottom:20px">统计报告</h2>
+                <div class="row">
+                    <div class="col"><div class="form-group"><label>开始日期</label><input type="date" id="statStartDate"></div></div>
+                    <div class="col"><div class="form-group"><label>结束日期</label><input type="date" id="statEndDate"></div></div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="loadStats()">生成报告</button>
+                    <button class="btn btn-secondary" onclick="downloadReport()">下载报告</button>
+                </div>
+                <div id="statsLoading" class="loading">加载中</div>
+                <div id="statsResult"></div>
+            </div>
+
+            <div id="train" class="tab-content">
+                <h2 style="margin-bottom:20px">自定义分类训练</h2>
+                <div id="trainAlert"></div>
+                <div class="form-group"><label>分类标签名称</label><input type="text" id="trainCategory" placeholder="例如：产品建议、售后支持、技术支持等"></div>
+                <div class="form-group"><label>示例邮件（每行一封）</label><textarea id="trainExamples" placeholder="请输入该分类下的示例邮件，每行一封..."></textarea></div>
+                <div class="form-group"><label>或直接添加关键词（逗号分隔）</label><input type="text" id="trainKeywords" placeholder="例如：bug, 故障, 无法登录"></div>
+                <div class="form-group"><label>关键词权重</label><input type="number" id="trainWeight" value="1.0" step="0.1" min="0.1" max="5.0"></div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="trainClassifier()">训练分类器</button>
+                    <button class="btn btn-secondary" onclick="addKeywords()">添加关键词</button>
+                    <button class="btn btn-secondary" onclick="loadKeywords()">查看所有关键词</button>
+                </div>
+                <div id="trainLoading" class="loading">处理中</div>
+                <div id="trainResult"></div>
+            </div>
+
+            <div id="feedback" class="tab-content">
+                <h2 style="margin-bottom:20px">反馈管理</h2>
+                <div class="form-group"><label>按分类筛选</label><select id="feedbackCategory"><option value="">全部</option></select></div>
+                <button class="btn btn-primary" onclick="loadFeedbacks()">查看反馈</button>
+                <div id="feedbackLoading" class="loading">加载中</div>
+                <div id="feedbackResult"></div>
+            </div>
+
+            <div id="settings" class="tab-content">
+                <h2 style="margin-bottom:20px">系统设置</h2>
+                <div id="settingsAlert"></div>
+                <h3 style="margin-bottom:15px">Webhook 配置</h3>
+                <div class="form-group"><label>钉钉 Webhook URL</label><input type="text" id="dingtalkUrl" placeholder="https://oapi.dingtalk.com/robot/send?access_token=..."></div>
+                <div class="form-group"><label><input type="checkbox" id="dingtalkEnabled" checked> 启用高优先级邮件通知</label></div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveWebhookConfig()">保存配置</button>
+                    <button class="btn btn-secondary" onclick="testWebhook()">测试Webhook</button>
+                </div>
+                <div id="webhookLoading" class="loading">测试中</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+let currentResult = null;
+let categories = [];
+
+function showTab(tabName, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    btn.classList.add('active');
+    if (tabName === 'logs' || tabName === 'feedback') loadCategories();
+}
+
+async function loadCategories() {
+    try {
+        const r = await fetch('/api/categories');
+        const d = await r.json();
+        categories = d.categories;
+        ['logCategory','feedbackCategory'].forEach(id => {
+            const sel = document.getElementById(id);
+            const v = sel.value;
+            sel.innerHTML = '<option value="">全部</option>';
+            categories.forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
+            sel.value = v;
+        });
+    } catch(e) { console.error(e); }
+}
+
+function showAlert(id, msg, type) {
+    const el = document.getElementById(id);
+    el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+    setTimeout(() => el.innerHTML = '', 5000);
+}
+
+function priBadge(p) {
+    const m = {'高':'badge-high','中':'badge-medium','低':'badge-low'};
+    return `<span class="badge ${m[p]||''}">${p}优先级</span>`;
+}
+function sentBadge(s) {
+    const m = {'正面':'badge-positive','负面':'badge-negative','中性':'badge-neutral'};
+    return `<span class="badge ${m[s]||''}">${s}</span>`;
+}
+function catBadge(c) { return `<span class="badge badge-category">${c}</span>`; }
+
+function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+function buildEmailCard(r, idx, showFeedback) {
+    let html = `<div class="email-card">
+        <div class="email-card-header">
+            <div class="email-card-badges">
+                ${catBadge(r.category)}
+                ${priBadge(r.priority)}
+                ${sentBadge(r.sentiment)}
+                <span style="font-size:11px;color:#999">置信度 ${Math.round(r.category_confidence*100)}%</span>
+            </div>
+            ${r.webhook_sent ? '<span style="font-size:11px;color:#e67e22">🔔 已推送</span>' : ''}
+        </div>
+        <div class="email-card-content">${escHtml(r.content)}</div>
+        <div class="email-card-body">
+            <strong>摘要：</strong>${escHtml(r.summary)}<br>
+            <strong>建议响应：</strong><span style="color:#dc3545">${r.suggested_response_time}</span>
+        </div>
+        <div class="email-card-explain">
+            <span>📋 分类：${escHtml(r.category_explanation)}</span>
+            <span>😊 情绪：${escHtml(r.sentiment_explanation)}</span>
+            <span>⚡ 优先级：${escHtml(r.priority_explanation)}</span>
+        </div>`;
+    if (showFeedback) {
+        html += `<div class="feedback-section">
+            <h4>✏️ 纠正分类</h4>
+            <div class="row">
+                <div class="col"><div class="form-group"><label>正确分类</label>
+                    <select id="correctedCategory">
+                        ${categories.map(c=>`<option value="${c}" ${c===r.category?'selected':''}>${c}</option>`).join('')}
+                    </select></div></div>
+                <div class="col"><div class="form-group"><label>正确优先级</label>
+                    <select id="correctedPriority">
+                        <option value="高" ${r.priority==='高'?'selected':''}>高</option>
+                        <option value="中" ${r.priority==='中'?'selected':''}>中</option>
+                        <option value="低" ${r.priority==='低'?'selected':''}>低</option>
+                    </select></div></div>
+            </div>
+            <div class="form-group"><label>备注</label><input type="text" id="feedbackNote" placeholder="可选备注..."></div>
+            <button class="btn btn-secondary btn-sm" onclick="submitFeedback()">提交反馈</button>
+        </div>`;
+    }
+    html += '</div>';
+    return html;
+}
+
+async function classifySingle() {
+    const content = document.getElementById('emailContent').value.trim();
+    if (!content) { showAlert('singleAlert','请输入邮件内容','error'); return; }
+    document.getElementById('singleLoading').style.display = 'block';
+    document.getElementById('singleResult').innerHTML = '';
+    try {
+        const r = await fetch('/api/classify',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({content})
+        });
+        const d = await r.json();
+        if (d.success) {
+            currentResult = d.data;
+            document.getElementById('singleResult').innerHTML = buildEmailCard(d.data, 0, true);
+        } else {
+            showAlert('singleAlert', d.error||'分类失败','error');
+        }
+    } catch(e) { showAlert('singleAlert','网络错误，请稍后重试','error'); }
+    finally { document.getElementById('singleLoading').style.display = 'none'; }
+}
+
+async function submitFeedback() {
+    if (!currentResult) return;
+    try {
+        const r = await fetch('/api/feedback',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                email_id: currentResult.email_id,
+                original_category: currentResult.category,
+                corrected_category: document.getElementById('correctedCategory').value,
+                original_priority: currentResult.priority,
+                corrected_priority: document.getElementById('correctedPriority').value,
+                email_content: currentResult.content,
+                note: document.getElementById('feedbackNote').value
+            })
+        });
+        const d = await r.json();
+        showAlert('singleAlert', d.success ? '反馈已提交，感谢！' : (d.error||'提交失败'), d.success?'success':'error');
+    } catch(e) { showAlert('singleAlert','网络错误','error'); }
+}
+
+function clearSingle() {
+    document.getElementById('emailContent').value = '';
+    document.getElementById('singleResult').innerHTML = '';
+    document.getElementById('singleAlert').innerHTML = '';
+    currentResult = null;
+}
+
+function handleFileSelect(event) {
+    const f = event.target.files[0];
+    document.getElementById('fileName').textContent = f ? `已选择: ${f.name}` : '';
+}
+
+async function classifyBatch() {
+    const text = document.getElementById('batchEmails').value.trim();
+    if (!text) { showAlert('batchAlert','请输入邮件内容','error'); return; }
+    const emails = text.split('\n').filter(e=>e.trim());
+    if (!emails.length) { showAlert('batchAlert','请输入至少一封邮件','error'); return; }
+    document.getElementById('batchLoading').style.display = 'block';
+    document.getElementById('batchResult').innerHTML = '';
+    try {
+        const r = await fetch('/api/classify/batch',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({emails})
+        });
+        const d = await r.json();
+        if (d.success) {
+            renderBatchResults(d.data, d.errors);
+        } else { showAlert('batchAlert',d.error||'处理失败','error'); }
+    } catch(e) { showAlert('batchAlert','网络错误','error'); }
+    finally { document.getElementById('batchLoading').style.display = 'none'; }
+}
+
+async function classifyCSV() {
+    const fileInput = document.getElementById('csvFile');
+    if (!fileInput||!fileInput.files||!fileInput.files.length) {
+        showAlert('batchAlert','请选择CSV文件','error'); return;
+    }
+    const file = fileInput.files[0];
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+        showAlert('batchAlert','仅支持CSV文件格式','error'); return;
+    }
+    document.getElementById('batchLoading').style.display = 'block';
+    try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const r = await fetch('/api/classify/csv',{ method:'POST', body:fd });
+        if (r.ok) {
+            const blob = await r.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'classification_results.csv';
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            showAlert('batchAlert','处理完成，结果CSV已下载','success');
+        } else {
+            let msg = '处理失败';
+            try { const d = await r.json(); msg = d.error||msg; } catch(e){}
+            showAlert('batchAlert', msg, 'error');
+        }
+    } catch(e) { showAlert('batchAlert','网络错误','error'); }
+    finally { document.getElementById('batchLoading').style.display = 'none'; }
+}
+
+function downloadTemplate() { window.location.href = '/api/csv/template'; }
+
+function renderBatchResults(results, errors) {
+    let html = `<div style="margin-top:20px"><h3>处理结果 <span style="font-size:14px;color:#999;font-weight:normal">共 ${results.length} 封</span></h3>`;
+    if (errors && errors.length) {
+        html += `<div class="alert alert-error" style="margin-top:10px">${errors.length} 封处理失败</div>`;
+    }
+    results.forEach((r,i) => { html += buildEmailCard(r, i, false); });
+    html += '</div>';
+    document.getElementById('batchResult').innerHTML = html;
+}
+
+async function loadLogs() {
+    document.getElementById('logsLoading').style.display = 'block';
+    document.getElementById('logsResult').innerHTML = '';
+    const p = new URLSearchParams({
+        start_date: document.getElementById('logStartDate').value,
+        end_date: document.getElementById('logEndDate').value,
+        category: document.getElementById('logCategory').value,
+        priority: document.getElementById('logPriority').value,
+        limit: 200
+    });
+    try {
+        const r = await fetch('/api/logs?'+p.toString());
+        const d = await r.json();
+        if (d.success) renderLogs(d.data);
+    } catch(e) { console.error(e); }
+    finally { document.getElementById('logsLoading').style.display = 'none'; }
+}
+
+function renderLogs(logs) {
+    if (!logs.length) { document.getElementById('logsResult').innerHTML = '<div class="alert alert-info">暂无数据</div>'; return; }
+    let html = '<div class="result-card"><div class="table-wrap"><table class="data-table"><thead><tr><th>时间</th><th>邮件内容</th><th>分类</th><th>优先级</th><th>情绪</th><th>分类依据</th><th>优先级依据</th><th>响应时间</th></tr></thead><tbody>';
+    logs.forEach(l => {
+        html += `<tr>
+            <td style="white-space:nowrap;font-size:12px">${new Date(l.created_at).toLocaleString('zh-CN')}</td>
+            <td style="max-width:200px;word-break:break-all">${escHtml(l.content||l.summary||'')}</td>
+            <td>${catBadge(l.category)}</td>
+            <td>${priBadge(l.priority)}</td>
+            <td>${sentBadge(l.sentiment)}</td>
+            <td style="font-size:12px;color:#888;max-width:180px">${escHtml(l.category_explanation||'')}</td>
+            <td style="font-size:12px;color:#888;max-width:180px">${escHtml(l.priority_explanation||'')}</td>
+            <td style="white-space:nowrap">${l.suggested_response_time}</td>
+        </tr>`;
+    });
+    html += '</tbody></table></div></div>';
+    document.getElementById('logsResult').innerHTML = html;
+}
+
+function exportLogs() {
+    const p = new URLSearchParams({
+        start_date: document.getElementById('logStartDate').value,
+        end_date: document.getElementById('logEndDate').value,
+        category: document.getElementById('logCategory').value,
+        priority: document.getElementById('logPriority').value
+    });
+    window.location.href = '/api/logs/export?'+p.toString();
+}
+
+async function loadStats() {
+    document.getElementById('statsLoading').style.display = 'block';
+    document.getElementById('statsResult').innerHTML = '';
+    const p = new URLSearchParams({
+        start_date: document.getElementById('statStartDate').value,
+        end_date: document.getElementById('statEndDate').value
+    });
+    try {
+        const r = await fetch('/api/statistics?'+p.toString());
+        const d = await r.json();
+        if (d.success) renderStats(d.data);
+    } catch(e) { console.error(e); }
+    finally { document.getElementById('statsLoading').style.display = 'none'; }
+}
+
+function renderStats(s) {
+    let html = '<div class="stats-grid">';
+    html += `<div class="stat-card"><h3>${s.total_emails}</h3><p>总邮件数</p></div>`;
+    html += `<div class="stat-card" style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%)"><h3>${s.high_priority_count}</h3><p>高优先级 (${s.high_priority_ratio}%)</p></div>`;
+    html += `<div class="stat-card" style="background:linear-gradient(135deg,#fa709a 0%,#fee140 100%)"><h3>${s.negative_sentiment_count}</h3><p>负面情绪 (${s.negative_sentiment_ratio}%)</p></div>`;
+    html += '</div>';
+
+    html += '<div class="result-card"><h3 style="margin-bottom:12px">按类别统计</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>类别</th><th>数量</th><th>建议响应时间</th></tr></thead><tbody>';
+    for (const [c,n] of Object.entries(s.by_category)) html += `<tr><td>${catBadge(c)}</td><td>${n}</td><td>${s.avg_response_time[c]||'24小时内'}</td></tr>`;
+    html += '</tbody></table></div></div>';
+
+    html += '<div class="result-card" style="margin-top:16px"><h3 style="margin-bottom:12px">按优先级统计</h3><table class="data-table"><thead><tr><th>优先级</th><th>数量</th></tr></thead><tbody>';
+    for (const [p,n] of Object.entries(s.by_priority)) html += `<tr><td>${priBadge(p)}</td><td>${n}</td></tr>`;
+    html += '</tbody></table></div>';
+
+    html += '<div class="result-card" style="margin-top:16px"><h3 style="margin-bottom:12px">按情绪统计</h3><table class="data-table"><thead><tr><th>情绪</th><th>数量</th></tr></thead><tbody>';
+    for (const [s2,n] of Object.entries(s.by_sentiment)) html += `<tr><td>${sentBadge(s2)}</td><td>${n}</td></tr>`;
+    html += '</tbody></table></div>';
+
+    document.getElementById('statsResult').innerHTML = html;
+}
+
+function downloadReport() {
+    const p = new URLSearchParams({
+        start_date: document.getElementById('statStartDate').value,
+        end_date: document.getElementById('statEndDate').value
+    });
+    window.location.href = '/api/report?'+p.toString();
+}
+
+async function trainClassifier() {
+    const cat = document.getElementById('trainCategory').value.trim();
+    const ex = document.getElementById('trainExamples').value.trim();
+    if (!cat) { showAlert('trainAlert','请输入分类标签','error'); return; }
+    if (!ex) { showAlert('trainAlert','请输入示例邮件','error'); return; }
+    const examples = ex.split('\n').filter(e=>e.trim());
+    document.getElementById('trainLoading').style.display = 'block';
+    try {
+        const r = await fetch('/api/train',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({category:cat,examples})
+        });
+        const d = await r.json();
+        if (d.success) { showAlert('trainAlert',d.message,'success'); loadCategories(); }
+        else { showAlert('trainAlert',d.error||'训练失败','error'); }
+    } catch(e) { showAlert('trainAlert','网络错误','error'); }
+    finally { document.getElementById('trainLoading').style.display = 'none'; }
+}
+
+async function addKeywords() {
+    const cat = document.getElementById('trainCategory').value.trim();
+    const kw = document.getElementById('trainKeywords').value.trim();
+    const wt = parseFloat(document.getElementById('trainWeight').value);
+    if (!cat) { showAlert('trainAlert','请输入分类标签','error'); return; }
+    if (!kw) { showAlert('trainAlert','请输入关键词','error'); return; }
+    const keywords = kw.split(/[,，]/).map(k=>k.trim()).filter(k=>k);
+    document.getElementById('trainLoading').style.display = 'block';
+    try {
+        const r = await fetch('/api/keywords',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({category:cat,keywords,weight:wt})
+        });
+        const d = await r.json();
+        if (d.success) { showAlert('trainAlert',d.message,'success'); loadCategories(); }
+        else { showAlert('trainAlert',d.error||'添加失败','error'); }
+    } catch(e) { showAlert('trainAlert','网络错误','error'); }
+    finally { document.getElementById('trainLoading').style.display = 'none'; }
+}
+
+async function loadKeywords() {
+    try {
+        const r = await fetch('/api/keywords');
+        const d = await r.json();
+        if (d.success) {
+            let html = '<div class="result-card" style="margin-top:20px"><h3>当前关键词配置</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>分类</th><th>权重</th><th>关键词</th></tr></thead><tbody>';
+            for (const [c,cfg] of Object.entries(d.data)) {
+                html += `<tr><td>${catBadge(c)}</td><td>${cfg.weight}</td><td style="font-size:12px;color:#666;word-break:break-all">${cfg.keywords.join(', ')}</td></tr>`;
+            }
+            html += '</tbody></table></div></div>';
+            document.getElementById('trainResult').innerHTML = html;
+        }
+    } catch(e) { console.error(e); }
+}
+
+async function loadFeedbacks() {
+    document.getElementById('feedbackLoading').style.display = 'block';
+    document.getElementById('feedbackResult').innerHTML = '';
+    const p = new URLSearchParams({ category: document.getElementById('feedbackCategory').value, limit:100 });
+    try {
+        const r = await fetch('/api/feedback?'+p.toString());
+        const d = await r.json();
+        if (d.success) renderFeedbacks(d.data);
+    } catch(e) { console.error(e); }
+    finally { document.getElementById('feedbackLoading').style.display = 'none'; }
+}
+
+function renderFeedbacks(fbs) {
+    if (!fbs.length) { document.getElementById('feedbackResult').innerHTML = '<div class="alert alert-info">暂无反馈数据</div>'; return; }
+    let html = '<div class="result-card"><div class="table-wrap"><table class="data-table"><thead><tr><th>时间</th><th>原邮件</th><th>原分类</th><th>修正分类</th><th>原优先级</th><th>修正优先级</th><th>备注</th></tr></thead><tbody>';
+    fbs.forEach(fb => {
+        html += `<tr>
+            <td style="white-space:nowrap;font-size:12px">${new Date(fb.created_at).toLocaleString('zh-CN')}</td>
+            <td style="max-width:160px;word-break:break-all">${escHtml(fb.email_content||'')}</td>
+            <td>${catBadge(fb.original_category)}</td>
+            <td>${catBadge(fb.corrected_category)}</td>
+            <td>${priBadge(fb.original_priority)}</td>
+            <td>${priBadge(fb.corrected_priority)}</td>
+            <td style="max-width:120px">${escHtml(fb.note||'-')}</td>
+        </tr>`;
+    });
+    html += '</tbody></table></div></div>';
+    document.getElementById('feedbackResult').innerHTML = html;
+}
+
+async function loadWebhookConfig() {
+    try {
+        const r = await fetch('/api/webhook/config');
+        const d = await r.json();
+        if (d.success) {
+            const c = d.data.dingtalk||{};
+            document.getElementById('dingtalkUrl').value = c.url||'';
+            document.getElementById('dingtalkEnabled').checked = c.enabled!==false;
+        }
+    } catch(e) { console.error(e); }
+}
+
+async function saveWebhookConfig() {
+    const url = document.getElementById('dingtalkUrl').value.trim();
+    const enabled = document.getElementById('dingtalkEnabled').checked;
+    if (!url) { showAlert('settingsAlert','请输入Webhook URL','error'); return; }
+    try {
+        const r = await fetch('/api/webhook/config',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({platform:'dingtalk',url,enabled})
+        });
+        const d = await r.json();
+        showAlert('settingsAlert', d.success?'配置已保存':(d.error||'保存失败'), d.success?'success':'error');
+    } catch(e) { showAlert('settingsAlert','网络错误','error'); }
+}
+
+async function testWebhook() {
+    const url = document.getElementById('dingtalkUrl').value.trim();
+    document.getElementById('webhookLoading').style.display = 'block';
+    try {
+        const r = await fetch('/api/webhook/test',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({platform:'dingtalk',url})
+        });
+        const d = await r.json();
+        showAlert('settingsAlert', d.success?'测试成功！请检查钉钉是否收到消息。':(d.error||'测试失败'), d.success?'success':'error');
+    } catch(e) { showAlert('settingsAlert','网络错误','error'); }
+    finally { document.getElementById('webhookLoading').style.display = 'none'; }
+}
+
+loadCategories();
+loadWebhookConfig();
+</script>
+</body>
+</html>

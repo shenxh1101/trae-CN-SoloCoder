@@ -1,0 +1,42 @@
+<!-- BlueButton Component -->
+<style>
+  .bluebutton {
+    padding: 12px 24px; font-size: 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    
+  }
+  .bluebutton:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .bluebutton:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  .bluebutton:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  .bluebutton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .bluebutton-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+</style>
+
+<button class="bluebutton"  aria-label="Click Me">
+  
+  <span class="bluebutton-text">Click Me</span>
+</button>

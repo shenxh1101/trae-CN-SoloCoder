@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 手势绘图板</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+</head>
+<body>
+  <div id="app">
+    <div class="app-toolbar" id="toolbar"></div>
+
+    <div class="app-canvas-area">
+      <div class="canvas-wrapper" id="canvasWrapper">
+        <canvas id="drawCanvas"></canvas>
+        <canvas id="overlayCanvas"></canvas>
+        <canvas id="touchCanvas"></canvas>
+      </div>
+
+      <div class="video-container" id="videoContainer">
+        <video id="video" playsinline autoplay muted></video>
+        <canvas class="video-overlay" id="keypointsCanvas"></canvas>
+        <div class="video-label">CAMERA</div>
+      </div>
+
+      <div class="playback-bar" id="playbackBar">
+        <button class="playback-btn" id="playbackStopBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
+        </button>
+        <div class="playback-progress-container" id="playbackProgressContainer">
+          <div class="playback-progress" id="playbackProgress"></div>
+        </div>
+        <span class="playback-time" id="playbackTime">00:00</span>
+      </div>
+
+      <div class="touch-cursor" id="touchCursor"></div>
+    </div>
+
+    <div class="app-status-panel" id="statusPanel"></div>
+  </div>
+
+  <div id="settingsPanel"></div>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-title">GESTURE DRAW</div>
+    <div class="loading-subtitle">AI 手势绘图板</div>
+    <div class="loading-bar-container">
+      <div class="loading-bar" id="loadingBar"></div>
+    </div>
+    <div class="loading-text" id="loadingText">正在初始化...</div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

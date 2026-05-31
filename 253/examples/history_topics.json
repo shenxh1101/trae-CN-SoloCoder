@@ -1,0 +1,52 @@
+[
+  {
+    "title": "大模型时代的程序员生存指南",
+    "outline": [
+      "AI编程工具如何改变开发效率",
+      "哪些技能在大模型时代更重要",
+      "如何利用AI提升代码质量"
+    ],
+    "guest_type": "资深技术总监",
+    "duration": "45-60分钟"
+  },
+  {
+    "title": "AI Agent：从概念到落地实战",
+    "outline": [
+      "什么是AI Agent，核心能力解析",
+      "企业级Agent应用案例分享",
+      "Agent开发的技术挑战"
+    ],
+    "guest_type": "AI架构师",
+    "duration": "40-50分钟"
+  },
+  {
+    "title": "产品经理如何与AI协作",
+    "outline": [
+      "AI时代产品经理的新角色",
+      "用AI辅助需求分析和用户研究",
+      "避免AI产品的常见陷阱"
+    ],
+    "guest_type": "AI产品负责人",
+    "duration": "35-45分钟"
+  },
+  {
+    "title": "开源大模型的商业化路径",
+    "outline": [
+      "主流开源大模型对比分析",
+      "企业如何选择适合的开源模型",
+      "开源vs闭源的商业价值对比"
+    ],
+    "guest_type": "开源社区负责人",
+    "duration": "50-60分钟"
+  },
+  {
+    "title": "Prompt Engineering 进阶技巧",
+    "outline": [
+      "高质量Prompt的设计原则",
+      "常用Prompt模式和案例",
+      "如何评估Prompt效果"
+    ],
+    "guest_type": "AI应用开发专家",
+    "duration": "30-40分钟"
+  }
+]

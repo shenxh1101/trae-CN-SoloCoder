@@ -1,0 +1,13 @@
+{
+  "version_id": "46ac28d1c85c",
+  "timestamp": "2026-05-31T20:46:33.414763",
+  "original_content": "\nfrom calculator import is_prime\n\ndef test_is_prime_normal():\n    assert is_prime(7) == True\n\ndef test_is_prime_boundary():\n    assert is_prime(2) == True\n",
+  "edited_content": "\nfrom calculator import is_prime\nimport pytest\n\ndef test_is_prime_normal():\n    \"\"\"Test prime numbers\"\"\"\n    assert is_prime(7) == True\n    assert is_prime(13) == True\n    assert is_prime(29) == True\n\ndef test_is_prime_boundary():\n    \"\"\"Test boundary cases\"\"\"\n    assert is_prime(2) == True\n    assert is_prime(1) == False\n    assert is_prime(0) == False\n\ndef test_is_prime_negative():\n    \"\"\"Test negative numbers\"\"\"\n    assert is_prime(-5) == False\n\n@pytest.mark.parametrize(\"n, expected\", [\n    (2, True), (3, True), (4, False), (5, True), (6, False)\n])\ndef test_is_prime_parametrized(n, expected):\n    \"\"\"Parametrized test for is_prime\"\"\"\n    assert is_prime(n) == expected\n",
+  "is_edited": true,
+  "function_name": "is_prime",
+  "file_path": "/Users/mac/code/solo coder/258/examples/calculator.py",
+  "language": "python",
+  "source_code": "def is_prime(n: int) -> bool:...",
+  "function_signature": "is_prime(n: int) -> bool",
+  "edit_reason": "\u6dfb\u52a0\u4e86\u53c2\u6570\u5316\u6d4b\u8bd5\u548c\u66f4\u591a\u8fb9\u754c\u7528\u4f8b"
+}

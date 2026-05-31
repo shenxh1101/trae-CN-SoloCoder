@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量比对 - AI合同条款智能比对工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">📄 AI合同条款智能比对工具</div>
+        <div class="nav-menu">
+            <a href="/">两两比对</a>
+            <a href="/batch" class="active">批量比对</a>
+            <a href="/templates">模板管理</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>批量比对</h2>
+            <p class="subtitle">上传基准合同和多个待比对合同，自动生成汇总报告</p>
+            
+            <form id="batchForm" class="upload-form">
+                <div class="upload-area">
+                    <label class="file-label">
+                        <span class="file-icon">📄</span>
+                        <span class="file-text">基准合同</span>
+                        <input type="file" id="base_contract" name="base_contract" accept=".txt,.docx" required>
+                    </label>
+                    <div class="file-info" id="baseFileInfo"></div>
+                </div>
+
+                <div class="upload-area">
+                    <label class="file-label">
+                        <span class="file-icon">📁</span>
+                        <span class="file-text">待比对合同 (可多选)</span>
+                        <input type="file" id="compare_files" name="compare_files" accept=".txt,.docx" multiple webkitdirectory directory>
+                    </label>
+                    <div class="file-info" id="compareFilesInfo"></div>
+                    <p class="help-text" style="margin-top: 0.5rem;">💡 支持选择多个文件或整个文件夹 (Chrome/Edge支持文件夹上传)</p>
+                </div>
+
+                <div class="options-section">
+                    <div class="option-group">
+                        <h3>⚙️ 比对选项</h3>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="use_transformer" name="use_transformer">
+                                使用AI模型提升比对精度 (Sentence Transformer)
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <label>相似度阈值:</label>
+                            <input type="range" id="threshold" name="threshold" min="0.5" max="0.95" step="0.05" value="0.7">
+                            <span id="thresholdValue">0.7</span>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <h3>🚫 自定义忽略规则 (正则表达式)</h3>
+                        <p class="help-text">每行一个正则表达式，匹配到的内容将被忽略比对</p>
+                        <textarea id="ignore_patterns" name="ignore_patterns" rows="3" placeholder="例如：&#10;\d{4}-\d{2}-\d{2}&#10;￥\s?\d+"></textarea>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="loadDefaultPatterns()">使用默认规则</button>
+                    </div>
+
+                    <div class="option-group">
+                        <h3>🎯 重点关注条款类别</h3>
+                        <div class="category-grid">
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="违约责任">
+                                违约责任
+                            </label>
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="保密条款">
+                                保密条款
+                            </label>
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="知识产权">
+                                知识产权
+                            </label>
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="付款条款">
+                                付款条款
+                            </label>
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="履行期限">
+                                履行期限
+                            </label>
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="终止条款">
+                                终止条款
+                            </label>
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="争议解决">
+                                争议解决
+                            </label>
+                            <label class="category-tag">
+                                <input type="checkbox" name="focus_categories" value="不可抗力">
+                                不可抗力
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="btn-text">开始批量比对</span>
+                        <span class="btn-loading" style="display:none;">比对中...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="batchResultSection" style="display:none;">
+            <div class="card">
+                <div class="result-header">
+                    <h2>批量比对结果</h2>
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="downloadSummary()">📥 下载汇总报告</button>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="contract-names">
+                        <span><strong>基准合同:</strong> <span id="baseContractName"></span></span>
+                        <span><strong>比对数量:</strong> <span id="compareCount"></span></span>
+                        <span><strong>成功:</strong> <span id="successCount"></span></span>
+                        <span><strong>失败:</strong> <span id="errorCount"></span></span>
+                        <span><strong>平均相似度:</strong> <span id="avgSimilarity"></span></span>
+                    </div>
+                    
+                    <div id="categorySummary" class="category-summary" style="margin-top: 1rem; display: none;">
+                        <h4>类别差异汇总</h4>
+                        <div id="categorySummaryGrid" class="stats-grid"></div>
+                    </div>
+                </div>
+
+                <div class="batch-results-table">
+                    <h3>详细比对结果</h3>
+                    <p class="help-text">💡 点击表格行可查看该合同的详细比对结果</p>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>合同名称</th>
+                                <th>相似度</th>
+                                <th>条款数</th>
+                                <th>新增</th>
+                                <th>删除</th>
+                                <th>修改</th>
+                                <th>未变化</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batchResultsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="detailModal" class="modal" style="display:none;">
+            <div class="modal-content" style="max-width: 1200px;">
+                <div class="modal-header">
+                    <h3 id="detailModalTitle">详细比对结果</h3>
+                    <button class="btn btn-secondary btn-sm" onclick="closeDetailModal()">✕ 关闭</button>
+                </div>
+                <div class="modal-body" id="detailModalBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p>正在批量比对，请稍候...</p>
+        <p id="loadingProgress" style="font-size: 0.9rem; opacity: 0.8;"></p>
+    </div>
+
+    <script>
+        let currentBatchResult = null;
+        let contractDetailMap = {};
+
+        document.getElementById('threshold').addEventListener('input', function(e) {
+            document.getElementById('thresholdValue').textContent = e.target.value;
+        });
+
+        document.getElementById('base_contract').addEventListener('change', function(e) {
+            document.getElementById('baseFileInfo').textContent = e.target.files[0] ? e.target.files[0].name : '';
+        });
+
+        document.getElementById('compare_files').addEventListener('change', function(e) {
+            const files = e.target.files;
+            let count = 0;
+            for (let f of files) {
+                if (f.name.endsWith('.txt') || f.name.endsWith('.docx')) {
+                    count++;
+                }
+            }
+            document.getElementById('compareFilesInfo').textContent = `已选择 ${count} 个合同文件`;
+        });
+
+        function loadDefaultPatterns() {
+            const patterns = [
+                '\\d{4}[-/年]\\d{1,2}[-/月]\\d{1,2}[日号]?',
+                '￥\\s?\\d+(?:,\\d+)*(?:\\.\\d+)?',
+                '\\d+(?:,\\d+)*(?:\\.\\d+)?\\s*元'
+            ];
+            document.getElementById('ignore_patterns').value = patterns.join('\n');
+        }
+
+        document.getElementById('batchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('submitBtn').disabled = true;
+            document.querySelector('#submitBtn .btn-text').style.display = 'none';
+            document.querySelector('#submitBtn .btn-loading').style.display = 'inline';
+            
+            try {
+                const response = await fetch('/api/batch-compare', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentBatchResult = data.result;
+                    contractDetailMap = {};
+                    data.result.results.forEach(r => {
+                        contractDetailMap[r.contract_id] = r;
+                    });
+                    displayBatchResult(data.result);
+                } else {
+                    alert('比对失败: ' + data.error);
+                    if (data.traceback) {
+                        console.error('Traceback:', data.traceback);
+                    }
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+                document.querySelector('#submitBtn .btn-text').style.display = 'inline';
+                document.querySelector('#submitBtn .btn-loading').style.display = 'none';
+            }
+        });
+
+        function displayBatchResult(result) {
+            document.getElementById('batchResultSection').style.display = 'block';
+            document.getElementById('baseContractName').textContent = result.base_contract;
+            document.getElementById('compareCount').textContent = result.total_compared;
+            document.getElementById('successCount').textContent = result.success_count;
+            document.getElementById('errorCount').textContent = result.error_count;
+            document.getElementById('avgSimilarity').textContent = (result.average_similarity * 100).toFixed(1) + '%';
+            
+            if (result.category_summary && Object.keys(result.category_summary).length > 0) {
+                document.getElementById('categorySummary').style.display = 'block';
+                const grid = document.getElementById('categorySummaryGrid');
+                grid.innerHTML = '';
+                for (const [cat, stats] of Object.entries(result.category_summary)) {
+                    if (stats.contract_count > 0) {
+                        const div = document.createElement('div');
+                        div.className = 'stat-card stat-modified';
+                        div.innerHTML = `
+                            <div class="stat-label">${cat}</div>
+                            <div class="stat-value" style="font-size: 1rem;">
+                                新增${stats.added} 删除${stats.deleted} 修改${stats.modified}
+                            </div>
+                            <div style="font-size: 0.8rem; color: #666;">${stats.contract_count}份合同有差异</div>
+                        `;
+                        grid.appendChild(div);
+                    }
+                }
+            }
+            
+            const tbody = document.getElementById('batchResultsBody');
+            tbody.innerHTML = '';
+            
+            result.results.forEach((r, idx) => {
+                const tr = document.createElement('tr');
+                const hasError = r.error;
+                
+                tr.style.cursor = hasError ? 'default' : 'pointer';
+                tr.onclick = hasError ? null : () => showDetailModal(r.contract_id);
+                
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td>${r.contract_name}</td>
+                    <td><span class="similarity-badge ${getSimilarityClass(r.overall_similarity)}">${(r.overall_similarity * 100).toFixed(1)}%</span></td>
+                    <td>${r.total_clauses_b}</td>
+                    <td class="stat-added">${r.stats.added}</td>
+                    <td class="stat-deleted">${r.stats.deleted}</td>
+                    <td class="stat-modified">${r.stats.modified}</td>
+                    <td class="stat-unchanged">${r.stats.unchanged}</td>
+                    <td>${hasError ? '<span class="error-badge" title="' + r.error + '">错误</span>' : '<span class="success-badge">完成</span>'}</td>
+                    <td>
+                        ${!hasError && r.detail_file ? 
+                            `<a href="${r.detail_file.download_url}" target="_blank" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">查看详情</a>` : 
+                            (hasError ? '<span style="color: #999; font-size: 0.8rem;">' + r.error.substring(0, 20) + '...</span>' : '')}
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        function getSimilarityClass(sim) {
+            if (sim >= 0.9) return 'sim-high';
+            if (sim >= 0.7) return 'sim-medium';
+            return 'sim-low';
+        }
+
+        function downloadSummary() {
+            if (currentBatchResult && currentBatchResult.summary_file) {
+                window.open(currentBatchResult.summary_file.download_url, '_blank');
+            } else {
+                alert('汇总报告未生成，请重新比对');
+            }
+        }
+
+        function showDetailModal(contractId) {
+            const detail = contractDetailMap[contractId];
+            if (!detail) return;
+            
+            document.getElementById('detailModalTitle').textContent = `详细比对结果 - ${detail.contract_name}`;
+            
+            const body = document.getElementById('detailModalBody');
+            
+            let html = `
+                <div class="summary-section" style="margin-bottom: 1rem;">
+                    <div class="contract-names">
+                        <span><strong>相似度:</strong> <span class="similarity-badge ${getSimilarityClass(detail.overall_similarity)}">${(detail.overall_similarity * 100).toFixed(1)}%</span></span>
+                        <span><strong>基准条款:</strong> ${detail.total_clauses_a}</span>
+                        <span><strong>对比条款:</strong> ${detail.total_clauses_b}</span>
+                    </div>
+                    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <div class="stat-card stat-added">
+                            <div class="stat-label">新增</div>
+                            <div class="stat-value">${detail.stats.added}</div>
+                        </div>
+                        <div class="stat-card stat-deleted">
+                            <div class="stat-label">删除</div>
+                            <div class="stat-value">${detail.stats.deleted}</div>
+                        </div>
+                        <div class="stat-card stat-modified">
+                            <div class="stat-label">修改</div>
+                            <div class="stat-value">${detail.stats.modified}</div>
+                        </div>
+                        <div class="stat-card stat-unchanged">
+                            <div class="stat-label">未变化</div>
+                            <div class="stat-value">${detail.stats.unchanged}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-color added"></span>新增</span>
+                    <span class="legend-item"><span class="legend-color deleted"></span>删除</span>
+                    <span class="legend-item"><span class="legend-color modified"></span>修改</span>
+                </div>
+                
+                <h4 style="margin-top: 1.5rem;">差异详情</h4>
+            `;
+            
+            detail.diff_results.forEach((diff, idx) => {
+                if (diff.type === 'unchanged') return;
+                
+                const typeLabels = { 'added': '新增', 'deleted': '删除', 'modified': '修改' };
+                
+                html += `
+                    <div class="diff-card type-${diff.type}" style="margin-top: 1rem;">
+                        <div class="diff-card-header">
+                            <div>
+                                <span class="diff-badge type-${diff.type}">${typeLabels[diff.type] || diff.type}</span>
+                                <span class="category-badge">${diff.category}</span>
+                            </div>
+                            <div class="diff-similarity">相似度: ${(diff.similarity * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="diff-card-body">
+                            <div class="diff-pane">
+                                <div class="diff-pane-title">基准合同</div>
+                                <div class="diff-pane-content">${diff.old_highlighted || '<span class="no-content">- 无内容 -</span>'}</div>
+                            </div>
+                            <div class="diff-pane">
+                                <div class="diff-pane-title">对比合同</div>
+                                <div class="diff-pane-content">${diff.new_highlighted || '<span class="no-content">- 无内容 -</span>'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const allUnchanged = detail.diff_results.every(d => d.type === 'unchanged');
+            if (allUnchanged) {
+                html += '<div style="padding: 2rem; text-align: center; color: #27ae60;">✅ 两份合同完全一致，无差异</div>';
+            }
+            
+            if (detail.detail_file) {
+                html += `
+                    <div style="margin-top: 1.5rem; text-align: center;">
+                        <a href="${detail.detail_file.download_url}" target="_blank" class="btn btn-primary">📥 下载完整HTML报告</a>
+                    </div>
+                `;
+            }
+            
+            body.innerHTML = html;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDetailModal();
+            }
+        });
+    </script>
+
+    <style>
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+        
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .category-summary h4 {
+            margin-bottom: 0.75rem;
+            color: #555;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #f0f7ff;
+        }
+        
+        .batch-results-table h3 {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</body>
+</html>
